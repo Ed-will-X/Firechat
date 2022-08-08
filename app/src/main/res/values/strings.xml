@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Firechat</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="auth_root_large_text">Discover your Nearby Friends</string>
+    <string name="auth_root_small_text">Find all your nearby friends by signing in quick and easily</string>
+    <string name="auth_root_login_button_text">Have an account? Login</string>
+    <string name="auth_root_signup_button_text">Join us, it\'s free</string>
+</resources>

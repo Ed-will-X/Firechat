@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_signedout.xml"
+    app:startDestination="@id/authRootFragment">
+
+    <fragment
+        android:id="@+id/authRootFragment"
+        android:name="com.varsel.firechat.view.signedOut.fragments.AuthRootFragment"
+        android:label="fragment_auth_root"
+        tools:layout="@layout/fragment_auth_root" >
+        <action
+            android:id="@+id/action_authRootFragment_to_authScreenFragment"
+            app:destination="@id/authScreenFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/authScreenFragment"
+        android:name="com.varsel.firechat.view.signedOut.fragments.AuthScreenFragment"
+        android:label="fragment_auth_screen"
+        tools:layout="@layout/fragment_auth_screen" />
+</navigation>
