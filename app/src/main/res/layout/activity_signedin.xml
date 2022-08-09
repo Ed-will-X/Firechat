@@ -1,26 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".view.signedIn.SignedinActivity">
+    <data>
+        <variable
+            name="appbarViewModel"
+            type="com.varsel.firechat.viewModel.AppbarViewModel" />
+    </data>
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/signed_in_nav_host_fragment"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_height="0dp"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_graph_signedin"
-        android:layout_weight="1"
-        />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/bottom_nav_view"
-        app:menu="@menu/bottom_nav_menu"/>
-</LinearLayout>
+        <com.google.android.material.appbar.AppBarLayout
+            style="@style/appbar">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="20dp"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/appbar_large_text"
+                    android:text="@string/all_chats"
+                    />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    />
+
+                <LinearLayout
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/add_chat_icon"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_add_new_chat"
+                        android:layout_marginRight="10dp"
+                        />
+
+                    <ImageView
+                        android:id="@+id/search_chat_icon"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_search"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/signed_in_nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/nav_graph_signedin"
+            android:layout_weight="1"
+            />
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/bottom_nav_view"
+            app:menu="@menu/bottom_nav_menu"/>
+    </LinearLayout>
+</layout>

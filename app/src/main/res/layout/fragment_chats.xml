@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.signedIn.fragments.bottomNav.ChatsFragment">
 
     <com.google.android.material.tabs.TabLayout
+        style="@style/tab"
         android:id="@+id/chats_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

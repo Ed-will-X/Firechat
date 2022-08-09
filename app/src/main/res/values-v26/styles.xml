@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="editTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="textInputStyle">
+            @style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense
+        </item>
+        <item name="background">"@drawable/edit_text_shape"</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:paddingVertical">5dp</item>
+    </style>
+</resources>

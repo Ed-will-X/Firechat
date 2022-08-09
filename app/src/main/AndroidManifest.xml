@@ -14,13 +14,13 @@
         android:theme="@style/Theme.Firechat"
         tools:targetApi="31">
         <activity
-            android:name=".view.signedIn.SignedinActivity"
+            android:name=".view.signedOut.SignedoutActivity"
             android:exported="false" />
         <activity
             android:name=".view.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".view.signedOut.SignedoutActivity"
+            android:name=".view.signedIn.SignedinActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

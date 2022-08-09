@@ -9,14 +9,5 @@
         android:id="@+id/authRootFragment"
         android:name="com.varsel.firechat.view.signedOut.fragments.AuthRootFragment"
         android:label="fragment_auth_root"
-        tools:layout="@layout/fragment_auth_root" >
-        <action
-            android:id="@+id/action_authRootFragment_to_authScreenFragment"
-            app:destination="@id/authScreenFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/authScreenFragment"
-        android:name="com.varsel.firechat.view.signedOut.fragments.AuthScreenFragment"
-        android:label="fragment_auth_screen"
-        tools:layout="@layout/fragment_auth_screen" />
+        tools:layout="@layout/fragment_auth_root" />
 </navigation>

@@ -1,10 +1,19 @@
 <resources>
     <string name="app_name">Firechat</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="auth_root_large_text">Discover your Nearby Friends</string>
     <string name="auth_root_small_text">Find all your nearby friends by signing in quick and easily</string>
     <string name="auth_root_login_button_text">Have an account? Login</string>
     <string name="auth_root_signup_button_text">Join us, it\'s free</string>
+    <string name="auth_root_signup_text_large">Signup</string>
+    <string name="auth_root_signin_text_large">Get Login</string>
+    <string name="auth_root_signup_terms">I have read &amp; agreed with the terms &amp; conditions</string>
+    <string name="auth_root_signup_btn_actionsheet">Signup Now</string>
+    <string name="auth_root_signin_btn_actionsheet">Get Login</string>
+    <string name="auth_root_signup_text_forgot_password">Forgot Password?</string>
+    <string name="placeholder_email">Email Address</string>
+    <string name="placeholder_password">Enter Password</string>
+    <string name="placeholder_fullname">Fullname</string>
+    <string name="placeholder_confirm_password">Confirm Password</string>
+    <string name="all_chats">All Chats</string>
 </resources>
