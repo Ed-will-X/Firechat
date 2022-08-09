@@ -16,4 +16,5 @@
     <string name="placeholder_fullname">Fullname</string>
     <string name="placeholder_confirm_password">Confirm Password</string>
     <string name="all_chats">All Chats</string>
+    <string name="my_profile">My Profile</string>
 </resources>

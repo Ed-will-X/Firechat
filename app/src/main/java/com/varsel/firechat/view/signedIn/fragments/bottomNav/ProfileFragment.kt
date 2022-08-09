@@ -5,11 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import com.varsel.firechat.R
-import com.varsel.firechat.databinding.FragmentChatsBinding
 import com.varsel.firechat.databinding.FragmentProfileBinding
-import com.varsel.firechat.viewModel.AppbarTags
+import com.varsel.firechat.viewModel.AppbarTag
 import com.varsel.firechat.viewModel.AppbarViewModel
 
 class ProfileFragment : Fragment() {
@@ -25,7 +26,8 @@ class ProfileFragment : Fragment() {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        appbarViewModel.setPage(AppbarTags.PROFILE)
+        appbarViewModel.setPage(AppbarTag.PROFILE)
+        appbarViewModel.setProfile(activity, context)
 
         return view
     }

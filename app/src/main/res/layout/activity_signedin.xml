@@ -17,6 +17,7 @@
         >
 
         <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar"
             style="@style/appbar">
 
             <LinearLayout
@@ -25,6 +26,7 @@
                 android:layout_marginHorizontal="20dp"
                 >
                 <TextView
+                    android:id="@+id/large_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/appbar_large_text"
@@ -43,15 +45,23 @@
                     android:layout_height="wrap_content">
 
                     <ImageView
-                        android:id="@+id/add_chat_icon"
+                        android:id="@+id/icon_1"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:src="@drawable/ic_add_new_chat"
-                        android:layout_marginRight="10dp"
+                        android:layout_marginRight="15dp"
                         />
 
                     <ImageView
-                        android:id="@+id/search_chat_icon"
+                        android:id="@+id/icon_2"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_add_new_chat"
+                        android:layout_marginRight="15dp"
+                        />
+
+                    <ImageView
+                        android:id="@+id/icon_3"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:src="@drawable/ic_search"
