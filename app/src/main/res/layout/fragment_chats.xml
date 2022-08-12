@@ -7,12 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".view.signedIn.fragments.bottomNav.ChatsFragment">
 
-    <com.google.android.material.tabs.TabLayout
-        style="@style/tab"
-        android:id="@+id/chats_tab_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/chats_view_pager"
         android:layout_width="match_parent"

@@ -6,16 +6,5 @@ import com.varsel.firechat.databinding.FragmentChatsBinding
 
 class ChatsViewModel: ViewModel() {
 
-    fun setTabText(binding: FragmentChatsBinding){
-        TabLayoutMediator(binding.chatsTabLayout, binding.chatsViewPager){ tab, position ->
-            when(position){
-                0 -> {
-                    tab.text = "Messages"
-                }
-                1 -> {
-                    tab.text = "Groups"
-                }
-            }
-        }.attach()
-    }
+
 }

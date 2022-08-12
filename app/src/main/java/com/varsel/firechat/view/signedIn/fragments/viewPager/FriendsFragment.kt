@@ -1,4 +1,4 @@
-package com.varsel.firechat.view.signedIn.fragments.bottomNav
+package com.varsel.firechat.view.signedIn.fragments.viewPager
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,12 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import com.varsel.firechat.R
+import com.varsel.firechat.databinding.FragmentFriendsBinding
 import com.varsel.firechat.databinding.FragmentProfileBinding
 import com.varsel.firechat.viewModel.AppbarTag
 import com.varsel.firechat.viewModel.AppbarViewModel
 
-class ProfileFragment : Fragment() {
-    private var _binding: FragmentProfileBinding? = null
+class FriendsFragment : Fragment() {
+    private var _binding: FragmentFriendsBinding? = null
     private val binding get() = _binding!!
     private val appbarViewModel: AppbarViewModel by activityViewModels()
 
@@ -19,12 +21,10 @@ class ProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        _binding = FragmentFriendsBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        appbarViewModel.setPage(AppbarTag.PROFILE)
-        appbarViewModel.setNavProps(activity, context)
+
 
         return view
     }

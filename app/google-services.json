@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "983103028222",
+    "project_id": "firechat-c2796",
+    "storage_bucket": "firechat-c2796.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:983103028222:android:906fb9f795552bf1bcdeaf",
+        "android_client_info": {
+          "package_name": "com.varsel.firechat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "983103028222-3quulaqv1famdcdb890r21pjdl035blt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.varsel.firechat",
+            "certificate_hash": "f5b1bb071a98e4474dfd18fca10efba6c37d3c8b"
+          }
+        },
+        {
+          "client_id": "983103028222-ifc57u4ob6vemiq6cime16igoff937o6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_wSBSMKGKJaEKp0Kb-8Rm5HDx40X1S5I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "983103028222-ifc57u4ob6vemiq6cime16igoff937o6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
