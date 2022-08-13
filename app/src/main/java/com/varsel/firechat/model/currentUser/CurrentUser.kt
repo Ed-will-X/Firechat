@@ -6,8 +6,8 @@ import com.varsel.firechat.model.User.User
 
 @Entity(tableName = "current_user")
 class CurrentUser: User {
-    var chatRooms: MutableList<ChatRoom>? = null
-    var groupRooms: MutableList<ChatRoom>? = null
+//    var chatRooms: MutableList<ChatRoom>? = null
+//    var groupRooms: MutableList<ChatRoom>? = null
 
     constructor(){
 

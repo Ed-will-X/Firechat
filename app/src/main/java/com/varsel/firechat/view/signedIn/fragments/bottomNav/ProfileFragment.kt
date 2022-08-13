@@ -24,13 +24,13 @@ class ProfileFragment : Fragment() {
         val view = binding.root
 
         appbarViewModel.setPage(AppbarTag.PROFILE)
-        appbarViewModel.setNavProps(activity, context)
+        appbarViewModel.setNavProps(activity, context, view)
 
         return view
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 }

@@ -1,13 +1,21 @@
 package com.varsel.firechat.viewModel
 
+import android.util.Log
 import android.widget.Toast
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.User.User
 
 class FirebaseViewModel: ViewModel() {
+    val usersLiveData = MutableLiveData<List<User>>()
+    val users = arrayListOf<User>()
+
     fun signUp(
         email: String,
         password: String,
@@ -65,28 +73,57 @@ class FirebaseViewModel: ViewModel() {
     }
 
     // TODO: Implement get all unlocked users
-    fun getAllUsers(): List<User> {
-        return listOf<User>()
+    fun getAllUsers(mDbRef: DatabaseReference, mAuth: FirebaseAuth, beforeCallback: ()-> Unit){
+        mDbRef.child("Users").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                beforeCallback()
+                for(item in snapshot.children){
+                    val user = item.getValue(User::class.java)
+                    // TODO: Add check to remove the current user
+                    if(mAuth.currentUser?.uid != user?.userUID){
+                        users.add(user!!)
+                    }
+                }
+                usersLiveData.value = users
+//                Log.d("LLL", "${usersLiveData.value}")
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+    }
+
+    // TODO: Implement Add Friend
+    fun addFriend(user: User) {
+
     }
 
     // TODO: Implement get all friends
-    fun getAllFriends(user: User): List<User>{
+    fun getAllFriends(): List<User>{
+        return listOf<User>()
+    }
+
+    // TODO: Implement Query database
+    fun queryUsers(term: String): List<User>{
         return listOf<User>()
     }
 
     // TODO: Implement get user chatroom
-    fun getUserChatRooms(user: User): List<ChatRoom>{
+    fun getUserChatRooms(): List<ChatRoom>{
         return listOf<ChatRoom>()
     }
 
     // TODO: Implement get single chat room
-    fun getChatRoom(user: User): ChatRoom{
+    fun getChatRoom(): ChatRoom{
         return ChatRoom()
     }
 
     // TODO: Implement delete chatroom
     fun deleteChatRoom(){
-
+        // push to deleted
     }
 
     fun signOut(mAuth: FirebaseAuth){

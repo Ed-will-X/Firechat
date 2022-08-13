@@ -90,4 +90,8 @@
         <item name="tabTextColor">@color/white</item>
     </style>
 
+    <style name="search_bar" parent="TextAppearance.AppCompat">
+
+    </style>
+
 </resources>

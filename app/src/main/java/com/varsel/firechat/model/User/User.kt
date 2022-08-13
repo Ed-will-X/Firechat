@@ -1,5 +1,6 @@
 package com.varsel.firechat.model.User
 
+import android.widget.ImageView
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -21,6 +22,7 @@ open class User{
     var phone: String? = null
 
     @ColumnInfo(name = "profile_image")
+//    var profileImage: ImageView? = null
     var profileImage: Array<Byte>? = null
 
     @ColumnInfo(name = "profile_lock")
@@ -39,6 +41,8 @@ open class User{
     var favoriteGroups: List<String>? = null
 
     var friends: MutableList<String>? = null
+
+    var friendRequests: MutableList<String>? = null
 
     constructor(name: String, email: String, userUID: String, about: String?, phone: String?, profileImage: Array<Byte>?, profileLock: Boolean, chatRooms: List<String>?, groupRooms: List<String>?, occupation: String?){
         this.name = name

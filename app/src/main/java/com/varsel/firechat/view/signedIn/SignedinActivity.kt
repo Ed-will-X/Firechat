@@ -19,6 +19,9 @@ import com.varsel.firechat.viewModel.AppbarViewModel
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.varsel.firechat.viewModel.FirebaseViewModel
 import kotlinx.coroutines.launch
 
 
@@ -27,12 +30,14 @@ class SignedinActivity : AppCompatActivity() {
     private lateinit var appbarViewModel: AppbarViewModel
     lateinit var dataStore: DataStore<Preferences>
     lateinit var firebaseAuth: FirebaseAuth
+    lateinit var mDbRef: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance()
+        mDbRef = FirebaseDatabase.getInstance().reference
 
         // initialising the datastore
         dataStore = createDataStore("current_user")

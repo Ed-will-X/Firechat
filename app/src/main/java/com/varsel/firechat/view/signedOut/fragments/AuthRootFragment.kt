@@ -63,11 +63,10 @@ class AuthRootFragment : Fragment() {
             }
         }
         binding.navigateToSignUp.setOnClickListener {
-            Log.d("M.FIRE"," ${signedOutViewModel.emailText.value}")
 
             showSignUpDialog() {
                 firebaseViewModel.signUp(emailText, passwordText, parent.mAuth, {
-                    firebaseViewModel.saveUser(emailText, passwordText, parent.mAuth.currentUser?.uid.toString() ,parent.mDbRef, {
+                    firebaseViewModel.saveUser(fullnameText, emailText, parent.mAuth.currentUser?.uid.toString() ,parent.mDbRef, {
                         navigate {
 
                         }

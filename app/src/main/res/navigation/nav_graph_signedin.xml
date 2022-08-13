@@ -9,7 +9,11 @@
         android:id="@+id/chatsFragment"
         android:name="com.varsel.firechat.view.signedIn.fragments.bottomNav.ChatsFragment"
         android:label="fragment_chats"
-        tools:layout="@layout/fragment_chats" />
+        tools:layout="@layout/fragment_chats" >
+        <action
+            android:id="@+id/action_chatsFragment_to_addFriends"
+            app:destination="@id/addFriends" />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.varsel.firechat.view.signedIn.fragments.bottomNav.ProfileFragment"
@@ -20,4 +24,9 @@
         android:name="com.varsel.firechat.view.signedIn.fragments.bottomNav.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/addFriends"
+        android:name="com.varsel.firechat.view.signedIn.fragments.AddFriendsFragment"
+        android:label="fragment_add_friends"
+        tools:layout="@layout/fragment_add_friends" />
 </navigation>

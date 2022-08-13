@@ -39,7 +39,7 @@ class SettingsFragment : Fragment() {
         val activity = activity as SignedinActivity
 
         appbarViewModel.setPage(AppbarTag.SETTINGS)
-        appbarViewModel.setNavProps(activity, context)
+        appbarViewModel.setNavProps(activity, context, view)
 
         binding.settingsLogoutClickable.setOnClickListener {
             Toast.makeText(view.context, "Logout", Toast.LENGTH_LONG).show()
@@ -69,8 +69,8 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 }
