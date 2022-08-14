@@ -15,13 +15,6 @@ class AddFriendsSearchAdapter(val clickListener: (UID: String?)-> Unit): Recycle
 
     var users: ArrayList<User> = arrayListOf()
 
-//    fun setData(newList: ArrayList<User>){
-//        this.run {
-//            users = newList
-//            notifyDataSetChanged()
-//        }
-//    }
-
     class UserItemViewHolder(item: View): RecyclerView.ViewHolder(item){
         val root = item.findViewById<LinearLayout>(R.id.root)
         val profileImage = item.findViewById<ImageView>(R.id.profile_image)
@@ -39,12 +32,12 @@ class AddFriendsSearchAdapter(val clickListener: (UID: String?)-> Unit): Recycle
         holder.name.setText(item.name)
         // TODO: Set occupation
         holder.occupation.setText(item.name)
+        // TODO: Set the image resource if profile pic is present
 
         holder.root.setOnClickListener {
             clickListener(item.userUID)
         }
 
-        Log.d("LLL", "Bind: ${users.size}")
     }
 
     override fun getItemCount(): Int {

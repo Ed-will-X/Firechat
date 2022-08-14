@@ -28,5 +28,18 @@
         android:id="@+id/addFriends"
         android:name="com.varsel.firechat.view.signedIn.fragments.AddFriendsFragment"
         android:label="fragment_add_friends"
-        tools:layout="@layout/fragment_add_friends" />
+        tools:layout="@layout/fragment_add_friends" >
+        <action
+            android:id="@+id/action_addFriends_to_otherProfileFragment"
+            app:destination="@id/otherProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/otherProfileFragment"
+        android:name="com.varsel.firechat.view.signedIn.fragments.OtherProfileFragment"
+        android:label="fragment_other_profile"
+        tools:layout="@layout/fragment_other_profile" >
+        <argument
+            android:name="user_id"
+            app:argType="string" />
+    </fragment>
 </navigation>

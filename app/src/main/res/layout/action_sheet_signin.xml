@@ -5,11 +5,7 @@
     android:orientation="vertical">
 
     <View
-        android:layout_width="35dp"
-        android:layout_height="5dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="15dp"
-        android:background="@drawable/actionsheet_handlebar"/>
+        style="@style/action_sheet_handlebar"/>
 
     <LinearLayout
         android:layout_width="300dp"

@@ -52,7 +52,6 @@ class AuthRootFragment : Fragment() {
 
         binding.navigateToSignIn.setOnClickListener {
             showSigninDialog {
-                Log.d("M.FIRE", "${email_login}")
                 firebaseViewModel.signin(email_login, password_login, parent.mAuth, {
                     navigate {
 
@@ -74,7 +73,6 @@ class AuthRootFragment : Fragment() {
                         Toast.makeText(requireContext(), "Something went wrong with DB", Toast.LENGTH_LONG).show()
                     })
                 }, {
-                    Log.d("M.FIRE", "${emailText}")
                     Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_LONG).show()
                 })
             }

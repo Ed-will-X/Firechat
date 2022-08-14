@@ -15,6 +15,7 @@ import com.varsel.firechat.model.User.User
 class FirebaseViewModel: ViewModel() {
     val usersLiveData = MutableLiveData<List<User>>()
     val users = arrayListOf<User>()
+    val selectedUser = MutableLiveData<User?>()
 
     fun signUp(
         email: String,
@@ -68,9 +69,33 @@ class FirebaseViewModel: ViewModel() {
     }
 
     // TODO: Create single retrieve user from Realtime database
-    fun getUserById(uid: String): User {
+    fun getUserById(uid: String, mDbRef: DatabaseReference, beforeCallback: () -> Unit, afterCallback: ()-> Unit = {}): User {
+        mDbRef.child("Users").orderByChild("userUID").equalTo(uid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                beforeCallback()
+
+                for(item in snapshot.children){
+                    Log.d("LLL", "$item")
+                    val user = item.getValue(User::class.java)
+                    selectedUser.value = user
+                }
+
+                afterCallback()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+
         return User()
     }
+
+    fun clearSelectedUser(){
+        selectedUser.value = null
+    }
+
 
     // TODO: Implement get all unlocked users
     fun getAllUsers(mDbRef: DatabaseReference, mAuth: FirebaseAuth, beforeCallback: ()-> Unit){
@@ -85,7 +110,6 @@ class FirebaseViewModel: ViewModel() {
                     }
                 }
                 usersLiveData.value = users
-//                Log.d("LLL", "${usersLiveData.value}")
 
             }
 
@@ -96,8 +120,14 @@ class FirebaseViewModel: ViewModel() {
         })
     }
 
-    // TODO: Implement Add Friend
-    fun addFriend(user: User) {
+
+    // TODO: Implement Accept Friend Request
+    fun acceptFriendRequest(user: User) {
+
+    }
+
+    // TODO: Implement send friend Request
+    fun sendFriendRequest(){
 
     }
 

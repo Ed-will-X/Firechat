@@ -94,4 +94,27 @@
 
     </style>
 
+    <style name="other_profile_header_text" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="other_profile_body_text" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/grey</item>
+    </style>
+
+    <style name="other_profile_button" parent="TextAppearance.AppCompat.Button">
+        <item name="android:fontFamily">@font/</item>
+    </style>
+
+    <style name="action_sheet_handlebar" parent="Widget.AppCompat.ListView">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_width">35dp</item>
+        <item name="android:layout_height">5dp</item>
+        <item name="android:layout_marginTop">15dp</item>
+        <item name="android:background">@drawable/actionsheet_handlebar</item>
+    </style>
+
 </resources>

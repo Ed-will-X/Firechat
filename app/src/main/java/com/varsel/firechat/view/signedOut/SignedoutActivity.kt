@@ -32,7 +32,6 @@ class SignedoutActivity : AppCompatActivity() {
         // firebase
         mAuth = FirebaseAuth.getInstance()
 
-        Log.d("M.FIRE", "SIGNED OUT UID: ${mAuth.currentUser?.uid}")
 
         mDbRef = FirebaseDatabase.getInstance().getReference()
 

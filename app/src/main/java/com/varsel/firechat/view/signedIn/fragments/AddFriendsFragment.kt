@@ -6,9 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentAddFriendsBinding
@@ -35,8 +37,13 @@ class AddFriendsFragment : Fragment() {
         val view = binding.root
         parent = activity as SignedinActivity
 
-        val friendsSearchAdapter = AddFriendsSearchAdapter {
+//        parent.window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.transparent)
 
+        val friendsSearchAdapter = AddFriendsSearchAdapter {
+            if(it != null){
+                val action = AddFriendsFragmentDirections.actionAddFriendsToOtherProfileFragment(it)
+                view.findNavController().navigate(action)
+            }
         }
 
         firebaseViewModel.getAllUsers(parent.mDbRef, parent.firebaseAuth) {
