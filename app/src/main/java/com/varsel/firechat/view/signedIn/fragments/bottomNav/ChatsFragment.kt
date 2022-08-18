@@ -15,13 +15,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentChatsBinding
+import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ChatsViewPagerAdapter
-import com.varsel.firechat.viewModel.AppbarTag
-import com.varsel.firechat.viewModel.AppbarViewModel
 import com.varsel.firechat.viewModel.ChatsViewModel
 import com.varsel.firechat.viewModel.FirebaseViewModel
 
@@ -30,10 +30,10 @@ class ChatsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var adapter: ChatsViewPagerAdapter
-    private val appbarViewModel: AppbarViewModel by activityViewModels()
     private lateinit var chatsViewModel: ChatsViewModel
     private val firebaseViewModel: FirebaseViewModel by activityViewModels()
     private lateinit var mDbRef: DatabaseReference
+    private lateinit var parent: SignedinActivity
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,9 +43,10 @@ class ChatsFragment : Fragment() {
         _binding = FragmentChatsBinding.inflate(inflater, container, false)
         val view = binding.root
 
+        parent = activity as SignedinActivity
+
+
         // set page in VM
-        appbarViewModel.setPage(AppbarTag.CHATS)
-        appbarViewModel.setNavProps(activity, context, view)
 
         chatsViewModel = ViewModelProvider(this).get(ChatsViewModel::class.java)
 
@@ -53,9 +54,14 @@ class ChatsFragment : Fragment() {
         binding.chatsViewPager.adapter = adapter
 
         val chatsViewPager = view.findViewById<ViewPager2>(R.id.chats_view_pager)
-        val chatsTab = activity?.findViewById<TabLayout>(R.id.chats_tab_layout)
+        val chatsTab = view.findViewById<TabLayout>(R.id.chats_tab_layout)
+
         if (chatsTab != null) {
-            appbarViewModel.setTabText(chatsTab, chatsViewPager)
+            setTabText(chatsTab, chatsViewPager)
+        }
+
+        binding.addNewChat.setOnClickListener {
+            view.findNavController().navigate(R.id.action_chatsFragment_to_addFriends)
         }
 
         return view
@@ -64,5 +70,21 @@ class ChatsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    fun setTabText(tabLayout: TabLayout, viewPager2: ViewPager2){
+        TabLayoutMediator(tabLayout, viewPager2){ tab, position ->
+            when(position){
+                0 -> {
+                    tab.text = "Messages"
+                }
+                1 -> {
+                    tab.text = "Groups"
+                }
+                2 -> {
+                    tab.text = "Friends"
+                }
+            }
+        }.attach()
     }
 }

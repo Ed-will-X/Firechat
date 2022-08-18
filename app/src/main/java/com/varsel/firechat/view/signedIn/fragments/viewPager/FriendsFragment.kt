@@ -9,13 +9,10 @@ import androidx.fragment.app.activityViewModels
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentFriendsBinding
 import com.varsel.firechat.databinding.FragmentProfileBinding
-import com.varsel.firechat.viewModel.AppbarTag
-import com.varsel.firechat.viewModel.AppbarViewModel
 
 class FriendsFragment : Fragment() {
     private var _binding: FragmentFriendsBinding? = null
     private val binding get() = _binding!!
-    private val appbarViewModel: AppbarViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

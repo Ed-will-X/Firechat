@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:paddingHorizontal="20dp"
+    android:paddingBottom="20dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <View
+        style="@style/action_sheet_handlebar"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/send_request_confirmation_header"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="25sp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        />
+
+    <TextView
+        android:id="@+id/send_request_body"
+        android:layout_marginBottom="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/send_request_confirmation_body"
+        />
+
+    <Button
+        android:id="@+id/send_request_yes"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/send_request_confirmation_yes"
+        style="@style/auth_root_sign_in_btn"
+        android:textSize="13sp"
+        />
+
+    <Button
+        android:id="@+id/send_request_no"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/send_request_confirmation_no"
+        style="@style/auth_root_sign_up_btn"
+        android:textSize="13sp"
+        />
+
+</LinearLayout>

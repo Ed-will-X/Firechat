@@ -18,14 +18,11 @@ import com.varsel.firechat.databinding.FragmentProfileBinding
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.AddFriendsSearchAdapter
-import com.varsel.firechat.viewModel.AppbarTag
-import com.varsel.firechat.viewModel.AppbarViewModel
 import com.varsel.firechat.viewModel.FirebaseViewModel
 
 class AddFriendsFragment : Fragment() {
     private var _binding: FragmentAddFriendsBinding? = null
     private val binding get() = _binding!!
-    private val appbarViewModel: AppbarViewModel by activityViewModels()
     private val firebaseViewModel: FirebaseViewModel by activityViewModels()
     lateinit var parent: SignedinActivity
 
@@ -37,8 +34,6 @@ class AddFriendsFragment : Fragment() {
         val view = binding.root
         parent = activity as SignedinActivity
 
-//        parent.window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.transparent)
-
         val friendsSearchAdapter = AddFriendsSearchAdapter {
             if(it != null){
                 val action = AddFriendsFragmentDirections.actionAddFriendsToOtherProfileFragment(it)
@@ -46,9 +41,9 @@ class AddFriendsFragment : Fragment() {
             }
         }
 
-        firebaseViewModel.getAllUsers(parent.mDbRef, parent.firebaseAuth) {
+        firebaseViewModel.getAllUsers(parent.mDbRef, parent.firebaseAuth, {
             friendsSearchAdapter.users.clear()
-        }
+        })
 
         binding.searchRecyclerView.adapter = friendsSearchAdapter
 
@@ -75,8 +70,6 @@ class AddFriendsFragment : Fragment() {
             }
         }
 
-        appbarViewModel.setPage(AppbarTag.ADD_FRIENDS)
-        appbarViewModel.setNavProps(activity, context, view)
 
         return view
     }

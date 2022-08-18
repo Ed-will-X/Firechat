@@ -34,10 +34,25 @@
     <string name="friends">Friends</string>
     <string name="more">More</string>
     <string name="see_all">See All</string>
-    <string name="about_user">About %1$s</string>
+    <string name="about_user">About %s</string>
     <string name="photos">Photos</string>
     <string name="add">Add</string>
-
+    <string name="remove">Remove</string>
+    <string name="send_request_confirmation_header">Send Friend Request?</string>
+    <string name="send_request_confirmation_body">Are you sure you want to send a friend request to %s?</string>
+    <string name="send_request_confirmation_yes">Yes, send request</string>
+    <string name="send_request_confirmation_no">No, do not send friend request</string>
+    <string name="revoke_request_confirmation_header">Revoke Friend Request?</string>
+    <string name="revoke_request_confirmation_body">Are you sure you want to revoke friend request from %s?</string>
+    <string name="revoke_request_confirmation_yes">Yes, revoke request</string>
+    <string name="revoke_request_confirmation_no">No, do not revoke request</string>
+    <string name="public_posts">Public Posts</string>
+    <string name="friend_requests">Friend Requests</string>
+    <string name="friend_request_count">(%s)</string>
+    <string name="zero">0</string>
+    <string name="zero_in_brackets">(0)</string>
+    <string name="accept">Accept</string>
+    <string name="no_about">No About....Tap to add</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

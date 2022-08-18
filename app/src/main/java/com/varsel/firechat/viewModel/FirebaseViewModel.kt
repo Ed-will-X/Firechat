@@ -14,8 +14,10 @@ import com.varsel.firechat.model.User.User
 
 class FirebaseViewModel: ViewModel() {
     val usersLiveData = MutableLiveData<List<User>>()
-    val users = arrayListOf<User>()
     val selectedUser = MutableLiveData<User?>()
+    val currentUser = MutableLiveData<User?>()
+    val friendRequests = MutableLiveData<List<User?>>()
+    var friends = MutableLiveData<List<User?>>()
 
     fun signUp(
         email: String,
@@ -49,7 +51,6 @@ class FirebaseViewModel: ViewModel() {
         }
     }
 
-    // TODO: Create save User to Realtime database
     fun saveUser(
         name: String,
         email: String,
@@ -58,7 +59,7 @@ class FirebaseViewModel: ViewModel() {
         onSuccessCallback: ()-> Unit,
         onFailureCallback: ()-> Unit
     ){
-        mDbRef.child("Users").child(UID).setValue(User(name, email, UID, null, null, null, false, null, null, null))
+        mDbRef.child("Users").child(UID).setValue(User(name, email, UID, null, null, null, false, null, null, null, null))
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     onSuccessCallback()
@@ -68,14 +69,32 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    // TODO: Create single retrieve user from Realtime database
-    fun getUserById(uid: String, mDbRef: DatabaseReference, beforeCallback: () -> Unit, afterCallback: ()-> Unit = {}): User {
+    fun getCurrentUser(mAuth: FirebaseAuth?, mDbRef: DatabaseReference, beforeCallback: () -> Unit, afterCallback: () -> Unit){
+        mDbRef.child("Users").orderByChild("userUID").equalTo(mAuth?.currentUser?.uid.toString()).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                beforeCallback()
+
+                for (item in snapshot.children){
+                    val user = item.getValue(User::class.java)
+                    currentUser.value = user
+                }
+                afterCallback()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+
+    }
+
+    fun getUserById(uid: String, mDbRef: DatabaseReference, beforeCallback: () -> Unit, afterCallback: ()-> Unit = {}) {
         mDbRef.child("Users").orderByChild("userUID").equalTo(uid).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 beforeCallback()
 
                 for(item in snapshot.children){
-                    Log.d("LLL", "$item")
                     val user = item.getValue(User::class.java)
                     selectedUser.value = user
                 }
@@ -88,23 +107,53 @@ class FirebaseViewModel: ViewModel() {
             }
 
         })
+    }
 
-        return User()
+    fun getUserSingle(UID: String, mDbRef: DatabaseReference, loopCallback: (user: User?) -> Unit, afterCallback: () -> Unit){
+        mDbRef.child("Users").orderByChild("userUID").equalTo(UID).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (i in snapshot.children){
+                    var user = i.getValue(User::class.java)
+                    loopCallback(user)
+                }
+                afterCallback()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+    }
+
+    fun getUserRecurrent(UID: String, mDbRef: DatabaseReference, loopCallback: (user: User?) -> Unit, afterCallback: () -> Unit){
+        mDbRef.child("Users").orderByChild("userUID").equalTo(UID).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (i in snapshot.children){
+                    var user = i.getValue(User::class.java)
+                    loopCallback(user)
+                }
+                afterCallback()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
 
     fun clearSelectedUser(){
         selectedUser.value = null
     }
 
-
-    // TODO: Implement get all unlocked users
-    fun getAllUsers(mDbRef: DatabaseReference, mAuth: FirebaseAuth, beforeCallback: ()-> Unit){
+    fun getAllUsers(mDbRef: DatabaseReference, mAuth: FirebaseAuth, beforeCallback: ()-> Unit, afterCallback: () -> Unit = {}){
         mDbRef.child("Users").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 beforeCallback()
+                val users = arrayListOf<User>()
                 for(item in snapshot.children){
                     val user = item.getValue(User::class.java)
-                    // TODO: Add check to remove the current user
                     if(mAuth.currentUser?.uid != user?.userUID){
                         users.add(user!!)
                     }
@@ -120,14 +169,98 @@ class FirebaseViewModel: ViewModel() {
         })
     }
 
+    fun sendFriendRequest(currentUserUid: String, user: User, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: ()-> Unit){
+        if(currentUserUid == user.userUID.toString()){
+            return
+        }
+
+        mDbRef
+            .child("Users")
+            .child(user.userUID.toString())
+            .child("friendRequests")
+            .child(currentUserUid)
+            .setValue(currentUserUid)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                }else{
+                    failureCallback()
+                }
+            }
+    }
+
+    fun revokeFriendRequest(currentUserId: String, user: User, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        mDbRef
+            .child("Users")
+            .child(user.userUID.toString())
+            .child("friendRequests")
+            .child(currentUserId)
+            .removeValue()
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
 
     // TODO: Implement Accept Friend Request
-    fun acceptFriendRequest(user: User) {
+    fun acceptFriendRequest(user: User, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}) {
+        val otherUserRef = mDbRef.child("Users").child(user.userUID.toString())
+        val currentUserRef = mDbRef.child("Users").child(mAuth.currentUser?.uid.toString())
+
+        otherUserRef
+            .child("friendRequests")
+            .child(mAuth.currentUser?.uid.toString())
+            .removeValue()
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    currentUserRef
+                        .child("friendRequests")
+                        .child(user.userUID.toString())
+                        .removeValue()
+                        .addOnCompleteListener {
+                            if(it.isSuccessful){
+                                otherUserRef
+                                    .child("friends")
+                                    .child(mAuth.currentUser?.uid.toString())
+                                    .setValue(mAuth.currentUser?.uid.toString())
+                                    .addOnCompleteListener {
+                                        if(it.isSuccessful){
+                                            currentUserRef
+                                                .child("friends")
+                                                .child(user.userUID!!)
+                                                .setValue(user.userUID!!)
+                                                .addOnCompleteListener {
+                                                    if (it.isSuccessful){
+                                                        successCallback()
+                                                    } else {
+                                                        failureCallback()
+                                                    }
+                                                }
+                                        } else {
+                                            failureCallback()
+                                        }
+                                    }
+                            } else {
+                                failureCallback()
+                            }
+                        }
+
+                } else {
+                    failureCallback()
+                }
+            }
 
     }
 
-    // TODO: Implement send friend Request
-    fun sendFriendRequest(){
+    // TODO: Implement Reject Friend Request
+    fun rejectFriendRequest(user: User){
+        // remove from request list
+    }
+
+    fun unfriendUser(user: User){
 
     }
 

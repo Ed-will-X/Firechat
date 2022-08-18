@@ -1,24 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--TODO: Add coordinator layout-->
 <!--TODO: Remove Placeholders-->
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    tools:context=".view.signedIn.fragments.OtherProfileFragment"
+    android:gravity="center"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    
+    <ProgressBar
+        android:id="@+id/loading_progress_indicator"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:visibility="gone"
+        />
+    
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/parent_view"
+        android:orientation="vertical"
+        tools:context=".view.signedIn.fragments.OtherProfileFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            android:layout_width="match_parent"
-            android:layout_height="400dp">
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                app:contentScrim="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                android:layout_width="match_parent"
+                android:layout_height="400dp">
 
                 <ImageView
                     android:id="@+id/user_image"
@@ -112,6 +124,18 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"/>
                         <Button
+                            android:visibility="gone"
+                            android:layout_gravity="center_vertical"
+                            android:fontFamily="sans-serif"
+                            android:id="@+id/remove_friend"
+                            android:textAllCaps="false"
+                            android:layout_width="wrap_content"
+                            android:layout_height="35dp"
+                            android:textSize="14sp"
+                            android:text="@string/remove"
+                            android:background="@drawable/bg_other_profile_remove_button"
+                            />
+                        <Button
                             android:layout_gravity="center_vertical"
                             android:fontFamily="sans-serif"
                             android:id="@+id/add_friend_btn"
@@ -124,55 +148,56 @@
                             />
                     </LinearLayout>
                 </LinearLayout>
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-    </com.google.android.material.appbar.AppBarLayout>
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.core.widget.NestedScrollView
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout
-            android:clickable="true"
-            android:id="@+id/more_about_clickable"
-            android:layout_marginTop="10dp"
-            android:paddingHorizontal="30dp"
+        <androidx.core.widget.NestedScrollView
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
             <LinearLayout
-                android:orientation="horizontal"
+                android:clickable="true"
+                android:id="@+id/more_about_clickable"
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="30dp"
                 android:layout_width="match_parent"
+                android:orientation="vertical"
                 android:layout_height="wrap_content">
-                <!-- TODO: Target placeholder from fragment -->
-                <TextView
-                    android:id="@+id/about_text_header"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="About Nancy"
-                    style="@style/other_profile_header_text"
-                    />
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="10dp"
-                    android:layout_weight="1"/>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <!-- TODO: Target placeholder from fragment -->
+                    <TextView
+                        android:id="@+id/about_text_header"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="About Nancy"
+                        style="@style/other_profile_header_text"
+                        />
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="10dp"
+                        android:layout_weight="1"/>
 
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/more"
+                        android:textColor="@color/ios_blue"
+                        />
+                </LinearLayout>
+
                 <TextView
+                    style="@style/other_profile_body_text"
+                    android:id="@+id/about_text_body"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/more"
-                    android:textColor="@color/ios_blue"
+                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eu aliquam quam. Donec nec laoreet sem, in sodales justo. Mauris egestas nulla ut luctus facilisis."
                     />
             </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
-            <TextView
-                style="@style/other_profile_body_text"
-                android:id="@+id/about_text_body"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eu aliquam quam. Donec nec laoreet sem, in sodales justo. Mauris egestas nulla ut luctus facilisis."
-                />
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

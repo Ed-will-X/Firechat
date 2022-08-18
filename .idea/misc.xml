@@ -7,6 +7,7 @@
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/drawable/actionsheet_round_corner.xml" value="0.141" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/drawable/bg_other_profile_button.xml" value="0.1415" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/drawable/bg_other_profile_gradient.xml" value="0.1415" />
+        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/drawable/bg_other_profile_revoke_button.xml" value="0.2035" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/drawable/bg_profile_background.xml" value="0.1415" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/drawable/bg_search_bar_background.xml" value="0.1415" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/drawable/bg_setting_chat_customise.xml" value="0.141" />
@@ -25,10 +26,14 @@
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/drawable/rounded_actionsheet.xml" value="0.1455" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/drawable/shape_logout_alert_dialog.xml" value="0.141" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/action_sheet_about_user.xml" value="0.1991869918699187" />
+        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/action_sheet_friend_requests.xml" value="0.2" />
+        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/action_sheet_request_sent.xml" value="0.4" />
+        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/action_sheet_revoke_request.xml" value="0.1778537836682343" />
+        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/action_sheet_send_friend_request.xml" value="0.4" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/action_sheet_signin.xml" value="0.536" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/action_sheet_signup.xml" value="0.536" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/activity_main.xml" value="0.18854166666666666" />
-        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/activity_signedin.xml" value="0.264" />
+        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/activity_signedin.xml" value="0.2538860103626943" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/activity_signedout.xml" value="0.1671875" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/dialog_logout.xml" value="0.264" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_add_friends.xml" value="0.264" />
@@ -43,10 +48,11 @@
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_individual.xml" value="0.18854166666666666" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_messages.xml" value="0.18854166666666666" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_other_profile.xml" value="0.264" />
-        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_profile.xml" value="0.18854166666666666" />
-        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_settings.xml" value="0.264" />
+        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_profile.xml" value="0.4" />
+        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_settings.xml" value="0.4" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_signup.xml" value="0.18854166666666666" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/recycler_add_friends_list_item.xml" value="0.72" />
+        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/recycler_view_friend_request_list_item.xml" value="0.2" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/setting_list_item_switch.xml" value="0.4" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/menu/bottom_nav_menu.xml" value="0.18854166666666666" />
       </map>

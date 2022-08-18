@@ -7,6 +7,54 @@
     android:orientation="vertical"
     tools:context=".view.signedIn.fragments.bottomNav.SettingsFragment">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        style="@style/appbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginHorizontal="20dp"
+            app:layout_scrollFlags="scroll|enterAlways"
+            >
+            <TextView
+                android:id="@+id/large_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/appbar_large_text"
+                android:text="@string/settings"
+                />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                />
+
+            <LinearLayout
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+
+
+
+                <ImageView
+                    android:id="@+id/icon_3"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ic_search"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.google.android.material.tabs.TabLayout
+            style="@style/tab"
+            android:id="@+id/chats_tab_layout"
+            android:layout_width="match_parent"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -22,11 +22,9 @@ import kotlinx.coroutines.launch
 class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
-    private val appbarViewModel: AppbarViewModel by activityViewModels()
     private val settingsViewModel: SettingsViewModel by activityViewModels()
     private val firebaseViewModel: FirebaseViewModel by activityViewModels()
-
-    lateinit var parent: Activity
+    private lateinit var parent: SignedinActivity
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,10 +34,6 @@ class SettingsFragment : Fragment() {
 
         parent = activity as SignedinActivity
         val view = binding.root
-        val activity = activity as SignedinActivity
-
-        appbarViewModel.setPage(AppbarTag.SETTINGS)
-        appbarViewModel.setNavProps(activity, context, view)
 
         binding.settingsLogoutClickable.setOnClickListener {
             Toast.makeText(view.context, "Logout", Toast.LENGTH_LONG).show()

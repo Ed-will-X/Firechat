@@ -18,7 +18,11 @@
         android:id="@+id/profileFragment"
         android:name="com.varsel.firechat.view.signedIn.fragments.bottomNav.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_otherProfileFragment"
+            app:destination="@id/otherProfileFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.varsel.firechat.view.signedIn.fragments.bottomNav.SettingsFragment"

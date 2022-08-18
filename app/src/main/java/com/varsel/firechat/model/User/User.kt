@@ -40,11 +40,26 @@ open class User{
 
     var favoriteGroups: List<String>? = null
 
-    var friends: MutableList<String>? = null
+    var friends: HashMap<String, String>? = null
 
-    var friendRequests: MutableList<String>? = null
+    var posts: HashMap<String, String>? = null
 
-    constructor(name: String, email: String, userUID: String, about: String?, phone: String?, profileImage: Array<Byte>?, profileLock: Boolean, chatRooms: List<String>?, groupRooms: List<String>?, occupation: String?){
+    @ColumnInfo(name = "friend_requests")
+    var friendRequests: HashMap<String, String>? = null
+
+    // Firebase Constructor
+    constructor(name: String,
+                email: String,
+                userUID: String,
+                about: String?,
+                phone: String?,
+                profileImage: Array<Byte>?,
+                profileLock: Boolean,
+                chatRooms: List<String>?,
+                groupRooms: List<String>?,
+                occupation: String?,
+                friendRequests: HashMap<String, String>?
+    ){
         this.name = name
         this.email = email
         this.about = about
@@ -55,6 +70,7 @@ open class User{
         this.chatRooms = chatRooms
         this.groupRooms = groupRooms
         this.occupation = occupation
+        this.friendRequests = friendRequests
     }
 
     constructor(){
