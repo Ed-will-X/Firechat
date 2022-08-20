@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.R
 import com.varsel.firechat.model.User.User
 
+// TODO: Change to ListAdapter
 class FriendRequestsAdapter(val parentListener: (id: String?)-> Unit, val btnListener: (user: User?)-> Unit): RecyclerView.Adapter<FriendRequestsAdapter.FriendRequestViewHolder>(){
 
     var users = arrayListOf<User>()

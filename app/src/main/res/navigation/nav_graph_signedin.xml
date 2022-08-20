@@ -13,6 +13,12 @@
         <action
             android:id="@+id/action_chatsFragment_to_addFriends"
             app:destination="@id/addFriends" />
+        <action
+            android:id="@+id/action_chatsFragment_to_otherProfileFragment"
+            app:destination="@id/otherProfileFragment" />
+        <action
+            android:id="@+id/action_chatsFragment_to_chatPageFragment"
+            app:destination="@id/chatPageFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -44,6 +50,18 @@
         tools:layout="@layout/fragment_other_profile" >
         <argument
             android:name="user_id"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/chatPageFragment"
+        android:name="com.varsel.firechat.view.signedIn.fragments.ChatPageFragment"
+        android:label="ChatPageFragment" >
+        <argument
+            android:name="chatRoom"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="userUid"
             app:argType="string" />
     </fragment>
 </navigation>

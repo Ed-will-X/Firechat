@@ -45,7 +45,7 @@
         android:id="@+id/btn_accept"
         android:layout_gravity="center_vertical"
         android:layout_width="80dp"
-        android:layout_height="30dp"
+        android:layout_height="32dp"
         android:text="@string/accept"
         android:textSize="10sp"
         android:background="@drawable/bg_other_profile_button"

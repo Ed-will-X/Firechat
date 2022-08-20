@@ -45,9 +45,6 @@ class ChatsFragment : Fragment() {
 
         parent = activity as SignedinActivity
 
-
-        // set page in VM
-
         chatsViewModel = ViewModelProvider(this).get(ChatsViewModel::class.java)
 
         adapter = ChatsViewPagerAdapter(childFragmentManager, lifecycle)

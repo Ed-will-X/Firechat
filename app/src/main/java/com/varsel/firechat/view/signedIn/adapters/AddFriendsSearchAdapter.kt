@@ -1,6 +1,5 @@
 package com.varsel.firechat.view.signedIn.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +22,7 @@ class AddFriendsSearchAdapter(val clickListener: (UID: String?)-> Unit): Recycle
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserItemViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_add_friends_list_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_view_add_friends_list_item, parent, false)
         return UserItemViewHolder(view)
     }
 

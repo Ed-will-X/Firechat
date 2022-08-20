@@ -9,16 +9,15 @@ import com.varsel.firechat.model.message.Message
 @Entity(tableName = "chat")
 class ChatRoom {
     @PrimaryKey(autoGenerate = true)
-    var roomId: Long = 0L
+//    var roomId: Long = 0L
 
     @ColumnInfo(name = "room_uid")
     var roomUID: String? = null
 
-    var participants: MutableList<String>? = null
+    var participants: HashMap<String, String>? = null
 
-    var messages: MutableList<Message>? = null
+    var messages: HashMap<String, Message>? = null
 
-    var deleted: MutableList<String>? = null
     // For deletion, id will be added to this list to prevent redownload
     // then it will be removed from room
 
@@ -26,9 +25,9 @@ class ChatRoom {
 
     }
 
-    constructor(roomUID: String, participants: MutableList<String>, messages: MutableList<Message>){
+    constructor(roomUID: String, participants: HashMap<String, String>){
         this.roomUID = roomUID
         this.participants = participants
-        this.messages = messages
+//        this.messages = messages
     }
 }

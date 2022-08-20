@@ -53,6 +53,10 @@
     <string name="zero_in_brackets">(0)</string>
     <string name="accept">Accept</string>
     <string name="no_about">No About....Tap to add</string>
+    <string name="no_occupation">*** No Occupation ***</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+    <string name="type_message">Type your message</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -43,10 +43,6 @@ class ProfileFragment : Fragment() {
             }
         })
 
-        firebaseViewModel.friendRequests.observe(viewLifecycleOwner, Observer {
-            Log.d("LLL", "${it}")
-        })
-
         parent = activity as SignedinActivity
 
         return view
@@ -113,7 +109,6 @@ class ProfileFragment : Fragment() {
         recyclerView?.adapter = adapter
 
         firebaseViewModel.friendRequests.observe(viewLifecycleOwner, Observer {
-            Log.d("LLL", "Observe ${it}")
             if(it != null){
                 adapter.run {
                     adapter.users = arrayListOf<User>()   // not tested

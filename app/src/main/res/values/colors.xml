@@ -16,8 +16,11 @@
     <color name="white_grey">#f9f9f9</color>
     <color name="light_grey">#F3F5F7</color>
     <color name="light_grey_2">#D3D3D3</color>
+    <color name="light_grey_3">#E7E7E7</color>
     <color name="transparent_white">#B1FFFFFF</color>
     <color name="red_accent">#fa8a8f</color>
     <color name="light_blue_accent">#4bc2bc</color>
     <color name="ios_blue">#1278f9</color>
+    <color name="light_green">#0bd899</color>
+    <color name="white_blue">#edf8fe</color>
 </resources>

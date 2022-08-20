@@ -29,7 +29,7 @@ open class User{
     var profileLock: Boolean = false
 
     @ColumnInfo(name = "chat_rooms")
-    var chatRooms: List<String>? = null
+    var chatRooms: HashMap<String, String>? = null
 
     @ColumnInfo(name = "group_rooms")
     var groupRooms: List<String>? = null
@@ -55,7 +55,7 @@ open class User{
                 phone: String?,
                 profileImage: Array<Byte>?,
                 profileLock: Boolean,
-                chatRooms: List<String>?,
+                chatRooms: HashMap<String, String>?,
                 groupRooms: List<String>?,
                 occupation: String?,
                 friendRequests: HashMap<String, String>?

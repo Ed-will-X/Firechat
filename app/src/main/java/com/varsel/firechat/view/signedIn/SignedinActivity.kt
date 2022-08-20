@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.viewModel.FirebaseViewModel
 import kotlinx.coroutines.launch
@@ -60,7 +61,17 @@ class SignedinActivity : AppCompatActivity() {
             } else {
                 firebaseViewModel.friendRequests.value = mutableListOf<User>()
             }
+
+            if(it?.friends != null){
+                getAllFriends(it?.friends?.values!!.toList())
+            } else {
+                firebaseViewModel.friends.value = mutableListOf<User>()
+            }
         })
+
+
+
+
 
         binding.bottomNavView.setupWithNavController(navController)
         setBottomNavVisibility(navController)
@@ -79,6 +90,9 @@ class SignedinActivity : AppCompatActivity() {
             if(destination.id == R.id.otherProfileFragment){
                 binding.bottomNavView.visibility = View.GONE
             }
+            if(destination.id == R.id.chatPageFragment){
+                binding.bottomNavView.visibility = View.GONE
+            }
         }
     }
 
@@ -86,8 +100,23 @@ class SignedinActivity : AppCompatActivity() {
         firebaseViewModel.getCurrentUser(firebaseAuth, mDbRef, {
 
         }, {
-
+            if(firebaseViewModel.currentUser.value?.chatRooms != null){
+                getAllChats(firebaseViewModel.currentUser.value!!.chatRooms!!.values.toList())
+            } else {
+                firebaseViewModel.chatRooms.value = mutableListOf()
+            }
         })
+    }
+
+    private fun getAllChats(chatRoomsUID: List<String>){
+        val chatRooms = mutableListOf<ChatRoom?>()
+        for(i in chatRoomsUID){
+            firebaseViewModel.getChatRoom(i, mDbRef, {
+                chatRooms.add(it)
+            }, {
+                firebaseViewModel.chatRooms.value = chatRooms
+            })
+        }
     }
 
     private fun getFriendRequests(requests: List<String>){
@@ -104,7 +133,7 @@ class SignedinActivity : AppCompatActivity() {
     private fun getAllFriends(friends: List<String>){
         val users = mutableListOf<User?>()
         for(i in friends){
-            firebaseViewModel.getUserRecurrent(i, mDbRef, {
+            firebaseViewModel.getUserSingle(i, mDbRef, {
                 users.add(it)
             }, {
                 firebaseViewModel.friends.value = users

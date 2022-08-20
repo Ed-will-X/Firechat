@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:foreground="?attr/selectableItemBackground"
+    android:id="@+id/parent_clickable_chats_list"
+    android:clickable="true"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:paddingVertical="10dp"
+    android:paddingHorizontal="10dp"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:layout_gravity="center_vertical"
+        android:id="@+id/profile_image_silhouette"
+        android:clickable="true"
+        android:background="@drawable/bg_profile_background"
+        android:layout_width="40dp"
+        android:layout_height="40dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_baseline_person_24"
+            android:layout_height="20dp"/>
+    </FrameLayout>
+    <LinearLayout
+        android:layout_marginLeft="10dp"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/name_chats_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lorem ipsum"
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            />
+        <TextView
+            android:id="@+id/last_message_chats_list"
+            android:textColor="@color/grey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="This is the last message"
+            android:textSize="12sp"
+            />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/timestamp_chats_list"
+        android:textColor="@color/grey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="15m ago"
+        android:textSize="12sp"
+        />
+</LinearLayout>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".view.signedIn.fragments.ChatPageFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:clickable="true"
+        android:id="@+id/appbar"
+        android:layout_height="55dp"
+        style="@style/appbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="10dp"
+            >
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_arrow_back_android"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/chat_back_button"
+                android:clickable="true"
+                />
+            <FrameLayout
+                android:layout_gravity="center_vertical"
+                android:id="@+id/profile_image_silhouette"
+                android:background="@drawable/bg_profile_background"
+                android:layout_width="33dp"
+                android:layout_height="33dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_baseline_person_24"
+                    android:layout_height="20dp"/>
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/name_text"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lorem Ipsum"
+                    />
+
+                <TextView
+                    android:id="@+id/occupation_text"
+                    android:textSize="11sp"
+                    android:text="@string/offline"
+                    android:textColor="@color/transparent_white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_gravity="center_vertical"
+                android:id="@+id/icon_3"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_more_vert"
+                />
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+<!--    Recycler View-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/messages_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        />
+
+<!--    Keyboard section-->
+    <LinearLayout
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.card.MaterialCardView
+            app:cardElevation="0dp"
+            android:layout_gravity="center_vertical"
+            app:cardBackgroundColor="@color/light_grey_3"
+            app:cardCornerRadius="360dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp">
+            <ImageView
+                android:layout_gravity="center"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_add"
+                app:tint="?attr/colorPrimary" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_gravity="center_vertical"
+            app:cardCornerRadius="60dp"
+            app:cardBackgroundColor="@color/light_grey_3"
+            app:cardElevation="0dp"
+            android:layout_marginLeft="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="10dp"
+                android:orientation="horizontal">
+
+<!--                TODO: Expand edit text based on the number of lines of the message-->
+                <EditText
+                    android:id="@+id/message_edit_text"
+                    android:background="@color/transparent"
+                    android:layout_weight="1"
+                    android:hint="@string/type_message"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:textSize="15dp"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    />
+
+                <ImageView
+                    android:clickable="true"
+                    android:id="@+id/send_message_btn"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ic_send"
+                    app:tint="?attr/colorPrimary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</LinearLayout>

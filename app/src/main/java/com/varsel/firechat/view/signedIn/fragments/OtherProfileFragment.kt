@@ -186,7 +186,7 @@ class OtherProfileFragment : Fragment() {
                 }, { })
 
             }, {
-                Log.d("LLL", "Unable to revoke")
+
             })
         }
     }
@@ -198,7 +198,7 @@ class OtherProfileFragment : Fragment() {
 
                 }, { })
             }, {
-                Log.d("LLL", "Friend request not sent")
+
             })
         }
     }

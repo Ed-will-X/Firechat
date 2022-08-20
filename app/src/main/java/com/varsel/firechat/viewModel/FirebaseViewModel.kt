@@ -11,6 +11,8 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.model.message.Message
+import com.varsel.firechat.model.message.MessageType
 
 class FirebaseViewModel: ViewModel() {
     val usersLiveData = MutableLiveData<List<User>>()
@@ -18,6 +20,8 @@ class FirebaseViewModel: ViewModel() {
     val currentUser = MutableLiveData<User?>()
     val friendRequests = MutableLiveData<List<User?>>()
     var friends = MutableLiveData<List<User?>>()
+    var chatRooms = MutableLiveData<List<ChatRoom?>>()
+    var selectedChatRoom = MutableLiveData<ChatRoom?>()
 
     fun signUp(
         email: String,
@@ -260,13 +264,75 @@ class FirebaseViewModel: ViewModel() {
         // remove from request list
     }
 
+    // TODO: Implement unfriend user
     fun unfriendUser(user: User){
 
     }
 
-    // TODO: Implement get all friends
-    fun getAllFriends(): List<User>{
-        return listOf<User>()
+    // TODO: Implement send message
+    fun sendMessage(
+        message: Message,
+        chatRoomUID: String,
+        mDbRef: DatabaseReference,
+        successCallback: () -> Unit,
+        failureCallback: () -> Unit){
+
+        // push the message to the chatroom
+        mDbRef
+            .child("chatRooms")
+            .child(chatRoomUID)
+            .child("messages")
+            .push()
+            .setValue(message)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun appendParticipants(chatRoom: ChatRoom, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        mDbRef
+            .child("chatRooms")
+            .child(chatRoom.roomUID!!)
+            .setValue(chatRoom)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun appendChatRoom(uid: String, otherUser: String, mAuth: FirebaseAuth, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        mDbRef
+            .child("Users")
+            .child(otherUser)
+            .child("chatRooms")
+            .child(uid)
+            .setValue(uid)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    mDbRef
+                        .child("Users")
+                        .child(mAuth.currentUser?.uid.toString())
+                        .child("chatRooms")
+                        .child(uid)
+                        .setValue(uid)
+                        .addOnCompleteListener {
+                            if(it.isSuccessful){
+                                successCallback()
+                            } else {
+                                failureCallback()
+                            }
+                        }
+                } else {
+                    failureCallback()
+                }
+            }
     }
 
     // TODO: Implement Query database
@@ -274,14 +340,66 @@ class FirebaseViewModel: ViewModel() {
         return listOf<User>()
     }
 
-    // TODO: Implement get user chatroom
-    fun getUserChatRooms(): List<ChatRoom>{
-        return listOf<ChatRoom>()
+    // TODO: Implement get single chatroom
+    fun getChatRoom(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (chatRoom: ChatRoom?) -> Unit, afterCallback: () -> Unit){
+        mDbRef
+            .child("chatRooms")
+            .orderByChild("roomUID")
+            .equalTo(chatRoomUID)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (i in snapshot.children){
+                        val item = i.getValue(ChatRoom::class.java)
+                        loopCallback(item)
+                    }
+
+                    afterCallback()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
     }
 
-    // TODO: Implement get single chat room
-    fun getChatRoom(): ChatRoom{
-        return ChatRoom()
+    fun getChatRoomRecurrent(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (chatRoom: ChatRoom?) -> Unit, afterCallback: () -> Unit){
+        mDbRef
+            .child("chatRooms")
+            .orderByChild("roomUID")
+            .equalTo(chatRoomUID)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (i in snapshot.children){
+                        val item = i.getValue(ChatRoom::class.java)
+                        loopCallback(item)
+                    }
+
+                    afterCallback()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
+    }
+
+    fun getChatsInChatroom(id: String, mDbRef: DatabaseReference, loopCallback: (message: Message?) -> Unit, afterCallback: () -> Unit){
+        mDbRef.child("chatRooms").orderByChild("roomId").equalTo(id).addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (i in snapshot.children){
+                    val item = i.getValue(Message::class.java)
+                    loopCallback(item)
+                }
+                afterCallback()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
 
     // TODO: Implement delete chatroom
@@ -292,4 +410,6 @@ class FirebaseViewModel: ViewModel() {
     fun signOut(mAuth: FirebaseAuth){
         mAuth.signOut()
     }
+
+
 }

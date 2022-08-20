@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="1dp"
+    >
+    <FrameLayout
+        android:layout_gravity="top"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="5dp"
+        android:id="@+id/profile_image_silhouette"
+        android:background="@drawable/bg_profile_background"
+        android:layout_width="40dp"
+        android:layout_height="40dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_baseline_person_24"
+            android:layout_height="20dp"/>
+    </FrameLayout>
+
+    <View
+        android:visibility="gone"
+        android:id="@+id/empty_padding"
+        android:layout_gravity="top"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:background="@drawable/bg_other_user_chat_second"
+            android:id="@+id/parent"
+            android:layout_marginRight="60dp"
+            >
+
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="17dp"
+                android:paddingVertical="10dp"
+                android:textSize="15dp"
+                android:textColor="@color/black"
+                android:text="Ad voluptua definiebas dnd vim, te vim omnes postulant. mnesarchum fifpepn ifpf [vn cum ut nec fabulas evertitur vituperata. In eos natum populo malorum, equidem ancillae invenire nec ut, no his quas tation ponderum."
+                />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="18m"
+            android:textSize="12dp"
+            android:textColor="@color/grey"
+            />
+    </LinearLayout>
+</LinearLayout>
+
