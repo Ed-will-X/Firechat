@@ -78,7 +78,7 @@ class OtherProfileFragment : Fragment() {
 
         if (user?.about != null){
             binding.aboutTextHeader.text = userUtils.getFirstName(user?.name!!)
-            binding.aboutTextBody.setText(userUtils.truncate(user?.about!!, 150))
+            binding.aboutTextBody.setText(UserUtils.truncate(user?.about!!, 150))
             binding.moreAboutClickable.setOnClickListener { it2 ->
                 showAboutActionSheet(userUtils.getFirstName(user?.name!!), user?.about!!)
             }

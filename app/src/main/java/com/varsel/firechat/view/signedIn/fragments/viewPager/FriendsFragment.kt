@@ -25,8 +25,7 @@ class FriendsFragment : Fragment() {
     private var _binding: FragmentFriendsBinding? = null
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
-    private lateinit var parentFragment: ChatsFragment
-
+    private lateinit var currentChatRoomId: String
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,6 +34,8 @@ class FriendsFragment : Fragment() {
         val view = binding.root
 
         parent = activity as SignedinActivity
+
+        toggleVisibility()
 
         val friendsAdapter = FriendsAdapter({
             if(it != null){
@@ -58,6 +59,21 @@ class FriendsFragment : Fragment() {
         return view
     }
 
+    private fun toggleVisibility(){
+        parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
+            if(it.isNotEmpty()){
+                binding.noFriends.visibility = View.GONE
+                binding.friendsRecyclerView.visibility = View.VISIBLE
+            } else {
+                binding.noFriends.visibility = View.VISIBLE
+                binding.friendsRecyclerView.visibility = View.GONE
+                binding.addFriendsClickable.setOnClickListener {
+                    view?.findNavController()?.navigate(R.id.action_chatsFragment_to_addFriends)
+                }
+            }
+        })
+    }
+
     private fun navigateToProfile(id: String){
         val action = ChatsFragmentDirections.actionChatsFragmentToOtherProfileFragment(id)
         binding.root.findNavController().navigate(action)
@@ -66,7 +82,7 @@ class FriendsFragment : Fragment() {
     private fun navigateToChats(userId: String){
         var action: NavDirections
         if(determineChatroom(userId)){
-            action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(userId, userId)
+            action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(currentChatRoomId, userId)
         }else {
             action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(null, userId)
         }
@@ -80,6 +96,7 @@ class FriendsFragment : Fragment() {
         for(i in chatRooms){
             if(i!!.participants!!.contains(userId)){
                 contains = true
+                currentChatRoomId = i.roomUID.toString()
             }
         }
         return contains

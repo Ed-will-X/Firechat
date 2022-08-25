@@ -13,6 +13,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.MessageUtils
+import com.varsel.firechat.utils.UserUtils
 import org.w3c.dom.Text
 
 class ChatListAdapter(val bindListener: (userId: String, holder: ChatItemViewHolder)-> Unit, val mAuth: FirebaseAuth, val parentClickListener: (userId: String, chatRoomId: String)-> Unit, val profileImageClickListener: ()-> Unit): ListAdapter<ChatRoom, ChatListAdapter.ChatItemViewHolder>(DiffUtilItemCallback()) {
@@ -35,7 +37,9 @@ class ChatListAdapter(val bindListener: (userId: String, holder: ChatItemViewHol
         if(item.participants != null){
             val id = getUserId(item.participants!!)
             item.roomUID?.let { bindListener(id, holder) }
-            holder.lastMessage.text = item.messages?.values?.toList()?.get(0)?.message.toString()
+            holder.lastMessage.text = UserUtils.truncate(item.messages?.values?.toList()?.get(0)?.message.toString(), 38)
+            holder.timestamp.text = MessageUtils.formatStampChatsPage(item.messages!!.values.toList().get(0).time!!.toString())
+
             holder.parent.setOnClickListener {
                 parentClickListener(id, item.roomUID!!)
             }

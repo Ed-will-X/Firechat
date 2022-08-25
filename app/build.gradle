@@ -83,4 +83,8 @@ dependencies {
 
     // coordinator layout
     implementation "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
+
+    // Time Formatter
+    implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
+
 }

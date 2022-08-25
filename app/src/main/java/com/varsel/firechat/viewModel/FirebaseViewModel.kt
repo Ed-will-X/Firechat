@@ -9,7 +9,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
+import com.varsel.firechat.databinding.ActionSheetEditProfileBinding
 import com.varsel.firechat.model.Chat.ChatRoom
+import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.model.message.Message
 import com.varsel.firechat.model.message.MessageType
@@ -22,6 +24,8 @@ class FirebaseViewModel: ViewModel() {
     var friends = MutableLiveData<List<User?>>()
     var chatRooms = MutableLiveData<List<ChatRoom?>>()
     var selectedChatRoom = MutableLiveData<ChatRoom?>()
+    val groupRooms = MutableLiveData<List<GroupRoom?>>()
+    val selectedGroupRoom = MutableLiveData<GroupRoom?>()
 
     fun signUp(
         email: String,
@@ -163,13 +167,11 @@ class FirebaseViewModel: ViewModel() {
                     }
                 }
                 usersLiveData.value = users
-
             }
 
             override fun onCancelled(error: DatabaseError) {
                 TODO("Not yet implemented")
             }
-
         })
     }
 
@@ -269,7 +271,7 @@ class FirebaseViewModel: ViewModel() {
 
     }
 
-    // TODO: Implement send message
+    // TODO: Modify to accommodate simultaneous first message possibilities
     fun sendMessage(
         message: Message,
         chatRoomUID: String,
@@ -293,6 +295,8 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
+
+    // TODO: Change name
     fun appendParticipants(chatRoom: ChatRoom, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
         mDbRef
             .child("chatRooms")
@@ -385,6 +389,77 @@ class FirebaseViewModel: ViewModel() {
             })
     }
 
+    // TODO: Implement create group
+    fun createGroup(groupObj: GroupRoom, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val groupRef = mDbRef.child("groupRooms")
+
+        groupRef
+            .child(groupObj.roomUID!!)
+            .setValue(groupObj)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    // TODO: Implement append group rooms to user
+    fun appendGroupRooms(
+        roomUid: String,
+        otherUserID: String,
+        mAuth: FirebaseAuth,
+        mDbRef: DatabaseReference,
+        successCallback: () -> Unit,
+        failureCallback: () -> Unit){
+
+        val currentUserRef = mDbRef.child("Users").child(mAuth.currentUser?.uid.toString())
+        val otherUserRef = mDbRef.child("Users").child(otherUserID)
+
+        currentUserRef
+            .child("groupRooms")
+            .child(roomUid)
+            .setValue(roomUid)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    otherUserRef
+                        .child("groupRooms")
+                        .child(roomUid)
+                        .setValue(roomUid)
+                        .addOnCompleteListener {
+                            if(it.isSuccessful){
+                                successCallback()
+                            } else {
+                                failureCallback()
+                            }
+                        }
+                } else {
+                    failureCallback()
+                }
+            }
+
+    }
+
+
+
+    // TODO: Implement add participants
+    fun addParticipants(){
+
+    }
+
+    // TODO: implement Make Admin
+    fun makeAdmin(){
+        // only admins can add admins
+    }
+
+    // TODO: implement Remove Admin
+    fun removeAdmin(){
+
+    }
+
+
+    // TODO: Delete
     fun getChatsInChatroom(id: String, mDbRef: DatabaseReference, loopCallback: (message: Message?) -> Unit, afterCallback: () -> Unit){
         mDbRef.child("chatRooms").orderByChild("roomId").equalTo(id).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -400,6 +475,18 @@ class FirebaseViewModel: ViewModel() {
             }
 
         })
+    }
+
+    fun editUser(key: String, value: String,firebaseAuth: FirebaseAuth, mDbRef: DatabaseReference){
+        val databaseRef = mDbRef.child("Users").child(firebaseAuth.currentUser?.uid.toString())
+
+        if(value.isEmpty()){
+            databaseRef.child(key).setValue(null)
+        } else {
+            databaseRef.child(key).setValue(value)
+        }
+
+        // TODO: Implement success and failure callbacks
     }
 
     // TODO: Implement delete chatroom

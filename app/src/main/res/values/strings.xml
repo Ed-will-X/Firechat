@@ -52,11 +52,31 @@
     <string name="zero">0</string>
     <string name="zero_in_brackets">(0)</string>
     <string name="accept">Accept</string>
-    <string name="no_about">No About....Tap to add</string>
+    <string name="no_about">No About....Navigate to Edit profile to start writing</string>
     <string name="no_occupation">*** No Occupation ***</string>
     <string name="online">Online</string>
     <string name="offline">Offline</string>
     <string name="type_message">Type your message</string>
+    <string name="moments_ago">moments ago</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="name">Name</string>
+    <string name="email_address">Email address</string>
+    <string name="location">Location</string>
+    <string name="phone">Phone</string>
+    <string name="occupation">Occupation</string>
+    <string name="gender">Gender</string>
+    <string name="about">About</string>
+    <string name="all_friends">All Friends</string>
+    <string name="people_count">%d People</string>
+    <string name="create_group">Create Group</string>
+    <string name="create_group_confirmation">The selected participants will be notified of the group creation</string>
+    <string name="done">Done</string>
+    <string name="group_name">Group Name</string>
+    <string name="no_group">No Group Chat</string>
+    <string name="no_group_body">You\'re not in any groups yet. You can create one and add your friends.</string>
+    <string name="no_friends">No Friends</string>
+    <string name="no_friends_body">You don\'t have any friends yet. You can add some.</string>
+
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:minHeight="400dp"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <View
+        style="@style/action_sheet_handlebar"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:paddingBottom="20dp"
+            android:paddingHorizontal="30dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/auth_root_signin_large_text"
+                android:text="@string/edit_profile"
+                android:layout_marginVertical="15dp"
+                />
+
+            <EditText
+                android:id="@+id/name_edit_text"
+                android:background="@drawable/edit_text_shape"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:inputType="textCapWords"
+                android:hint="@string/name"
+                android:textSize="@dimen/edit_profile_edit_text_font"
+                />
+
+            <EditText
+                android:id="@+id/email_edit_text"
+                android:background="@drawable/edit_text_shape"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:inputType="textEmailAddress"
+                android:hint="@string/placeholder_email"
+                android:textSize="@dimen/edit_profile_edit_text_font"
+                />
+
+            <EditText
+                android:id="@+id/location_edit_text"
+                android:background="@drawable/edit_text_shape"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:inputType="textCapSentences"
+                android:hint="@string/location"
+                android:textSize="@dimen/edit_profile_edit_text_font"
+                />
+
+            <EditText
+                android:id="@+id/phone_edit_text"
+                android:background="@drawable/edit_text_shape"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:inputType="phone"
+                android:hint="@string/phone"
+                android:textSize="@dimen/edit_profile_edit_text_font"
+                />
+
+            <EditText
+                android:id="@+id/occupation_edit_text"
+                android:background="@drawable/edit_text_shape"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:inputType="textCapSentences"
+                android:hint="@string/occupation"
+                android:textSize="@dimen/edit_profile_edit_text_font"
+                />
+
+            <EditText
+                android:id="@+id/about_edit_text"
+                android:background="@drawable/edit_text_shape"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:inputType="textMultiLine|textCapSentences"
+                android:hint="@string/about"
+                android:textSize="@dimen/edit_profile_edit_text_font"
+                />
+
+<!--            TODO: Implement gender slider-->
+
+            <Button
+                android:id="@+id/edit_profile_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:enabled="true"
+                android:text="@string/edit_profile" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

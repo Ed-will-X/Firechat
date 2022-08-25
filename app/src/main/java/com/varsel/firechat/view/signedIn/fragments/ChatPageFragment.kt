@@ -12,6 +12,7 @@ import com.varsel.firechat.databinding.FragmentChatPageBinding
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.message.Message
 import com.varsel.firechat.model.message.MessageType
+import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.MessageListAdapter
 
@@ -42,7 +43,7 @@ class ChatPageFragment : Fragment() {
         userUID = ChatPageFragmentArgs.fromBundle(requireArguments()).userUid
 
         // Chatroom initialisation
-        newChatRoomId = generateUID(50)
+        newChatRoomId = MessageUtils.generateUID(50)
         newChatRoom = ChatRoom(newChatRoomId, hashMapOf<String, String>(userUID to userUID, parent.firebaseAuth.uid.toString() to parent.firebaseAuth.uid.toString()))
 
         getChatRoom()
@@ -56,14 +57,12 @@ class ChatPageFragment : Fragment() {
                     it.time
                 }
                 messagesListAdapter.submitList(sorted)
-                val f = sorted?.listIterator()
             })
         }
 
-
         // send button
         binding.sendMessageBtn.setOnClickListener {
-            var message = Message(generateUID(50), binding.messageEditText.text.toString(), System.currentTimeMillis(), parent.firebaseAuth.currentUser?.uid, MessageType.TEXT)
+            var message = Message(MessageUtils.generateUID(50), binding.messageEditText.text.toString(), System.currentTimeMillis(), parent.firebaseAuth.currentUser?.uid, MessageType.TEXT)
 
             if(binding.messageEditText.text.toString() != ""){
                 sendMessage(message)
@@ -114,12 +113,7 @@ class ChatPageFragment : Fragment() {
         }
     }
 
-    fun generateUID(length: Int) : String {
-        val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
-        return (1..length)
-            .map { allowedChars.random() }
-            .joinToString("")
-    }
+
 
     fun getParticipant(){
         if(existingChatRoomId != null){

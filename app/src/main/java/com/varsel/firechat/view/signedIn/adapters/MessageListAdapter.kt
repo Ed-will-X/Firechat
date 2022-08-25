@@ -15,12 +15,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.varsel.firechat.R
 import com.varsel.firechat.model.message.Message
+import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedIn.fragments.ChatPageFragment
 import java.lang.Exception
 
 class MessageListAdapter(val mAuth: FirebaseAuth, val fragment: ChatPageFragment): ListAdapter<Message, RecyclerView.ViewHolder>(MessagesCallback()) {
     private val SENT = 0
     private val RECEIVED = 1
+
 
     class SentViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val parent = itemView.findViewById<LinearLayout>(R.id.parent)
@@ -47,47 +49,74 @@ class MessageListAdapter(val mAuth: FirebaseAuth, val fragment: ChatPageFragment
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        // TODO: separate the text messages into different segments depending on the time received
         val item: Message = getItem(position)
-
-        Log.d("LLL", "Current ${item.message}")
 
         if(holder.javaClass == SentViewHolder::class.java){
             // Sent Holder
             val viewHolder = holder as SentViewHolder
             viewHolder.text.text = item.message
+
+            viewHolder.timestamp.text = MessageUtils.formatStampMessage(item.time.toString())
+
             try {
                 val prev: Message? = getItem(position - 1)
                 if(prev?.sender.equals(item.sender)){
                     viewHolder.parent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat_second) }
+                } else {
+                    viewHolder.parent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat) }
                 }
-            } catch(e: Exception){ }
+            } catch(e: Exception){
+                viewHolder.parent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat) }
+            }
 
             try {
                 val next: Message? = getItem(position + 1)
                 if(next?.sender == item.sender){
                     viewHolder.timestamp.visibility = View.GONE
+                } else {
+                    viewHolder.timestamp.visibility = View.VISIBLE
                 }
-            } catch(e: Exception) {}
+            } catch(e: Exception) {
+                viewHolder.timestamp.visibility = View.VISIBLE
+            }
 
 
         } else {
             // Received Holder
             val viewHolder = holder as ReceivedViewHolder
             viewHolder.text.text = item.message
+
+            viewHolder.timestamp.text = MessageUtils.formatStampMessage(item.time.toString())
+
             try {
                 val next: Message? = getItem(position + 1)
                 if(next?.sender.equals(item.sender)){
                     viewHolder.parent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_other_user_chat) }
                     viewHolder.timestamp.visibility = View.GONE
+                } else {
+                    viewHolder.parent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_other_user_chat_second) }
+                    viewHolder.timestamp.visibility = View.VISIBLE
                 }
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+                viewHolder.parent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_other_user_chat_second) }
+                viewHolder.timestamp.visibility = View.VISIBLE
+            }
+
+
             try {
                 val prev: Message? = getItem(position - 1)
                 if(prev?.sender.equals(item.sender)){
                     viewHolder.empty_profile_pic.visibility = View.GONE
                     viewHolder.emptyPadding.visibility = View.VISIBLE
+                } else {
+                    viewHolder.empty_profile_pic.visibility = View.VISIBLE
+                    viewHolder.emptyPadding.visibility = View.GONE
                 }
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+                viewHolder.empty_profile_pic.visibility = View.VISIBLE
+                viewHolder.emptyPadding.visibility = View.GONE
+            }
         }
     }
 

@@ -7,7 +7,7 @@ import com.varsel.firechat.model.User.User
 import com.varsel.firechat.model.message.Message
 
 @Entity(tableName = "chat")
-class ChatRoom {
+open class ChatRoom {
     @PrimaryKey(autoGenerate = true)
 //    var roomId: Long = 0L
 
@@ -28,6 +28,5 @@ class ChatRoom {
     constructor(roomUID: String, participants: HashMap<String, String>){
         this.roomUID = roomUID
         this.participants = participants
-//        this.messages = messages
     }
 }

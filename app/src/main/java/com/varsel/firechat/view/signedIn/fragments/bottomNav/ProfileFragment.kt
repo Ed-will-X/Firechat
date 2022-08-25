@@ -34,6 +34,7 @@ class ProfileFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val view = binding.root
+        parent = activity as SignedinActivity
 
         userUtils = UserUtils(this)
 
@@ -43,17 +44,16 @@ class ProfileFragment : Fragment() {
             }
         })
 
-        parent = activity as SignedinActivity
-
         return view
     }
+
 
     private fun setUser(user: User){
         if(user.name != null){
             binding.name.text = user?.name
         }
         if(user.about != null){
-            binding.aboutTextBody.text = userUtils.truncate(user?.about!!, 150)
+            binding.aboutTextBody.text = UserUtils.truncate(user?.about!!, 150)
         }
 
         if(user.posts != null){
@@ -86,6 +86,14 @@ class ProfileFragment : Fragment() {
 
         binding.friendRequestsClickable.setOnClickListener {
             showFriendRequestsActionsheet()
+        }
+
+        binding.friendsClickable.setOnClickListener {
+            view?.findNavController()?.navigate(R.id.action_profileFragment_to_friendListFragment)
+        }
+
+        binding.editProfile.setOnClickListener {
+            view?.findNavController()?.navigate(R.id.action_profileFragment_to_editProfilePage)
         }
     }
 

@@ -32,7 +32,7 @@ open class User{
     var chatRooms: HashMap<String, String>? = null
 
     @ColumnInfo(name = "group_rooms")
-    var groupRooms: List<String>? = null
+    var groupRooms: HashMap<String, String>? = null
 
     var occupation: String? = null
 
@@ -43,6 +43,10 @@ open class User{
     var friends: HashMap<String, String>? = null
 
     var posts: HashMap<String, String>? = null
+
+    var gender: String? = null
+
+    var location: String? = null
 
     @ColumnInfo(name = "friend_requests")
     var friendRequests: HashMap<String, String>? = null
@@ -56,7 +60,7 @@ open class User{
                 profileImage: Array<Byte>?,
                 profileLock: Boolean,
                 chatRooms: HashMap<String, String>?,
-                groupRooms: List<String>?,
+                groupRooms: HashMap<String, String>?,
                 occupation: String?,
                 friendRequests: HashMap<String, String>?
     ){
@@ -76,5 +80,14 @@ open class User{
     constructor(){
 
     }
+}
 
+class GenderValues(){
+    companion object {
+        val MALE = 0
+        val FEMALE = 1
+        val TRANS = 2
+        val MIXED = 3
+        val OTHER = 4
+    }
 }

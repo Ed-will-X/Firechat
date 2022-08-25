@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:paddingBottom="20dp"
+    android:paddingHorizontal="30dp"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        style="@style/action_sheet_handlebar"
+        />
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/create_group"
+        style="@style/auth_root_signin_large_text"
+        />
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/create_group_confirmation"
+        style="@style/auth_root_small_text"
+        android:textColor="@color/grey"
+        />
+
+    <EditText
+        android:layout_marginTop="10dp"
+        android:id="@+id/group_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edit_text_shape"
+        android:layout_marginBottom="10dp"
+        android:inputType="text"
+        android:hint="@string/group_name" />
+
+    <Button
+        android:id="@+id/btn_create_group"
+        android:enabled="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create_group"
+        />
+
+</LinearLayout>

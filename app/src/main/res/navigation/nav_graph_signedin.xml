@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_chatsFragment_to_chatPageFragment"
             app:destination="@id/chatPageFragment" />
+        <action
+            android:id="@+id/action_chatsFragment_to_createGroupFragment"
+            app:destination="@id/createGroupFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -28,6 +31,12 @@
         <action
             android:id="@+id/action_profileFragment_to_otherProfileFragment"
             app:destination="@id/otherProfileFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_editProfilePage"
+            app:destination="@id/editProfilePage" />
+        <action
+            android:id="@+id/action_profileFragment_to_friendListFragment"
+            app:destination="@id/friendListFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -64,4 +73,23 @@
             android:name="userUid"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/editProfilePage"
+        android:name="com.varsel.firechat.view.signedIn.fragments.EditProfilePage"
+        android:label="fragment_edit_profile_page"
+        tools:layout="@layout/fragment_edit_profile_page" />
+    <fragment
+        android:id="@+id/friendListFragment"
+        android:name="com.varsel.firechat.view.signedIn.fragments.FriendListFragment"
+        android:label="fragment_friend_list"
+        tools:layout="@layout/fragment_friend_list" >
+        <action
+            android:id="@+id/action_friendListFragment_to_otherProfileFragment"
+            app:destination="@id/otherProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createGroupFragment"
+        android:name="com.varsel.firechat.view.signedIn.fragments.CreateGroupFragment"
+        android:label="fragment_create_group"
+        tools:layout="@layout/fragment_create_group" />
 </navigation>

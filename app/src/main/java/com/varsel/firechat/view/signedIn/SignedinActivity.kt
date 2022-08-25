@@ -1,32 +1,26 @@
 package com.varsel.firechat.view.signedIn
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.core.DataStore
-import androidx.datastore.createDataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.preferencesKey
-import androidx.datastore.preferences.createDataStore
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
-import com.varsel.firechat.R
-import com.varsel.firechat.databinding.ActivitySignedinBinding
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.varsel.firechat.R
+import com.varsel.firechat.databinding.ActivitySignedinBinding
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.viewModel.FirebaseViewModel
-import kotlinx.coroutines.launch
+import org.ocpsoft.prettytime.PrettyTime
+import java.util.*
 
 
 class SignedinActivity : AppCompatActivity() {
@@ -69,16 +63,13 @@ class SignedinActivity : AppCompatActivity() {
             }
         })
 
-
-
-
-
         binding.bottomNavView.setupWithNavController(navController)
         setBottomNavVisibility(navController)
 
         // Makes the chat fragment the default destination
         binding.bottomNavView.menu.findItem(R.id.chatsFragment).setChecked(true)
     }
+
 
     fun setBottomNavVisibility(navController: NavController){
         navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -91,6 +82,15 @@ class SignedinActivity : AppCompatActivity() {
                 binding.bottomNavView.visibility = View.GONE
             }
             if(destination.id == R.id.chatPageFragment){
+                binding.bottomNavView.visibility = View.GONE
+            }
+            if(destination.id == R.id.editProfilePage){
+                binding.bottomNavView.visibility = View.GONE
+            }
+            if(destination.id == R.id.friendListFragment){
+                binding.bottomNavView.visibility = View.GONE
+            }
+            if(destination.id == R.id.createGroupFragment){
                 binding.bottomNavView.visibility = View.GONE
             }
         }
