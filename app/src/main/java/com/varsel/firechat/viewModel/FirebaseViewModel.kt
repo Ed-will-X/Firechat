@@ -1,7 +1,6 @@
 package com.varsel.firechat.viewModel
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -9,12 +8,10 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
-import com.varsel.firechat.databinding.ActionSheetEditProfileBinding
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.model.message.Message
-import com.varsel.firechat.model.message.MessageType
 
 class FirebaseViewModel: ViewModel() {
     val usersLiveData = MutableLiveData<List<User>>()
@@ -22,9 +19,9 @@ class FirebaseViewModel: ViewModel() {
     val currentUser = MutableLiveData<User?>()
     val friendRequests = MutableLiveData<List<User?>>()
     var friends = MutableLiveData<List<User?>>()
-    var chatRooms = MutableLiveData<List<ChatRoom?>>()
+    var chatRooms = MutableLiveData<MutableList<ChatRoom?>>()
     var selectedChatRoom = MutableLiveData<ChatRoom?>()
-    val groupRooms = MutableLiveData<List<GroupRoom?>>()
+    val groupRooms = MutableLiveData<MutableList<GroupRoom?>>()
     val selectedGroupRoom = MutableLiveData<GroupRoom?>()
 
     fun signUp(
@@ -77,7 +74,7 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    fun getCurrentUser(mAuth: FirebaseAuth?, mDbRef: DatabaseReference, beforeCallback: () -> Unit, afterCallback: () -> Unit){
+    fun getCurrentUserRecurrent(mAuth: FirebaseAuth?, mDbRef: DatabaseReference, beforeCallback: () -> Unit, afterCallback: () -> Unit){
         mDbRef.child("Users").orderByChild("userUID").equalTo(mAuth?.currentUser?.uid.toString()).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 beforeCallback()
@@ -90,10 +87,33 @@ class FirebaseViewModel: ViewModel() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+
             }
 
         })
+    }
+
+    fun getCurrentUserSingle(mAuth: FirebaseAuth?, mDbRef: DatabaseReference, beforeCallback: () -> Unit, afterCallback: () -> Unit){
+        mDbRef.child("Users").orderByChild("userUID").equalTo(mAuth?.currentUser?.uid.toString()).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                beforeCallback()
+
+                for (item in snapshot.children){
+                    val user = item.getValue(User::class.java)
+//                    currentUser.value = user
+                }
+                afterCallback()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+    }
+
+    // TODO: Implement Get User Single
+    fun getUserSingle(){
 
     }
 
@@ -111,7 +131,7 @@ class FirebaseViewModel: ViewModel() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+
             }
 
         })
@@ -128,7 +148,7 @@ class FirebaseViewModel: ViewModel() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+
             }
 
         })
@@ -145,7 +165,7 @@ class FirebaseViewModel: ViewModel() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+
             }
 
         })
@@ -170,7 +190,7 @@ class FirebaseViewModel: ViewModel() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+
             }
         })
     }
@@ -344,7 +364,6 @@ class FirebaseViewModel: ViewModel() {
         return listOf<User>()
     }
 
-    // TODO: Implement get single chatroom
     fun getChatRoom(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (chatRoom: ChatRoom?) -> Unit, afterCallback: () -> Unit){
         mDbRef
             .child("chatRooms")
@@ -361,7 +380,7 @@ class FirebaseViewModel: ViewModel() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+
                 }
 
             })
@@ -383,9 +402,8 @@ class FirebaseViewModel: ViewModel() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
 
+                }
             })
     }
 
@@ -405,8 +423,7 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    // TODO: Implement append group rooms to user
-    fun appendGroupRooms(
+    fun appendGroupRoomsToUser(
         roomUid: String,
         otherUserID: String,
         mAuth: FirebaseAuth,
@@ -438,7 +455,73 @@ class FirebaseViewModel: ViewModel() {
                     failureCallback()
                 }
             }
+    }
 
+    fun getGroupChatRoomSingle(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (chatRoom: GroupRoom?) -> Unit, afterCallback: () -> Unit){
+        mDbRef
+            .child("groupRooms")
+            .orderByChild("roomUID")
+            .equalTo(chatRoomUID)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (i in snapshot.children){
+                        val item = i.getValue(GroupRoom::class.java)
+                        loopCallback(item)
+                    }
+
+                    afterCallback()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+
+            })
+    }
+
+    fun getGroupChatRoomRecurrent(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (groupRoom: GroupRoom?) -> Unit, afterCallback: () -> Unit){
+        mDbRef
+            .child("groupRooms")
+            .orderByChild("roomUID")
+            .equalTo(chatRoomUID)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (i in snapshot.children){
+                        val item = i.getValue(GroupRoom::class.java)
+                        loopCallback(item)
+                    }
+
+                    afterCallback()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+            })
+    }
+
+    // TODO: Modify to accommodate simultaneous first message possibilities
+    fun sendGroupMessage(
+        message: Message,
+        chatRoomID: String,
+        mDbRef: DatabaseReference,
+        successCallback: () -> Unit,
+        failureCallback: () -> Unit){
+
+        // push the message to the chatroom
+        mDbRef
+            .child("groupRooms")
+            .child(chatRoomID)
+            .child("messages")
+            .push()
+            .setValue(message)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
     }
 
 
@@ -471,9 +554,8 @@ class FirebaseViewModel: ViewModel() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
 
+            }
         })
     }
 
@@ -498,5 +580,10 @@ class FirebaseViewModel: ViewModel() {
         mAuth.signOut()
     }
 
+    // TODO: Implement delete account
+    fun deleteAccount(){
+        // delete from auth db
 
+        // delete from realtime db
+    }
 }

@@ -1,7 +1,6 @@
 package com.varsel.firechat.view.signedIn.adapters
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +8,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -16,10 +16,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.varsel.firechat.R
 import com.varsel.firechat.model.message.Message
 import com.varsel.firechat.utils.MessageUtils
-import com.varsel.firechat.view.signedIn.fragments.ChatPageFragment
 import java.lang.Exception
 
-class MessageListAdapter(val mAuth: FirebaseAuth, val fragment: ChatPageFragment): ListAdapter<Message, RecyclerView.ViewHolder>(MessagesCallback()) {
+class ChatPageType {
+    companion object {
+        val INDIVIDUAL = 0
+        val GROUP = 1
+    }
+}
+
+class MessageListAdapter(val mAuth: FirebaseAuth, val fragment: Fragment, val pageType: Int): ListAdapter<Message, RecyclerView.ViewHolder>(MessagesCallback()) {
     private val SENT = 0
     private val RECEIVED = 1
 
@@ -87,7 +93,7 @@ class MessageListAdapter(val mAuth: FirebaseAuth, val fragment: ChatPageFragment
             val viewHolder = holder as ReceivedViewHolder
             viewHolder.text.text = item.message
 
-            viewHolder.timestamp.text = MessageUtils.formatStampMessage(item.time.toString())
+            setOtherUserTimestamp(viewHolder, item)
 
             try {
                 val next: Message? = getItem(position + 1)
@@ -126,6 +132,14 @@ class MessageListAdapter(val mAuth: FirebaseAuth, val fragment: ChatPageFragment
             return SENT
         } else {
             return RECEIVED
+        }
+    }
+
+    fun setOtherUserTimestamp(viewHolder: ReceivedViewHolder, item: Message){
+        if(pageType == ChatPageType.INDIVIDUAL){
+            viewHolder.timestamp.text = MessageUtils.formatStampMessage(item.time.toString())
+        } else {
+            viewHolder.timestamp.text = "${MessageUtils.formatStampMessage(item.time.toString())} · Name Here"
         }
     }
 }

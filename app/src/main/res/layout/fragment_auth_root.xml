@@ -10,9 +10,16 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/auth_root_img_1"
+        android:src="@drawable/a_e_f_v_d_f_g_d"
         android:scaleType="centerCrop"
         />
+
+    <LinearLayout
+        android:background="@color/dark_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_gravity="center"

@@ -36,7 +36,6 @@ class SettingsFragment : Fragment() {
         val view = binding.root
 
         binding.settingsLogoutClickable.setOnClickListener {
-            Toast.makeText(view.context, "Logout", Toast.LENGTH_LONG).show()
             showLogoutConfirmationDialog {
                 lifecycleScope.launch {
                     firebaseViewModel.signOut((parent as SignedinActivity).firebaseAuth)

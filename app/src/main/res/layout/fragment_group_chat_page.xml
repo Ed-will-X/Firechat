@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".view.signedIn.fragments.ChatPageFragment">
+    tools:context=".view.signedIn.fragments.GroupChatPageFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:clickable="true"
@@ -37,8 +37,9 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_baseline_person_24"
-                    android:layout_height="20dp"/>
+                    android:src="@drawable/ic_people"
+                    android:layout_height="20dp"
+                    app:tint="@color/white" />
             </FrameLayout>
 
             <LinearLayout
@@ -49,18 +50,18 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content">
                 <TextView
-                    android:id="@+id/name_text"
+                    android:id="@+id/group_name_text"
                     android:textSize="16sp"
                     android:textColor="@color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Username Here"
+                    android:text="Group Name Here"
                     />
 
                 <TextView
-                    android:id="@+id/occupation_text"
+                    android:id="@+id/participants_text"
                     android:textSize="11sp"
-                    android:text="@string/offline"
+                    android:text="Ligma Balls, Sugma Balls, Deez Nuts..."
                     android:textColor="@color/transparent_white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -77,7 +78,7 @@
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-<!--    Recycler View-->
+    <!--    Recycler View-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messages_recycler_view"
         android:layout_width="match_parent"
@@ -86,7 +87,7 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         />
 
-<!--    Keyboard section-->
+    <!--    Keyboard section-->
     <LinearLayout
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="10dp"
@@ -124,7 +125,7 @@
                 android:paddingRight="10dp"
                 android:orientation="horizontal">
 
-<!--                TODO: Expand edit text based on the number of lines of the message-->
+                <!--                TODO: Expand edit text based on the number of lines of the message-->
                 <EditText
                     android:id="@+id/message_edit_text"
                     android:background="@color/transparent"

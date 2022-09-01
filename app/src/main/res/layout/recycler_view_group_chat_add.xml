@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    app:cardElevation="1dp"
+    android:layout_marginTop="@dimen/gc_card_margin"
+    android:layout_marginHorizontal="@dimen/gc_card_margin_2"
+    android:clickable="true"
+    android:id="@+id/add_new_group_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="170dp">
+
+    <LinearLayout
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_gravity="center_horizontal"
+            app:cardBackgroundColor="@color/light_grey_2"
+            app:cardCornerRadius="360dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_add"
+                app:tint="@color/white" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_new"
+            android:textColor="@color/black"
+            android:layout_gravity="center_horizontal"
+            android:textSize="@dimen/gc_card_text_size"
+            />
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

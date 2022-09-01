@@ -10,8 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.R
 import com.varsel.firechat.model.User.User
 
-class CreateGroupAdapter(): RecyclerView.Adapter<CreateGroupAdapter.CreateGroupViewHolder>() {
+// TODO: Change to ListView (optional)
+class CreateGroupAdapter(val checkChanged: ()-> Unit): RecyclerView.Adapter<CreateGroupAdapter.CreateGroupViewHolder>() {
     var friends: ArrayList<User?> = arrayListOf<User?>()
+    var selected: ArrayList<String?> = arrayListOf()
 
     class CreateGroupViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val parent = itemView.findViewById<LinearLayout>(R.id.parent_clickable)
@@ -24,19 +26,34 @@ class CreateGroupAdapter(): RecyclerView.Adapter<CreateGroupAdapter.CreateGroupV
         return CreateGroupViewHolder(view)
     }
 
+    // TODO: Fix potential bug where the item is scrolled off in the view
     override fun onBindViewHolder(holder: CreateGroupViewHolder, position: Int) {
         val item: User? = friends[position]
         if (item != null) {
             holder.name.text = item.name
         }
 
-        holder.checkbox.setOnClickListener {
+        holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
+            if(isChecked){
+                item?.userUID?.let { select(it) }
+            } else {
+                item?.userUID?.let { unselect(it) }
+            }
 
+            checkChanged()
         }
 
         holder.parent.setOnClickListener {
 
         }
+    }
+
+    private fun select(uid: String){
+        selected.add(uid)
+    }
+
+    private fun unselect(uid: String){
+        selected.remove(uid)
     }
 
     override fun getItemCount(): Int {

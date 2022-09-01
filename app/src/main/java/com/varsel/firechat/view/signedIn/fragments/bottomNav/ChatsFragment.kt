@@ -84,4 +84,12 @@ class ChatsFragment : Fragment() {
             }
         }.attach()
     }
+
+    fun swipeToFriends(){
+        binding.chatsViewPager.apply {
+            beginFakeDrag()
+            fakeDragBy(-2000f)
+            endFakeDrag()
+        }
+    }
 }

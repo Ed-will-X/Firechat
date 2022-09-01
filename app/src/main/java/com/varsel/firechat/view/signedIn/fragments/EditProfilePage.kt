@@ -60,7 +60,6 @@ class EditProfilePage : Fragment() {
             binding.locationText.text = it?.location ?: "-"
             binding.phoneText.text = it?.phone ?: "-"
             binding.occupationText.text = it?.occupation ?: "-"
-            binding.genderText.text = it?.gender ?: "-"
         })
     }
 

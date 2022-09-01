@@ -2,20 +2,19 @@ package com.varsel.firechat.view.signedIn.fragments.viewPager
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
-import com.varsel.firechat.R
-import com.varsel.firechat.databinding.DialogLogoutBinding
 import com.varsel.firechat.databinding.FragmentIndividualBinding
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ChatListAdapter
+import com.varsel.firechat.view.signedIn.fragments.bottomNav.ChatsFragment
 import com.varsel.firechat.view.signedIn.fragments.bottomNav.ChatsFragmentDirections
 
 class IndividualFragment : Fragment() {
@@ -34,35 +33,47 @@ class IndividualFragment : Fragment() {
         parent = activity as SignedinActivity
 
         // adapter
-        val chatListAdapter = ChatListAdapter({ userId, holder ->
-            getUser(userId) {
-                holder.name.text = it.name
-            }
-        }, parent.firebaseAuth, { userId, chatRoomId ->
+        val chatListAdapter = ChatListAdapter(parent.firebaseAuth, parent.mDbRef, parent.firebaseViewModel, { userId, chatRoomId ->
             val action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(chatRoomId, userId)
             view.findNavController().navigate(action)
         }, {})
 
         binding.individualChatsRecyclerView.adapter = chatListAdapter
 
+        // TODO: Add a second observer for the chat rooms
         parent.firebaseViewModel.chatRooms.observe(viewLifecycleOwner, Observer {
-            // TODO: Fix state issues and crash issues
-            chatListAdapter.submitList(it)
+            val sorted = MessageUtils.sortChats(it as MutableList<ChatRoom>)
+
+            toggleRecyclerViewVisibility(it)
+            chatListAdapter.submitList(sorted)
             chatListAdapter.notifyDataSetChanged()
+        })
+
+        parent.firebaseViewModel.currentUser.observe(viewLifecycleOwner, Observer {
+            if(it != null){
+                binding.chatPeopleClickable.setOnClickListener {
+                    swipeToFriends()
+                }
+            }
         })
 
         return view
     }
 
-    private fun getUser(id: String, afterCallback: (user: User)-> Unit) {
-        lateinit var user: User
-        parent.firebaseViewModel.getUserSingle(id, parent.mDbRef, {
-            if (it != null) {
-                user = it
-            }
-        }, {
-            afterCallback(user)
-        })
+    private fun toggleRecyclerViewVisibility(chats: MutableList<ChatRoom?>){
+        if(chats.isNotEmpty()){
+            binding.individualChatsRecyclerView.visibility = View.VISIBLE
+            binding.noChats.visibility = View.GONE
+        } else {
+            binding.individualChatsRecyclerView.visibility = View.GONE
+            binding.noChats.visibility = View.VISIBLE
+        }
+    }
+
+    private fun swipeToFriends(){
+        val chatsFragment = parentFragment as ChatsFragment
+
+        chatsFragment.swipeToFriends()
     }
 
     override fun onDestroyView() {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    android:background="@color/white"
     android:foreground="?attr/selectableItemBackground"
     android:id="@+id/parent_clickable_chats_list"
     android:clickable="true"

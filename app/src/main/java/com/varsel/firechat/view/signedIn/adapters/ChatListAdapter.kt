@@ -1,23 +1,34 @@
 package com.varsel.firechat.view.signedIn.adapters
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.ListView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
 import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.ChatRoom
+import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.model.message.Message
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.UserUtils
-import org.w3c.dom.Text
+import com.varsel.firechat.viewModel.FirebaseViewModel
 
-class ChatListAdapter(val bindListener: (userId: String, holder: ChatItemViewHolder)-> Unit, val mAuth: FirebaseAuth, val parentClickListener: (userId: String, chatRoomId: String)-> Unit, val profileImageClickListener: ()-> Unit): ListAdapter<ChatRoom, ChatListAdapter.ChatItemViewHolder>(DiffUtilItemCallback()) {
+class ChatListAdapter(
+    val mAuth: FirebaseAuth,
+    val mDbRef: DatabaseReference,
+    val firebaseViewModel: FirebaseViewModel,
+    val parentClickListener: (userId: String, chatRoomId: String)-> Unit,
+    val profileImageClickListener: ()-> Unit,
+) : ListAdapter<ChatRoom, ChatListAdapter.ChatItemViewHolder>(ChatsListAdapterDiffItemCallback()) {
 
     class ChatItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val name = itemView.findViewById<TextView>(R.id.name_chats_list)
@@ -34,16 +45,21 @@ class ChatListAdapter(val bindListener: (userId: String, holder: ChatItemViewHol
 
     override fun onBindViewHolder(holder: ChatItemViewHolder, position: Int) {
         val item: ChatRoom = getItem(position)
-        if(item.participants != null){
-            val id = getUserId(item.participants!!)
-            item.roomUID?.let { bindListener(id, holder) }
-            holder.lastMessage.text = UserUtils.truncate(item.messages?.values?.toList()?.get(0)?.message.toString(), 38)
-            holder.timestamp.text = MessageUtils.formatStampChatsPage(item.messages!!.values.toList().get(0).time!!.toString())
-
-            holder.parent.setOnClickListener {
-                parentClickListener(id, item.roomUID!!)
+            if(item != null){
+                val id = getUserId(item.participants!!)
+                holder.lastMessage.text = UserUtils.truncate(getLastMessage(item), 38)
+                if(item.participants != null){
+                    getUser(getUserId(item.participants!!)){
+                        holder.name.text = it.name
+                    }
+                }
+                if(item.messages != null){
+                    holder.timestamp.text = MessageUtils.formatStampChatsPage(getLastMessageTimestamp(item))
+                }
+                holder.parent.setOnClickListener {
+                    parentClickListener(id, item.roomUID!!)
+                }
             }
-        }
     }
 
     fun getUserId(participants: HashMap<String, String>): String{
@@ -56,12 +72,35 @@ class ChatListAdapter(val bindListener: (userId: String, holder: ChatItemViewHol
 
         return otherUser
     }
+
+    private fun getLastMessage(chatRoom: ChatRoom): String {
+        val sortedMessages: List<Message>? = MessageUtils.sortMessages(chatRoom)
+
+        return (sortedMessages?.last()?.message ?: "")
+    }
+
+    private fun getLastMessageTimestamp(chatRoom: ChatRoom): String {
+        val sortedMessages: List<Message>? = MessageUtils.sortMessages(chatRoom)
+
+        return (sortedMessages?.last()?.time.toString() ?: "")
+    }
+
+    private fun getUser(id: String, afterCallback: (user: User)-> Unit) {
+        lateinit var user: User
+        firebaseViewModel.getUserSingle(id, mDbRef, {
+            if (it != null) {
+                user = it
+            }
+        }, {
+            afterCallback(user)
+        })
+    }
 }
 
-
-class DiffUtilItemCallback(): DiffUtil.ItemCallback<ChatRoom>() {
+class ChatsListAdapterDiffItemCallback(): DiffUtil.ItemCallback<ChatRoom>(){
     override fun areItemsTheSame(oldItem: ChatRoom, newItem: ChatRoom): Boolean = oldItem.roomUID == newItem.roomUID
 
     @SuppressLint("DiffUtilEquals")
     override fun areContentsTheSame(oldItem: ChatRoom, newItem: ChatRoom): Boolean = oldItem == newItem
+
 }

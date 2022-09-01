@@ -37,6 +37,10 @@ class FriendsFragment : Fragment() {
 
         toggleVisibility()
 
+        binding.addFriendsClickable.setOnClickListener {
+            view.findNavController().navigate(R.id.action_chatsFragment_to_addFriends)
+        }
+
         val friendsAdapter = FriendsAdapter({
             if(it != null){
                 navigateToProfile(it.userUID!!)
@@ -67,9 +71,6 @@ class FriendsFragment : Fragment() {
             } else {
                 binding.noFriends.visibility = View.VISIBLE
                 binding.friendsRecyclerView.visibility = View.GONE
-                binding.addFriendsClickable.setOnClickListener {
-                    view?.findNavController()?.navigate(R.id.action_chatsFragment_to_addFriends)
-                }
             }
         })
     }

@@ -2,6 +2,7 @@ package com.varsel.firechat.view.signedIn.fragments
 
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import com.varsel.firechat.model.message.Message
 import com.varsel.firechat.model.message.MessageType
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
+import com.varsel.firechat.view.signedIn.adapters.ChatPageType
 import com.varsel.firechat.view.signedIn.adapters.MessageListAdapter
 
 
@@ -48,17 +50,13 @@ class ChatPageFragment : Fragment() {
 
         getChatRoom()
 
-        messagesListAdapter = MessageListAdapter(parent.firebaseAuth, this)
+        messagesListAdapter = MessageListAdapter(parent.firebaseAuth, this, ChatPageType.INDIVIDUAL)
         binding.messagesRecyclerView.adapter = messagesListAdapter
 
-        if(existingChatRoomId != null || firstMessageSent == true){
-            parent.firebaseViewModel.selectedChatRoom.observe(viewLifecycleOwner, Observer {
-                val sorted = it?.messages?.values?.sortedBy {
-                    it.time
-                }
-                messagesListAdapter.submitList(sorted)
-            })
-        }
+
+        parent.firebaseViewModel.selectedChatRoom.observe(viewLifecycleOwner, Observer {
+            getMessages(it)
+        })
 
         // send button
         binding.sendMessageBtn.setOnClickListener {
@@ -67,7 +65,6 @@ class ChatPageFragment : Fragment() {
             if(binding.messageEditText.text.toString() != ""){
                 sendMessage(message)
             }
-            binding.messageEditText.setText("")
 
             if(parent.firebaseViewModel.selectedChatRoom.value?.messages != null){
                 binding.messagesRecyclerView.scrollToPosition(parent.firebaseViewModel.selectedChatRoom.value?.messages!!.size -1)
@@ -77,17 +74,30 @@ class ChatPageFragment : Fragment() {
         return view
     }
 
+    private fun getMessages(it: ChatRoom?){
+        if(existingChatRoomId != null || firstMessageSent == true){
+            val sorted = it?.messages?.values?.sortedBy {
+                it.time
+            }
+            messagesListAdapter.submitList(sorted)
+        }
+    }
+
     private fun getChatRoom(){
         if(existingChatRoomId != null){
             parent.firebaseViewModel.getChatRoomRecurrent(existingChatRoomId!!, parent.mDbRef, {
                 parent.firebaseViewModel.selectedChatRoom.value = it
             },{})
         } else {
-            // Gets the chat room based on the generated id
-            parent.firebaseViewModel.getChatRoomRecurrent(newChatRoomId, parent.mDbRef, {
-                parent.firebaseViewModel.selectedChatRoom.value = it
-            },{})
+
         }
+    }
+
+    private fun getChatRoomFirst(){
+        // Gets the chat room based on the generated id
+        parent.firebaseViewModel.getChatRoomRecurrent(newChatRoomId, parent.mDbRef, {
+            parent.firebaseViewModel.selectedChatRoom.value = it
+        },{})
     }
 
     private fun sendMessage(message: Message){
@@ -102,10 +112,14 @@ class ChatPageFragment : Fragment() {
                     parent.firebaseViewModel.appendParticipants(newChatRoom, parent.mDbRef, {
                         parent.firebaseViewModel.sendMessage(message, newChatRoomId, parent.mDbRef, {
                             firstMessageSent = true
+                            getChatRoomFirst()
+                            clearEditText()
                         }, {})
                     }, {})
                 } else {
-                    parent.firebaseViewModel.sendMessage(message, newChatRoomId, parent.mDbRef, {}, {})
+                    parent.firebaseViewModel.sendMessage(message, newChatRoomId, parent.mDbRef, {
+                        clearEditText()
+                    }, {})
                 }
             },{})
             // append to that chat room in the chats repo
@@ -113,14 +127,8 @@ class ChatPageFragment : Fragment() {
         }
     }
 
-
-
-    fun getParticipant(){
-        if(existingChatRoomId != null){
-
-        } else {
-
-        }
+    private fun clearEditText(){
+        binding.messageEditText.setText("")
     }
 
     override fun onDestroyView() {

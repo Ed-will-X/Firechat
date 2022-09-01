@@ -1,8 +1,10 @@
 package com.varsel.firechat.utils
 
-import android.util.Log
+import com.varsel.firechat.model.Chat.ChatRoom
+import com.varsel.firechat.model.message.Message
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MessageUtils {
     // TODO: Change the >1m text to "moments ago"
@@ -10,7 +12,6 @@ class MessageUtils {
         fun formatStampMessage(timeString: String): String{
             val prettyTime = PrettyTime(Locale.getDefault())
             val ago: String = prettyTime.format(Date(timeString.toLong()))
-            Log.d("LLL","${ago}")
 
             if(ago == "moments ago"){
                 return "1s"
@@ -37,6 +38,24 @@ class MessageUtils {
             return (1..length)
                 .map { allowedChars.random() }
                 .joinToString("")
+        }
+
+        fun sortMessages(chatRoom: ChatRoom?): List<Message>?{
+            val sorted = chatRoom?.messages?.values?.sortedBy {
+                it.time
+            }
+
+            return sorted
+        }
+
+        fun sortChats(chatRooms: List<ChatRoom>?): MutableList<ChatRoom>?{
+            val sorted = chatRooms?.sortedBy {
+                val sortedMessages = sortMessages(it)
+
+                sortedMessages?.last()?.time
+            }?.reversed()?.toMutableList()
+
+            return sorted
         }
     }
 }

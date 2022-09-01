@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    android:layout_marginHorizontal="@dimen/gc_card_margin_2"
+    android:layout_marginTop="@dimen/gc_card_margin"
+    android:id="@+id/group_parent"
+    app:cardElevation="1dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="170dp">
+
+    <LinearLayout
+        android:layout_gravity="center_horizontal"
+        android:paddingVertical="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_marginHorizontal="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="@dimen/gc_icon_size"
+                android:layout_height="@dimen/gc_icon_size"
+                android:src="@drawable/ic_star"
+                app:tint="@color/light_grey_2" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                />
+
+            <ImageView
+                android:layout_width="@dimen/gc_icon_size"
+                android:layout_height="@dimen/gc_icon_size"
+                android:src="@drawable/ic_more_vert"
+                app:tint="@color/grey" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_gravity="center"
+            android:id="@+id/profile_image_silhouette"
+            android:background="@drawable/bg_profile_background"
+            android:layout_width="@dimen/gc_image_size"
+            android:layout_height="@dimen/gc_image_size">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_people"
+                android:layout_height="25dp"
+                app:tint="@color/white" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/group_name"
+            android:text="Friends &amp; Family"
+            android:textColor="@color/black"
+            android:layout_gravity="center_horizontal"
+            android:textSize="@dimen/gc_card_text_size"
+            />
+
+        <FrameLayout
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <!--        TODO: Fix styling issues-->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/gc_image_card_1"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/white"
+                app:strokeWidth="@dimen/gc_stroke_width"
+                app:cardCornerRadius="360dp"
+                android:layout_width="@dimen/gc_users_image_size"
+                android:layout_height="@dimen/gc_users_image_size">
+                <ImageView
+                    android:scaleType="centerCrop"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/auth_root_img_1"
+                    />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/gc_image_card_2"
+                app:cardElevation="0dp"
+                android:layout_marginLeft="15dp"
+                app:cardCornerRadius="360dp"
+                app:strokeWidth="@dimen/gc_stroke_width"
+                android:layout_width="@dimen/gc_users_image_size"
+                android:layout_height="@dimen/gc_users_image_size">
+                <ImageView
+                    android:scaleType="centerCrop"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/auth_root_img_1"
+                    />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/gc_image_card_3"
+                app:cardElevation="0dp"
+                android:layout_marginLeft="30dp"
+                app:cardCornerRadius="360dp"
+                app:strokeWidth="@dimen/gc_stroke_width"
+                android:layout_width="@dimen/gc_users_image_size"
+                android:layout_height="@dimen/gc_users_image_size">
+                <ImageView
+                    android:scaleType="centerCrop"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/auth_root_img_1"
+                    />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/gc_image_card_4"
+                app:cardElevation="0dp"
+                android:layout_marginLeft="45dp"
+                app:cardCornerRadius="360dp"
+                app:strokeWidth="@dimen/gc_stroke_width"
+                android:layout_width="@dimen/gc_users_image_size"
+                android:layout_height="@dimen/gc_users_image_size">
+                <ImageView
+                    android:scaleType="centerCrop"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/auth_root_img_1"
+                    />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/gc_image_card_5"
+                app:cardElevation="0dp"
+                android:layout_marginLeft="60dp"
+                app:cardCornerRadius="360dp"
+                app:strokeWidth="@dimen/gc_stroke_width"
+                android:layout_width="@dimen/gc_users_image_size"
+                android:layout_height="@dimen/gc_users_image_size">
+                <ImageView
+                    android:scaleType="centerCrop"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/auth_root_img_1"
+                    />
+            </com.google.android.material.card.MaterialCardView>
+
+
+
+        </FrameLayout>
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

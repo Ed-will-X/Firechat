@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    android:background="@color/cream"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,7 +9,60 @@
     android:orientation="vertical"
     tools:context=".view.signedIn.fragments.viewPager.IndividualFragment">
 
+    <FrameLayout
+        android:id="@+id/no_chats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@drawable/bar_chart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="130dp"
+            />
+
+        <LinearLayout
+            android:id="@+id/chat_people_clickable"
+            android:clickable="true"
+            android:layout_marginHorizontal="100dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="70dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_conversations"
+                android:textSize="@dimen/no_chat_header"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_gravity="center"
+                />
+
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_conversations_body"
+                android:textSize="@dimen/no_chat_body"
+                android:textColor="@color/grey"
+                />
+
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/chat_people"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/ios_blue"
+                />
+        </LinearLayout>
+    </FrameLayout>
+
     <androidx.recyclerview.widget.RecyclerView
+        android:visibility="gone"
+        android:background="@color/white"
         android:id="@+id/individual_chats_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

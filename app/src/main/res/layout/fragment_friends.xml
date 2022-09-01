@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    android:background="@color/cream"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,6 +10,7 @@
     tools:context=".view.signedIn.fragments.viewPager.FriendsFragment">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:background="@color/white"
         android:visibility="gone"
         android:id="@+id/friends_recycler_view"
         android:layout_width="match_parent"
