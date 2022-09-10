@@ -29,6 +29,7 @@
                 />
 
             <EditText
+                android:maxLength="20"
                 android:id="@+id/name_edit_text"
                 android:background="@drawable/edit_text_shape"
                 android:layout_width="match_parent"
@@ -40,17 +41,7 @@
                 />
 
             <EditText
-                android:id="@+id/email_edit_text"
-                android:background="@drawable/edit_text_shape"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:inputType="textEmailAddress"
-                android:hint="@string/placeholder_email"
-                android:textSize="@dimen/edit_profile_edit_text_font"
-                />
-
-            <EditText
+                android:maxLength="50"
                 android:id="@+id/location_edit_text"
                 android:background="@drawable/edit_text_shape"
                 android:layout_width="match_parent"
@@ -62,6 +53,7 @@
                 />
 
             <EditText
+                android:maxLength="20"
                 android:id="@+id/phone_edit_text"
                 android:background="@drawable/edit_text_shape"
                 android:layout_width="match_parent"
@@ -73,6 +65,7 @@
                 />
 
             <EditText
+                android:maxLength="20"
                 android:id="@+id/occupation_edit_text"
                 android:background="@drawable/edit_text_shape"
                 android:layout_width="match_parent"

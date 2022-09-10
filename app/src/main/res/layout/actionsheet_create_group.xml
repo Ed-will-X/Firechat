@@ -31,11 +31,12 @@
     <EditText
         android:layout_marginTop="10dp"
         android:id="@+id/group_name"
+        android:maxLength="25"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/edit_text_shape"
         android:layout_marginBottom="10dp"
-        android:inputType="text"
+        android:inputType="textCapSentences"
         android:hint="@string/group_name" />
 
     <Button

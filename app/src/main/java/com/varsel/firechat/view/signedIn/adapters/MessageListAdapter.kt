@@ -67,7 +67,9 @@ class MessageListAdapter(val mAuth: FirebaseAuth, val fragment: Fragment, val pa
 
             try {
                 val prev: Message? = getItem(position - 1)
-                if(prev?.sender.equals(item.sender)){
+                // TODO: Test timestamp code
+                // apply the first conditional if the timestamp is less than 20 mins
+                if(prev?.sender.equals(item.sender) && MessageUtils.calculateTimestampDifferenceLess(item.time!!, prev?.time!!)){
                     viewHolder.parent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat_second) }
                 } else {
                     viewHolder.parent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat) }
@@ -78,7 +80,7 @@ class MessageListAdapter(val mAuth: FirebaseAuth, val fragment: Fragment, val pa
 
             try {
                 val next: Message? = getItem(position + 1)
-                if(next?.sender == item.sender){
+                if(next?.sender == item.sender  && MessageUtils.calculateTimestampDifferenceLess(next?.time!!, item.time!!)){
                     viewHolder.timestamp.visibility = View.GONE
                 } else {
                     viewHolder.timestamp.visibility = View.VISIBLE
@@ -86,7 +88,6 @@ class MessageListAdapter(val mAuth: FirebaseAuth, val fragment: Fragment, val pa
             } catch(e: Exception) {
                 viewHolder.timestamp.visibility = View.VISIBLE
             }
-
 
         } else {
             // Received Holder

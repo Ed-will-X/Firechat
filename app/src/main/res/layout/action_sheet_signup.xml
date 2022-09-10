@@ -23,12 +23,13 @@
             android:text="@string/auth_root_signup_text_large" />
 
         <EditText
+            android:inputType="textCapWords"
+            android:maxLength="20"
             android:id="@+id/name_edit_text"
             android:background="@drawable/edit_text_shape"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:inputType="text"
             android:hint="@string/placeholder_fullname" />
 
         <EditText
@@ -37,10 +38,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:inputType="textEmailAddress|textCapWords"
+            android:inputType="textEmailAddress"
             android:hint="@string/placeholder_email" />
 
         <EditText
+            android:maxLength="20"
             android:id="@+id/password_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -50,6 +52,7 @@
             android:hint="@string/placeholder_password" />
 
         <EditText
+            android:maxLength="20"
             android:id="@+id/confirm_password_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

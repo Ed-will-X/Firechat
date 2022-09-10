@@ -67,7 +67,6 @@ class EditProfilePage : Fragment() {
         val firebaseViewModel: FirebaseViewModel = parent.firebaseViewModel
 
         dialogBinding.nameEditText.setText(firebaseViewModel.currentUser.value?.name)
-        dialogBinding.emailEditText.setText(firebaseViewModel.currentUser.value?.email)
 
         if(firebaseViewModel.currentUser.value?.phone == null){
             dialogBinding.phoneEditText.setText("+")
@@ -82,9 +81,6 @@ class EditProfilePage : Fragment() {
 
     private fun editUser(dialogBinding: ActionSheetEditProfileBinding){
         parent.firebaseViewModel.editUser("name",dialogBinding.nameEditText.text.toString(), parent.firebaseAuth, parent.mDbRef)
-        if(dialogBinding.emailEditText.text.isNotEmpty()){
-            parent.firebaseViewModel.editUser("email",dialogBinding.emailEditText.text.toString(), parent.firebaseAuth, parent.mDbRef)
-        }
         parent.firebaseViewModel.editUser("about",dialogBinding.aboutEditText.text.toString(), parent.firebaseAuth, parent.mDbRef)
 
         if(binding.phoneText.text.length in 8..14){

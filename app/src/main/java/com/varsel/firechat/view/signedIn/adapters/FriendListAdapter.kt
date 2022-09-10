@@ -11,7 +11,7 @@ import com.varsel.firechat.R
 import com.varsel.firechat.model.User.User
 
 class FriendListAdapter(val parentListener: (id: String)-> Unit): RecyclerView.Adapter<FriendListAdapter.FriendItemViewHolder>() {
-    val friends = arrayListOf<User>()
+    val friends: MutableList<User> = mutableListOf()
 
     class FriendItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val name = itemView.findViewById<TextView>(R.id.name)
@@ -32,7 +32,6 @@ class FriendListAdapter(val parentListener: (id: String)-> Unit): RecyclerView.A
         holder.parentClickable.setOnClickListener {
             item.userUID?.let { it1 -> parentListener(it1) }
         }
-
     }
 
     override fun getItemCount(): Int {

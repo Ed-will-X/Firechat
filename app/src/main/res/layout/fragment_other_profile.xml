@@ -155,47 +155,54 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <LinearLayout
-                android:clickable="true"
-                android:id="@+id/more_about_clickable"
-                android:layout_marginTop="10dp"
-                android:paddingHorizontal="30dp"
-                android:layout_width="match_parent"
                 android:orientation="vertical"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
                 <LinearLayout
-                    android:orientation="horizontal"
+                    android:clickable="true"
+                    android:id="@+id/more_about_clickable"
+                    android:layout_marginTop="10dp"
+                    android:paddingHorizontal="30dp"
                     android:layout_width="match_parent"
+                    android:orientation="vertical"
                     android:layout_height="wrap_content">
-                    <!-- TODO: Target placeholder from fragment -->
-                    <TextView
-                        android:id="@+id/about_text_header"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="About Nancy"
-                        style="@style/other_profile_header_text"
-                        />
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="10dp"
-                        android:layout_weight="1"/>
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <!-- TODO: Target placeholder from fragment -->
+                        <TextView
+                            android:id="@+id/about_text_header"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="About Nancy"
+                            style="@style/other_profile_header_text"
+                            />
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="10dp"
+                            android:layout_weight="1"/>
 
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/more"
+                            android:textColor="@color/ios_blue"
+                            />
+                    </LinearLayout>
+
                     <TextView
+                        style="@style/other_profile_body_text"
+                        android:id="@+id/about_text_body"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/more"
-                        android:textColor="@color/ios_blue"
+                        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eu aliquam quam. Donec nec laoreet sem, in sodales justo. Mauris egestas nulla ut luctus facilisis."
                         />
                 </LinearLayout>
 
-                <TextView
-                    style="@style/other_profile_body_text"
-                    android:id="@+id/about_text_body"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eu aliquam quam. Donec nec laoreet sem, in sodales justo. Mauris egestas nulla ut luctus facilisis."
-                    />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 

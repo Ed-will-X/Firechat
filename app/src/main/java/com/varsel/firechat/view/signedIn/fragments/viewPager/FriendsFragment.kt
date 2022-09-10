@@ -82,26 +82,27 @@ class FriendsFragment : Fragment() {
 
     private fun navigateToChats(userId: String){
         var action: NavDirections
-        if(determineChatroom(userId)){
-            action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(currentChatRoomId, userId)
+        if(parent.signedinViewModel.determineChatroom(userId, parent.firebaseViewModel.chatRooms.value)){
+            action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(parent.signedinViewModel.currentChatRoomId.value, userId)
         }else {
             action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(null, userId)
         }
         binding.root.findNavController().navigate(action)
     }
 
-    private fun determineChatroom(userId: String): Boolean{
-        // TODO: Fix potential null pointer exception
-        val chatRooms = parent.firebaseViewModel.chatRooms.value!!
-        var contains: Boolean = false
-        for(i in chatRooms){
-            if(i!!.participants!!.contains(userId)){
-                contains = true
-                currentChatRoomId = i.roomUID.toString()
-            }
-        }
-        return contains
-    }
+//    private fun determineChatroom(userId: String): Boolean{
+//        // TODO: Fix potential null pointer exception
+//        val chatRooms = parent.firebaseViewModel.chatRooms.value!!
+//        var contains: Boolean = false
+//        for(i in chatRooms){
+//            if(i!!.participants!!.contains(userId)){
+//                contains = true
+//                currentChatRoomId = i.roomUID.toString()
+//                break
+//            }
+//        }
+//        return contains
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

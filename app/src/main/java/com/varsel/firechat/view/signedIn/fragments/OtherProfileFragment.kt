@@ -161,10 +161,22 @@ class OtherProfileFragment : Fragment() {
         dialog.show()
     }
 
+    private fun showUnfriendActionsheet(user: User){
+        val dialog = BottomSheetDialog(parent)
+        dialog.setContentView(R.layout.action_sheet_unfriend)
+
+
+
+        dialog.show()
+    }
+
     private fun determineActionsheet(user: User?){
         if(user?.friendRequests?.contains(parent.firebaseAuth.currentUser?.uid) == true){
             showRevokeRequest(user)
-        } else {
+        } else if(user?.friends?.contains(parent.firebaseAuth.currentUser?.uid) == true){
+            showUnfriendActionsheet(user)
+        }
+        else {
             showSendRequestActionSheet(user)
         }
     }
@@ -178,7 +190,7 @@ class OtherProfileFragment : Fragment() {
 
     }
 
-    fun revokeFriendRequest(user: User?){
+    private fun revokeFriendRequest(user: User?){
         if (user != null) {
             firebaseViewModel.revokeFriendRequest(parent.firebaseAuth.currentUser?.uid.toString(), user, parent.mDbRef, {
                 firebaseViewModel.getUserById(user.userUID!!, parent.mDbRef, {
@@ -191,7 +203,7 @@ class OtherProfileFragment : Fragment() {
         }
     }
 
-    fun sendFriendRequest(user: User?){
+    private fun sendFriendRequest(user: User?){
         if (user != null) {
             firebaseViewModel.sendFriendRequest(parent.firebaseAuth.currentUser?.uid.toString(), user, parent.mDbRef, {
                 firebaseViewModel.getUserById(user.userUID!!, parent.mDbRef, {

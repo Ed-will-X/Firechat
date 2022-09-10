@@ -7,7 +7,6 @@
     <View
         style="@style/action_sheet_handlebar"/>
 
-<!--    TODO: Make size dynamic by swapping the width for padding-->
     <LinearLayout
         android:layout_width="300dp"
         android:layout_height="wrap_content"
@@ -20,47 +19,34 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
-            android:text="@string/auth_root_signin_text_large" />
+            android:text="@string/edit_group" />
 
         <EditText
-            android:id="@+id/email_edit_text"
+            android:maxLength="25"
+            android:id="@+id/group_name_edit_text"
             android:background="@drawable/edit_text_shape"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:inputType="textEmailAddress"
-            android:hint="@string/placeholder_email" />
+            android:inputType="textCapSentences"
+            android:hint="@string/group_name" />
 
         <EditText
             android:maxLength="20"
-            android:id="@+id/password_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:id="@+id/group_subject_edit_text"
             android:background="@drawable/edit_text_shape"
-            android:layout_marginBottom="5dp"
-            android:inputType="textPassword"
-            android:hint="@string/placeholder_password" />
-
-        <Button
-            android:id="@+id/sign_in_btn_actionsheet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:enabled="false"
-            android:text="@string/auth_root_signin_btn_actionsheet" />
+            android:inputType="text"
+            android:hint="@string/group_subject" />
 
-        <LinearLayout
-            android:id="@+id/forgot_password"
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/edit_group_btn_actionsheet"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:clickable="true"
-            android:orientation="vertical">
+            android:layout_marginBottom="10dp"
+            android:text="@string/edit_group" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/auth_root_signup_text_forgot_password" />
-        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

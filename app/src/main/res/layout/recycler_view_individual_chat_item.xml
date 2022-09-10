@@ -8,7 +8,7 @@
     android:layout_width="match_parent"
     android:orientation="horizontal"
     android:paddingVertical="10dp"
-    android:paddingHorizontal="10dp"
+    android:paddingHorizontal="15dp"
     android:layout_height="wrap_content">
 
     <FrameLayout

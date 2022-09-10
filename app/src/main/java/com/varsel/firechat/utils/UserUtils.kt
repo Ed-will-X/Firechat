@@ -4,6 +4,9 @@ import android.content.Context
 import android.provider.Settings.Global.getString
 import androidx.fragment.app.Fragment
 import com.varsel.firechat.R
+import com.varsel.firechat.model.Chat.ChatRoom
+import com.varsel.firechat.model.User.User
+import com.varsel.firechat.model.message.Message
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 
@@ -15,6 +18,14 @@ class UserUtils(var fragment: Fragment) {
             } else {
                 return about
             }
+        }
+
+        fun sortUsersByName(users: List<User?>): MutableList<User?>{
+            val sorted = users?.sortedBy {
+                it?.name
+            }.toMutableList()
+
+            return sorted
         }
     }
 

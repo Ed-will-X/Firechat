@@ -1,5 +1,6 @@
 package com.varsel.firechat.utils
 
+import android.util.Log
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.message.Message
 import org.ocpsoft.prettytime.PrettyTime
@@ -56,6 +57,39 @@ class MessageUtils {
             }?.reversed()?.toMutableList()
 
             return sorted
+        }
+
+        // TODO: Fix bug
+        fun calculateTimestampDifferenceLess(currentMessageTime: Long, previousMessageTime: Long): Boolean{
+            val day: Long = 86400000
+            val hour: Long = 3600000
+            val timestampNow = System.currentTimeMillis()
+
+            if((currentMessageTime + day) > timestampNow){
+                // apply hour rule
+                if ((currentMessageTime - previousMessageTime) < hour){
+                    return true
+                } else {
+                    return false
+                }
+            } else {
+                // apply day rule
+                if ((currentMessageTime - previousMessageTime) < day){
+                    return true
+                } else {
+                    return false
+                }
+            }
+
+        }
+
+        fun calculateTimestampDifferenceMore(currentMessageTime: Long, previousMessageTime: Long, timeDifference: Long): Boolean{
+            val day: Long = 86400000
+            if((currentMessageTime - previousMessageTime) < day){
+                return true
+            } else {
+                return false
+            }
         }
     }
 }

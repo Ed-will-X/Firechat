@@ -78,11 +78,11 @@
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:inputType="text"
+                android:inputType="textCapWords"
                 android:textColor="@color/white"
                 android:background="@null"
                 android:textSize="14sp"
-                android:textColorHint="@color/white"
+                android:textColorHint="@color/transparent_white"
                 android:hint="@string/placeholder_search_users" />
             <ImageView
                 android:id="@+id/add_friends_cancel_button"
@@ -96,6 +96,38 @@
                 />
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/not_found"
+        android:layout_marginTop="100dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/not_found"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/user_not_found"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/user_not_found_body"
+            android:textColor="@color/grey"
+            android:textSize="12sp"
+            />
+    </LinearLayout>
     
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/search_recycler_view"

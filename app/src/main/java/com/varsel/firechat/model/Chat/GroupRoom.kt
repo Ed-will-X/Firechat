@@ -11,6 +11,10 @@ class GroupRoom: ChatRoom {
 
     var admins: HashMap<String, String>? = null
 
+    var about: String? = null
+
+    var subject: String? = null
+
 //    var groupIcon:
 
     constructor(){

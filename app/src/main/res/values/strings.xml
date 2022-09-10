@@ -68,10 +68,16 @@
     <string name="about">About</string>
     <string name="all_friends">All Friends</string>
     <string name="people_count">%d People</string>
+    <string name="people_count_one">1 Person</string>
     <string name="create_group">Create Group</string>
     <string name="create_group_confirmation">The selected participants will be notified of the group creation</string>
     <string name="done">Done</string>
     <string name="group_name">Group Name</string>
+    <string name="group_subject">Group Subject</string>
+    <string name="group_members">Group Members</string>
+    <string name="media_files">Media Files</string>
+    <string name="add_a_member">Add a member</string>
+    <string name="no_subject">*** No Specific Subject ***</string>
     <string name="no_group">No Group Chat</string>
     <string name="no_group_body">You\'re not in any groups yet. You can create one and add your friends.</string>
     <string name="no_friends">No Friends</string>
@@ -80,6 +86,22 @@
     <string name="no_conversations">No Conversations</string>
     <string name="no_conversations_body">You don\'t have any conversations yet, you can start by having conversations with friends</string>
     <string name="chat_people">Chat People</string>
+    <string name="unfriend_user">Unfriend User?</string>
+    <string name="unfriend_user_body">Are you sure you want to unfriend %s</string>
+    <string name="unfriend_user_confirm_btn">Yes, unfriend</string>
+    <string name="unfriend_user_cancel_btn">No, I still want to be friends</string>
+    <string name="user_not_found">User Not Found</string>
+    <string name="user_not_found_body">Try again by searching by the firstname</string>
+    <string name="about_group_chat">About Group Chat</string>
+    <string name="admin">Admin</string>
+    <string name="edit_group">Edit Group</string>
+    <string name="you">You</string>
+    <string name="user_actions">User Actions</string>
+    <string name="make_admin">Make Admin</string>
+    <string name="remove_admin">Remove Admin</string>
+    <string name="send_message">Send Message</string>
+    <string name="remove_from_group">Remove from Group</string>
+    <string name="block">Block</string>
 
 
     <string name="hello_blank_fragment">Hello blank fragment</string>

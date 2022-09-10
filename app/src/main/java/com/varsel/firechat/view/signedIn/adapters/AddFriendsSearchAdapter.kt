@@ -29,8 +29,8 @@ class AddFriendsSearchAdapter(val clickListener: (UID: String?)-> Unit): Recycle
     override fun onBindViewHolder(holder: UserItemViewHolder, position: Int) {
         val item: User = users[position]
         holder.name.setText(item.name)
-        // TODO: Set occupation
-        holder.occupation.setText(item.name)
+        holder.occupation.setText(item.occupation ?: "")
+
         // TODO: Set the image resource if profile pic is present
 
         holder.root.setOnClickListener {

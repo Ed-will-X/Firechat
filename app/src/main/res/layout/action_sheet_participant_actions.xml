@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <View
+        style="@style/action_sheet_handlebar"/>
+
+    <!--    TODO: Make size dynamic by swapping the width for padding-->
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginVertical="20dp"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/auth_root_signin_large_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="@string/user_actions" />
+
+        <Button
+            android:id="@+id/make_admin_btn"
+            android:backgroundTint="@color/light_green"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/make_admin" />
+
+        <Button
+            android:id="@+id/remove_admin_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/remove_admin" />
+
+        <Button
+            android:id="@+id/send_message_btn"
+            android:backgroundTint="@color/grey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/send_message" />
+
+        <Button
+            android:id="@+id/remove_btn"
+            android:backgroundTint="@color/ios_blue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/remove_from_group" />
+
+        <Button
+            android:id="@+id/block_btn"
+            android:backgroundTint="@color/orange_red"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/block"
+            />
+
+    </LinearLayout>
+</LinearLayout>

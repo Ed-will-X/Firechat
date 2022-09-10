@@ -5,10 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentFriendListBinding
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.FriendListAdapter
 
@@ -32,12 +34,23 @@ class FriendListFragment : Fragment() {
             view.findNavController().navigate(action)
         }
 
-        binding.friendCount.text = getString(R.string.people_count, parent.firebaseViewModel.friends.value?.size)
+        if(parent.firebaseViewModel.friends.value?.size == 1){
+            binding.friendCount.text = getString(R.string.people_count_one)
+        } else {
+            binding.friendCount.text = getString(R.string.people_count, parent.firebaseViewModel.friends.value?.size)
+        }
         binding.allFriendsRecyclerView.adapter = adapter
 
-        if(adapter != null){
-            adapter!!.friends.addAll(parent.firebaseViewModel.friends.value as ArrayList<User>)
-        }
+        parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
+            val sorted = UserUtils.sortUsersByName(it)
+
+            if(adapter != null){
+                adapter!!.friends.addAll(sorted as ArrayList<User>)
+                adapter!!.notifyDataSetChanged()
+            }
+        })
+
+
 
         return view
     }

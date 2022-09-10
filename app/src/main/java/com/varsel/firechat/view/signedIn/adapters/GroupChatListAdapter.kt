@@ -15,6 +15,7 @@ import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.UserUtils
 
 class GroupChatsListAdapter(val mAuth: FirebaseAuth,val addNewListener: ()-> Unit, val groupItemListener: (id: String)-> Unit): ListAdapter<GroupRoom, RecyclerView.ViewHolder>(GroupChatDiffUtilItemCallback()) {
     private val ADD_NEW = 0
@@ -63,7 +64,7 @@ class GroupChatsListAdapter(val mAuth: FirebaseAuth,val addNewListener: ()-> Uni
             val viewHolder = holder as GroupChatViewHolder
             getParticipantCount(participants, viewHolder)
 
-            viewHolder.groupName.text = item.groupName
+            viewHolder.groupName.text = item.groupName?.let { UserUtils.truncate(it, 15) }
             viewHolder.parent.setOnClickListener {
                 item.roomUID?.let { it1 -> groupItemListener(it1) }
             }

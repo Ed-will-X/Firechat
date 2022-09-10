@@ -10,6 +10,7 @@ import com.varsel.firechat.model.Chat.ChatRoom
 open class User{
 //    var userId: Long? = 0L
 
+    // change userUID to non-nullable
     @PrimaryKey
     var userUID: String? = null
 

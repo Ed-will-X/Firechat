@@ -47,21 +47,23 @@ class AddFriendsFragment : Fragment() {
 
         binding.searchRecyclerView.adapter = friendsSearchAdapter
 
-        binding.addFriendsBackButton.setOnClickListener {
-            findNavController().navigateUp()
-        }
-
-        binding.addFriendsCancelButton.setOnClickListener {
-            clearInput()
-        }
-
-        firebaseViewModel.usersLiveData.observe(viewLifecycleOwner, Observer {
+        parent.firebaseViewModel.usersQuery.observe(viewLifecycleOwner, Observer {
+            toggleNotFoundIconVisibility(it)
             friendsSearchAdapter.run {
                 friendsSearchAdapter.users = it as ArrayList<User>
                 friendsSearchAdapter.notifyDataSetChanged()
             }
         })
 
+        toggleCancelIconVisibility()
+        backButton()
+        cancelButton()
+        searchBar()
+
+        return view
+    }
+
+    private fun toggleCancelIconVisibility(){
         binding.addFriendsSearchBox.doAfterTextChanged {
             if (it.toString().isNotEmpty()){
                 binding.addFriendsCancelButton.visibility = View.VISIBLE
@@ -69,9 +71,34 @@ class AddFriendsFragment : Fragment() {
                 binding.addFriendsCancelButton.visibility = View.GONE
             }
         }
+    }
 
+    private fun toggleNotFoundIconVisibility(users: List<User>){
+        if(users.isEmpty() && binding.addFriendsSearchBox.text.isNotEmpty()){
+            binding.searchRecyclerView.visibility = View.GONE
+            binding.notFound.visibility = View.VISIBLE
+        } else {
+            binding.searchRecyclerView.visibility = View.VISIBLE
+            binding.notFound.visibility = View.GONE
+        }
+    }
 
-        return view
+    private fun backButton(){
+        binding.addFriendsBackButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
+    private fun cancelButton(){
+        binding.addFriendsCancelButton.setOnClickListener {
+            clearInput()
+        }
+    }
+
+    private fun searchBar(){
+        binding.addFriendsSearchBox.doAfterTextChanged {
+            parent.firebaseViewModel.queryUsers(binding.addFriendsSearchBox.text.toString(), parent.mDbRef, parent.firebaseAuth, {}, {})
+        }
     }
 
     private fun clearInput(){

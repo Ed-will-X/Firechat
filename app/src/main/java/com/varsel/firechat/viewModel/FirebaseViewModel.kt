@@ -17,12 +17,15 @@ class FirebaseViewModel: ViewModel() {
     val usersLiveData = MutableLiveData<List<User>>()
     val selectedUser = MutableLiveData<User?>()
     val currentUser = MutableLiveData<User?>()
+    val currentUserSingle = MutableLiveData<User?>()
     val friendRequests = MutableLiveData<List<User?>>()
     var friends = MutableLiveData<List<User?>>()
     var chatRooms = MutableLiveData<MutableList<ChatRoom?>>()
     var selectedChatRoom = MutableLiveData<ChatRoom?>()
     val groupRooms = MutableLiveData<MutableList<GroupRoom?>>()
     val selectedGroupRoom = MutableLiveData<GroupRoom?>()
+    val usersQuery = MutableLiveData<List<User>>()
+    val selectedGroupParticipants = MutableLiveData<List<User>>()
 
     fun signUp(
         email: String,
@@ -100,7 +103,7 @@ class FirebaseViewModel: ViewModel() {
 
                 for (item in snapshot.children){
                     val user = item.getValue(User::class.java)
-//                    currentUser.value = user
+                    currentUserSingle.value = user
                 }
                 afterCallback()
             }
@@ -110,11 +113,6 @@ class FirebaseViewModel: ViewModel() {
             }
 
         })
-    }
-
-    // TODO: Implement Get User Single
-    fun getUserSingle(){
-
     }
 
     fun getUserById(uid: String, mDbRef: DatabaseReference, beforeCallback: () -> Unit, afterCallback: ()-> Unit = {}) {
@@ -187,6 +185,27 @@ class FirebaseViewModel: ViewModel() {
                     }
                 }
                 usersLiveData.value = users
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })
+    }
+
+    fun queryUsers(queryString: String, mDbRef: DatabaseReference, mAuth: FirebaseAuth, beforeCallback: ()-> Unit, afterCallback: () -> Unit = {}){
+        mDbRef.child("Users").orderByChild("name").startAt(queryString).endAt(queryString+"\uf8ff").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                beforeCallback()
+                val users = arrayListOf<User>()
+                for(item in snapshot.children){
+                    val user = item.getValue(User::class.java)
+                    if(mAuth.currentUser?.uid != user?.userUID && queryString.isNotEmpty()){
+                        users.add(user!!)
+                    }
+                }
+                usersQuery.value = users
+                afterCallback()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -359,11 +378,6 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    // TODO: Implement Query database
-    fun queryUsers(term: String): List<User>{
-        return listOf<User>()
-    }
-
     fun getChatRoom(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (chatRoom: ChatRoom?) -> Unit, afterCallback: () -> Unit){
         mDbRef
             .child("chatRooms")
@@ -524,8 +538,6 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-
-
     // TODO: Implement add participants
     fun addParticipants(){
 
@@ -539,6 +551,11 @@ class FirebaseViewModel: ViewModel() {
     // TODO: implement Remove Admin
     fun removeAdmin(){
 
+    }
+
+    // TODO: Implement exit group
+    fun exitGroup(){
+        // deny exit if user is the only admin
     }
 
 
@@ -559,7 +576,7 @@ class FirebaseViewModel: ViewModel() {
         })
     }
 
-    fun editUser(key: String, value: String,firebaseAuth: FirebaseAuth, mDbRef: DatabaseReference){
+    fun editUser(key: String, value: String, firebaseAuth: FirebaseAuth, mDbRef: DatabaseReference){
         val databaseRef = mDbRef.child("Users").child(firebaseAuth.currentUser?.uid.toString())
 
         if(value.isEmpty()){
@@ -567,8 +584,17 @@ class FirebaseViewModel: ViewModel() {
         } else {
             databaseRef.child(key).setValue(value)
         }
-
         // TODO: Implement success and failure callbacks
+    }
+
+    fun editGroup(key: String, value: String, groupId: String, mDbRef: DatabaseReference){
+        val databaseRef = mDbRef.child("groupRooms").child(groupId)
+
+        if(value.isEmpty()){
+            databaseRef.child(key).setValue(null)
+        } else {
+            databaseRef.child(key).setValue(value)
+        }
     }
 
     // TODO: Implement delete chatroom

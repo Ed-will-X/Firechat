@@ -6,7 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.databinding.FragmentGroupChatPageBinding
+import com.varsel.firechat.model.User.User
 import com.varsel.firechat.model.message.Message
 import com.varsel.firechat.model.message.MessageType
 import com.varsel.firechat.utils.MessageUtils
@@ -38,9 +41,23 @@ class GroupChatPageFragment : Fragment() {
 
         binding.sendMessageBtn.setOnClickListener {
             sendMessage()
+            clearEditText()
+        }
+
+        binding.chatBackButton.setOnClickListener {
+            popNavigation()
+        }
+
+        binding.appbar.setOnClickListener {
+            navigateToGroupChatDetail(roomId)
         }
 
         return view
+    }
+
+    private fun navigateToGroupChatDetail(roomId: String){
+        val action = GroupChatPageFragmentDirections.actionGroupChatPageFragmentToGroupChatDetailFragment(roomId)
+        view?.findNavController()?.navigate(action)
     }
 
     private fun getMessages(){
@@ -51,7 +68,7 @@ class GroupChatPageFragment : Fragment() {
     }
 
     private fun sendMessage(){
-        val message = Message(MessageUtils.generateUID(50), binding.messageEditText.text.toString(),  System.currentTimeMillis(), parent.firebaseAuth.currentUser?.uid, MessageType.TEXT)
+        val message = Message(MessageUtils.generateUID(50), binding.messageEditText.text.toString(), System.currentTimeMillis(), parent.firebaseAuth.currentUser?.uid, MessageType.TEXT)
         parent.firebaseViewModel.sendGroupMessage(message, roomId, parent.mDbRef, {
             clearEditText()
         }, {})
@@ -61,10 +78,28 @@ class GroupChatPageFragment : Fragment() {
         binding.messageEditText.setText("")
     }
 
+    private fun popNavigation(){
+        findNavController().navigateUp()
+    }
+
     private fun getChatRoom(){
         parent.firebaseViewModel.getGroupChatRoomRecurrent(roomId, parent.mDbRef, {
             parent.firebaseViewModel.selectedGroupRoom.value = it
+            getParticipants()
         }, {})
+    }
+
+    private fun getParticipants(){
+        var users = mutableListOf<User>()
+        for (i in parent.firebaseViewModel.selectedGroupRoom.value!!.participants!!.values.toList()){
+            parent.firebaseViewModel.getUserSingle(i, parent.mDbRef, {
+                if (it != null) {
+                    users.add(it)
+                }
+            }, {
+                parent.firebaseViewModel.selectedGroupParticipants.value = users
+            })
+        }
     }
 
     override fun onDestroyView() {

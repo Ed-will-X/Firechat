@@ -119,7 +119,7 @@ class ProfileFragment : Fragment() {
         firebaseViewModel.friendRequests.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 adapter.run {
-                    adapter.users = arrayListOf<User>()   // not tested
+                    adapter.users = arrayListOf<User>()
                     adapter.users = it as ArrayList<User>
                     adapter.notifyDataSetChanged()
                 }
