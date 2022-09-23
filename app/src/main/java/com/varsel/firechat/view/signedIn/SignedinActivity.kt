@@ -60,8 +60,6 @@ class SignedinActivity : AppCompatActivity() {
         firebaseViewModel.currentUser.observe(this, Observer {
             if (it != null) {
                 compareUsers(it)
-                Log.d("LLL", "R ${it?.chatRooms?.size}")
-                Log.d("LLL", "C ${firebaseViewModel.currentUserSingle.value?.chatRooms?.size}")
             }
 
             if(it?.friendRequests != null){
@@ -213,7 +211,6 @@ class SignedinActivity : AppCompatActivity() {
         val groupRoomSize: Int = firebaseViewModel.currentUserSingle.value?.groupRooms?.size ?: 0
         // if a new chat room or group room is added to the array re-run get user single
         if(user.chatRooms?.size != chatRoomSize){
-            Log.d("LLL", "Ran")
             signedinViewModel.getCurrentUserSingle(this)
         } else if(user.groupRooms?.size != groupRoomSize){
             signedinViewModel.getCurrentUserSingle(this)

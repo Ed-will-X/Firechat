@@ -3,8 +3,7 @@ package com.varsel.firechat.model.Chat
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.varsel.firechat.model.User.User
-import com.varsel.firechat.model.message.Message
+import com.varsel.firechat.model.Message.Message
 
 @Entity(tableName = "chat")
 open class ChatRoom {
@@ -12,7 +11,7 @@ open class ChatRoom {
 //    var roomId: Long = 0L
 
     @ColumnInfo(name = "room_uid")
-    var roomUID: String? = null
+    lateinit var roomUID: String
 
     var participants: HashMap<String, String>? = null
 

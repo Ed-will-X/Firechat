@@ -13,9 +13,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
 import com.varsel.firechat.R
-import com.varsel.firechat.model.message.Message
+import com.varsel.firechat.model.Message.Message
+import com.varsel.firechat.model.Message.SystemMessageType
+import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.MessageUtils
+import com.varsel.firechat.viewModel.FirebaseViewModel
 import java.lang.Exception
 
 class ChatPageType {
@@ -25,10 +29,22 @@ class ChatPageType {
     }
 }
 
-class MessageListAdapter(val mAuth: FirebaseAuth, val fragment: Fragment, val pageType: Int): ListAdapter<Message, RecyclerView.ViewHolder>(MessagesCallback()) {
-    private val SENT = 0
-    private val RECEIVED = 1
-
+class MessageType {
+    companion object {
+        val SENT = 0
+        val RECEIVED = 1
+        val SYSTEM = 2
+    }
+}
+class MessageListAdapter(
+    val mAuth: FirebaseAuth,
+    val mDbRef: DatabaseReference,
+    val fragment: Fragment,
+    val pageType: Int,
+    val firebaseViewModel: FirebaseViewModel)
+    : ListAdapter<Message, RecyclerView.ViewHolder>(MessagesCallback()) {
+//    private val SENT = 0
+//    private val RECEIVED = 1
 
     class SentViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val parent = itemView.findViewById<LinearLayout>(R.id.parent)
@@ -44,18 +60,24 @@ class MessageListAdapter(val mAuth: FirebaseAuth, val fragment: Fragment, val pa
         val timestamp = itemView.findViewById<TextView>(R.id.timestamp)
     }
 
+    class SystemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+        val systemText = itemView.findViewById<TextView>(R.id.system_text)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if(viewType == SENT){
+        if(viewType == MessageType.SENT){
             val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_view_sent_text, parent, false)
             return SentViewHolder(view)
-        } else {
+        } else if(viewType == MessageType.SYSTEM){
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_view_system_text, parent, false)
+            return SystemViewHolder(view)
+        }else {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_view_received_text, parent, false)
             return ReceivedViewHolder(view)
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        // TODO: separate the text messages into different segments depending on the time received
         val item: Message = getItem(position)
 
         if(holder.javaClass == SentViewHolder::class.java){
@@ -67,8 +89,6 @@ class MessageListAdapter(val mAuth: FirebaseAuth, val fragment: Fragment, val pa
 
             try {
                 val prev: Message? = getItem(position - 1)
-                // TODO: Test timestamp code
-                // apply the first conditional if the timestamp is less than 20 mins
                 if(prev?.sender.equals(item.sender) && MessageUtils.calculateTimestampDifferenceLess(item.time!!, prev?.time!!)){
                     viewHolder.parent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat_second) }
                 } else {
@@ -89,11 +109,18 @@ class MessageListAdapter(val mAuth: FirebaseAuth, val fragment: Fragment, val pa
                 viewHolder.timestamp.visibility = View.VISIBLE
             }
 
-        } else {
+        } else if(holder.javaClass == SystemViewHolder::class.java){
+            // system message
+            val viewHolder = holder as SystemViewHolder
+
+            formatSystemMessage(item, item.time) {
+                viewHolder.systemText.text = it
+            }
+
+        }else {
             // Received Holder
             val viewHolder = holder as ReceivedViewHolder
             viewHolder.text.text = item.message
-
             setOtherUserTimestamp(viewHolder, item)
 
             try {
@@ -130,9 +157,43 @@ class MessageListAdapter(val mAuth: FirebaseAuth, val fragment: Fragment, val pa
     override fun getItemViewType(position: Int): Int {
         val item: Message = getItem(position)
         if(item.sender.toString() == mAuth.currentUser?.uid.toString()){
-            return SENT
-        } else {
-            return RECEIVED
+            return MessageType.SENT
+        } else if(item.sender == "SYSTEM"){
+            return MessageType.SYSTEM
+        }else {
+            return MessageType.RECEIVED
+        }
+    }
+
+    fun getUser(userId: String, callback: (user: User)-> Unit){
+        firebaseViewModel.getUserSingle(userId, mDbRef, {
+            if(it != null){
+                callback(it)
+            }
+        },{})
+    }
+
+    fun formatSystemMessage(message: Message, time: Long, afterCallback: (message: String)-> Unit){
+        if(message.messageUID == SystemMessageType.GROUP_REMOVE){
+            val messageArr: Array<String> = message.message.split(" ").toTypedArray()
+
+            getUser(messageArr[0]){ remover ->
+                getUser(messageArr[1]) { removed ->
+                    afterCallback("${remover.name} removed ${removed.name}")
+                }
+            }
+        }
+
+        getUser(message.message) {
+            if(message.messageUID == SystemMessageType.GROUP_CREATE){
+                afterCallback("${it.name} created the group ${MessageUtils.formatStampChatsPage(time.toString())}")
+            } else if(message.messageUID == SystemMessageType.NOW_ADMIN){
+                afterCallback("${it.name} is now admin")
+            } else if(message.messageUID == SystemMessageType.NOT_ADMIN){
+                afterCallback("${it.name} is no longer admin")
+            } else if(message.messageUID == SystemMessageType.GROUP_EXIT){
+                afterCallback("${it.name} left the group")
+            }
         }
     }
 
@@ -140,7 +201,10 @@ class MessageListAdapter(val mAuth: FirebaseAuth, val fragment: Fragment, val pa
         if(pageType == ChatPageType.INDIVIDUAL){
             viewHolder.timestamp.text = MessageUtils.formatStampMessage(item.time.toString())
         } else {
-            viewHolder.timestamp.text = "${MessageUtils.formatStampMessage(item.time.toString())} · Name Here"
+            getUser(item.sender) {
+                viewHolder.timestamp.text = "${MessageUtils.formatStampMessage(item.time.toString())} · ${it.name}"
+            }
+
         }
     }
 }

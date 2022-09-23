@@ -13,13 +13,14 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.varsel.firechat.R
+import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.viewModel.FirebaseViewModel
 
 class ParticipantsListAdapter(
     val context: Context,
     val firebaseAuth: FirebaseAuth,
-    val firebaseViewModel: FirebaseViewModel,
+    val groupRoom: GroupRoom,
     val pressListener: (userId: String)-> Unit,
     val longPressListener: (userId: String) -> Unit
     )
@@ -47,21 +48,25 @@ class ParticipantsListAdapter(
 
         if(item.userUID?.let { isCurrentUser(it) } == true){
             holder.name.text = context.getString(R.string.you)
+            holder.parentClickable.setOnLongClickListener {
+                longPressListener(item.userUID!!)
+                true
+            }
         } else {
             holder.name.text = item.name
             holder.parentClickable.setOnClickListener {
-                item.userUID?.let { it1 -> pressListener(it1) }
+                pressListener(item.userUID!!)
             }
 
             holder.parentClickable.setOnLongClickListener {
-                item.userUID?.let { it1 -> longPressListener(it1) }
+                longPressListener(item.userUID!!)
                 true
             }
         }
     }
 
     private fun isAdmin(id: String): Boolean{
-        val admins = firebaseViewModel.selectedGroupRoom.value?.admins?.values
+        val admins = groupRoom.admins?.values
         if (admins != null) {
             for(i in admins){
                 if (id == i){

@@ -2,20 +2,20 @@ package com.varsel.firechat.view.signedIn.fragments
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
-import android.util.Log
-import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.TranslateAnimation
 import android.widget.Button
 import android.widget.EditText
-import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDirections
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -23,10 +23,9 @@ import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActionSheetParticipantActionsBinding
 import com.varsel.firechat.databinding.FragmentGroupChatDetailBinding
 import com.varsel.firechat.model.Chat.GroupRoom
-import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ParticipantsListAdapter
-import com.varsel.firechat.view.signedIn.fragments.bottomNav.ChatsFragmentDirections
 import com.varsel.firechat.viewModel.GroupChatDetailViewModel
 
 
@@ -38,6 +37,7 @@ class GroupChatDetailFragment : Fragment() {
     private var recyclerViewVisible: Boolean = false
     private lateinit var participantAdapter: ParticipantsListAdapter
     private val fragmentViewModel: GroupChatDetailViewModel by activityViewModels()
+    private val groupPageViewModel: GroupChatDetailViewModel by activityViewModels()
 
     override fun onResume() {
         super.onResume()
@@ -53,12 +53,29 @@ class GroupChatDetailFragment : Fragment() {
         parent = activity as SignedinActivity
 
         // adapter init
-        participantAdapter = ParticipantsListAdapter(requireContext(), parent.firebaseAuth, parent.firebaseViewModel, {
-            navigateToOtherProfileFragment(it)
-        },{
-            showParticipantOptionsActonsheet(it)
+        parent.firebaseViewModel.selectedGroupRoom.observe(viewLifecycleOwner, Observer {
+            binding.groupName.text = it?.groupName
+            binding.groupSubject.text = it?.subject ?: getString(R.string.no_subject)
+
+            binding.editGroupNameClickable.setOnClickListener { button ->
+                if (it != null) {
+                    showEditGroupActionsheet(it)
+                }
+            }
+
+            if (it != null) {
+                groupPageViewModel.determineGetParticipants(it, parent)
+            }
+            if(it!= null){
+                participantAdapter = ParticipantsListAdapter(requireContext(), parent.firebaseAuth, it, {
+                    navigateToOtherProfileFragment(it)
+                },{
+                    showParticipantOptionsActonsheet(it)
+                })
+
+                binding.partipantsRecyclerView.adapter = participantAdapter
+            }
         })
-        binding.partipantsRecyclerView.adapter = participantAdapter
 
         groupId = GroupChatDetailFragmentArgs.fromBundle(requireArguments()).groupId
 
@@ -70,18 +87,12 @@ class GroupChatDetailFragment : Fragment() {
 
         parent.firebaseViewModel.selectedGroupParticipants.observe(viewLifecycleOwner, Observer {
             binding.groupMembersCount.text = "(${it.size})"
-            participantAdapter.submitList(it)
-        })
+            val admins = parent.firebaseViewModel.selectedGroupRoom.value!!.admins!!.values.toList()
+            val currentUser = parent.firebaseAuth.currentUser!!.uid
+            val sorted = UserUtils.sortUsersByNameInGroup(it, admins, currentUser)
 
-        parent.firebaseViewModel.selectedGroupRoom.observe(viewLifecycleOwner, Observer {
-            binding.groupName.text = it?.groupName
-            binding.groupSubject.text = it?.subject ?: getString(R.string.no_subject)
-
-            binding.editGroupNameClickable.setOnClickListener { button ->
-                if (it != null) {
-                    showEditGroupActionsheet(it)
-                }
-            }
+            participantAdapter.submitList(sorted)
+            participantAdapter.notifyDataSetChanged()
         })
 
         binding.groupMembersClickable.setOnClickListener {
@@ -153,6 +164,40 @@ class GroupChatDetailFragment : Fragment() {
         }
     }
 
+    private fun makeAdmin(userId: String){
+        parent.firebaseViewModel.makeAdmin(userId, groupId, parent.mDbRef, {
+           Toast.makeText(requireContext(), "Successful", Toast.LENGTH_LONG).show()
+        }, {
+            Toast.makeText(requireContext(), "Failure", Toast.LENGTH_LONG).show()
+        })
+    }
+
+    private fun removeAdmin(userId: String){
+        parent.firebaseViewModel.removeAdmin(userId, groupId, parent.firebaseAuth, parent.mDbRef, {
+            Toast.makeText(requireContext(), "Successful", Toast.LENGTH_LONG).show()
+        }, {
+            Toast.makeText(requireContext(), "Failure", Toast.LENGTH_LONG).show()
+        })
+    }
+
+    private fun removeFromGroup(userId: String){
+        parent.firebaseViewModel.removeFromGroup(parent.firebaseAuth, userId, groupId, parent.mDbRef, {
+            Toast.makeText(requireContext(), "Removed", Toast.LENGTH_LONG).show()
+        }, {
+            Toast.makeText(requireContext(), "Failure", Toast.LENGTH_LONG).show()
+        })
+    }
+
+    private fun isAdmin(userId: String): Boolean{
+        for (i in parent.firebaseViewModel.selectedGroupRoom.value!!.admins!!.values){
+            if(i == userId){
+                return true
+            }
+        }
+
+        return false
+    }
+
     private fun scaleOpen(){
 //        binding.participantsRecyclerViewParent.animate().translationY(binding.participantsRecyclerViewParent.height.toFloat())
         val animate = TranslateAnimation(
@@ -199,9 +244,9 @@ class GroupChatDetailFragment : Fragment() {
         val view = dialogBinding.root
         dialog.setContentView(view)
 
-        setUserActionButtonVisibilities(dialogBinding, dialog)
-
         fragmentViewModel.actionSheetUserId.value = userId
+
+        setUserActionButtonVisibilities(dialogBinding, dialog)
 
         dialog.show()
     }
@@ -213,6 +258,14 @@ class GroupChatDetailFragment : Fragment() {
                 binding.makeAdminBtn.visibility = View.VISIBLE
                 binding.removeAdminBtn.visibility = View.VISIBLE
                 binding.removeBtn.visibility = View.VISIBLE
+
+                if(isAdmin(fragmentViewModel.actionSheetUserId.value!!)){
+                    binding.makeAdminBtn.visibility = View.GONE
+                    binding.removeAdminBtn.visibility = View.VISIBLE
+                } else {
+                    binding.makeAdminBtn.visibility = View.VISIBLE
+                    binding.removeAdminBtn.visibility = View.GONE
+                }
             } else {
                 binding.makeAdminBtn.visibility = View.GONE
                 binding.removeAdminBtn.visibility = View.GONE
@@ -221,6 +274,36 @@ class GroupChatDetailFragment : Fragment() {
 
             binding.sendMessageBtn.setOnClickListener {
                 navigateToChats()
+                dialog.dismiss()
+            }
+
+            if(currentUserId == fragmentViewModel.actionSheetUserId.value){
+                binding.leaveBtn.visibility = View.VISIBLE
+                binding.makeAdminBtn.visibility = View.GONE
+                binding.removeBtn.visibility = View.GONE
+//                binding.removeAdminBtn.visibility = View.GONE
+                binding.sendMessageBtn.visibility = View.GONE
+            } else {
+                binding.leaveBtn.visibility = View.GONE
+            }
+
+            binding.makeAdminBtn.setOnClickListener {
+                makeAdmin(fragmentViewModel.actionSheetUserId.value!!)
+                dialog.dismiss()
+            }
+
+            binding.removeAdminBtn.setOnClickListener {
+                removeAdmin(fragmentViewModel.actionSheetUserId.value!!)
+                dialog.dismiss()
+            }
+
+            binding.removeBtn.setOnClickListener {
+                removeFromGroup(fragmentViewModel.actionSheetUserId.value!!)
+                dialog.dismiss()
+            }
+
+            binding.leaveBtn.setOnClickListener {
+                exitGroup()
                 dialog.dismiss()
             }
         })
@@ -235,6 +318,21 @@ class GroupChatDetailFragment : Fragment() {
 
         }
         binding.root.findNavController().navigate(action)
+    }
+
+    private fun exitGroup(){
+        parent.firebaseViewModel.leaveGroup(groupId, parent.mDbRef, parent.firebaseAuth, {
+            navigateToHome()
+        }, {
+            Toast.makeText(context, "Exit denied", Toast.LENGTH_LONG).show()
+        })
+    }
+
+    private fun navigateToHome(){
+        lifecycleScope.launchWhenResumed {
+            findNavController().navigateUp()
+            findNavController().navigateUp()
+        }
     }
 
     // TODO: Re-implement for other pages

@@ -10,7 +10,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/a_e_f_v_d_f_g_d"
+        android:src="@drawable/a_s_s_d_f_r_v"
         android:scaleType="centerCrop"
         />
 

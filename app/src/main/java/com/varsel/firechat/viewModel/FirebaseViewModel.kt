@@ -1,6 +1,5 @@
 package com.varsel.firechat.viewModel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -11,7 +10,9 @@ import com.google.firebase.database.ValueEventListener
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
-import com.varsel.firechat.model.message.Message
+import com.varsel.firechat.model.Message.Message
+import com.varsel.firechat.model.Message.MessageType
+import com.varsel.firechat.model.Message.SystemMessageType
 
 class FirebaseViewModel: ViewModel() {
     val usersLiveData = MutableLiveData<List<User>>()
@@ -250,7 +251,6 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    // TODO: Implement Accept Friend Request
     fun acceptFriendRequest(user: User, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}) {
         val otherUserRef = mDbRef.child("Users").child(user.userUID.toString())
         val currentUserRef = mDbRef.child("Users").child(mAuth.currentUser?.uid.toString())
@@ -300,7 +300,6 @@ class FirebaseViewModel: ViewModel() {
 
     }
 
-    // TODO: Implement Reject Friend Request
     fun rejectFriendRequest(user: User){
         // remove from request list
     }
@@ -310,7 +309,6 @@ class FirebaseViewModel: ViewModel() {
 
     }
 
-    // TODO: Modify to accommodate simultaneous first message possibilities
     fun sendMessage(
         message: Message,
         chatRoomUID: String,
@@ -335,7 +333,6 @@ class FirebaseViewModel: ViewModel() {
     }
 
 
-    // TODO: Change name
     fun appendParticipants(chatRoom: ChatRoom, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
         mDbRef
             .child("chatRooms")
@@ -421,16 +418,19 @@ class FirebaseViewModel: ViewModel() {
             })
     }
 
-    // TODO: Implement create group
-    fun createGroup(groupObj: GroupRoom, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+    fun createGroup(groupObj: GroupRoom, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit, failureCallback: () -> Unit){
         val groupRef = mDbRef.child("groupRooms")
 
         groupRef
-            .child(groupObj.roomUID!!)
+            .child(groupObj.roomUID)
             .setValue(groupObj)
             .addOnCompleteListener {
                 if(it.isSuccessful){
-                    successCallback()
+                    groupCreateMessage(mAuth.currentUser!!.uid, groupObj.roomUID, mDbRef,{
+                        successCallback()
+                    },{
+                        failureCallback()
+                    })
                 } else {
                     failureCallback()
                 }
@@ -538,26 +538,235 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    // TODO: Implement add participants
-    fun addParticipants(){
+    fun makeAdmin(userId: String, roomId: String, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val reference = mDbRef.child("groupRooms").child(roomId)
 
-    }
-
-    // TODO: implement Make Admin
-    fun makeAdmin(){
-        // only admins can add admins
+        reference
+            .child("admins")
+            .child(userId)
+            .setValue(userId)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    groupNowAdminMessage(userId, roomId, mDbRef, {
+                        successCallback()
+                    },{
+                        failureCallback()
+                    })
+                } else {
+                    failureCallback()
+                }
+            }
     }
 
     // TODO: implement Remove Admin
-    fun removeAdmin(){
+    fun removeAdmin(userId: String, roomId: String, mAuth: FirebaseAuth, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val reference = mDbRef.child("groupRooms").child(roomId)
+        val admins = selectedGroupRoom.value!!.admins
+        val currentUserId = mAuth.currentUser!!.uid
+
+        if(admins!!.size < 2 && userId == currentUserId){
+            failureCallback()
+        } else {
+            reference
+                .child("admins")
+                .child(userId)
+                .removeValue()
+                .addOnCompleteListener {
+                    if(it.isSuccessful){
+                        groupNotAdminMessage(userId, roomId, mDbRef, {
+                            successCallback()
+                        }, {
+                            failureCallback()
+                        })
+                    } else {
+                        failureCallback()
+                    }
+                }
+        }
+    }
+
+    fun removeFromGroup(firebaseAuth: FirebaseAuth, userId: String, groupId: String, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val reference = mDbRef.child("groupRooms").child(groupId)
+
+        reference
+            .child("participants")
+            .child(userId)
+            .removeValue()
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    groupRemoveMessage(firebaseAuth.currentUser!!.uid, userId, groupId, mDbRef, {
+                        successCallback()
+                    }, {
+                        failureCallback()
+                    })
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun leaveGroup(groupId: String, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val groupReference = mDbRef.child("groupRooms").child(groupId)
+        val userReference = mDbRef.child("Users").child(mAuth.currentUser!!.uid)
+        val currentUserId: String = mAuth.currentUser!!.uid
+        val admins = selectedGroupRoom.value!!.admins
+
+        if(admins!!.containsValue(currentUserId) && admins.size < 2){
+            failureCallback()
+        } else {
+            // removes from admin list
+            if(admins.containsValue(currentUserId)){
+                groupReference
+                    .child("admins")
+                    .child(mAuth.currentUser!!.uid)
+                    .removeValue()
+                    .addOnCompleteListener {
+                        if(it.isSuccessful){
+
+                        } else {
+                            failureCallback()
+                            return@addOnCompleteListener
+                        }
+                    }
+            }
+
+            // sends exit message
+            groupExitMessage(currentUserId, groupId, mDbRef, {
+                // Removes from participant list
+                groupReference
+                    .child("participants")
+                    .child(mAuth.currentUser!!.uid)
+                    .removeValue()
+                    .addOnCompleteListener {
+                        if(it.isSuccessful){
+                            // Removes from user object
+                            userReference
+                                .child("groupRooms")
+                                .child(groupId)
+                                .removeValue()
+                                .addOnCompleteListener {
+                                    if(it.isSuccessful){
+                                        successCallback()
+                                    } else {
+                                        failureCallback()
+                                    }
+                                }
+                        } else {
+                            failureCallback()
+                        }
+                    }
+            }, {
+                failureCallback()
+            })
+        }
+    }
+
+    fun groupJoinMessage(){
 
     }
 
-    // TODO: Implement exit group
-    fun exitGroup(){
-        // deny exit if user is the only admin
+    fun groupAddMessage(){
+
     }
 
+    fun groupExitMessage(userId: String, roomId: String, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val message = Message(SystemMessageType.GROUP_EXIT, userId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val databaseReference = mDbRef.child("groupRooms")
+
+        databaseReference
+            .child(roomId)
+            .child("messages")
+            .push()
+            .setValue(message)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun groupRemoveMessage(currentUserId: String, userId: String, roomId: String, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val message = Message(SystemMessageType.GROUP_REMOVE, "${currentUserId} ${userId}", System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val databaseReference = mDbRef.child("groupRooms")
+
+        databaseReference
+            .child(roomId)
+            .child("messages")
+            .push()
+            .setValue(message)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun groupNowAdminMessage(userId: String, roomId: String, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val message = Message(SystemMessageType.NOW_ADMIN, userId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val databaseReference = mDbRef.child("groupRooms")
+
+        databaseReference
+            .child(roomId)
+            .child("messages")
+            .push()
+            .setValue(message)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun groupNotAdminMessage(userId: String, roomId: String, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val message = Message(SystemMessageType.NOT_ADMIN, userId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val databaseReference = mDbRef.child("groupRooms")
+
+        databaseReference
+            .child(roomId)
+            .child("messages")
+            .push()
+            .setValue(message)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun groupCreateMessage(currentUserId: String, roomId: String, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val message = Message(SystemMessageType.GROUP_CREATE, currentUserId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val databaseReference = mDbRef.child("groupRooms")
+
+        databaseReference
+            .child(roomId)
+            .child("messages")
+            .push()
+            .setValue(message)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun groupDismantleMessage(){
+
+    }
+
+    // TODO: implement Add Participants
+    fun addParticipants(){
+        // only admins can add admins
+    }
 
     // TODO: Delete
     fun getChatsInChatroom(id: String, mDbRef: DatabaseReference, loopCallback: (message: Message?) -> Unit, afterCallback: () -> Unit){

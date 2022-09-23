@@ -86,7 +86,7 @@ class CreateGroupFragment : Fragment() {
             val participants = addParticipants()
             val group = GroupRoom(newRoomId, participants, groupName?.text.toString(), makeCurrentUserAdmin())
 
-            parent.firebaseViewModel.createGroup(group, parent.mDbRef, {
+            parent.firebaseViewModel.createGroup(group, parent.mDbRef, parent.firebaseAuth, {
                appendRoomIdToUsers(participants.values.toList(), newRoomId) {
                     navigateToGroupPage(newRoomId)
 

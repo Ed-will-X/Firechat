@@ -1,18 +1,15 @@
 package com.varsel.firechat.view.signedIn.fragments
 
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentChatPageBinding
 import com.varsel.firechat.model.Chat.ChatRoom
-import com.varsel.firechat.model.message.Message
-import com.varsel.firechat.model.message.MessageType
+import com.varsel.firechat.model.Message.Message
+import com.varsel.firechat.model.Message.MessageType
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ChatPageType
@@ -57,7 +54,7 @@ class ChatPageFragment : Fragment() {
         newChatRoomId = MessageUtils.generateUID(50)
         newChatRoom = ChatRoom(newChatRoomId, hashMapOf<String, String>(userUID to userUID, parent.firebaseAuth.uid.toString() to parent.firebaseAuth.uid.toString()))
 
-        messagesListAdapter = MessageListAdapter(parent.firebaseAuth, this, ChatPageType.INDIVIDUAL)
+        messagesListAdapter = MessageListAdapter(parent.firebaseAuth, parent.mDbRef,this, ChatPageType.INDIVIDUAL, parent.firebaseViewModel)
         binding.messagesRecyclerView.adapter = messagesListAdapter
 
         parent.firebaseViewModel.selectedChatRoom.observe(viewLifecycleOwner, Observer {
@@ -66,7 +63,7 @@ class ChatPageFragment : Fragment() {
 
         // send button
         binding.sendMessageBtn.setOnClickListener {
-            var message = Message(MessageUtils.generateUID(50), binding.messageEditText.text.toString(), System.currentTimeMillis(), parent.firebaseAuth.currentUser?.uid, MessageType.TEXT)
+            var message = Message(MessageUtils.generateUID(50), binding.messageEditText.text.toString(), System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
 
             if(binding.messageEditText.text.toString() != ""){
                 sendMessage(message)
@@ -151,7 +148,6 @@ class ChatPageFragment : Fragment() {
             // if found, set the existingChatRoomId to that chatroom
             existingChatRoomId = chatRoom.roomUID
             getChatRoom()
-            Log.d("LLL", "Ran")
         }
     }
 

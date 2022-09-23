@@ -1,13 +1,11 @@
-package com.varsel.firechat.model.message
-
-import com.varsel.firechat.model.User.User
+package com.varsel.firechat.model.Message
 
 class Message {
 //    var id: Long = 0L
     var messageUID: String? = null
-    var message: String? = null
-    var time: Long? = null
-    var sender: String? = null
+    lateinit var message: String
+    var time: Long = 0L
+    lateinit var sender: String
     var type: Int? = null
     var deleted: HashMap<String, String>? = null
 
@@ -15,7 +13,7 @@ class Message {
 
     }
 
-    constructor(messageUID: String, message: String, time: Long, sender: String?, type: Int?){
+    constructor(messageUID: String, message: String, time: Long, sender: String, type: Int?){
         this.messageUID = messageUID
         this.message = message
         this.sender = sender
@@ -36,5 +34,15 @@ class MessageStatus(){
         val SENT = 0
         val DELIVERED = 1
         val READ = 2
+    }
+}
+
+class SystemMessageType(){
+    companion object {
+        val GROUP_CREATE = "GROUP_CREATE"
+        val NOW_ADMIN = "NOW_ADMIN"
+        val NOT_ADMIN = "NOT_ADMIN"
+        val GROUP_REMOVE = "GROUP_REMOVE"
+        val GROUP_EXIT = "GROUP_EXIT"
     }
 }

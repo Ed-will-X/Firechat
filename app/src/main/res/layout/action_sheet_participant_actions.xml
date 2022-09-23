@@ -39,7 +39,7 @@
 
         <Button
             android:id="@+id/send_message_btn"
-            android:backgroundTint="@color/grey"
+            android:backgroundTint="@color/ios_blue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
@@ -47,20 +47,29 @@
 
         <Button
             android:id="@+id/remove_btn"
-            android:backgroundTint="@color/ios_blue"
+            android:backgroundTint="@color/grey"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:text="@string/remove_from_group" />
 
         <Button
-            android:id="@+id/block_btn"
+            android:id="@+id/leave_btn"
             android:backgroundTint="@color/orange_red"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:text="@string/block"
+            android:text="@string/leave_group"
             />
+
+<!--        <Button-->
+<!--            android:id="@+id/block_btn"-->
+<!--            android:backgroundTint="@color/orange_red"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginBottom="5dp"-->
+<!--            android:text="@string/block"-->
+<!--            />-->
 
     </LinearLayout>
 </LinearLayout>

@@ -1,12 +1,10 @@
 package com.varsel.firechat.view.signedIn.adapters
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.ListView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -15,9 +13,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.ChatRoom
-import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
-import com.varsel.firechat.model.message.Message
+import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.viewModel.FirebaseViewModel

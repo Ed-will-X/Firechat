@@ -52,6 +52,12 @@ open class User{
     @ColumnInfo(name = "friend_requests")
     var friendRequests: HashMap<String, String>? = null
 
+    var favorite_groups: HashMap<String, String>? = null
+
+    var favorite_chats: HashMap<String, String>? = null
+
+    var favorite_friends: HashMap<String, String>? = null
+
     // Firebase Constructor
     constructor(name: String,
                 email: String,

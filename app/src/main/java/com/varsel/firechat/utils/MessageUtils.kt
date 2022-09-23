@@ -1,11 +1,9 @@
 package com.varsel.firechat.utils
 
-import android.util.Log
 import com.varsel.firechat.model.Chat.ChatRoom
-import com.varsel.firechat.model.message.Message
+import com.varsel.firechat.model.Message.Message
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MessageUtils {
     // TODO: Change the >1m text to "moments ago"

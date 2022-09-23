@@ -1,14 +1,8 @@
 package com.varsel.firechat.utils
 
-import android.content.Context
-import android.provider.Settings.Global.getString
 import androidx.fragment.app.Fragment
 import com.varsel.firechat.R
-import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.User.User
-import com.varsel.firechat.model.message.Message
-import org.ocpsoft.prettytime.PrettyTime
-import java.util.*
 
 class UserUtils(var fragment: Fragment) {
     companion object {
@@ -24,6 +18,17 @@ class UserUtils(var fragment: Fragment) {
             val sorted = users?.sortedBy {
                 it?.name
             }.toMutableList()
+
+            return sorted
+        }
+
+        fun sortUsersByNameInGroup(users: List<User?>, admins: List<String>, currentUser: String): MutableList<User?>{
+            // TODO: Remove current user from array before sort
+            val sorted = users?.sortedBy {
+                it?.name
+            }.toMutableList()
+
+            // TODO: Add current user to the end of array after sort
 
             return sorted
         }
