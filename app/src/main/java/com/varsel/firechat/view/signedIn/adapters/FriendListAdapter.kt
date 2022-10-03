@@ -11,7 +11,7 @@ import com.varsel.firechat.R
 import com.varsel.firechat.model.User.User
 
 class FriendListAdapter(val parentListener: (id: String)-> Unit): RecyclerView.Adapter<FriendListAdapter.FriendItemViewHolder>() {
-    val friends: MutableList<User> = mutableListOf()
+    var friends: MutableList<User> = mutableListOf()
 
     class FriendItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val name = itemView.findViewById<TextView>(R.id.name)

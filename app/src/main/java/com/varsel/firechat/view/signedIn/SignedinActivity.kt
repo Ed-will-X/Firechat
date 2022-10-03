@@ -107,10 +107,13 @@ class SignedinActivity : AppCompatActivity() {
             if(destination.id == R.id.groupChatPageFragment){
                 binding.bottomNavView.visibility = View.GONE
             }
-            if(destination.id == R.id.chatDetailFragment){
+            if(destination.id == R.id.aboutUserFragment){
                 binding.bottomNavView.visibility = View.GONE
             }
             if (destination.id == R.id.groupChatDetailFragment){
+                binding.bottomNavView.visibility = View.GONE
+            }
+            if (destination.id == R.id.addGroupMembersFragment){
                 binding.bottomNavView.visibility = View.GONE
             }
         }
@@ -121,68 +124,6 @@ class SignedinActivity : AppCompatActivity() {
 
         })
     }
-
-//    private fun getCurrentUserSingle(){
-//        firebaseViewModel.getCurrentUserSingle(firebaseAuth, mDbRef, { }, {
-//            // sets the chat rooms in the viewModel
-//            if(firebaseViewModel.currentUser.value?.chatRooms != null){
-//                getAllChats(firebaseViewModel.currentUser.value!!.chatRooms!!.values.toList())
-//            } else {
-//                firebaseViewModel.chatRooms.value = mutableListOf()
-//            }
-//
-//            // Sets the groups in the viewModel
-//            if(firebaseViewModel.currentUser.value?.groupRooms != null){
-//                getAllGroupChats(firebaseViewModel.currentUser.value!!.groupRooms!!.values.toList())
-//            } else {
-//                firebaseViewModel.groupRooms.value = mutableListOf()
-//            }
-//
-//        })
-//    }
-
-//    private fun getAllChats(chatRoomsUID: List<String>){
-//        val chatRooms = mutableListOf<ChatRoom?>()
-//        for(i in chatRoomsUID){
-//            firebaseViewModel.getChatRoomRecurrent(i, mDbRef, { chatRoom ->
-//                if(firebaseViewModel.chatRooms.value != null){
-//                    val groupIterator = firebaseViewModel.chatRooms.value!!.iterator()
-//                    while (groupIterator.hasNext()){
-//                        val g = groupIterator.next()
-//                        if(g?.roomUID == chatRoom?.roomUID){
-//                            groupIterator.remove()
-//                        }
-//                    }
-//                }
-//                chatRooms.add(chatRoom)
-//            }, {
-//                firebaseViewModel.chatRooms.value = chatRooms
-//            })
-//        }
-//    }
-//
-//    private fun getAllGroupChats(groupRoomIDs: List<String>){
-//        val groupRooms = mutableListOf<GroupRoom?>()
-//
-//        for (i in groupRoomIDs){
-//            // TODO: Fix bug here:
-//            firebaseViewModel.getGroupChatRoomRecurrent(i, mDbRef, {
-//                if(firebaseViewModel.groupRooms.value != null){
-//                    val groupIterator = firebaseViewModel.groupRooms.value!!.iterator()
-//                    while (groupIterator.hasNext()){
-//                        val g = groupIterator.next()
-//                        if(g?.roomUID == it?.roomUID){
-//                            groupIterator.remove()
-//                        }
-//                    }
-//                }
-//                groupRooms.add(it)
-//
-//            }, {
-//                firebaseViewModel.groupRooms.value = groupRooms
-//            })
-//        }
-//    }
 
     private fun getFriendRequests(requests: List<String>){
         val users = mutableListOf<User?>()

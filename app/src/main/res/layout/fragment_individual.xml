@@ -11,6 +11,7 @@
 
     <FrameLayout
         android:id="@+id/no_chats"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <ImageView
@@ -59,6 +60,58 @@
                 />
         </LinearLayout>
     </FrameLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/shimmer_messages"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include
+            layout="@layout/shimmer_messages"
+            />
+        <include
+            layout="@layout/shimmer_messages"
+            />
+        <include
+            layout="@layout/shimmer_messages"
+            />
+        <include
+            layout="@layout/shimmer_messages"
+            />
+        <include
+            layout="@layout/shimmer_messages"
+            />
+        <include
+            layout="@layout/shimmer_messages"
+            />
+        <include
+            layout="@layout/shimmer_messages"
+            />
+        <include
+            layout="@layout/shimmer_messages"
+            />
+        <include
+            layout="@layout/shimmer_messages"
+            />
+        <include
+            layout="@layout/shimmer_messages"
+            />
+        <include
+            layout="@layout/shimmer_messages"
+            />
+        <include
+            layout="@layout/shimmer_messages"
+            />
+        <include
+            layout="@layout/shimmer_messages"
+            />
+        <include
+            layout="@layout/shimmer_messages"
+            />
+        <include
+            layout="@layout/shimmer_messages"
+            />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:visibility="gone"

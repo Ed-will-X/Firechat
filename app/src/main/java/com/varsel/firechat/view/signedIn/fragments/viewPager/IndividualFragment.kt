@@ -32,6 +32,8 @@ class IndividualFragment : Fragment() {
 
         parent = activity as SignedinActivity
 
+        toggleShimmerVisibility(null)
+
         // adapter
         val chatListAdapter = ChatListAdapter(parent.firebaseAuth, parent.mDbRef, parent.firebaseViewModel, { userId, chatRoomId ->
             val action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(chatRoomId, userId)
@@ -50,6 +52,7 @@ class IndividualFragment : Fragment() {
         })
 
         parent.firebaseViewModel.currentUser.observe(viewLifecycleOwner, Observer {
+            toggleShimmerVisibility(it)
             if(it != null){
                 binding.chatPeopleClickable.setOnClickListener {
                     swipeToFriends()
@@ -61,12 +64,21 @@ class IndividualFragment : Fragment() {
     }
 
     private fun toggleRecyclerViewVisibility(chats: MutableList<ChatRoom?>){
-        if(chats.isNotEmpty()){
+        val currentUser = parent.firebaseViewModel.currentUser.value
+        if(chats.isNotEmpty() && currentUser != null){
             binding.individualChatsRecyclerView.visibility = View.VISIBLE
             binding.noChats.visibility = View.GONE
         } else {
             binding.individualChatsRecyclerView.visibility = View.GONE
             binding.noChats.visibility = View.VISIBLE
+        }
+    }
+
+    private fun toggleShimmerVisibility(currentUser: User?){
+        if(currentUser != null){
+            binding.shimmerMessages.visibility = View.GONE
+        } else {
+            binding.shimmerMessages.visibility = View.VISIBLE
         }
     }
 

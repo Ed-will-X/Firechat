@@ -1,29 +1,34 @@
 package com.varsel.firechat.view.signedIn.adapters
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
 import com.varsel.firechat.R
-import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Chat.GroupRoom
-import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.AnimationUtils
+import com.varsel.firechat.utils.AnimationUtils.Companion.changeColor
 import com.varsel.firechat.utils.UserUtils
+import com.varsel.firechat.viewModel.FirebaseViewModel
 
-class GroupChatsListAdapter(val mAuth: FirebaseAuth,val addNewListener: ()-> Unit, val groupItemListener: (id: String)-> Unit): ListAdapter<GroupRoom, RecyclerView.ViewHolder>(GroupChatDiffUtilItemCallback()) {
+class GroupChatsListAdapter(val mAuth: FirebaseAuth, val mDbRef: DatabaseReference, val context: Context, val firebaseViewModel: FirebaseViewModel, val addNewListener: ()-> Unit, val groupItemListener: (id: String)-> Unit): ListAdapter<GroupRoom, RecyclerView.ViewHolder>(GroupChatDiffUtilItemCallback()) {
     private val ADD_NEW = 0
     private val GROUP_CHAT = 1
 
     class GroupChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val parent = itemView.findViewById<MaterialCardView>(R.id.group_parent)
         val groupName: TextView = itemView.findViewById<TextView>(R.id.group_name)
+        val favoriteIcon: ImageView = itemView.findViewById(R.id.favorite_icon)
         val img_card_1 = itemView.findViewById<MaterialCardView>(R.id.gc_image_card_1)
         val img_card_2 = itemView.findViewById<MaterialCardView>(R.id.gc_image_card_2)
         val img_card_3 = itemView.findViewById<MaterialCardView>(R.id.gc_image_card_3)
@@ -51,7 +56,6 @@ class GroupChatsListAdapter(val mAuth: FirebaseAuth,val addNewListener: ()-> Uni
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item: GroupRoom = getItem(position)
 
-        val participants = filterOutCurrentUser(item.participants!!.values.toList())
 
         if(holder.javaClass == AddNewViewHolder::class.java){
             val viewHolder = holder as AddNewViewHolder
@@ -62,13 +66,57 @@ class GroupChatsListAdapter(val mAuth: FirebaseAuth,val addNewListener: ()-> Uni
 
         } else {
             val viewHolder = holder as GroupChatViewHolder
+            val participants = filterOutCurrentUser(item.participants!!.values.toList())
+
             getParticipantCount(participants, viewHolder)
 
             viewHolder.groupName.text = item.groupName?.let { UserUtils.truncate(it, 15) }
             viewHolder.parent.setOnClickListener {
                 item.roomUID?.let { it1 -> groupItemListener(it1) }
             }
+
+            if(isFavorite(item.roomUID)){
+                AnimationUtils.changeColor(holder.favoriteIcon, R.color.yellow, context)
+            } else {
+                AnimationUtils.changeColor(holder.favoriteIcon, R.color.light_grey_2, context)
+            }
+
+            holder.favoriteIcon.setOnClickListener {
+                setFavorite(item.roomUID, holder.favoriteIcon)
+            }
         }
+    }
+
+    private fun setFavorite(groupId: String, icon: ImageView){
+        if(!isFavorite(groupId)){
+            firebaseViewModel.addGroupToFavorites(groupId, mAuth, mDbRef, {
+                AnimationUtils.changeColor(icon, R.color.yellow, context)
+                Log.d("LLL", "add success")
+            },{
+                Log.d("LLL", "add failure")
+            })
+        } else {
+            firebaseViewModel.removeGroupFromFavorites(groupId, mAuth, mDbRef, {
+                Log.d("LLL", "removal success")
+                AnimationUtils.changeColor(icon, R.color.light_grey_2, context)
+            },{
+                Log.d("LLL", "removal failure")
+            })
+        }
+    }
+
+    private fun isFavorite(groupID: String): Boolean{
+        val favorites = firebaseViewModel.currentUser.value!!.favoriteGroups?.values
+
+        if (favorites != null) {
+            for(i in favorites){
+                if(i == groupID){
+                    return true
+                }
+            }
+        }
+
+        return false
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -82,7 +130,7 @@ class GroupChatsListAdapter(val mAuth: FirebaseAuth,val addNewListener: ()-> Uni
 
     private fun filterOutCurrentUser(users: List<String>): List<String>{
         val currentUser = mAuth.currentUser?.uid.toString()
-        val otherUsers: MutableList<String>  = mutableListOf()
+        val otherUsers: MutableList<String> = mutableListOf()
 
         for(i in users){
             if(i != currentUser){

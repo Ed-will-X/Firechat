@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.databinding.FragmentChatPageBinding
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Message.Message
@@ -54,13 +55,25 @@ class ChatPageFragment : Fragment() {
         newChatRoomId = MessageUtils.generateUID(50)
         newChatRoom = ChatRoom(newChatRoomId, hashMapOf<String, String>(userUID to userUID, parent.firebaseAuth.uid.toString() to parent.firebaseAuth.uid.toString()))
 
-        messagesListAdapter = MessageListAdapter(parent.firebaseAuth, parent.mDbRef,this, ChatPageType.INDIVIDUAL, parent.firebaseViewModel)
+        messagesListAdapter = MessageListAdapter(parent.firebaseAuth, parent.mDbRef,this, requireContext() ,ChatPageType.INDIVIDUAL, parent.firebaseViewModel,
+        { _, _, _ ->
+
+        }, { _, _, _ ->
+
+        })
         binding.messagesRecyclerView.adapter = messagesListAdapter
 
         parent.firebaseViewModel.selectedChatRoom.observe(viewLifecycleOwner, Observer {
             getMessages(it)
         })
 
+        parent.firebaseViewModel.selectedUser.observe(viewLifecycleOwner, Observer {
+            binding.nameText.text = it?.name
+        })
+
+        binding.navTopClickable.setOnClickListener {
+            navigateToDetail()
+        }
         // send button
         binding.sendMessageBtn.setOnClickListener {
             var message = Message(MessageUtils.generateUID(50), binding.messageEditText.text.toString(), System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
@@ -104,6 +117,16 @@ class ChatPageFragment : Fragment() {
             },{})
         } else {
 
+        }
+    }
+
+    private fun navigateToDetail(){
+        if(existingChatRoomId != null){
+            val action = ChatPageFragmentDirections.actionChatPageFragmentToAboutUserFragment(existingChatRoomId!!, userUID)
+            findNavController().navigate(action)
+        } else {
+            val action = ChatPageFragmentDirections.actionChatPageFragmentToAboutUserFragment(null, userUID)
+            findNavController().navigate(action)
         }
     }
 
@@ -154,6 +177,21 @@ class ChatPageFragment : Fragment() {
     private fun clearEditText(){
         binding.messageEditText.setText("")
     }
+    // TODO: Fix buggy code
+//    private fun getOtherUserFromParticipants(participants: List<String>): String?{
+//        val currentUser = parent.firebaseAuth.currentUser!!.uid
+//        for(i in participants){
+//            if(i != currentUser){
+//                return i
+//            }
+//        }
+//
+//        return null
+//    }
+//
+//    private fun getOtherUserFromFirebase(id: String){
+//        parent.firebaseViewModel.getUserById(id, parent.mDbRef, {},{})
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

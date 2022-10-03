@@ -12,11 +12,11 @@ open class User{
 
     // change userUID to non-nullable
     @PrimaryKey
-    var userUID: String? = null
+    lateinit var userUID: String
 
     var email: String? = null
 
-    var name: String? = null
+    lateinit var name: String
 
     var about: String? = null
 
@@ -39,7 +39,7 @@ open class User{
 
     var favoriteChats: List<String>? = null
 
-    var favoriteGroups: List<String>? = null
+    var favoriteGroups: HashMap<String, String>? = null
 
     var friends: HashMap<String, String>? = null
 

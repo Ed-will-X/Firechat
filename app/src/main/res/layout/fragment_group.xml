@@ -10,6 +10,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <FrameLayout
+        android:visibility="gone"
         android:id="@+id/no_groups"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
@@ -59,6 +60,42 @@
                 />
         </LinearLayout>
     </FrameLayout>
+
+
+    <LinearLayout
+        android:layout_marginHorizontal="15dp"
+        android:id="@+id/shimmer_group"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent">
+
+            <include layout="@layout/shimmer_group_messages"/>
+            <include layout="@layout/shimmer_group_messages"/>
+            <include layout="@layout/shimmer_group_messages"/>
+            <include layout="@layout/shimmer_group_messages"/>
+            <include layout="@layout/shimmer_group_messages"/>
+            <include layout="@layout/shimmer_group_messages"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent">
+
+            <include layout="@layout/shimmer_group_messages"/>
+            <include layout="@layout/shimmer_group_messages"/>
+            <include layout="@layout/shimmer_group_messages"/>
+            <include layout="@layout/shimmer_group_messages"/>
+            <include layout="@layout/shimmer_group_messages"/>
+            <include layout="@layout/shimmer_group_messages"/>
+        </LinearLayout>
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginHorizontal="15dp"

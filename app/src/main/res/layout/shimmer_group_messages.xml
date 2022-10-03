@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:layout_marginHorizontal="@dimen/gc_card_margin_2"
+    android:layout_marginTop="@dimen/gc_card_margin"
+    android:id="@+id/group_parent"
+    app:cardElevation="1dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    tools:viewBindingIgnore="true"
+    android:layout_height="170dp"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_gravity="center_horizontal"
+        android:paddingVertical="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_marginHorizontal="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:clickable="true"
+                android:id="@+id/favorite_icon"
+                android:layout_width="@dimen/gc_icon_size"
+                android:layout_height="@dimen/gc_icon_size"
+                android:src="@drawable/ic_star"
+                app:tint="@color/light_grey_2"
+                />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                />
+
+            <ImageView
+                android:layout_width="@dimen/gc_icon_size"
+                android:layout_height="@dimen/gc_icon_size"
+                android:src="@drawable/ic_more_vert"
+                app:tint="@color/grey" />
+        </LinearLayout>
+
+        <View
+            android:layout_gravity="center"
+            android:layout_width="@dimen/gc_image_size"
+            android:layout_height="@dimen/gc_image_size"
+            android:background="@drawable/bg_loading_shimmer_background_circle"
+            />
+
+        <View
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_width="@dimen/shimmer_long_width_2"
+            android:layout_height="@dimen/shimmer_long_height"
+            android:background="@drawable/bg_loading_shimmer_background_long"
+            />
+
+        <FrameLayout
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+
+            <View
+                android:background="@drawable/bg_loading_shimmer_background_circle"
+                android:layout_gravity="center_vertical"
+                android:layout_width="@dimen/gc_users_image_size"
+                android:layout_height="@dimen/gc_users_image_size"
+                />
+
+            <View
+                android:background="@drawable/bg_loading_shimmer_background_circle"
+                android:layout_gravity="center_vertical"
+                android:layout_width="@dimen/gc_users_image_size"
+                android:layout_height="@dimen/gc_users_image_size"
+                android:layout_marginLeft="15dp"
+                />
+
+            <View
+                android:background="@drawable/bg_loading_shimmer_background_circle"
+                android:layout_gravity="center_vertical"
+                android:layout_width="@dimen/gc_users_image_size"
+                android:layout_height="@dimen/gc_users_image_size"
+                android:layout_marginLeft="30dp"
+                />
+
+            <View
+                android:background="@drawable/bg_loading_shimmer_background_circle"
+                android:layout_gravity="center_vertical"
+                android:layout_width="@dimen/gc_users_image_size"
+                android:layout_height="@dimen/gc_users_image_size"
+                android:layout_marginLeft="45dp"
+                />
+
+            <View
+                android:background="@drawable/bg_loading_shimmer_background_circle"
+                android:layout_gravity="center_vertical"
+                android:layout_width="@dimen/gc_users_image_size"
+                android:layout_height="@dimen/gc_users_image_size"
+                android:layout_marginLeft="60dp"
+                />
+        </FrameLayout>
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

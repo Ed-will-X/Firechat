@@ -10,9 +10,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.transition.MaterialSharedAxis
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentOtherProfileBinding
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.AnimationUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.viewModel.FirebaseViewModel

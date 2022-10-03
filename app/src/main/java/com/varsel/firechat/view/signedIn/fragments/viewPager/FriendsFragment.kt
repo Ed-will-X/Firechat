@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.NavDirections
@@ -14,6 +15,7 @@ import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentFriendsBinding
 import com.varsel.firechat.databinding.FragmentProfileBinding
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.AnimationUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.FriendsAdapter
 import com.varsel.firechat.view.signedIn.fragments.AddFriendsFragmentDirections
@@ -34,6 +36,9 @@ class FriendsFragment : Fragment() {
         val view = binding.root
 
         parent = activity as SignedinActivity
+
+        postponeTransition()
+
 
         toggleVisibility()
 
@@ -61,6 +66,11 @@ class FriendsFragment : Fragment() {
         })
 
         return view
+    }
+
+    private fun postponeTransition(){
+        postponeEnterTransition()
+        view?.doOnPreDraw { startPostponedEnterTransition() }
     }
 
     private fun toggleVisibility(){

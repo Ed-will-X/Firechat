@@ -8,7 +8,6 @@
     tools:context=".view.signedIn.fragments.ChatPageFragment">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:clickable="true"
         android:id="@+id/appbar"
         android:layout_height="55dp"
         style="@style/appbar">
@@ -42,6 +41,7 @@
             </FrameLayout>
 
             <LinearLayout
+                android:id="@+id/nav_top_clickable"
                 android:layout_marginLeft="10dp"
                 android:layout_weight="1"
                 android:orientation="vertical"

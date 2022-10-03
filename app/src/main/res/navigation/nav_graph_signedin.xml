@@ -12,18 +12,36 @@
         tools:layout="@layout/fragment_chats" >
         <action
             android:id="@+id/action_chatsFragment_to_addFriends"
-            app:destination="@id/addFriends" />
+            app:destination="@id/addFriends"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right" />
         <action
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
             android:id="@+id/action_chatsFragment_to_otherProfileFragment"
             app:destination="@id/otherProfileFragment" />
         <action
             android:id="@+id/action_chatsFragment_to_chatPageFragment"
-            app:destination="@id/chatPageFragment" />
+            app:destination="@id/chatPageFragment"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right" />
         <action
             android:id="@+id/action_chatsFragment_to_createGroupFragment"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
             app:destination="@id/createGroupFragment" />
         <action
             android:id="@+id/action_chatsFragment_to_groupChatPageFragment"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
             app:destination="@id/groupChatPageFragment" />
     </fragment>
     <fragment
@@ -32,13 +50,25 @@
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" >
         <action
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
             android:id="@+id/action_profileFragment_to_otherProfileFragment"
             app:destination="@id/otherProfileFragment" />
         <action
             android:id="@+id/action_profileFragment_to_editProfilePage"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
             app:destination="@id/editProfilePage" />
         <action
             android:id="@+id/action_profileFragment_to_friendListFragment"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
             app:destination="@id/friendListFragment" />
     </fragment>
     <fragment
@@ -52,6 +82,10 @@
         android:label="fragment_add_friends"
         tools:layout="@layout/fragment_add_friends" >
         <action
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
             android:id="@+id/action_addFriends_to_otherProfileFragment"
             app:destination="@id/otherProfileFragment" />
     </fragment>
@@ -76,8 +110,12 @@
             android:name="userUid"
             app:argType="string" />
         <action
-            android:id="@+id/action_chatPageFragment_to_chatDetailFragment"
-            app:destination="@id/chatDetailFragment" />
+            android:id="@+id/action_chatPageFragment_to_aboutUserFragment"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
+            app:destination="@id/aboutUserFragment" />
     </fragment>
     <fragment
         android:id="@+id/editProfilePage"
@@ -90,6 +128,10 @@
         android:label="fragment_friend_list"
         tools:layout="@layout/fragment_friend_list" >
         <action
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
             android:id="@+id/action_friendListFragment_to_otherProfileFragment"
             app:destination="@id/otherProfileFragment" />
     </fragment>
@@ -100,6 +142,10 @@
         tools:layout="@layout/fragment_create_group" >
         <action
             android:id="@+id/action_createGroupFragment_to_groupChatPageFragment"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
             app:destination="@id/groupChatPageFragment"
             app:popUpTo="@id/chatsFragment" />
     </fragment>
@@ -113,7 +159,18 @@
             app:argType="string" />
         <action
             android:id="@+id/action_groupChatPageFragment_to_groupChatDetailFragment"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
             app:destination="@id/groupChatDetailFragment" />
+        <action
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
+            android:id="@+id/action_groupChatPageFragment_to_otherProfileFragment"
+            app:destination="@id/otherProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/groupChatDetailFragment"
@@ -121,6 +178,10 @@
         android:label="fragment_group_chat_detail"
         tools:layout="@layout/fragment_group_chat_detail" >
         <action
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
             android:id="@+id/action_groupChatDetailFragment_to_otherProfileFragment"
             app:destination="@id/otherProfileFragment" />
         <argument
@@ -128,18 +189,46 @@
             app:argType="string" />
         <action
             android:id="@+id/action_groupChatDetailFragment_to_chatPageFragment"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
             app:destination="@id/chatPageFragment" />
+        <action
+            android:id="@+id/action_groupChatDetailFragment_to_addGroupMembersFragment"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
+            app:destination="@id/addGroupMembersFragment" />
     </fragment>
     <fragment
-        android:id="@+id/chatDetailFragment"
-        android:name="com.varsel.firechat.view.signedIn.fragments.ChatDetailFragment"
-        android:label="fragment_chat_detail"
-        tools:layout="@layout/fragment_chat_detail" >
+        android:id="@+id/addGroupMembersFragment"
+        android:name="com.varsel.firechat.view.signedIn.fragments.AddGroupMembersFragment"
+        android:label="fragment_add_group_members"
+        tools:layout="@layout/fragment_add_group_members" >
+        <argument
+            android:name="groupId"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/aboutUserFragment"
+        android:name="com.varsel.firechat.view.signedIn.fragments.AboutUserFragment"
+        android:label="fragment_about_user"
+        tools:layout="@layout/fragment_about_user" >
         <action
-            android:id="@+id/action_chatDetailFragment_to_otherProfileFragment"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right"
+            android:id="@+id/action_aboutUserFragment_to_otherProfileFragment"
             app:destination="@id/otherProfileFragment" />
         <argument
             android:name="chatRoomId"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="userId"
             app:argType="string" />
     </fragment>
 </navigation>

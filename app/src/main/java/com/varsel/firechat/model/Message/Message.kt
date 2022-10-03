@@ -6,14 +6,14 @@ class Message {
     lateinit var message: String
     var time: Long = 0L
     lateinit var sender: String
-    var type: Int? = null
+    var type: Int = MessageType.TEXT
     var deleted: HashMap<String, String>? = null
 
     constructor(){
 
     }
 
-    constructor(messageUID: String, message: String, time: Long, sender: String, type: Int?){
+    constructor(messageUID: String, message: String, time: Long, sender: String, type: Int){
         this.messageUID = messageUID
         this.message = message
         this.sender = sender
@@ -29,11 +29,11 @@ class MessageType(){
     }
 }
 
-class MessageStatus(){
+class MessageStatus {
     companion object {
         val SENT = 0
-        val DELIVERED = 1
-        val READ = 2
+        val RECEIVED = 1
+        val SYSTEM = 2
     }
 }
 
@@ -44,5 +44,6 @@ class SystemMessageType(){
         val NOT_ADMIN = "NOT_ADMIN"
         val GROUP_REMOVE = "GROUP_REMOVE"
         val GROUP_EXIT = "GROUP_EXIT"
+        val GROUP_ADD = "GROUP_ADD"
     }
 }

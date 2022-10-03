@@ -83,8 +83,6 @@ class GroupChatDetailFragment : Fragment() {
             popNavigation()
         }
 
-        toggleAddMemberVisibility()
-
         parent.firebaseViewModel.selectedGroupParticipants.observe(viewLifecycleOwner, Observer {
             binding.groupMembersCount.text = "(${it.size})"
             val admins = parent.firebaseViewModel.selectedGroupRoom.value!!.admins!!.values.toList()
@@ -93,6 +91,8 @@ class GroupChatDetailFragment : Fragment() {
 
             participantAdapter.submitList(sorted)
             participantAdapter.notifyDataSetChanged()
+
+            toggleAddMemberVisibility()
         })
 
         binding.groupMembersClickable.setOnClickListener {
@@ -106,8 +106,13 @@ class GroupChatDetailFragment : Fragment() {
     private fun toggleAddMemberVisibility(){
         if(checkAdminStatus()){
             binding.addMemberClickable.visibility = View.VISIBLE
+            binding.addMemberClickable.setOnClickListener {
+                val action = GroupChatDetailFragmentDirections.actionGroupChatDetailFragmentToAddGroupMembersFragment(groupId)
+                findNavController().navigate(action)
+            }
         } else {
             binding.addMemberClickable.visibility = View.GONE
+            binding.addMemberClickable.setOnClickListener(null)
         }
     }
 

@@ -22,10 +22,13 @@
             android:layout_height="wrap_content">
 
             <ImageView
+                android:clickable="true"
+                android:id="@+id/favorite_icon"
                 android:layout_width="@dimen/gc_icon_size"
                 android:layout_height="@dimen/gc_icon_size"
                 android:src="@drawable/ic_star"
-                app:tint="@color/light_grey_2" />
+                app:tint="@color/light_grey_2"
+                />
 
             <View
                 android:layout_width="0dp"

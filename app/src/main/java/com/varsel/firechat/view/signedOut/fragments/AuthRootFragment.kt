@@ -1,10 +1,7 @@
 package com.varsel.firechat.view.signedOut.fragments
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,11 +11,7 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentAuthRootBinding
@@ -26,7 +19,13 @@ import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedOut.SignedoutActivity
 import com.varsel.firechat.viewModel.FirebaseViewModel
 import com.varsel.firechat.viewModel.SignedoutViewModel
-import kotlinx.coroutines.launch
+
+class AuthType {
+    companion object {
+        val SIGN_UP = "SIGN_UP"
+        val SIGN_IN = "SIGN_IN"
+    }
+}
 
 class AuthRootFragment : Fragment() {
     private var _binding: FragmentAuthRootBinding? = null
@@ -53,7 +52,7 @@ class AuthRootFragment : Fragment() {
         binding.navigateToSignIn.setOnClickListener {
             showSigninDialog {
                 firebaseViewModel.signin(email_login, password_login, parent.mAuth, {
-                    navigate {
+                    navigate(AuthType.SIGN_IN) {
 
                     }
                 }, {
@@ -66,7 +65,7 @@ class AuthRootFragment : Fragment() {
             showSignUpDialog() {
                 firebaseViewModel.signUp(emailText, passwordText, parent.mAuth, {
                     firebaseViewModel.saveUser(fullnameText, emailText, parent.mAuth.currentUser?.uid.toString() ,parent.mDbRef, {
-                        navigate {
+                        navigate(AuthType.SIGN_UP) {
 
                         }
                     }, {
@@ -141,9 +140,11 @@ class AuthRootFragment : Fragment() {
         dialog.show()
     }
 
-    fun navigate(callback: () -> Unit){
+    fun navigate(authType: String, callback: () -> Unit){
         val intent = Intent(context, SignedinActivity::class.java)
         callback()
+
+        intent.putExtra("AUTH_TYPE", authType)
 
         parent.finish()
         startActivity(intent)

@@ -1,6 +1,7 @@
 package com.varsel.firechat.view.signedIn.adapters
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.varsel.firechat.R
 import com.varsel.firechat.model.Message.Message
+import com.varsel.firechat.model.Message.MessageStatus
+import com.varsel.firechat.model.Message.MessageType
 import com.varsel.firechat.model.Message.SystemMessageType
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.MessageUtils
@@ -29,22 +32,17 @@ class ChatPageType {
     }
 }
 
-class MessageType {
-    companion object {
-        val SENT = 0
-        val RECEIVED = 1
-        val SYSTEM = 2
-    }
-}
 class MessageListAdapter(
     val mAuth: FirebaseAuth,
     val mDbRef: DatabaseReference,
     val fragment: Fragment,
+    val context: Context,
     val pageType: Int,
-    val firebaseViewModel: FirebaseViewModel)
+    val firebaseViewModel: FirebaseViewModel,
+    val onClickListener: (message: Message, messageType: Int, messageStatus: Int)-> Unit,
+    val onLongClickListener: (message: Message, messageType: Int, messageStatus: Int)-> Unit
+    )
     : ListAdapter<Message, RecyclerView.ViewHolder>(MessagesCallback()) {
-//    private val SENT = 0
-//    private val RECEIVED = 1
 
     class SentViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val parent = itemView.findViewById<LinearLayout>(R.id.parent)
@@ -62,13 +60,14 @@ class MessageListAdapter(
 
     class SystemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val systemText = itemView.findViewById<TextView>(R.id.system_text)
+        val systemMessageParent = itemView.findViewById<LinearLayout>(R.id.system_message_parent)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if(viewType == MessageType.SENT){
+        if(viewType == MessageStatus.SENT){
             val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_view_sent_text, parent, false)
             return SentViewHolder(view)
-        } else if(viewType == MessageType.SYSTEM){
+        } else if(viewType == MessageStatus.SYSTEM){
             val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_view_system_text, parent, false)
             return SystemViewHolder(view)
         }else {
@@ -117,6 +116,11 @@ class MessageListAdapter(
                 viewHolder.systemText.text = it
             }
 
+            viewHolder.systemMessageParent.setOnLongClickListener {
+                onLongClickListener(item, MessageType.TEXT, MessageStatus.SYSTEM)
+                true
+            }
+
         }else {
             // Received Holder
             val viewHolder = holder as ReceivedViewHolder
@@ -157,15 +161,15 @@ class MessageListAdapter(
     override fun getItemViewType(position: Int): Int {
         val item: Message = getItem(position)
         if(item.sender.toString() == mAuth.currentUser?.uid.toString()){
-            return MessageType.SENT
+            return MessageStatus.SENT
         } else if(item.sender == "SYSTEM"){
-            return MessageType.SYSTEM
+            return MessageStatus.SYSTEM
         }else {
-            return MessageType.RECEIVED
+            return MessageStatus.RECEIVED
         }
     }
 
-    fun getUser(userId: String, callback: (user: User)-> Unit){
+    private fun getUser(userId: String, callback: (user: User)-> Unit){
         firebaseViewModel.getUserSingle(userId, mDbRef, {
             if(it != null){
                 callback(it)
@@ -173,31 +177,81 @@ class MessageListAdapter(
         },{})
     }
 
-    fun formatSystemMessage(message: Message, time: Long, afterCallback: (message: String)-> Unit){
+    private fun formatSystemMessage(message: Message, time: Long, afterCallback: (message: String)-> Unit){
+        val currentUser = mAuth.currentUser!!.uid
         if(message.messageUID == SystemMessageType.GROUP_REMOVE){
             val messageArr: Array<String> = message.message.split(" ").toTypedArray()
 
             getUser(messageArr[0]){ remover ->
                 getUser(messageArr[1]) { removed ->
-                    afterCallback("${remover.name} removed ${removed.name}")
+//                    afterCallback("${if (remover.userUID == currentUser) "You" else "${remover.name}"} removed ${if(removed.userUID == currentUser) "You" else "${removed.name}"}")
+                    afterCallback(context.getString(R.string.group_removed, if (remover.userUID == currentUser) "You" else "${remover.name}", if(removed.userUID == currentUser) "You" else "${removed.name}"))
                 }
             }
+            // TODO: Add lone return
+        }
+
+        if(message.messageUID == SystemMessageType.GROUP_ADD){
+            val users: Array<String> = message.message.split(" ").toTypedArray()
+            getUser(users[0]) {
+                if (users.size < 3) {
+                    formatPerson(it.userUID, {
+                        afterCallback(context.getString(R.string.group_add_second_person_singular))
+                    }, {
+                        afterCallback(context.getString(R.string.group_add_third_person_singular, it.name))
+                    })
+                } else {
+                    formatPerson(it.userUID, {
+                        afterCallback(context.getString(R.string.group_add_second_person, users.size -1))
+                    }, {
+                        afterCallback(context.getString(R.string.group_add_third_person, it.name, users.size -1))
+                    })
+                }
+            }
+            // TODO: Add lone return statement
         }
 
         getUser(message.message) {
             if(message.messageUID == SystemMessageType.GROUP_CREATE){
-                afterCallback("${it.name} created the group ${MessageUtils.formatStampChatsPage(time.toString())}")
-            } else if(message.messageUID == SystemMessageType.NOW_ADMIN){
-                afterCallback("${it.name} is now admin")
-            } else if(message.messageUID == SystemMessageType.NOT_ADMIN){
-                afterCallback("${it.name} is no longer admin")
-            } else if(message.messageUID == SystemMessageType.GROUP_EXIT){
-                afterCallback("${it.name} left the group")
+                formatPerson(it.userUID, {
+                    afterCallback(context.getString(R.string.group_create_second_person, MessageUtils.formatStampChatsPage(time.toString())))
+                }, {
+                    afterCallback(context.getString(R.string.group_create_third_person, it.name, MessageUtils.formatStampChatsPage(time.toString())))
+                })
+            }
+            else if(message.messageUID == SystemMessageType.NOW_ADMIN){
+                formatPerson(it.userUID, {
+                    afterCallback(context.getString(R.string.now_admin_second_person))
+                },{
+                    afterCallback(context.getString(R.string.now_admin_third_person, it.name))
+                })
+            }
+            else if(message.messageUID == SystemMessageType.NOT_ADMIN){
+                formatPerson(it.userUID, {
+                    afterCallback(context.getString(R.string.not_admin_second_person))
+                },{
+                    afterCallback(context.getString(R.string.not_admin_third_person, it.name))
+                })
+            }
+            else if(message.messageUID == SystemMessageType.GROUP_EXIT){
+                formatPerson(it.userUID, {
+                    afterCallback(context.getString(R.string.group_exit_second_person))
+                }, {
+                    afterCallback(context.getString(R.string.group_exit_third_person, it.name))
+                })
             }
         }
     }
 
-    fun setOtherUserTimestamp(viewHolder: ReceivedViewHolder, item: Message){
+    private fun formatPerson(userId: String, secondPersonCallback: ()-> Unit, thirdPersonCallback: ()-> Unit){
+        if(userId == mAuth.currentUser!!.uid){
+            secondPersonCallback()
+        } else {
+            thirdPersonCallback()
+        }
+    }
+
+    private fun setOtherUserTimestamp(viewHolder: ReceivedViewHolder, item: Message){
         if(pageType == ChatPageType.INDIVIDUAL){
             viewHolder.timestamp.text = MessageUtils.formatStampMessage(item.time.toString())
         } else {

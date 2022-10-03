@@ -116,6 +116,7 @@ class FirebaseViewModel: ViewModel() {
         })
     }
 
+    // used to fetch a user that is being displayed on a separate page
     fun getUserById(uid: String, mDbRef: DatabaseReference, beforeCallback: () -> Unit, afterCallback: ()-> Unit = {}) {
         mDbRef.child("Users").orderByChild("userUID").equalTo(uid).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -136,6 +137,7 @@ class FirebaseViewModel: ViewModel() {
         })
     }
 
+    // used to fetch a user for a recycler view
     fun getUserSingle(UID: String, mDbRef: DatabaseReference, loopCallback: (user: User?) -> Unit, afterCallback: () -> Unit){
         mDbRef.child("Users").orderByChild("userUID").equalTo(UID).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -586,16 +588,28 @@ class FirebaseViewModel: ViewModel() {
     }
 
     fun removeFromGroup(firebaseAuth: FirebaseAuth, userId: String, groupId: String, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
-        val reference = mDbRef.child("groupRooms").child(groupId)
+        val groupRef = mDbRef.child("groupRooms").child(groupId)
+        val userRef = mDbRef.child("Users").child(userId)
 
-        reference
+        groupRef
             .child("participants")
             .child(userId)
             .removeValue()
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     groupRemoveMessage(firebaseAuth.currentUser!!.uid, userId, groupId, mDbRef, {
-                        successCallback()
+                        // TODO: Remove from user object
+                        userRef
+                            .child("groupRooms")
+                            .child(groupId)
+                            .removeValue()
+                            .addOnCompleteListener {
+                                if(it.isSuccessful){
+                                    successCallback()
+                                } else {
+                                    failureCallback()
+                                }
+                            }
                     }, {
                         failureCallback()
                     })
@@ -603,6 +617,47 @@ class FirebaseViewModel: ViewModel() {
                     failureCallback()
                 }
             }
+    }
+
+    fun addGroupMembers(users: List<String>, currentUserId: String, groupId: String, mDbRef: DatabaseReference, successCallback: (userId: String) -> Unit, failureCallback: (userId: String) -> Unit, afterCallback: () -> Unit){
+        val groupReference = mDbRef.child("groupRooms").child(groupId)
+
+        groupAddMessage(users, currentUserId, groupId, mDbRef, {
+            for((i, v) in users.withIndex()){
+                groupReference
+                    .child("participants")
+                    .child(v)
+                    .setValue(v)
+                    .addOnCompleteListener {
+                        if(it.isSuccessful){
+
+                            // append group room to user
+                            mDbRef
+                                .child("Users")
+                                .child(v)
+                                .child("groupRooms")
+                                .child(groupId)
+                                .setValue(groupId)
+                                .addOnCompleteListener {
+                                    if(it.isSuccessful){
+                                        successCallback(v)
+                                    } else {
+                                        failureCallback(v)
+                                    }
+                                }
+                        } else {
+                            failureCallback(v)
+                        }
+                    }
+
+                if(i == users.size -1){
+                    afterCallback()
+                }
+            }
+        }, {
+        })
+        // append user IDs to group object
+
     }
 
     fun leaveGroup(groupId: String, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit, failureCallback: () -> Unit){
@@ -665,8 +720,25 @@ class FirebaseViewModel: ViewModel() {
 
     }
 
-    fun groupAddMessage(){
+    fun groupAddMessage(users: List<String>, currentUserId: String, roomId: String, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val usersInString = users.joinToString(
+            separator = " ",
+        )
+        val message = Message(SystemMessageType.GROUP_ADD, "${currentUserId} ${usersInString}", System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val databaseReference = mDbRef.child("groupRooms")
 
+        databaseReference
+            .child(roomId)
+            .child("messages")
+            .push()
+            .setValue(message)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
     }
 
     fun groupExitMessage(userId: String, roomId: String, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
@@ -763,28 +835,6 @@ class FirebaseViewModel: ViewModel() {
 
     }
 
-    // TODO: implement Add Participants
-    fun addParticipants(){
-        // only admins can add admins
-    }
-
-    // TODO: Delete
-    fun getChatsInChatroom(id: String, mDbRef: DatabaseReference, loopCallback: (message: Message?) -> Unit, afterCallback: () -> Unit){
-        mDbRef.child("chatRooms").orderByChild("roomId").equalTo(id).addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (i in snapshot.children){
-                    val item = i.getValue(Message::class.java)
-                    loopCallback(item)
-                }
-                afterCallback()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-
-            }
-        })
-    }
-
     fun editUser(key: String, value: String, firebaseAuth: FirebaseAuth, mDbRef: DatabaseReference){
         val databaseRef = mDbRef.child("Users").child(firebaseAuth.currentUser?.uid.toString())
 
@@ -806,7 +856,41 @@ class FirebaseViewModel: ViewModel() {
         }
     }
 
-    // TODO: Implement delete chatroom
+    fun addGroupToFavorites(groupId: String, mAuth: FirebaseAuth, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val currentUserId = mAuth.currentUser!!.uid
+        val userReference = mDbRef.child("Users").child(currentUserId)
+
+        userReference
+            .child("favoriteGroups")
+            .child(groupId)
+            .setValue(groupId)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun removeGroupFromFavorites(groupId: String, mAuth: FirebaseAuth, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit) {
+        val currentUserId = mAuth.currentUser!!.uid
+        val userReference = mDbRef.child("Users").child(currentUserId)
+
+        userReference
+            .child("favoriteGroups")
+            .child(groupId)
+            .removeValue()
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+        // TODO: Implement delete chatroom
     fun deleteChatRoom(){
         // push to deleted
     }

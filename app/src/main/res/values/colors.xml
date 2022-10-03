@@ -29,6 +29,8 @@
     <color name="cream">#F6F6F6</color>
     <color name="cream_2">#F7F7F7</color>
 
+    <color name="yellow">#F7C84A</color>
+
     <color name="dark_overlay">#23000000</color>
 
 </resources>

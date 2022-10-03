@@ -22,4 +22,13 @@
     <dimen name="gc_card_margin">10dp</dimen>
     <dimen name="gc_card_margin_2">5dp</dimen>
 
+    <dimen name="about_user_check_circle">20dp</dimen>
+    <dimen name="about_user_check">15dp</dimen>
+
+    <dimen name="shimmer_long_height">8dp</dimen>
+    <dimen name="shimmer_long_width_1">200dp</dimen>
+    <dimen name="shimmer_long_width_2">100dp</dimen>
+
+    <dimen name="page_transition_speed">400</dimen>
+
 </resources>

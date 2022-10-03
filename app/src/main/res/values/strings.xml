@@ -104,6 +104,34 @@
     <string name="leave_group">Leave Group</string>
     <string name="block">Block</string>
 
+    <string name="now_admin_second_person">You are now admin</string>
+    <string name="now_admin_third_person">%s is now admin</string>
+    <string name="not_admin_second_person">You are no longer admin</string>
+    <string name="not_admin_third_person">%s is no longer admin</string>
+    <string name="group_exit_second_person">You left the group</string>
+    <string name="group_exit_third_person">%s left the group</string>
+    <string name="group_create_second_person">You created the group at %s</string>
+    <string name="group_create_third_person">%1$s created the group at %2$s</string>
+    <string name="group_removed">%1$s removed %2$s</string>
+    <string name="add_group_members">Add Group Members</string>
+
+    <string name="group_add_second_person">You added %d members</string>
+    <string name="group_add_third_person">%1$s added %2$d members</string>
+    <string name="group_add_second_person_singular">You added a new member</string>
+    <string name="group_add_third_person_singular">%s added a new member</string>
+
+    <string name="about_user_2">About User</string>
+    <string name="user_details">User Details</string>
+
+    <string name="name_colon">Name:</string>
+    <string name="email_colon">Email:</string>
+    <string name="phone_colon">Phone:</string>
+    <string name="gender_colon">Gender:</string>
+    <string name="location_colon">Location:</string>
+    <string name="occupation_colon">Occupation:</string>
+    <string name="about_colon">About:</string>
+
+    <string name="none">None</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

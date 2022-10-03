@@ -11,6 +11,7 @@ import androidx.navigation.findNavController
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentGroupBinding
 import com.varsel.firechat.model.Chat.GroupRoom
+import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.GroupChatsListAdapter
@@ -31,13 +32,14 @@ class GroupFragment : Fragment() {
 
         parent = activity as SignedinActivity
 
-        adapter = GroupChatsListAdapter(parent.firebaseAuth,{
+        adapter = GroupChatsListAdapter(parent.firebaseAuth, parent.mDbRef, requireContext(), parent.firebaseViewModel,{
             navigateToCreateGroup()
         }, {
             navigateToGroupChatPage(it)
         })
 
         parent.firebaseViewModel.currentUser.observe(viewLifecycleOwner, Observer {
+            toggleShimmerVisibility(it)
             if(it != null){
                 binding.createGroupClickable.setOnClickListener {
                     navigateToCreateGroup()
@@ -50,6 +52,7 @@ class GroupFragment : Fragment() {
         parent.firebaseViewModel.groupRooms.observe(viewLifecycleOwner, Observer {
             toggleVisibility(it)
 
+
             submitListToAdapter(it as List<GroupRoom>?)
         })
 
@@ -58,6 +61,14 @@ class GroupFragment : Fragment() {
 
     fun navigateToCreateGroup(){
         view?.findNavController()?.navigate(R.id.action_chatsFragment_to_createGroupFragment)
+    }
+
+    private fun toggleShimmerVisibility(currentUser: User?){
+        if(currentUser != null){
+            binding.shimmerGroup.visibility = View.GONE
+        } else {
+            binding.shimmerGroup.visibility = View.VISIBLE
+        }
     }
 
     fun navigateToGroupChatPage(groupId: String){
@@ -80,7 +91,8 @@ class GroupFragment : Fragment() {
     }
 
     private fun toggleVisibility(groupRooms: List<GroupRoom?>){
-        if(groupRooms.isNotEmpty()){
+        val currentUser = parent.firebaseViewModel.currentUser.value
+        if(groupRooms.isNotEmpty() && currentUser != null){
             binding.noGroups.visibility = View.GONE
             binding.groupChatsRecyclerView.visibility = View.VISIBLE
         } else {

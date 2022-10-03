@@ -10,36 +10,33 @@ import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.R
 import com.varsel.firechat.model.User.User
 
-// TODO: Change to ListView (optional)
-class CreateGroupAdapter(val checkChanged: ()-> Unit): RecyclerView.Adapter<CreateGroupAdapter.CreateGroupViewHolder>() {
-    var friends: ArrayList<User?> = arrayListOf<User?>()
-    var selected: ArrayList<String?> = arrayListOf()
+class AddGroupMembersAdapter(val checkChanged: ()-> Unit): RecyclerView.Adapter<AddGroupMembersAdapter.AddMemberViewHolder>() {
 
-    class CreateGroupViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+    val users: ArrayList<User> = arrayListOf()
+    val selected: ArrayList<String> = arrayListOf()
+
+    class AddMemberViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val parent = itemView.findViewById<LinearLayout>(R.id.parent_clickable)
         val checkbox = itemView.findViewById<CheckBox>(R.id.checkbox)
         val name = itemView.findViewById<TextView>(R.id.name)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CreateGroupViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddMemberViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_view_create_group_item, parent, false)
-        return CreateGroupViewHolder(view)
+        return AddMemberViewHolder(view)
     }
 
-    // TODO: Fix potential bug where the item is scrolled off in the view
-    override fun onBindViewHolder(holder: CreateGroupViewHolder, position: Int) {
-        val item: User? = friends[position]
-        if (item != null) {
-            holder.name.text = item.name
-        }
+    override fun onBindViewHolder(holder: AddMemberViewHolder, position: Int) {
+        val item: User = users[position]
 
-        holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
+        holder.name.text = item.name
+
+        holder.checkbox.setOnCheckedChangeListener { buttonView, isChecked ->
             if(isChecked){
-                item?.userUID?.let { select(it) }
+                select(item.userUID)
             } else {
-                item?.userUID?.let { unselect(it) }
+                unselect(item.userUID)
             }
-
             checkChanged()
         }
 
@@ -58,6 +55,6 @@ class CreateGroupAdapter(val checkChanged: ()-> Unit): RecyclerView.Adapter<Crea
     }
 
     override fun getItemCount(): Int {
-        return friends.size
+        return users.size
     }
 }
