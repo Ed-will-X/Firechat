@@ -1,11 +1,15 @@
 package com.varsel.firechat.view.signedIn
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -19,6 +23,7 @@ import com.varsel.firechat.databinding.ActivitySignedinBinding
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.view.signedOut.SignedoutActivity
 import com.varsel.firechat.viewModel.FirebaseViewModel
 import com.varsel.firechat.viewModel.SignedinViewModel
 
@@ -30,6 +35,7 @@ class SignedinActivity : AppCompatActivity() {
     lateinit var mDbRef: DatabaseReference
     lateinit var firebaseViewModel: FirebaseViewModel
     lateinit var signedinViewModel: SignedinViewModel
+    lateinit var timer: CountDownTimer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +53,6 @@ class SignedinActivity : AppCompatActivity() {
         // get current user single
         signedinViewModel.getCurrentUserSingle(this)
 
-
         binding = ActivitySignedinBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -55,7 +60,15 @@ class SignedinActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.signed_in_nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
+        checkConnectivity()
+        setOverlayClickListeners()
 
+
+        binding.logoutTextBtn.setOnClickListener {
+            logout(this, this) {
+
+            }
+        }
 
         firebaseViewModel.currentUser.observe(this, Observer {
             if (it != null) {
@@ -81,7 +94,6 @@ class SignedinActivity : AppCompatActivity() {
         // Makes the chat fragment the default destination
         binding.bottomNavView.menu.findItem(R.id.chatsFragment).setChecked(true)
     }
-
 
     fun setBottomNavVisibility(navController: NavController){
         navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -119,8 +131,42 @@ class SignedinActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkConnectivity(){
+        firebaseViewModel.checkFirebaseConnection {
+            if(it){
+                timer.cancel()
+                binding.networkErrorOverlay.visibility = View.GONE
+            } else {
+                timer = signedinViewModel.setNetworkOverlayTimer {
+                    binding.networkErrorOverlay.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
+
+    private fun setOverlayClickListeners(){
+        binding.networkErrorOverlay.setOnClickListener {
+            dismissNetworkErrorOverlay()
+            timer = signedinViewModel.setNetworkOverlayTimer {
+                binding.networkErrorOverlay.visibility = View.VISIBLE
+            }
+        }
+
+        binding.cancelNetworkErrorOverlay.setOnClickListener {
+            dismissNetworkErrorOverlay()
+
+            timer = signedinViewModel.setNetworkOverlayTimer {
+                binding.networkErrorOverlay.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun dismissNetworkErrorOverlay(){
+        binding.networkErrorOverlay.visibility = View.GONE
+    }
+
     private fun getCurrentUserRecurrent(){
-        firebaseViewModel.getCurrentUserRecurrent(firebaseAuth, mDbRef, { }, {
+        firebaseViewModel.getCurrentUserRecurrent(firebaseAuth, mDbRef, {  }, {
 
         })
     }
@@ -145,6 +191,16 @@ class SignedinActivity : AppCompatActivity() {
                 firebaseViewModel.friends.value = users
             })
         }
+    }
+
+    private fun logout(activity: FragmentActivity, context: Context?, callback: ()-> Unit){
+        val intent = Intent(context, SignedoutActivity::class.java)
+        callback()
+
+        activity.startActivity(intent)
+        activity.finish()
+
+        // run firebase logout
     }
 
     private fun compareUsers(user: User){

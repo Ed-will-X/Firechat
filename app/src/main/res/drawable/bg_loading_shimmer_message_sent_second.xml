@@ -5,5 +5,9 @@
         android:endColor="@color/light_grey"
         />
 
-    <corners android:radius="360dp"/>
+    <corners
+        android:topLeftRadius="@dimen/chat_bubble_corner"
+        android:bottomLeftRadius="@dimen/chat_bubble_corner"
+        />
+
 </shape>

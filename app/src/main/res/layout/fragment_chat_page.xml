@@ -77,7 +77,16 @@
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-<!--    Recycler View-->
+    <LinearLayout
+        android:id="@+id/shimmer_messages"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include
+            layout="@layout/shimmer_chat"
+            />
+    </LinearLayout>
+
+    <!--    Recycler View-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messages_recycler_view"
         android:layout_width="match_parent"

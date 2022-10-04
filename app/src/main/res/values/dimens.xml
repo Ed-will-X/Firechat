@@ -28,6 +28,7 @@
     <dimen name="shimmer_long_height">8dp</dimen>
     <dimen name="shimmer_long_width_1">200dp</dimen>
     <dimen name="shimmer_long_width_2">100dp</dimen>
+    <dimen name="shimmer_long_width_3">70dp</dimen>
 
     <dimen name="page_transition_speed">400</dimen>
 

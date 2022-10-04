@@ -63,6 +63,9 @@ class ChatPageFragment : Fragment() {
         })
         binding.messagesRecyclerView.adapter = messagesListAdapter
 
+        if(existingChatRoomId == null) {
+            binding.shimmerMessages.visibility = View.GONE
+        }
         parent.firebaseViewModel.selectedChatRoom.observe(viewLifecycleOwner, Observer {
             getMessages(it)
         })
@@ -97,7 +100,17 @@ class ChatPageFragment : Fragment() {
             val sorted = it?.messages?.values?.sortedBy {
                 it.time
             }
+
+            setShimmerVisibility(it)
             messagesListAdapter.submitList(sorted)
+        }
+    }
+
+    private fun setShimmerVisibility(chatRoom: ChatRoom?){
+        if(chatRoom == null){
+            binding.shimmerMessages.visibility = View.VISIBLE
+        } else {
+            binding.shimmerMessages.visibility = View.GONE
         }
     }
 

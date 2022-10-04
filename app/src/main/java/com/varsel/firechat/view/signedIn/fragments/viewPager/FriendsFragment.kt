@@ -1,27 +1,20 @@
 package com.varsel.firechat.view.signedIn.fragments.viewPager
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.NavDirections
 import androidx.navigation.findNavController
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentFriendsBinding
-import com.varsel.firechat.databinding.FragmentProfileBinding
 import com.varsel.firechat.model.User.User
-import com.varsel.firechat.utils.AnimationUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.FriendsAdapter
-import com.varsel.firechat.view.signedIn.fragments.AddFriendsFragmentDirections
-import com.varsel.firechat.view.signedIn.fragments.bottomNav.ChatsFragment
 import com.varsel.firechat.view.signedIn.fragments.bottomNav.ChatsFragmentDirections
-import com.varsel.firechat.view.signedIn.fragments.bottomNav.ProfileFragmentDirections
 
 class FriendsFragment : Fragment() {
     private var _binding: FragmentFriendsBinding? = null
@@ -40,7 +33,6 @@ class FriendsFragment : Fragment() {
         postponeTransition()
 
 
-        toggleVisibility()
 
         binding.addFriendsClickable.setOnClickListener {
             view.findNavController().navigate(R.id.action_chatsFragment_to_addFriends)
@@ -58,6 +50,12 @@ class FriendsFragment : Fragment() {
         binding.friendsRecyclerView.adapter = friendsAdapter
 
         parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
+            toggleVisibility(it)
+
+        })
+
+        parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
+            toggleShimmerVisibility(it)
             if (it != null){
                 friendsAdapter.submitList(it)
             } else {
@@ -73,16 +71,15 @@ class FriendsFragment : Fragment() {
         view?.doOnPreDraw { startPostponedEnterTransition() }
     }
 
-    private fun toggleVisibility(){
-        parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
-            if(it.isNotEmpty()){
-                binding.noFriends.visibility = View.GONE
-                binding.friendsRecyclerView.visibility = View.VISIBLE
-            } else {
-                binding.noFriends.visibility = View.VISIBLE
-                binding.friendsRecyclerView.visibility = View.GONE
-            }
-        })
+    private fun toggleVisibility(it: List<User?>){
+        val currentUser = parent.firebaseViewModel.currentUser.value
+        if(it.isNotEmpty() && currentUser != null){
+            binding.noFriends.visibility = View.GONE
+            binding.friendsRecyclerView.visibility = View.VISIBLE
+        } else {
+            binding.noFriends.visibility = View.VISIBLE
+            binding.friendsRecyclerView.visibility = View.GONE
+        }
     }
 
     private fun navigateToProfile(id: String){
@@ -98,6 +95,14 @@ class FriendsFragment : Fragment() {
             action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(null, userId)
         }
         binding.root.findNavController().navigate(action)
+    }
+
+    private fun toggleShimmerVisibility(friends: List<User?>){
+        if(friends != null){
+            binding.shimmerFriends.visibility = View.GONE
+        } else {
+            binding.shimmerFriends.visibility = View.VISIBLE
+        }
     }
 
 //    private fun determineChatroom(userId: String): Boolean{

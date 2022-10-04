@@ -1,5 +1,6 @@
 package com.varsel.firechat.viewModel
 
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.LiveData
@@ -14,6 +15,24 @@ import com.varsel.firechat.view.signedIn.fragments.bottomNav.ChatsFragmentDirect
 
 class SignedinViewModel(): ViewModel() {
     val currentChatRoomId = MutableLiveData<String>()
+
+    fun setNetworkOverlayTimer(onEnd: ()-> Unit): CountDownTimer {
+        val timer = object : CountDownTimer(4000, 1000){
+            override fun onTick(millisUntilFinished: Long) {
+                Log.d("LLL", "Timer Ticking")
+                if(millisUntilFinished > 5000){
+                    this.cancel()
+                    Log.d("LLL", "Timer Cancelled Internally")
+                }
+            }
+
+            override fun onFinish() {
+                onEnd()
+            }
+        }.start()
+
+        return timer
+    }
 
     fun getCurrentUserSingle(activity: SignedinActivity){
         activity.firebaseViewModel.getCurrentUserSingle(activity.firebaseAuth, activity.mDbRef, { }, {

@@ -32,5 +32,7 @@
     <color name="yellow">#F7C84A</color>
 
     <color name="dark_overlay">#23000000</color>
+    <color name="dark_overlay_2">#42000000</color>
+
 
 </resources>

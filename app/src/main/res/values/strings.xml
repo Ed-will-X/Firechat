@@ -132,6 +132,13 @@
     <string name="about_colon">About:</string>
 
     <string name="none">None</string>
+    <string name="network_error">Network Error</string>
+    <string name="could_not_connect">Could not connect to the server, retrying connection</string>
+    <string name="retrying_connection">Retrying Connection</string>
+    <string name="logout">logout</string>
+
+
+
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

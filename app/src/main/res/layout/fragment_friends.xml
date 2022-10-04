@@ -19,6 +19,7 @@
         />
 
     <FrameLayout
+        android:visibility="gone"
         android:id="@+id/no_friends"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
@@ -68,5 +69,29 @@
                 />
         </LinearLayout>
     </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/shimmer_friends"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include layout="@layout/shimmer_friends"/>
+        <include layout="@layout/shimmer_friends"/>
+        <include layout="@layout/shimmer_friends"/>
+        <include layout="@layout/shimmer_friends"/>
+        <include layout="@layout/shimmer_friends"/>
+        <include layout="@layout/shimmer_friends"/>
+        <include layout="@layout/shimmer_friends"/>
+        <include layout="@layout/shimmer_friends"/>
+        <include layout="@layout/shimmer_friends"/>
+        <include layout="@layout/shimmer_friends"/>
+        <include layout="@layout/shimmer_friends"/>
+        <include layout="@layout/shimmer_friends"/>
+        <include layout="@layout/shimmer_friends"/>
+        <include layout="@layout/shimmer_friends"/>
+        <include layout="@layout/shimmer_friends"/>
+
+    </LinearLayout>
 
 </LinearLayout>

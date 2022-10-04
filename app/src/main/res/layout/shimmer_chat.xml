@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <LinearLayout
+        android:orientation="vertical"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include layout="@layout/shimmer_messages_sent"/>
+        <include layout="@layout/shimmer_message_received" />
+        <include layout="@layout/shimmer_messages_sent"/>
+        <include layout="@layout/shimmer_message_received" />
+        <include layout="@layout/shimmer_messages_sent"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:gravity="center_vertical"
+        android:paddingBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            />
+
+        <include layout="@layout/shimmer_text_input" />
+
+    </LinearLayout>
+
+</FrameLayout>

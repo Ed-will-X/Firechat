@@ -1,5 +1,6 @@
 package com.varsel.firechat.viewModel
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -7,6 +8,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
@@ -78,6 +81,26 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
+    fun checkFirebaseConnection(callback: (Boolean)-> Unit){
+        val connectedRef = Firebase.database.getReference(".info/connected")
+        connectedRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val connected = snapshot.getValue(Boolean::class.java) ?: false
+                if (connected) {
+                    Log.d("LLL", "connected")
+                    callback(true)
+                } else {
+                    Log.d("LLL", "not connected")
+                    callback(false)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("LLL", "Listener was cancelled")
+            }
+        })
+    }
+
     fun getCurrentUserRecurrent(mAuth: FirebaseAuth?, mDbRef: DatabaseReference, beforeCallback: () -> Unit, afterCallback: () -> Unit){
         mDbRef.child("Users").orderByChild("userUID").equalTo(mAuth?.currentUser?.uid.toString()).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -91,7 +114,7 @@ class FirebaseViewModel: ViewModel() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-
+                Log.d("LLL", "Fetch cancelled")
             }
 
         })

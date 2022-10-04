@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentGroupChatPageBinding
+import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageStatus
 import com.varsel.firechat.model.Message.MessageType
@@ -74,6 +75,14 @@ class GroupChatPageFragment : Fragment() {
         return view
     }
 
+    private fun setShimmerVisibility(chatRoom: ChatRoom?){
+        if(chatRoom == null){
+            binding.shimmerMessages.visibility = View.VISIBLE
+        } else {
+            binding.shimmerMessages.visibility = View.GONE
+        }
+    }
+
     private fun navigateToGroupChatDetail(roomId: String){
         val action = GroupChatPageFragmentDirections.actionGroupChatPageFragmentToGroupChatDetailFragment(roomId)
         view?.findNavController()?.navigate(action)
@@ -87,9 +96,13 @@ class GroupChatPageFragment : Fragment() {
 
     private fun getMessages(){
         parent.firebaseViewModel.selectedGroupRoom.observe(viewLifecycleOwner, Observer {
-            val sorted = MessageUtils.sortMessages(it)
-            binding.groupNameText.text = it?.groupName
-            messageAdapter.submitList(sorted)
+            if(it?.roomUID == roomId){
+                setShimmerVisibility(it)
+
+                val sorted = MessageUtils.sortMessages(it)
+                binding.groupNameText.text = it?.groupName
+                messageAdapter.submitList(sorted)
+            }
         })
     }
 
@@ -123,6 +136,7 @@ class GroupChatPageFragment : Fragment() {
         dialog.setContentView(R.layout.action_sheet_system_message)
         val recyclerView = dialog.findViewById<RecyclerView>(R.id.system_message_participant_recycler_view)
         val adapter = FriendListAdapter {
+            dialog.dismiss()
             val action = GroupChatPageFragmentDirections.actionGroupChatPageFragmentToOtherProfileFragment(it)
             binding.root.findNavController().navigate(action)
         }

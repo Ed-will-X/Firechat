@@ -111,13 +111,13 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/black"
                             android:textStyle="bold"
-                            android:text="Balls Gulls"
+                            android:text=""
                             />
                         <TextView
                             android:id="@+id/occupation"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Software Developer"
+                            android:text=""
                             android:textColor="@color/grey"
                             />
                     </LinearLayout>
@@ -127,7 +127,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="Balls Gulls"
+                        android:text=""
                         android:textColor="@color/black"
                         android:textSize="22sp"
                         />
