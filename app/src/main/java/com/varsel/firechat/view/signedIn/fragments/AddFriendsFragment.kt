@@ -1,30 +1,30 @@
 package com.varsel.firechat.view.signedIn.fragments
 
 import android.os.Bundle
-import android.util.Log
+import android.os.CountDownTimer
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentAddFriendsBinding
-import com.varsel.firechat.databinding.FragmentProfileBinding
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.AddFriendsSearchAdapter
+import com.varsel.firechat.viewModel.AddFriendsViewModel
 import com.varsel.firechat.viewModel.FirebaseViewModel
 
 class AddFriendsFragment : Fragment() {
     private var _binding: FragmentAddFriendsBinding? = null
     private val binding get() = _binding!!
     private val firebaseViewModel: FirebaseViewModel by activityViewModels()
-    lateinit var parent: SignedinActivity
+    private lateinit var parent: SignedinActivity
+    private val viewModel: AddFriendsViewModel by activityViewModels()
+    private var timer: CountDownTimer? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -96,9 +96,19 @@ class AddFriendsFragment : Fragment() {
     }
 
     private fun searchBar(){
-        binding.addFriendsSearchBox.doAfterTextChanged {
-            parent.firebaseViewModel.queryUsers(binding.addFriendsSearchBox.text.toString(), parent.mDbRef, parent.firebaseAuth, {}, {})
-        }
+        viewModel.shouldRun.observe(viewLifecycleOwner, Observer { shouldRun ->
+            binding.addFriendsSearchBox.doAfterTextChanged {
+                if(timer != null){
+                    timer?.cancel()
+                }
+
+                timer = viewModel.debounce {
+                    parent.firebaseViewModel.queryUsers(binding.addFriendsSearchBox.text.toString(), parent.mDbRef, parent.firebaseAuth, {
+
+                    }, {})
+                }
+            }
+        })
     }
 
     private fun clearInput(){

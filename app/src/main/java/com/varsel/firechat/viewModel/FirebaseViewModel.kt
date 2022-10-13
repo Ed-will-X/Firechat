@@ -12,6 +12,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Chat.GroupRoom
+import com.varsel.firechat.model.Image.Image
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageType
@@ -71,7 +72,7 @@ class FirebaseViewModel: ViewModel() {
         onSuccessCallback: ()-> Unit,
         onFailureCallback: ()-> Unit
     ){
-        mDbRef.child("Users").child(UID).setValue(User(name, email, UID, null, null, null, false, null, null, null, null))
+        mDbRef.child("Users").child(UID).setValue(User(name, email, UID, null, null, false, null, null, null, null))
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     onSuccessCallback()
@@ -918,8 +919,60 @@ class FirebaseViewModel: ViewModel() {
         // push to deleted
     }
 
+    // TODO: Give option to clear user data before logout
     fun signOut(mAuth: FirebaseAuth){
+        // delete both user and image from the local db
         mAuth.signOut()
+    }
+
+    fun uploadProfileImage(image: Image, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+        val currentUserId = mAuth.currentUser!!.uid
+        val reference = mDbRef.child("Images").child(currentUserId)
+
+        reference
+            .child("profileImage")
+            .setValue(image)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun removeProfileImage(mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+        val currentUserId = mAuth.currentUser!!.uid
+        val reference = mDbRef.child("Images").child(currentUserId)
+
+        reference
+            .child("profileImage")
+            .setValue(null)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    // TODO: not tested
+    fun getProfileImage(mAuth: FirebaseAuth, mDbRef: DatabaseReference, loopCallback: (image: Image?) -> Unit, afterCallback: () -> Unit){
+        val currentUserId = mAuth.currentUser!!.uid
+        mDbRef.child("Images").child(currentUserId).child("profileImage").addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for(item in snapshot.children){
+                    val image = item.getValue(Image::class.java)
+                    loopCallback(image)
+                }
+                afterCallback()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 
     // TODO: Implement delete account
@@ -927,5 +980,7 @@ class FirebaseViewModel: ViewModel() {
         // delete from auth db
 
         // delete from realtime db
+
+        // also delete user images
     }
 }

@@ -4,11 +4,13 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.varsel.firechat.R
@@ -32,6 +34,8 @@ class ChatListAdapter(
         val lastMessage = itemView.findViewById<TextView>(R.id.last_message_chats_list)
         val timestamp = itemView.findViewById<TextView>(R.id.timestamp_chats_list)
         val parent = itemView.findViewById<LinearLayout>(R.id.parent_clickable_chats_list)
+        val profileImageParent = itemView.findViewById<MaterialCardView>(R.id.profile_image_parent)
+        val profileImage = itemView.findViewById<ImageView>(R.id.profile_image)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatItemViewHolder {
@@ -46,8 +50,10 @@ class ChatListAdapter(
                 val id = getUserId(item.participants!!)
                 holder.lastMessage.text = UserUtils.truncate(getLastMessage(item), 38)
                 if(item.participants != null){
+                    // TODO: Replace with internal database code
                     getUser(getUserId(item.participants!!)){
                         holder.name.text = it.name
+//                        ImageUtils.setProfileImage(it.profileImage, holder.profileImageParent, holder.profileImage)
                     }
                 }
                 if(item.messages != null){
@@ -82,6 +88,7 @@ class ChatListAdapter(
         return (sortedMessages?.last()?.time.toString() ?: "")
     }
 
+    // TODO: Show shimmer if the adapter can't account for every username
     private fun getUser(id: String, afterCallback: (user: User)-> Unit) {
         lateinit var user: User
         firebaseViewModel.getUserSingle(id, mDbRef, {

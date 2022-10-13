@@ -19,11 +19,14 @@
     <color name="transparent_light_grey">#9DF3F5F7</color>
     <color name="light_grey_2">#D3D3D3</color>
     <color name="light_grey_3">#E7E7E7</color>
+    <color name="light_grey_4">#F0F1F3</color>
+
     <color name="transparent_white">#B1FFFFFF</color>
     <color name="red_accent">#fa8a8f</color>
     <color name="orange_red">#ff4500</color>
     <color name="light_blue_accent">#4bc2bc</color>
     <color name="ios_blue">#1278f9</color>
+    <color name="blue">#3397FB</color>
     <color name="light_green">#0bd899</color>
     <color name="white_blue">#edf8fe</color>
     <color name="cream">#F6F6F6</color>

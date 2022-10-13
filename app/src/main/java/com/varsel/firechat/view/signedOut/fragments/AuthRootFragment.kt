@@ -24,6 +24,8 @@ class AuthType {
     companion object {
         val SIGN_UP = "SIGN_UP"
         val SIGN_IN = "SIGN_IN"
+        val NAVIGATE_TO_SIGN_UP = "NAVIGATE_TO_SIGN_UP"
+        val NAVIGATE_TO_SIGNED_IN = "NAVIGATE_TO_SIGNED_IN"
     }
 }
 

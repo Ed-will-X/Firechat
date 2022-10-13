@@ -32,4 +32,8 @@
 
     <dimen name="page_transition_speed">400</dimen>
 
+    <dimen name="action_sheet_profile_image_icon_parent_size">50dp</dimen>
+    <dimen name="action_sheet_profile_image_icon_size">20dp</dimen>
+    <dimen name="action_sheet_profile_image_text_size">14dp</dimen>
+
 </resources>

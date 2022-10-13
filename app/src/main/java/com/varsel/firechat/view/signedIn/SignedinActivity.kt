@@ -18,15 +18,18 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.varsel.firechat.FirechatApplication
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActivitySignedinBinding
-import com.varsel.firechat.model.Chat.ChatRoom
-import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.model.Image.ImageDatabase
+import com.varsel.firechat.model.Image.ImageViewModel
+import com.varsel.firechat.model.Image.ImageViewModelFactory
+import com.varsel.firechat.model.Setting.SettingDatabase
 import com.varsel.firechat.view.signedOut.SignedoutActivity
+import com.varsel.firechat.view.signedOut.fragments.AuthType
 import com.varsel.firechat.viewModel.FirebaseViewModel
 import com.varsel.firechat.viewModel.SignedinViewModel
-
 
 class SignedinActivity : AppCompatActivity() {
     lateinit var binding: ActivitySignedinBinding
@@ -35,7 +38,9 @@ class SignedinActivity : AppCompatActivity() {
     lateinit var mDbRef: DatabaseReference
     lateinit var firebaseViewModel: FirebaseViewModel
     lateinit var signedinViewModel: SignedinViewModel
-    lateinit var timer: CountDownTimer
+    var timer: CountDownTimer? = null
+    lateinit var imageViewModel: ImageViewModel
+//    lateinit var settingViewModel: SettingViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +51,10 @@ class SignedinActivity : AppCompatActivity() {
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance()
         mDbRef = FirebaseDatabase.getInstance().reference
+
+//        initialiseSettingViewModel()
+
+        determineAuthType(intent)
 
         // get current user recurrent
         getCurrentUserRecurrent()
@@ -95,6 +104,24 @@ class SignedinActivity : AppCompatActivity() {
         binding.bottomNavView.menu.findItem(R.id.chatsFragment).setChecked(true)
     }
 
+    fun determineAuthType(intent: Intent?){
+        val authType = intent?.extras?.getString("AUTH_TYPE").toString()
+
+        if(authType == AuthType.SIGN_IN){
+            removeImageFromDB()
+        } else if(authType == AuthType.SIGN_UP){
+            removeImageFromDB()
+        } else if(authType == AuthType.NAVIGATE_TO_SIGNED_IN){
+            Log.d("LLL", "nav to signed in")
+        } else if(authType == AuthType.NAVIGATE_TO_SIGN_UP){
+            removeImageFromDB()
+        }
+    }
+
+    fun removeImageFromDB(){
+//        settingViewModel.deleteProfilePic()
+    }
+
     fun setBottomNavVisibility(navController: NavController){
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.bottomNavView.visibility = View.VISIBLE
@@ -131,10 +158,19 @@ class SignedinActivity : AppCompatActivity() {
         }
     }
 
+
+//    private fun initialiseSettingViewModel(){
+//        val vmFactory = SettingViewModelFactory((this.application as FirechatApplication).database.settingDao)
+//        settingViewModel = ViewModelProvider(this, vmFactory).get(SettingViewModel::class.java)
+//    }
+
+
     private fun checkConnectivity(){
         firebaseViewModel.checkFirebaseConnection {
             if(it){
-                timer.cancel()
+                if(timer != null){
+                    timer?.cancel()
+                }
                 binding.networkErrorOverlay.visibility = View.GONE
             } else {
                 timer = signedinViewModel.setNetworkOverlayTimer {

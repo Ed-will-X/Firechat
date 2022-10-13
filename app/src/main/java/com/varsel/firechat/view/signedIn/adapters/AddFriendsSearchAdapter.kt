@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
 import com.varsel.firechat.model.User.User
 
@@ -16,9 +17,10 @@ class AddFriendsSearchAdapter(val clickListener: (UID: String?)-> Unit): Recycle
 
     class UserItemViewHolder(item: View): RecyclerView.ViewHolder(item){
         val root = item.findViewById<LinearLayout>(R.id.root)
-        val profileImage = item.findViewById<ImageView>(R.id.profile_image)
         val name = item.findViewById<TextView>(R.id.name)
         val occupation = item.findViewById<TextView>(R.id.occupation)
+        val profileImageParent = itemView.findViewById<MaterialCardView>(R.id.profile_image_parent)
+        val profileImage = itemView.findViewById<ImageView>(R.id.profile_image)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserItemViewHolder {
@@ -31,7 +33,7 @@ class AddFriendsSearchAdapter(val clickListener: (UID: String?)-> Unit): Recycle
         holder.name.setText(item.name)
         holder.occupation.setText(item.occupation ?: "")
 
-        // TODO: Set the image resource if profile pic is present
+//        ImageUtils.setProfileImage(item.profileImage, holder.profileImageParent, holder.profileImage)
 
         holder.root.setOnClickListener {
             clickListener(item.userUID)

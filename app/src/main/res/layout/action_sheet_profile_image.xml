@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="horizontal"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/light_grey_4"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120dp">
+    <View
+        style="@style/equal_space_horizontal"
+        />
+    <LinearLayout
+        android:id="@+id/view_image"
+        android:clickable="true"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_gravity="center_horizontal"
+            android:backgroundTint="@color/light_green"
+            app:cardElevation="0dp"
+            app:cardCornerRadius="360dp"
+            android:layout_width="@dimen/action_sheet_profile_image_icon_parent_size"
+            android:layout_height="@dimen/action_sheet_profile_image_icon_parent_size">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:layout_width="@dimen/action_sheet_profile_image_icon_size"
+                android:layout_height="@dimen/action_sheet_profile_image_icon_size"
+                android:src="@drawable/ic_zoom"
+                app:tint="@color/white" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_marginTop="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/expand"
+            android:textColor="@color/black"
+            android:textSize="@dimen/action_sheet_profile_image_text_size"
+            />
+    </LinearLayout>
+
+    <View
+        style="@style/equal_space_horizontal"
+        />
+    <LinearLayout
+        android:id="@+id/open_camera"
+        android:clickable="true"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_gravity="center_horizontal"
+            android:backgroundTint="@color/blue"
+            app:cardElevation="0dp"
+            app:cardCornerRadius="360dp"
+            android:layout_width="@dimen/action_sheet_profile_image_icon_parent_size"
+            android:layout_height="@dimen/action_sheet_profile_image_icon_parent_size">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:layout_width="@dimen/action_sheet_profile_image_icon_size"
+                android:layout_height="@dimen/action_sheet_profile_image_icon_size"
+                android:src="@drawable/ic_camera"
+                app:tint="@color/white" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_marginTop="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/open_camera"
+            android:textColor="@color/black"
+            android:textSize="@dimen/action_sheet_profile_image_text_size"
+            />
+    </LinearLayout>
+
+    <View
+        style="@style/equal_space_horizontal"
+        />
+    <LinearLayout
+        android:id="@+id/pick_image"
+        android:clickable="true"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_gravity="center_horizontal"
+            android:backgroundTint="@color/purple_500"
+            app:cardElevation="0dp"
+            app:cardCornerRadius="360dp"
+            android:layout_width="@dimen/action_sheet_profile_image_icon_parent_size"
+            android:layout_height="@dimen/action_sheet_profile_image_icon_parent_size">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:layout_width="@dimen/action_sheet_profile_image_icon_size"
+                android:layout_height="@dimen/action_sheet_profile_image_icon_size"
+                android:src="@drawable/ic_image"
+                app:tint="@color/white" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_marginTop="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_image"
+            android:textColor="@color/black"
+            android:textSize="@dimen/action_sheet_profile_image_text_size"
+            />
+    </LinearLayout>
+
+    <View
+        style="@style/equal_space_horizontal"
+        />
+    <LinearLayout
+        android:id="@+id/remove_image"
+        android:clickable="true"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_gravity="center_horizontal"
+            android:backgroundTint="@color/orange_red"
+            app:cardElevation="0dp"
+            app:cardCornerRadius="360dp"
+            android:layout_width="@dimen/action_sheet_profile_image_icon_parent_size"
+            android:layout_height="@dimen/action_sheet_profile_image_icon_parent_size">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:layout_width="@dimen/action_sheet_profile_image_icon_size"
+                android:layout_height="@dimen/action_sheet_profile_image_icon_size"
+                android:src="@drawable/ic_cancel"
+                app:tint="@color/white" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_marginTop="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/remove_image"
+            android:textColor="@color/black"
+            android:textSize="@dimen/action_sheet_profile_image_text_size"
+            />
+    </LinearLayout>
+    <View
+        style="@style/equal_space_horizontal"
+        />
+
+
+
+
+
+</LinearLayout>

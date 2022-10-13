@@ -5,6 +5,7 @@
     android:clickable="true"
     android:orientation="horizontal"
     android:paddingLeft="10dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -21,6 +22,25 @@
             android:layout_gravity="center"
             android:src="@drawable/ic_baseline_person_24"
             android:layout_height="20dp"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:visibility="gone"
+            android:id="@+id/profile_image_parent"
+            app:cardCornerRadius="360dp"
+            app:cardElevation="0dp"
+            android:elevation="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/profile_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                />
+
+        </com.google.android.material.card.MaterialCardView>
+
     </FrameLayout>
 
     <TextView

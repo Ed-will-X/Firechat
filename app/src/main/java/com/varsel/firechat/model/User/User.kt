@@ -1,10 +1,8 @@
 package com.varsel.firechat.model.User
 
-import android.widget.ImageView
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.varsel.firechat.model.Chat.ChatRoom
 
 @Entity(tableName = "user")
 open class User{
@@ -22,9 +20,10 @@ open class User{
 
     var phone: String? = null
 
-    @ColumnInfo(name = "profile_image")
-//    var profileImage: ImageView? = null
-    var profileImage: Array<Byte>? = null
+//    @ColumnInfo(name = "profile_image")
+//    var profileImage: Array<Byte>? = null
+
+//    val profileImage: String? = null
 
     @ColumnInfo(name = "profile_lock")
     var profileLock: Boolean = false
@@ -64,7 +63,6 @@ open class User{
                 userUID: String,
                 about: String?,
                 phone: String?,
-                profileImage: Array<Byte>?,
                 profileLock: Boolean,
                 chatRooms: HashMap<String, String>?,
                 groupRooms: HashMap<String, String>?,
@@ -76,7 +74,6 @@ open class User{
         this.about = about
         this.userUID = userUID
         this.phone = phone
-        this.profileImage = profileImage
         this.profileLock = profileLock
         this.chatRooms = chatRooms
         this.groupRooms = groupRooms

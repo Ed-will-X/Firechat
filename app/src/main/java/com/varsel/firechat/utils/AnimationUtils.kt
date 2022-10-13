@@ -3,6 +3,7 @@ package com.varsel.firechat.utils
 import android.content.Context
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import java.time.Duration
@@ -42,6 +43,12 @@ class AnimationUtils {
         fun materialFadeThroughExit(fragment: Fragment, length: Long){
             fragment.exitTransition = MaterialFadeThrough().apply {
                 duration = length
+            }
+        }
+
+        fun changeDialogDimAmount(dialog: BottomSheetDialog, amount: Float){
+            if(dialog.window != null){
+                dialog.window!!.setDimAmount(amount)
             }
         }
     }

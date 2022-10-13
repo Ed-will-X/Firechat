@@ -17,7 +17,6 @@ import com.google.firebase.database.DatabaseReference
 import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.utils.AnimationUtils
-import com.varsel.firechat.utils.AnimationUtils.Companion.changeColor
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.viewModel.FirebaseViewModel
 

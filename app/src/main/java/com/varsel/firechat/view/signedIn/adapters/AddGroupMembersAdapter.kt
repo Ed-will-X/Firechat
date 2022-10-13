@@ -4,9 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
 import com.varsel.firechat.model.User.User
 
@@ -19,6 +21,8 @@ class AddGroupMembersAdapter(val checkChanged: ()-> Unit): RecyclerView.Adapter<
         val parent = itemView.findViewById<LinearLayout>(R.id.parent_clickable)
         val checkbox = itemView.findViewById<CheckBox>(R.id.checkbox)
         val name = itemView.findViewById<TextView>(R.id.name)
+        val profileImageParent = itemView.findViewById<MaterialCardView>(R.id.profile_image_parent)
+        val profileImage = itemView.findViewById<ImageView>(R.id.profile_image)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddMemberViewHolder {
@@ -30,6 +34,7 @@ class AddGroupMembersAdapter(val checkChanged: ()-> Unit): RecyclerView.Adapter<
         val item: User = users[position]
 
         holder.name.text = item.name
+//        ImageUtils.setProfileImage(item.profileImage, holder.profileImageParent, holder.profileImage)
 
         holder.checkbox.setOnCheckedChangeListener { buttonView, isChecked ->
             if(isChecked){

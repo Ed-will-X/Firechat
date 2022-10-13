@@ -137,6 +137,13 @@
     <string name="retrying_connection">Retrying Connection</string>
     <string name="logout">logout</string>
 
+    <string name="open_camera">Camera</string>
+    <string name="select_image">Pick</string>
+    <string name="remove_image">Remove</string>
+    <string name="expand">Expand</string>
+
+    <string name="image_upload_error">"Something went wrong with image upload"</string>
+
 
 
 

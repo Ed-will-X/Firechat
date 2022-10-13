@@ -2,20 +2,20 @@ package com.varsel.firechat.view.signedIn.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
-import com.varsel.firechat.viewModel.FirebaseViewModel
 
 class ParticipantsListAdapter(
     val context: Context,
@@ -30,6 +30,8 @@ class ParticipantsListAdapter(
 //        val more = itemView.findViewById<ImageView>(R.id.more)
         val parentClickable = itemView.findViewById<LinearLayout>(R.id.parent_clickable)
         val admin = itemView.findViewById<LinearLayout>(R.id.admin)
+        val profileImageParent = itemView.findViewById<MaterialCardView>(R.id.profile_image_parent)
+        val profileImage = itemView.findViewById<ImageView>(R.id.profile_image)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ParticipantViewHolder {
@@ -39,6 +41,8 @@ class ParticipantsListAdapter(
 
     override fun onBindViewHolder(holder: ParticipantViewHolder, position: Int) {
         val item = getItem(position)
+
+//        ImageUtils.setProfileImage(item.profileImage, holder.profileImageParent, holder.profileImage)
 
         if(item.userUID?.let { isAdmin(it) } == true){
             holder.admin.visibility = View.VISIBLE
