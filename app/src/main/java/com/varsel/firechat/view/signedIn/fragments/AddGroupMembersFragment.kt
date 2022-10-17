@@ -91,11 +91,11 @@ class AddGroupMembersFragment : Fragment() {
     }
 
     private fun addParticipants(){
-        Log.d("LLL", "${adapter.selected}")
         parent.firebaseViewModel.addGroupMembers(adapter.selected, parent.firebaseAuth.uid!!, groupId, parent.mDbRef, {
-           Log.d("LLL", "${it} - successful")
+
+
         }, {
-            Log.d("LLL", "${it} - failure")
+
         }, {
             popNavigation()
         })

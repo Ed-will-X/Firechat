@@ -39,8 +39,8 @@ class SignedinActivity : AppCompatActivity() {
     lateinit var firebaseViewModel: FirebaseViewModel
     lateinit var signedinViewModel: SignedinViewModel
     var timer: CountDownTimer? = null
-    lateinit var imageViewModel: ImageViewModel
 //    lateinit var settingViewModel: SettingViewModel
+    lateinit var imageViewModel: ImageViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +53,7 @@ class SignedinActivity : AppCompatActivity() {
         mDbRef = FirebaseDatabase.getInstance().reference
 
 //        initialiseSettingViewModel()
+        initialiseImageViewModel()
 
         determineAuthType(intent)
 
@@ -112,7 +113,7 @@ class SignedinActivity : AppCompatActivity() {
         } else if(authType == AuthType.SIGN_UP){
             removeImageFromDB()
         } else if(authType == AuthType.NAVIGATE_TO_SIGNED_IN){
-            Log.d("LLL", "nav to signed in")
+//            Log.d("LLL", "nav to signed in")
         } else if(authType == AuthType.NAVIGATE_TO_SIGN_UP){
             removeImageFromDB()
         }
@@ -163,6 +164,11 @@ class SignedinActivity : AppCompatActivity() {
 //        val vmFactory = SettingViewModelFactory((this.application as FirechatApplication).database.settingDao)
 //        settingViewModel = ViewModelProvider(this, vmFactory).get(SettingViewModel::class.java)
 //    }
+
+    private fun initialiseImageViewModel(){
+        val vmFactory = ImageViewModelFactory((this.application as FirechatApplication).imageDatabase.imageDao)
+        imageViewModel = ViewModelProvider(this, vmFactory).get(ImageViewModel::class.java)
+    }
 
 
     private fun checkConnectivity(){

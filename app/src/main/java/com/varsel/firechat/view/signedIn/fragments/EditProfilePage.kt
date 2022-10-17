@@ -16,6 +16,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
@@ -24,7 +26,9 @@ import com.varsel.firechat.databinding.ActionSheetProfileImageBinding
 import com.varsel.firechat.databinding.FragmentEditProfilePageBinding
 import com.varsel.firechat.model.Image.Image
 import com.varsel.firechat.model.Image.ImageType
+import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.AnimationUtils
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
@@ -32,6 +36,7 @@ import com.varsel.firechat.viewModel.FirebaseViewModel
 
 private val REQUEST_TAKE_PHOTO = 0
 private val REQUEST_SELECT_IMAGE_IN_ALBUM = 1
+
 class EditProfilePage : Fragment() {
     private var _binding: FragmentEditProfilePageBinding? = null
     private val binding get() = _binding!!
@@ -48,14 +53,11 @@ class EditProfilePage : Fragment() {
 
         setBindings()
 
-//        parent.settingViewModel.getProfilePic().observe(viewLifecycleOwner, Observer {
-//            if(it.settingValue != null){
-//                setProfilePic(it.settingValue!!)
-//            } else {
-//                // get profile image from DB
-//                fetchProfileImage()
-//            }
-//        })
+        parent.firebaseViewModel.currentUser.observe(viewLifecycleOwner, Observer {
+            if(it != null){
+                determineImgFetchMethod(it)
+            }
+        })
 
         binding.actionSheetClickable.setOnClickListener {
             openEditProfileActionsheet()
@@ -65,12 +67,41 @@ class EditProfilePage : Fragment() {
     }
 
     private fun fetchProfileImage(){
+        Log.d("LLL", "Fetch image ran")
         parent.firebaseViewModel.getProfileImage(parent.firebaseAuth, parent.mDbRef, {
             if(it != null){
-//                it.image?.let { it1 -> parent.settingViewModel.storeProfilePic(it1) }
+                parent.imageViewModel.storeImage(it)
+                it.image?.let { it1 -> setProfilePic(it1) }
             }
         }, {
 
+        })
+    }
+
+    // TODO: Fix recursive fetch after delete and re-upload
+    private fun determineImgFetchMethod(user: User){
+        Log.d("LLL", "determine image ran")
+
+        val imageLiveData = parent.imageViewModel.determineImageRetrieveMethod(user)
+        Log.d("LLL", "imgChangeTimestamp user: ${user.imgChangeTimestamp}")
+        Log.d("LLL", "imgChangeTimestamp DB: ${imageLiveData?.value?.imgChangeTimestamp}")
+
+//        if(imageLiveData?.value != null && imageLiveData.value?.imgChangeTimestamp == user.imgChangeTimestamp){
+//            imageLiveData.value!!.image?.let { setProfilePic(it) }
+//            Log.d("LLL", "Image not null")
+//        } else {
+//            fetchProfileImage()
+//            Log.d("LLL", "Image null")
+//        }
+
+        imageLiveData?.observeOnce(viewLifecycleOwner, Observer {
+            if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
+                setProfilePic(it.image!!)
+                Log.d("LLL", "Image not null")
+            } else {
+                Log.d("LLL", "Image null")
+                fetchProfileImage()
+            }
         })
     }
 
@@ -141,10 +172,15 @@ class EditProfilePage : Fragment() {
     private fun uploadImage(uri: Uri, successCallback: ()-> Unit){
         val base64: String? = ImageUtils.uriToBitmap(uri, parent)
         val currentUser = parent.firebaseAuth.currentUser!!.uid
-        val image = Image(MessageUtils.generateUID(50), currentUser, base64!!, ImageType.PROFILE_IMAGE)
+        val timestamp = System.currentTimeMillis()
+        val imageId = MessageUtils.generateUID(50)
+        val image = Image(imageId, currentUser, base64!!, ImageType.PROFILE_IMAGE, timestamp)
 
         parent.firebaseViewModel.uploadProfileImage(image, parent.mDbRef, parent.firebaseAuth, {
-            successCallback()
+            parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, imageId, {
+                parent.imageViewModel.storeImage(image)
+                successCallback()
+            }, {})
 //            parent.settingViewModel.storeProfilePic(image.image!!)
 
         }, {
@@ -154,10 +190,15 @@ class EditProfilePage : Fragment() {
 
     private fun uploadImage(base64: String, successCallback: () -> Unit){
         val currentUser = parent.firebaseAuth.currentUser!!.uid
-        val image = Image(MessageUtils.generateUID(50), currentUser, base64, ImageType.PROFILE_IMAGE)
+        val timestamp = System.currentTimeMillis()
+        val imageId = MessageUtils.generateUID(50)
+        val image = Image(imageId, currentUser, base64, ImageType.PROFILE_IMAGE, timestamp)
 
         parent.firebaseViewModel.uploadProfileImage(image, parent.mDbRef, parent.firebaseAuth, {
-            successCallback()
+            parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, imageId,{
+                parent.imageViewModel.storeImage(image)
+                successCallback()
+            }, {})
 //            parent.settingViewModel.storeProfilePic(image.image!!)
         }, {
             Toast.makeText(requireContext(), getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
@@ -166,8 +207,11 @@ class EditProfilePage : Fragment() {
 
     private fun removeImage(successCallback: () -> Unit){
         val currentUser = parent.firebaseAuth.currentUser!!.uid
+        val timestamp = System.currentTimeMillis()
         parent.firebaseViewModel.removeProfileImage(parent.mDbRef, parent.firebaseAuth, {
-            successCallback()
+            parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, null, {
+                successCallback()
+            }, {})
 //            parent.settingViewModel.deleteProfilePic()
         }, {})
     }

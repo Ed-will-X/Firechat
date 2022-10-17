@@ -88,16 +88,14 @@ class FirebaseViewModel: ViewModel() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val connected = snapshot.getValue(Boolean::class.java) ?: false
                 if (connected) {
-                    Log.d("LLL", "connected")
                     callback(true)
                 } else {
-                    Log.d("LLL", "not connected")
                     callback(false)
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.d("LLL", "Listener was cancelled")
+
             }
         })
     }
@@ -115,7 +113,7 @@ class FirebaseViewModel: ViewModel() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.d("LLL", "Fetch cancelled")
+
             }
 
         })
@@ -927,10 +925,9 @@ class FirebaseViewModel: ViewModel() {
 
     fun uploadProfileImage(image: Image, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: ()-> Unit, failureCallback: ()-> Unit){
         val currentUserId = mAuth.currentUser!!.uid
-        val reference = mDbRef.child("Images").child(currentUserId)
+        val reference = mDbRef.child("ProfileImages").child(currentUserId)
 
         reference
-            .child("profileImage")
             .setValue(image)
             .addOnCompleteListener {
                 if(it.isSuccessful){
@@ -943,10 +940,9 @@ class FirebaseViewModel: ViewModel() {
 
     fun removeProfileImage(mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: ()-> Unit, failureCallback: ()-> Unit){
         val currentUserId = mAuth.currentUser!!.uid
-        val reference = mDbRef.child("Images").child(currentUserId)
+        val reference = mDbRef.child("ProfileImages").child(currentUserId)
 
         reference
-            .child("profileImage")
             .setValue(null)
             .addOnCompleteListener {
                 if(it.isSuccessful){
@@ -960,9 +956,10 @@ class FirebaseViewModel: ViewModel() {
     // TODO: not tested
     fun getProfileImage(mAuth: FirebaseAuth, mDbRef: DatabaseReference, loopCallback: (image: Image?) -> Unit, afterCallback: () -> Unit){
         val currentUserId = mAuth.currentUser!!.uid
-        mDbRef.child("Images").child(currentUserId).child("profileImage").addListenerForSingleValueEvent(object: ValueEventListener{
+        mDbRef.child("ProfileImages").orderByChild("ownerId").equalTo(currentUserId).addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 for(item in snapshot.children){
+
                     val image = item.getValue(Image::class.java)
                     loopCallback(image)
                 }
@@ -973,6 +970,32 @@ class FirebaseViewModel: ViewModel() {
                 TODO("Not yet implemented")
             }
         })
+    }
+
+    // TODO: not tested
+    fun appendProfileImageTimestamp(mAuth: FirebaseAuth, mDbRef: DatabaseReference, timestamp: Long, profileImageId: String?, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val currentuser = mAuth.currentUser!!.uid
+        val databaseReference = mDbRef.child("Users").child(currentuser)
+
+        databaseReference
+            .child("imgChangeTimestamp")
+            .setValue(timestamp)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    databaseReference
+                        .child("profileImageId")
+                        .setValue(profileImageId)
+                        .addOnCompleteListener {
+                            if (it.isSuccessful){
+                                successCallback()
+                            } else {
+                                failureCallback()
+                            }
+                        }
+                } else {
+                    failureCallback()
+                }
+            }
     }
 
     // TODO: Implement delete account

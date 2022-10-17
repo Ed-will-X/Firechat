@@ -12,13 +12,10 @@ class AddFriendsViewModel: ViewModel() {
 //        shouldRun.value = false
         val timer = object : CountDownTimer(1000, 100){
             override fun onTick(millisUntilFinished: Long) {
-                Log.d("LLL", "Run debounce - tick: ${shouldRun.value}")
             }
 
             override fun onFinish() {
                 onEnd()
-//                shouldRun.value = true
-                Log.d("LLL", "Run debounce - finish: ${shouldRun.value}")
             }
         }.start()
 

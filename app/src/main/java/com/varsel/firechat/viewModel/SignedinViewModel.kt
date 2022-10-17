@@ -14,10 +14,8 @@ class SignedinViewModel(): ViewModel() {
     fun setNetworkOverlayTimer(onEnd: ()-> Unit): CountDownTimer {
         val timer = object : CountDownTimer(4000, 1000){
             override fun onTick(millisUntilFinished: Long) {
-                Log.d("LLL", "Timer Ticking")
                 if(millisUntilFinished > 5000){
                     this.cancel()
-                    Log.d("LLL", "Timer Cancelled Internally")
                 }
             }
 

@@ -90,16 +90,13 @@ class GroupChatsListAdapter(val mAuth: FirebaseAuth, val mDbRef: DatabaseReferen
         if(!isFavorite(groupId)){
             firebaseViewModel.addGroupToFavorites(groupId, mAuth, mDbRef, {
                 AnimationUtils.changeColor(icon, R.color.yellow, context)
-                Log.d("LLL", "add success")
             },{
-                Log.d("LLL", "add failure")
             })
         } else {
             firebaseViewModel.removeGroupFromFavorites(groupId, mAuth, mDbRef, {
-                Log.d("LLL", "removal success")
                 AnimationUtils.changeColor(icon, R.color.light_grey_2, context)
             },{
-                Log.d("LLL", "removal failure")
+
             })
         }
     }

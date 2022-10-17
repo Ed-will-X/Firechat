@@ -15,16 +15,21 @@ class Image {
     @ColumnInfo(name = "owner_id")
     lateinit var ownerId: String
 
+    var imgChangeTimestamp: Long = 0L
+
     var image: String? = null
 
     var type: Int = 0
 
-    constructor(imageId: String, ownerId: String, image: String, type: Int){
+    constructor(imageId: String, ownerId: String, image: String, type: Int, imgChangeTimestamp: Long){
         this.imageId = imageId
         this.ownerId = ownerId
         this.image = image
         this.type = type
+        this.imgChangeTimestamp = imgChangeTimestamp
     }
+
+    constructor()
 }
 
 class ImageType {

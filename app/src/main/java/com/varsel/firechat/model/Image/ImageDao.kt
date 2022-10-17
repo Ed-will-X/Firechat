@@ -5,7 +5,7 @@ import androidx.room.*
 
 @Dao
 interface ImageDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(image: Image)
 
     @Update
@@ -19,4 +19,6 @@ interface ImageDao {
 
     @Query("SELECT * FROM image_table WHERE imageId = :imageId")
     fun get(imageId: String): LiveData<Image>
+
+    // TODO: Add remove all and remove by id
 }

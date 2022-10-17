@@ -9,9 +9,12 @@
     tools:context=".view.signedIn.fragments.viewPager.GroupFragment"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+<LinearLayout
+    android:visibility="gone"
+    android:id="@+id/no_groups"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <FrameLayout
-        android:visibility="gone"
-        android:id="@+id/no_groups"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <ImageView
@@ -61,6 +64,7 @@
         </LinearLayout>
     </FrameLayout>
 
+</LinearLayout>
 
     <LinearLayout
         android:layout_marginHorizontal="15dp"

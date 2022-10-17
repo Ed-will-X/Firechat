@@ -21,7 +21,6 @@ class GroupChatDetailViewModel: ViewModel() {
                     users.add(it)
                 }
             }, {
-                Log.d("LLL", "Ran")
                 parent.firebaseViewModel.selectedGroupParticipants.value = users
             })
         }
