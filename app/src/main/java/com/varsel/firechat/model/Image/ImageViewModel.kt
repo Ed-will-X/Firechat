@@ -18,7 +18,7 @@ class ImageViewModel(val dao: ImageDao): ViewModel() {
     }
 
     fun storeImage(image: Image){
-        Log.d("LLL", "Store Image Called")
+        Log.d("LLL", "Store Image Called :::::::::::::::::::::::::::::::::: ${image.ownerId}")
         viewModelScope.launch {
             dao.insert(image)
         }

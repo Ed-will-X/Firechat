@@ -954,9 +954,8 @@ class FirebaseViewModel: ViewModel() {
     }
 
     // TODO: not tested
-    fun getProfileImage(mAuth: FirebaseAuth, mDbRef: DatabaseReference, loopCallback: (image: Image?) -> Unit, afterCallback: () -> Unit){
-        val currentUserId = mAuth.currentUser!!.uid
-        mDbRef.child("ProfileImages").orderByChild("ownerId").equalTo(currentUserId).addListenerForSingleValueEvent(object: ValueEventListener{
+    fun getProfileImage(userId: String, mDbRef: DatabaseReference, loopCallback: (image: Image?) -> Unit, afterCallback: () -> Unit){
+        mDbRef.child("ProfileImages").orderByChild("ownerId").equalTo(userId).addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 for(item in snapshot.children){
 

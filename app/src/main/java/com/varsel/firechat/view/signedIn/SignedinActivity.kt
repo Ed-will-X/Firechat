@@ -171,7 +171,7 @@ class SignedinActivity : AppCompatActivity() {
 
     private fun fetchCurrentUserProfileImage(){
         Log.d("LLL", "Fetch image ran")
-        firebaseViewModel.getProfileImage(firebaseAuth, mDbRef, {
+        firebaseViewModel.getProfileImage(firebaseAuth.currentUser!!.uid, mDbRef, {
             if(it != null){
                 imageViewModel.storeImage(it)
                 imageViewModel.profileImageEncoded.value = it.image
@@ -199,10 +199,10 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-    private fun fetchProfileImage(afterCallback: (image: String?)-> Unit){
-        firebaseViewModel.getProfileImage(firebaseAuth, mDbRef, {
+    private fun fetchProfileImage(userId: String, afterCallback: (image: String?)-> Unit){
+        firebaseViewModel.getProfileImage(userId, mDbRef, {
             if(it != null){
-                Log.d("LLL", "Fetch image ran and is not null")
+                Log.d("LLL", "Fetch image ran and is not null ============================ ${it.ownerId}")
                 imageViewModel.storeImage(it)
                 afterCallback(it.image)
             }
@@ -228,7 +228,7 @@ class SignedinActivity : AppCompatActivity() {
                 Log.d("LLL", "other user Image not null")
             } else {
                 Log.d("LLL", "other user Image null")
-                fetchProfileImage {
+                fetchProfileImage(user.userUID) {
                     fetchCallback(it)
                 }
             }
