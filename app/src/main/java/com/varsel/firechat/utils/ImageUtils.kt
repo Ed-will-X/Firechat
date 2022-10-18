@@ -9,6 +9,8 @@ import android.view.View
 import android.widget.ImageView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.model.Image.Image
+import com.varsel.firechat.model.User.User
+import com.varsel.firechat.view.signedIn.SignedinActivity
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
@@ -48,5 +50,25 @@ class ImageUtils {
                 imageCard.visibility = View.GONE
             }
         }
+
+        fun setProfilePic(base64: String, view: ImageView, viewParent: View){
+            val bitmap = ImageUtils.base64ToBitmap(base64)
+
+            view.setImageBitmap(bitmap)
+            viewParent.visibility = View.VISIBLE
+        }
+
+        fun setProfilePicOtherUser(user: User, view: ImageView, viewParent: View, parent: SignedinActivity){
+            parent.determineOtherImgFetchMethod(user, {
+                if (it != null) {
+                    setProfilePic(it, view, viewParent)
+                }
+            }, {
+                if (it != null) {
+                    setProfilePic(it, view, viewParent)
+                }
+            })
+        }
+
     }
 }

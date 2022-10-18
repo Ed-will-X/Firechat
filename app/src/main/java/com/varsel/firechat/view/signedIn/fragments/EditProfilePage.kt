@@ -53,9 +53,9 @@ class EditProfilePage : Fragment() {
 
         setBindings()
 
-        parent.firebaseViewModel.currentUser.observe(viewLifecycleOwner, Observer {
+        parent.imageViewModel.profileImageEncoded.observe(viewLifecycleOwner, Observer {
             if(it != null){
-                determineImgFetchMethod(it)
+                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
             }
         })
 
@@ -64,45 +64,6 @@ class EditProfilePage : Fragment() {
         }
 
         return view
-    }
-
-    private fun fetchProfileImage(){
-        Log.d("LLL", "Fetch image ran")
-        parent.firebaseViewModel.getProfileImage(parent.firebaseAuth, parent.mDbRef, {
-            if(it != null){
-                parent.imageViewModel.storeImage(it)
-                it.image?.let { it1 -> setProfilePic(it1) }
-            }
-        }, {
-
-        })
-    }
-
-    // TODO: Fix recursive fetch after delete and re-upload
-    private fun determineImgFetchMethod(user: User){
-        Log.d("LLL", "determine image ran")
-
-        val imageLiveData = parent.imageViewModel.determineImageRetrieveMethod(user)
-        Log.d("LLL", "imgChangeTimestamp user: ${user.imgChangeTimestamp}")
-        Log.d("LLL", "imgChangeTimestamp DB: ${imageLiveData?.value?.imgChangeTimestamp}")
-
-//        if(imageLiveData?.value != null && imageLiveData.value?.imgChangeTimestamp == user.imgChangeTimestamp){
-//            imageLiveData.value!!.image?.let { setProfilePic(it) }
-//            Log.d("LLL", "Image not null")
-//        } else {
-//            fetchProfileImage()
-//            Log.d("LLL", "Image null")
-//        }
-
-        imageLiveData?.observeOnce(viewLifecycleOwner, Observer {
-            if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
-                setProfilePic(it.image!!)
-                Log.d("LLL", "Image not null")
-            } else {
-                Log.d("LLL", "Image null")
-                fetchProfileImage()
-            }
-        })
     }
 
     private fun openImagePicker(){
@@ -120,13 +81,6 @@ class EditProfilePage : Fragment() {
         } else {
             requestCameraPermission()
         }
-    }
-
-    private fun setProfilePic(base64: String){
-        val bitmap = ImageUtils.base64ToBitmap(base64)
-
-        binding.profileImage.setImageBitmap(bitmap)
-        binding.profileImageParent.visibility = View.VISIBLE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -181,8 +135,6 @@ class EditProfilePage : Fragment() {
                 parent.imageViewModel.storeImage(image)
                 successCallback()
             }, {})
-//            parent.settingViewModel.storeProfilePic(image.image!!)
-
         }, {
             Toast.makeText(requireContext(), getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
         })
@@ -199,7 +151,6 @@ class EditProfilePage : Fragment() {
                 parent.imageViewModel.storeImage(image)
                 successCallback()
             }, {})
-//            parent.settingViewModel.storeProfilePic(image.image!!)
         }, {
             Toast.makeText(requireContext(), getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
         })

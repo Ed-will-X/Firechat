@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 
 class ImageViewModel(val dao: ImageDao): ViewModel() {
     val profileImage = MutableLiveData<Image>()
+    val profileImageEncoded = MutableLiveData<String>()
 
     fun getImageById(id: String): LiveData<Image> {
         val image = dao.get(id)
@@ -29,13 +30,18 @@ class ImageViewModel(val dao: ImageDao): ViewModel() {
         }
     }
 
-    fun determineImageRetrieveMethod(user: User): LiveData<Image>?{
-        if(user.profileImageId != null){
-            val image = dao.get(user.profileImageId!!)
+    fun checkForProfileImageInRoom(profileImageId: String?): LiveData<Image>?{
+        if(profileImageId != null){
+            val image = dao.get(profileImageId)
             Log.d("LLL", "PP ID in user: ${image.value?.ownerId}")
             return image
         } else {
             return null
         }
     }
+
+    fun determineImageRetrieveMethod(){
+
+    }
+
 }

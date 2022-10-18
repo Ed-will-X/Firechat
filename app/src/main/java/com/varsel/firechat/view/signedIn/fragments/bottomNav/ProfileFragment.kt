@@ -13,6 +13,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentProfileBinding
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.FriendRequestsAdapter
@@ -36,6 +37,8 @@ class ProfileFragment : Fragment() {
         parent = activity as SignedinActivity
 
         userUtils = UserUtils(this)
+
+        observeProfileImage()
 
         firebaseViewModel.currentUser.observe(viewLifecycleOwner, Observer {
             if (it != null) {
@@ -73,8 +76,6 @@ class ProfileFragment : Fragment() {
             binding.friendRequestsCount.text = getString(R.string.zero_in_brackets)
         }
 
-//        ImageUtils.setProfileImage(user.profileImage, binding.profileImageParent, binding.profileImage)
-
         if(user?.occupation != null){
             binding.occupation.text = user?.occupation
             binding.nameWithoutOccupation.visibility = View.GONE
@@ -96,6 +97,12 @@ class ProfileFragment : Fragment() {
         binding.editProfile.setOnClickListener {
             view?.findNavController()?.navigate(R.id.action_profileFragment_to_editProfilePage)
         }
+    }
+
+    private fun observeProfileImage(){
+        parent.imageViewModel.profileImageEncoded.observe(viewLifecycleOwner, Observer {
+            ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
+        })
     }
 
     private fun showFriendRequestsActionsheet(){

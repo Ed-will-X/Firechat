@@ -17,14 +17,14 @@ import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.model.Message.Message
+import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.UserUtils
+import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.viewModel.FirebaseViewModel
 
 class ChatListAdapter(
-    val mAuth: FirebaseAuth,
-    val mDbRef: DatabaseReference,
-    val firebaseViewModel: FirebaseViewModel,
+    val parent: SignedinActivity,
     val parentClickListener: (userId: String, chatRoomId: String)-> Unit,
     val profileImageClickListener: ()-> Unit,
 ) : ListAdapter<ChatRoom, ChatListAdapter.ChatItemViewHolder>(ChatsListAdapterDiffItemCallback()) {
@@ -54,21 +54,24 @@ class ChatListAdapter(
                     getUser(getUserId(item.participants!!)){
                         holder.name.text = it.name
 //                        ImageUtils.setProfileImage(it.profileImage, holder.profileImageParent, holder.profileImage)
+                        ImageUtils.setProfilePicOtherUser(it, holder.profileImage, holder.profileImageParent, parent)
                     }
                 }
                 if(item.messages != null){
                     holder.timestamp.text = MessageUtils.formatStampChatsPage(getLastMessageTimestamp(item))
                 }
+
                 holder.parent.setOnClickListener {
                     parentClickListener(id, item.roomUID!!)
                 }
+
             }
     }
 
     fun getUserId(participants: HashMap<String, String>): String{
         var otherUser = ""
         for (i in participants.values){
-            if(i != mAuth.currentUser?.uid.toString()){
+            if(i != parent.firebaseAuth.currentUser?.uid.toString()){
                 otherUser = i
             }
         }
@@ -91,7 +94,7 @@ class ChatListAdapter(
     // TODO: Show shimmer if the adapter can't account for every username
     private fun getUser(id: String, afterCallback: (user: User)-> Unit) {
         lateinit var user: User
-        firebaseViewModel.getUserSingle(id, mDbRef, {
+        parent.firebaseViewModel.getUserSingle(id, parent.mDbRef, {
             if (it != null) {
                 user = it
             }
