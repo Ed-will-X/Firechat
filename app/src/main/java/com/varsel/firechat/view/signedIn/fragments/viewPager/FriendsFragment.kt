@@ -38,7 +38,7 @@ class FriendsFragment : Fragment() {
             view.findNavController().navigate(R.id.action_chatsFragment_to_addFriends)
         }
 
-        val friendsAdapter = FriendsAdapter({
+        val friendsAdapter = FriendsAdapter(parent, {
             if(it != null){
                 navigateToProfile(it.userUID!!)
             }

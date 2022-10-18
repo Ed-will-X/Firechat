@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
 import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.User.User
@@ -21,10 +19,9 @@ import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
-import com.varsel.firechat.viewModel.FirebaseViewModel
 
 class ChatListAdapter(
-    val parent: SignedinActivity,
+    val activity: SignedinActivity,
     val parentClickListener: (userId: String, chatRoomId: String)-> Unit,
     val profileImageClickListener: ()-> Unit,
 ) : ListAdapter<ChatRoom, ChatListAdapter.ChatItemViewHolder>(ChatsListAdapterDiffItemCallback()) {
@@ -53,8 +50,7 @@ class ChatListAdapter(
                     // TODO: Replace with internal database code
                     getUser(getUserId(item.participants!!)){
                         holder.name.text = it.name
-//                        ImageUtils.setProfileImage(it.profileImage, holder.profileImageParent, holder.profileImage)
-                        ImageUtils.setProfilePicOtherUser(it, holder.profileImage, holder.profileImageParent, parent)
+                        ImageUtils.setProfilePicOtherUser(it, holder.profileImage, holder.profileImageParent, activity)
                     }
                 }
                 if(item.messages != null){
@@ -71,7 +67,7 @@ class ChatListAdapter(
     fun getUserId(participants: HashMap<String, String>): String{
         var otherUser = ""
         for (i in participants.values){
-            if(i != parent.firebaseAuth.currentUser?.uid.toString()){
+            if(i != activity.firebaseAuth.currentUser?.uid.toString()){
                 otherUser = i
             }
         }
@@ -94,7 +90,7 @@ class ChatListAdapter(
     // TODO: Show shimmer if the adapter can't account for every username
     private fun getUser(id: String, afterCallback: (user: User)-> Unit) {
         lateinit var user: User
-        parent.firebaseViewModel.getUserSingle(id, parent.mDbRef, {
+        activity.firebaseViewModel.getUserSingle(id, activity.mDbRef, {
             if (it != null) {
                 user = it
             }

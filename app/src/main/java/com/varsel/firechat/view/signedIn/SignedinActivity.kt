@@ -200,30 +200,34 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     private fun fetchProfileImage(afterCallback: (image: String?)-> Unit){
-        Log.d("LLL", "Fetch image ran")
         firebaseViewModel.getProfileImage(firebaseAuth, mDbRef, {
             if(it != null){
+                Log.d("LLL", "Fetch image ran and is not null")
                 imageViewModel.storeImage(it)
                 afterCallback(it.image)
             }
+            // TODO: Remove image from DB if it is null
         }, {
 
         })
     }
 
     fun determineOtherImgFetchMethod(user: User, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
-        Log.d("LLL", "determine image ran")
+        Log.d("LLL", "determine other user image ran ${user.name}")
 
         val imageLiveData = imageViewModel.checkForProfileImageInRoom(user.profileImageId)
-        Log.d("LLL", "imgChangeTimestamp user: ${user.imgChangeTimestamp}")
-        Log.d("LLL", "imgChangeTimestamp DB: ${imageLiveData?.value?.imgChangeTimestamp}")
+
 
         imageLiveData?.observeOnce(this, Observer {
+            Log.d("LLL", "other user id arg: ${user.userUID}")
+            Log.d("LLL", "other user id in DB: ${it?.ownerId}")
+
             if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
+
                 dbCallback(it.image)
-                Log.d("LLL", "Image not null")
+                Log.d("LLL", "other user Image not null")
             } else {
-                Log.d("LLL", "Image null")
+                Log.d("LLL", "other user Image null")
                 fetchProfileImage {
                     fetchCallback(it)
                 }

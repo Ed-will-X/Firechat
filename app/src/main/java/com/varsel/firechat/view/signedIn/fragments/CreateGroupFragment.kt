@@ -36,7 +36,7 @@ class CreateGroupFragment : Fragment() {
         parent = activity as SignedinActivity
 
 
-        adapter = CreateGroupAdapter {
+        adapter = CreateGroupAdapter(parent) {
             toggleBtnEnable()
         }
         binding.friendsRecyclerView.adapter = adapter

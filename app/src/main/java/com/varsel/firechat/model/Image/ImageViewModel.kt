@@ -18,8 +18,15 @@ class ImageViewModel(val dao: ImageDao): ViewModel() {
     }
 
     fun storeImage(image: Image){
+        Log.d("LLL", "Store Image Called")
         viewModelScope.launch {
             dao.insert(image)
+        }
+    }
+
+    fun deleteImage(image: Image){
+        viewModelScope.launch {
+            dao.delete(image)
         }
     }
 
@@ -33,7 +40,6 @@ class ImageViewModel(val dao: ImageDao): ViewModel() {
     fun checkForProfileImageInRoom(profileImageId: String?): LiveData<Image>?{
         if(profileImageId != null){
             val image = dao.get(profileImageId)
-            Log.d("LLL", "PP ID in user: ${image.value?.ownerId}")
             return image
         } else {
             return null

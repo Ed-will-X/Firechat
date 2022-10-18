@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Base64
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import com.google.android.material.card.MaterialCardView
@@ -61,10 +62,12 @@ class ImageUtils {
         fun setProfilePicOtherUser(user: User, view: ImageView, viewParent: View, parent: SignedinActivity){
             parent.determineOtherImgFetchMethod(user, {
                 if (it != null) {
+                    Log.d("LLL", "Fetch Callback")
                     setProfilePic(it, view, viewParent)
                 }
             }, {
                 if (it != null) {
+                    Log.d("LLL", "DB Callback")
                     setProfilePic(it, view, viewParent)
                 }
             })

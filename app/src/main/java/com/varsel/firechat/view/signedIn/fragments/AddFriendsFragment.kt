@@ -34,7 +34,7 @@ class AddFriendsFragment : Fragment() {
         val view = binding.root
         parent = activity as SignedinActivity
 
-        val friendsSearchAdapter = AddFriendsSearchAdapter {
+        val friendsSearchAdapter = AddFriendsSearchAdapter(parent) {
             if(it != null){
                 val action = AddFriendsFragmentDirections.actionAddFriendsToOtherProfileFragment(it)
                 view.findNavController().navigate(action)

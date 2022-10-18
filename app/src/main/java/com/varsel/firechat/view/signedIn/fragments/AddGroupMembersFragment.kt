@@ -28,7 +28,7 @@ class AddGroupMembersFragment : Fragment() {
         val view = binding.root
         groupId = AddGroupMembersFragmentArgs.fromBundle(requireArguments()).groupId
         parent = activity as SignedinActivity
-        adapter = AddGroupMembersAdapter {
+        adapter = AddGroupMembersAdapter(parent) {
             toggleBtnEnable()
         }
         binding.usersRecyclerView.adapter = adapter

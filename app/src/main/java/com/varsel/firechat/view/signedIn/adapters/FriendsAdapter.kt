@@ -9,10 +9,17 @@ import android.widget.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.view.signedIn.SignedinActivity
 
-class FriendsAdapter(val parentClickListener: (user: User)-> Unit, val chatIconClickListener: (user: User)-> Unit): ListAdapter<User, FriendsAdapter.FriendItem>(FriendItemDiffCallback()){
+class FriendsAdapter(
+    val activity: SignedinActivity,
+    val parentClickListener: (user: User)-> Unit,
+    val chatIconClickListener: (user: User)-> Unit
+): ListAdapter<User, FriendsAdapter.FriendItem>(FriendItemDiffCallback()){
     private lateinit var context: Context
     class FriendItem(itemView: View) : RecyclerView.ViewHolder(itemView){
         val name = itemView.findViewById<TextView>(R.id.name_friend)
@@ -20,6 +27,8 @@ class FriendsAdapter(val parentClickListener: (user: User)-> Unit, val chatIconC
         val parentClickable = itemView.findViewById<LinearLayout>(R.id.parent_clickable_friend)
         val messageIcon = itemView.findViewById<ImageView>(R.id.chat_icon_clickable)
         val nameWithOccupation = itemView.findViewById<LinearLayout>(R.id.name_with_occupation_friend)
+        val profileImageParent = itemView.findViewById<MaterialCardView>(R.id.profile_image_parent)
+        val profileImage = itemView.findViewById<ImageView>(R.id.profile_image)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendItem {
@@ -33,6 +42,7 @@ class FriendsAdapter(val parentClickListener: (user: User)-> Unit, val chatIconC
         val item = getItem(position)
 
         holder.name.text = item.name
+        ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity)
 
         if(item.occupation != null){
             holder.occupation.text = item.occupation

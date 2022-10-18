@@ -66,7 +66,7 @@ class GroupChatDetailFragment : Fragment() {
                 groupPageViewModel.determineGetParticipants(it, parent)
             }
             if(it!= null){
-                participantAdapter = ParticipantsListAdapter(requireContext(), parent.firebaseAuth, it, {
+                participantAdapter = ParticipantsListAdapter(parent, requireContext(), parent.firebaseAuth, it, {
                     navigateToOtherProfileFragment(it)
                 },{
                     showParticipantOptionsActonsheet(it)

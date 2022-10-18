@@ -110,7 +110,7 @@ class ProfileFragment : Fragment() {
         dialog.setContentView(R.layout.action_sheet_friend_requests)
 
         val recyclerView = dialog.findViewById<RecyclerView>(R.id.friend_requests_recycler_view)
-        adapter = FriendRequestsAdapter({
+        adapter = FriendRequestsAdapter(parent, {
             if(it != null){
                 val action = ProfileFragmentDirections.actionProfileFragmentToOtherProfileFragment(it)
                 dialog.dismiss()

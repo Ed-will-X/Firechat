@@ -29,7 +29,7 @@ class FriendListFragment : Fragment() {
 
         parent = activity as SignedinActivity
 
-        adapter = FriendListAdapter {
+        adapter = FriendListAdapter(parent) {
             val action = FriendListFragmentDirections.actionFriendListFragmentToOtherProfileFragment(it)
             view.findNavController().navigate(action)
         }

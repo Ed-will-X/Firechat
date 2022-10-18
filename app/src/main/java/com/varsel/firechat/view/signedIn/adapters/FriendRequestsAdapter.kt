@@ -11,9 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.view.signedIn.SignedinActivity
 
 // TODO: Change to ListAdapter
-class FriendRequestsAdapter(val parentListener: (id: String?)-> Unit, val btnListener: (user: User?)-> Unit): RecyclerView.Adapter<FriendRequestsAdapter.FriendRequestViewHolder>(){
+class FriendRequestsAdapter(
+    val activity: SignedinActivity,
+    val parentListener: (id: String?)-> Unit,
+    val btnListener: (user: User?)-> Unit
+): RecyclerView.Adapter<FriendRequestsAdapter.FriendRequestViewHolder>(){
 
     var users = arrayListOf<User>()
 
@@ -35,7 +41,7 @@ class FriendRequestsAdapter(val parentListener: (id: String?)-> Unit, val btnLis
         val item: User = users[position]
 
         holder.name.text = item.name
-//        ImageUtils.setProfileImage(item.profileImage, holder.profileImageParent, holder.profileImage)
+        ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity)
 
 
         holder.parentClickable.setOnClickListener {

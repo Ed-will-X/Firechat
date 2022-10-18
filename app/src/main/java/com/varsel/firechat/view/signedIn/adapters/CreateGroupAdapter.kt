@@ -11,9 +11,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.view.signedIn.SignedinActivity
 
 // TODO: Change to ListView (optional)
-class CreateGroupAdapter(val checkChanged: ()-> Unit): RecyclerView.Adapter<CreateGroupAdapter.CreateGroupViewHolder>() {
+class CreateGroupAdapter(
+    val activity: SignedinActivity,
+    val checkChanged: ()-> Unit
+): RecyclerView.Adapter<CreateGroupAdapter.CreateGroupViewHolder>() {
     var friends: ArrayList<User?> = arrayListOf<User?>()
     var selected: ArrayList<String?> = arrayListOf()
 
@@ -35,7 +40,7 @@ class CreateGroupAdapter(val checkChanged: ()-> Unit): RecyclerView.Adapter<Crea
         val item: User? = friends[position]
         if (item != null) {
             holder.name.text = item.name
-//            ImageUtils.setProfileImage(item.profileImage, holder.profileImageParent, holder.profileImage)
+            ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity)
         }
 
         holder.checkbox.setOnCheckedChangeListener { _, isChecked ->

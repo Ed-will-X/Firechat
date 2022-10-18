@@ -16,8 +16,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.view.signedIn.SignedinActivity
 
 class ParticipantsListAdapter(
+    val activity: SignedinActivity,
     val context: Context,
     val firebaseAuth: FirebaseAuth,
     val groupRoom: GroupRoom,
@@ -42,7 +45,7 @@ class ParticipantsListAdapter(
     override fun onBindViewHolder(holder: ParticipantViewHolder, position: Int) {
         val item = getItem(position)
 
-//        ImageUtils.setProfileImage(item.profileImage, holder.profileImageParent, holder.profileImage)
+        ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity)
 
         if(item.userUID?.let { isAdmin(it) } == true){
             holder.admin.visibility = View.VISIBLE

@@ -134,7 +134,7 @@ class GroupChatPageFragment : Fragment() {
         val dialog = BottomSheetDialog(requireContext())
         dialog.setContentView(R.layout.action_sheet_system_message)
         val recyclerView = dialog.findViewById<RecyclerView>(R.id.system_message_participant_recycler_view)
-        val adapter = FriendListAdapter {
+        val adapter = FriendListAdapter(parent) {
             dialog.dismiss()
             val action = GroupChatPageFragmentDirections.actionGroupChatPageFragmentToOtherProfileFragment(it)
             binding.root.findNavController().navigate(action)
