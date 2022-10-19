@@ -132,6 +132,7 @@ class EditProfilePage : Fragment() {
         parent.firebaseViewModel.uploadProfileImage(image, parent.mDbRef, parent.firebaseAuth, {
             parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
                 parent.imageViewModel.storeImage(image)
+                parent.imageViewModel.profileImageEncoded.value = image.image
                 successCallback()
             }, {})
         }, {
@@ -147,6 +148,7 @@ class EditProfilePage : Fragment() {
         parent.firebaseViewModel.uploadProfileImage(image, parent.mDbRef, parent.firebaseAuth, {
             parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
                 parent.imageViewModel.storeImage(image)
+                parent.imageViewModel.profileImageEncoded.value = image.image
                 successCallback()
             }, {})
         }, {
@@ -155,10 +157,18 @@ class EditProfilePage : Fragment() {
     }
 
     private fun removeImage(successCallback: () -> Unit){
-        val currentUser = parent.firebaseAuth.currentUser!!.uid
+        val currentUserId = parent.firebaseAuth.currentUser!!.uid
         val timestamp = System.currentTimeMillis()
         parent.firebaseViewModel.removeProfileImage(parent.mDbRef, parent.firebaseAuth, {
             parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
+                val image = parent.imageViewModel.getImageById(currentUserId)
+
+                image.observeOnce(viewLifecycleOwner, Observer {
+                    if(it != null){
+                        parent.imageViewModel.deleteImage(it)
+                        parent.imageViewModel.profileImageEncoded.value = null
+                    }
+                })
                 successCallback()
             }, {})
 //            parent.settingViewModel.deleteProfilePic()
