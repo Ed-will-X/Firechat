@@ -1,7 +1,7 @@
 package com.varsel.firechat
 
 import android.app.Application
-import com.varsel.firechat.model.Image.ProfileImageDatabase
+import com.varsel.firechat.model.ProfileImage.ProfileImageDatabase
 import com.varsel.firechat.model.Setting.SettingDatabase
 
 class FirechatApplication: Application() {

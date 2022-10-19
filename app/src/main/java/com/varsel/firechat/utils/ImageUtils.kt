@@ -9,7 +9,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import com.google.android.material.card.MaterialCardView
-import com.varsel.firechat.model.Image.ProfileImage
+import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import java.io.ByteArrayOutputStream

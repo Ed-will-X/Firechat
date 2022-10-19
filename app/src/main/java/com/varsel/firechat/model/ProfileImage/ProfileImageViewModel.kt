@@ -1,4 +1,4 @@
-package com.varsel.firechat.model.Image
+package com.varsel.firechat.model.ProfileImage
 
 import android.util.Log
 import androidx.lifecycle.LiveData

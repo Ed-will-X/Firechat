@@ -22,8 +22,8 @@ import com.varsel.firechat.FirechatApplication
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActivitySignedinBinding
 import com.varsel.firechat.model.User.User
-import com.varsel.firechat.model.Image.ProfileImageViewModel
-import com.varsel.firechat.model.Image.ProfileImageViewModelFactory
+import com.varsel.firechat.model.ProfileImage.ProfileImageViewModel
+import com.varsel.firechat.model.ProfileImage.ProfileImageViewModelFactory
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.view.signedOut.SignedoutActivity
 import com.varsel.firechat.view.signedOut.fragments.AuthType

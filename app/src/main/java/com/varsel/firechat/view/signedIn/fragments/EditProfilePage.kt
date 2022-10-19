@@ -21,8 +21,7 @@ import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActionSheetEditProfileBinding
 import com.varsel.firechat.databinding.ActionSheetProfileImageBinding
 import com.varsel.firechat.databinding.FragmentEditProfilePageBinding
-import com.varsel.firechat.model.Image.ProfileImage
-import com.varsel.firechat.model.Image.ImageType
+import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.utils.AnimationUtils
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.utils.ImageUtils
@@ -122,7 +121,8 @@ class EditProfilePage : Fragment() {
         val base64: String? = ImageUtils.uriToBitmap(uri, parent)
         val currentUser = parent.firebaseAuth.currentUser!!.uid
         val timestamp = System.currentTimeMillis()
-        val profileImage = ProfileImage(currentUser, base64!!, timestamp)
+        val profileImage =
+            ProfileImage(currentUser, base64!!, timestamp)
 
         parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, parent.firebaseAuth, {
             parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
@@ -138,7 +138,8 @@ class EditProfilePage : Fragment() {
     private fun uploadImage(base64: String, successCallback: () -> Unit){
         val currentUser = parent.firebaseAuth.currentUser!!.uid
         val timestamp = System.currentTimeMillis()
-        val profileImage = ProfileImage( currentUser, base64, timestamp)
+        val profileImage =
+            ProfileImage( currentUser, base64, timestamp)
 
         parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, parent.firebaseAuth, {
             parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
