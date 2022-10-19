@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.varsel.firechat.model.User.User
 import kotlinx.coroutines.launch
 
 class ImageViewModel(val dao: ImageDao): ViewModel() {
@@ -30,20 +29,9 @@ class ImageViewModel(val dao: ImageDao): ViewModel() {
         }
     }
 
-    fun getProfileImage(imageId: String){
-        viewModelScope.launch {
-            val image = dao.get(imageId)
-            profileImage.value = image.value
-        }
-    }
-
-    fun checkForProfileImageInRoom(profileImageId: String?): LiveData<Image>?{
-        if(profileImageId != null){
-            val image = dao.get(profileImageId)
-            return image
-        } else {
-            return null
-        }
+    fun checkForProfileImageInRoom(ownerId: String): LiveData<Image>?{
+        val image = dao.get(ownerId)
+        return image
     }
 
     fun determineImageRetrieveMethod(){

@@ -127,11 +127,10 @@ class EditProfilePage : Fragment() {
         val base64: String? = ImageUtils.uriToBitmap(uri, parent)
         val currentUser = parent.firebaseAuth.currentUser!!.uid
         val timestamp = System.currentTimeMillis()
-        val imageId = MessageUtils.generateUID(50)
-        val image = Image(imageId, currentUser, base64!!, ImageType.PROFILE_IMAGE, timestamp)
+        val image = Image(currentUser, base64!!, ImageType.PROFILE_IMAGE, timestamp)
 
         parent.firebaseViewModel.uploadProfileImage(image, parent.mDbRef, parent.firebaseAuth, {
-            parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, imageId, {
+            parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
                 parent.imageViewModel.storeImage(image)
                 successCallback()
             }, {})
@@ -143,11 +142,10 @@ class EditProfilePage : Fragment() {
     private fun uploadImage(base64: String, successCallback: () -> Unit){
         val currentUser = parent.firebaseAuth.currentUser!!.uid
         val timestamp = System.currentTimeMillis()
-        val imageId = MessageUtils.generateUID(50)
-        val image = Image(imageId, currentUser, base64, ImageType.PROFILE_IMAGE, timestamp)
+        val image = Image( currentUser, base64, ImageType.PROFILE_IMAGE, timestamp)
 
         parent.firebaseViewModel.uploadProfileImage(image, parent.mDbRef, parent.firebaseAuth, {
-            parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, imageId,{
+            parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
                 parent.imageViewModel.storeImage(image)
                 successCallback()
             }, {})
@@ -160,7 +158,7 @@ class EditProfilePage : Fragment() {
         val currentUser = parent.firebaseAuth.currentUser!!.uid
         val timestamp = System.currentTimeMillis()
         parent.firebaseViewModel.removeProfileImage(parent.mDbRef, parent.firebaseAuth, {
-            parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, null, {
+            parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
                 successCallback()
             }, {})
 //            parent.settingViewModel.deleteProfilePic()

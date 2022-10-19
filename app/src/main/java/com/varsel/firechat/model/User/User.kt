@@ -18,8 +18,6 @@ open class User{
 
     var imgChangeTimestamp: Long = 0L
 
-    var profileImageId: String? = null
-
     var about: String? = null
 
     var phone: String? = null

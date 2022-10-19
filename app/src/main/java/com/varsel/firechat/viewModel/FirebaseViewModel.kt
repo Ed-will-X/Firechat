@@ -972,7 +972,7 @@ class FirebaseViewModel: ViewModel() {
     }
 
     // TODO: not tested
-    fun appendProfileImageTimestamp(mAuth: FirebaseAuth, mDbRef: DatabaseReference, timestamp: Long, profileImageId: String?, successCallback: () -> Unit, failureCallback: () -> Unit){
+    fun appendProfileImageTimestamp(mAuth: FirebaseAuth, mDbRef: DatabaseReference, timestamp: Long, successCallback: () -> Unit, failureCallback: () -> Unit){
         val currentuser = mAuth.currentUser!!.uid
         val databaseReference = mDbRef.child("Users").child(currentuser)
 
@@ -981,16 +981,7 @@ class FirebaseViewModel: ViewModel() {
             .setValue(timestamp)
             .addOnCompleteListener {
                 if(it.isSuccessful){
-                    databaseReference
-                        .child("profileImageId")
-                        .setValue(profileImageId)
-                        .addOnCompleteListener {
-                            if (it.isSuccessful){
-                                successCallback()
-                            } else {
-                                failureCallback()
-                            }
-                        }
+                    successCallback()
                 } else {
                     failureCallback()
                 }

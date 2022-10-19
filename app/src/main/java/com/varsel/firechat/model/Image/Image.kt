@@ -9,9 +9,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "image_table")
 class Image {
     @PrimaryKey(autoGenerate = false)
-    @NonNull
-    lateinit var imageId: String
-
     @ColumnInfo(name = "owner_id")
     lateinit var ownerId: String
 
@@ -21,8 +18,7 @@ class Image {
 
     var type: Int = 0
 
-    constructor(imageId: String, ownerId: String, image: String, type: Int, imgChangeTimestamp: Long){
-        this.imageId = imageId
+    constructor(ownerId: String, image: String, type: Int, imgChangeTimestamp: Long){
         this.ownerId = ownerId
         this.image = image
         this.type = type

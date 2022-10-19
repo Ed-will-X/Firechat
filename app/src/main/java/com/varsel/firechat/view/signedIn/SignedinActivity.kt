@@ -184,7 +184,7 @@ class SignedinActivity : AppCompatActivity() {
     private fun determineCurrentUserImgFetchMethod(user: User){
         Log.d("LLL", "determine image ran")
 
-        val imageLiveData = imageViewModel.checkForProfileImageInRoom(user.profileImageId)
+        val imageLiveData = imageViewModel.checkForProfileImageInRoom(user.userUID)
         Log.d("LLL", "imgChangeTimestamp user: ${user.imgChangeTimestamp}")
         Log.d("LLL", "imgChangeTimestamp DB: ${imageLiveData?.value?.imgChangeTimestamp}")
 
@@ -215,7 +215,7 @@ class SignedinActivity : AppCompatActivity() {
     fun determineOtherImgFetchMethod(user: User, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
         Log.d("LLL", "determine other user image ran ${user.name}")
 
-        val imageLiveData = imageViewModel.checkForProfileImageInRoom(user.profileImageId)
+        val imageLiveData = imageViewModel.checkForProfileImageInRoom(user.userUID)
 
 
         imageLiveData?.observeOnce(this, Observer {
