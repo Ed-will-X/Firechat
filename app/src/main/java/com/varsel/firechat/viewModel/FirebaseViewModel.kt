@@ -986,9 +986,68 @@ class FirebaseViewModel: ViewModel() {
     }
 
     // TODO: implement upload group image
+    fun uploadGroupImage(profileImage: ProfileImage, mDbRef: DatabaseReference, groupId: String, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+        val reference = mDbRef.child("GroupImages").child(groupId)
+
+        reference
+            .setValue(profileImage)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
     // TODO: implement remove group image
+    fun removeGroupImage(mDbRef: DatabaseReference, groupId: String, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+        val reference = mDbRef.child("GroupImages").child(groupId)
+
+        reference
+            .setValue(null)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
     // TODO: implement get group image
+    fun getGroupImage(groupId: String, mDbRef: DatabaseReference, loopCallback: (profileImage: ProfileImage?) -> Unit, afterCallback: () -> Unit){
+        mDbRef.child("GroupImages").orderByChild("ownerId").equalTo(groupId).addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for(item in snapshot.children){
+
+                    val profileImage = item.getValue(ProfileImage::class.java)
+                    loopCallback(profileImage)
+                }
+                afterCallback()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+    }
+
     // TODO: implement append group image timestamp
+    fun appendGroupImageTimestamp(groupId: String, mDbRef: DatabaseReference, timestamp: Long, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val databaseReference = mDbRef.child("groupRooms").child(groupId)
+
+        databaseReference
+            .child("imgChangeTimestamp")
+            .setValue(timestamp)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
 
     // TODO: Implement delete account
     fun deleteAccount(){

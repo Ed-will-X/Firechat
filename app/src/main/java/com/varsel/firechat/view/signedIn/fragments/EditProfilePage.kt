@@ -25,11 +25,10 @@ import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.utils.AnimationUtils
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.utils.REQUEST_SELECT_IMAGE_IN_ALBUM
+import com.varsel.firechat.utils.REQUEST_TAKE_PHOTO
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.viewModel.FirebaseViewModel
-
-private val REQUEST_TAKE_PHOTO = 0
-private val REQUEST_SELECT_IMAGE_IN_ALBUM = 1
 
 class EditProfilePage : Fragment() {
     private var _binding: FragmentEditProfilePageBinding? = null
@@ -60,61 +59,16 @@ class EditProfilePage : Fragment() {
         return view
     }
 
-    private fun openImagePicker(){
-        val intent = Intent()
-        intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        startActivityForResult(Intent.createChooser(intent, "Select Image"), REQUEST_SELECT_IMAGE_IN_ALBUM)
-    }
-
-    private fun openCamera(){
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-
-        if(isCameraPermissionGranted()){
-            startActivityForResult(intent, REQUEST_TAKE_PHOTO)
-        } else {
-            requestCameraPermission()
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if(requestCode == REQUEST_SELECT_IMAGE_IN_ALBUM && resultCode == Activity.RESULT_OK){
-
-            var uri: Uri? = data?.data
-            if(uri != null) {
-
-                uploadImage(uri) {
-//                    binding.profileImage.setImageURI(uri)
-//                    binding.profileImageParent.visibility = View.VISIBLE
-                }
+        ImageUtils.handleOnActivityResult(requestCode, resultCode, data, {
+            uploadImage(it, {})
+        }, {
+            if(it != null){
+                uploadImage(it, {})
             }
-        }
-        else if(requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK){
-            val image: Bitmap = data?.extras?.get("data") as Bitmap
-
-            if(image != null) {
-                val base64: String? = ImageUtils.encodeImage(image)
-                uploadImage(base64!!) {
-//                    binding.profileImage.setImageBitmap(image)
-//                    binding.profileImageParent.visibility = View.VISIBLE
-                }
-            }
-        }
-    }
-
-    private fun isCameraPermissionGranted(): Boolean{
-        return ContextCompat.checkSelfPermission(
-            requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun requestCameraPermission(){
-        ActivityCompat.requestPermissions(
-            parent,
-            arrayOf<String>(Manifest.permission.CAMERA),
-            1
-        )
+        })
     }
 
     private fun uploadImage(uri: Uri, successCallback: ()-> Unit){
@@ -167,7 +121,6 @@ class EditProfilePage : Fragment() {
                 })
                 successCallback()
             }, {})
-//            parent.settingViewModel.deleteProfilePic()
         }, {})
     }
 
@@ -222,11 +175,11 @@ class EditProfilePage : Fragment() {
         }
 
         dialogBinding.pickImage.setOnClickListener {
-            openImagePicker()
+            ImageUtils.openImagePicker(this)
         }
 
         dialogBinding.openCamera.setOnClickListener {
-            openCamera()
+            ImageUtils.openCamera(requireContext(), this, parent)
         }
 
         dialogBinding.removeImage.setOnClickListener {

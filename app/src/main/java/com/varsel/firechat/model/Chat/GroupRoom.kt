@@ -11,6 +11,8 @@ class GroupRoom: ChatRoom {
 
     var admins: HashMap<String, String>? = null
 
+    var imgChangeTimestamp: Long = 0L
+
     var about: String? = null
 
     var subject: String? = null
