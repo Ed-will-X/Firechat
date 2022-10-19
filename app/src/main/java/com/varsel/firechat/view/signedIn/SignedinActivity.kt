@@ -22,8 +22,8 @@ import com.varsel.firechat.FirechatApplication
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActivitySignedinBinding
 import com.varsel.firechat.model.User.User
-import com.varsel.firechat.model.Image.ImageViewModel
-import com.varsel.firechat.model.Image.ImageViewModelFactory
+import com.varsel.firechat.model.Image.ProfileImageViewModel
+import com.varsel.firechat.model.Image.ProfileImageViewModelFactory
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.view.signedOut.SignedoutActivity
 import com.varsel.firechat.view.signedOut.fragments.AuthType
@@ -39,7 +39,7 @@ class SignedinActivity : AppCompatActivity() {
     lateinit var signedinViewModel: SignedinViewModel
     var timer: CountDownTimer? = null
 //    lateinit var settingViewModel: SettingViewModel
-    lateinit var imageViewModel: ImageViewModel
+    lateinit var profileImageViewModel: ProfileImageViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -165,16 +165,16 @@ class SignedinActivity : AppCompatActivity() {
 //    }
 
     private fun initialiseImageViewModel(){
-        val vmFactory = ImageViewModelFactory((this.application as FirechatApplication).imageDatabase.imageDao)
-        imageViewModel = ViewModelProvider(this, vmFactory).get(ImageViewModel::class.java)
+        val vmFactory = ProfileImageViewModelFactory((this.application as FirechatApplication).profileImageDatabase.profileImageDao)
+        profileImageViewModel = ViewModelProvider(this, vmFactory).get(ProfileImageViewModel::class.java)
     }
 
     private fun fetchCurrentUserProfileImage(){
         Log.d("LLL", "Fetch image ran")
         firebaseViewModel.getProfileImage(firebaseAuth.currentUser!!.uid, mDbRef, {
             if(it != null){
-                imageViewModel.storeImage(it)
-                imageViewModel.profileImageEncoded.value = it.image
+                profileImageViewModel.storeImage(it)
+                profileImageViewModel.profileImageEncoded.value = it.image
             }
         }, {
 
@@ -184,13 +184,13 @@ class SignedinActivity : AppCompatActivity() {
     private fun determineCurrentUserImgFetchMethod(user: User){
         Log.d("LLL", "determine image ran")
 
-        val imageLiveData = imageViewModel.checkForProfileImageInRoom(user.userUID)
+        val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
         Log.d("LLL", "imgChangeTimestamp user: ${user.imgChangeTimestamp}")
         Log.d("LLL", "imgChangeTimestamp DB: ${imageLiveData?.value?.imgChangeTimestamp}")
 
         imageLiveData?.observeOnce(this, Observer {
             if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
-                imageViewModel.profileImageEncoded.value = it.image
+                profileImageViewModel.profileImageEncoded.value = it.image
                 Log.d("LLL", "Image not null")
             } else {
                 Log.d("LLL", "Image null")
@@ -203,7 +203,7 @@ class SignedinActivity : AppCompatActivity() {
         firebaseViewModel.getProfileImage(userId, mDbRef, {
             if(it != null){
                 Log.d("LLL", "Fetch image ran and is not null ============================ ${it.ownerId}")
-                imageViewModel.storeImage(it)
+                profileImageViewModel.storeImage(it)
                 afterCallback(it.image)
             }
             // TODO: Remove image from DB if it is null
@@ -215,7 +215,7 @@ class SignedinActivity : AppCompatActivity() {
     fun determineOtherImgFetchMethod(user: User, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
         Log.d("LLL", "determine other user image ran ${user.name}")
 
-        val imageLiveData = imageViewModel.checkForProfileImageInRoom(user.userUID)
+        val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
 
 
         imageLiveData?.observeOnce(this, Observer {

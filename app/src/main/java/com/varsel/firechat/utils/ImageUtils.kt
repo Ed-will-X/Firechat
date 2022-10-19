@@ -9,7 +9,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import com.google.android.material.card.MaterialCardView
-import com.varsel.firechat.model.Image.Image
+import com.varsel.firechat.model.Image.ProfileImage
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import java.io.ByteArrayOutputStream
@@ -42,9 +42,9 @@ class ImageUtils {
             return decoded
         }
 
-        fun setProfileImage(image: Image, imageCard: MaterialCardView, imageView: ImageView){
-            if(image.image != null){
-                val decodedImage = ImageUtils.base64ToBitmap(image.image!!)
+        fun setProfileImage(profileImage: ProfileImage, imageCard: MaterialCardView, imageView: ImageView){
+            if(profileImage.image != null){
+                val decodedImage = ImageUtils.base64ToBitmap(profileImage.image!!)
                 imageCard.visibility = View.VISIBLE
                 imageView.setImageBitmap(decodedImage)
             } else {

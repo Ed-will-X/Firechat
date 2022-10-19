@@ -100,7 +100,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun observeProfileImage(){
-        parent.imageViewModel.profileImageEncoded.observe(viewLifecycleOwner, Observer {
+        parent.profileImageViewModel.profileImageEncoded.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
             }

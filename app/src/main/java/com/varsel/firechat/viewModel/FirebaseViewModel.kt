@@ -1,6 +1,5 @@
 package com.varsel.firechat.viewModel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -12,7 +11,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Chat.GroupRoom
-import com.varsel.firechat.model.Image.Image
+import com.varsel.firechat.model.Image.ProfileImage
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageType
@@ -923,12 +922,12 @@ class FirebaseViewModel: ViewModel() {
         mAuth.signOut()
     }
 
-    fun uploadProfileImage(image: Image, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+    fun uploadProfileImage(profileImage: ProfileImage, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: ()-> Unit, failureCallback: ()-> Unit){
         val currentUserId = mAuth.currentUser!!.uid
         val reference = mDbRef.child("ProfileImages").child(currentUserId)
 
         reference
-            .setValue(image)
+            .setValue(profileImage)
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
@@ -953,14 +952,13 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    // TODO: not tested
-    fun getProfileImage(userId: String, mDbRef: DatabaseReference, loopCallback: (image: Image?) -> Unit, afterCallback: () -> Unit){
+    fun getProfileImage(userId: String, mDbRef: DatabaseReference, loopCallback: (profileImage: ProfileImage?) -> Unit, afterCallback: () -> Unit){
         mDbRef.child("ProfileImages").orderByChild("ownerId").equalTo(userId).addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 for(item in snapshot.children){
 
-                    val image = item.getValue(Image::class.java)
-                    loopCallback(image)
+                    val profileImage = item.getValue(ProfileImage::class.java)
+                    loopCallback(profileImage)
                 }
                 afterCallback()
             }
@@ -971,7 +969,6 @@ class FirebaseViewModel: ViewModel() {
         })
     }
 
-    // TODO: not tested
     fun appendProfileImageTimestamp(mAuth: FirebaseAuth, mDbRef: DatabaseReference, timestamp: Long, successCallback: () -> Unit, failureCallback: () -> Unit){
         val currentuser = mAuth.currentUser!!.uid
         val databaseReference = mDbRef.child("Users").child(currentuser)
@@ -987,6 +984,11 @@ class FirebaseViewModel: ViewModel() {
                 }
             }
     }
+
+    // TODO: implement upload group image
+    // TODO: implement remove group image
+    // TODO: implement get group image
+    // TODO: implement append group image timestamp
 
     // TODO: Implement delete account
     fun deleteAccount(){

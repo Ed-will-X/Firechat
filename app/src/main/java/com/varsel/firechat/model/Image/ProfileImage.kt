@@ -6,8 +6,8 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "image_table")
-class Image {
+@Entity(tableName = "profile_image_table")
+class ProfileImage {
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "owner_id")
     lateinit var ownerId: String
@@ -16,12 +16,11 @@ class Image {
 
     var image: String? = null
 
-    var type: Int = 0
+//    var type: Int = 0
 
-    constructor(ownerId: String, image: String, type: Int, imgChangeTimestamp: Long){
+    constructor(ownerId: String, image: String, imgChangeTimestamp: Long){
         this.ownerId = ownerId
         this.image = image
-        this.type = type
         this.imgChangeTimestamp = imgChangeTimestamp
     }
 

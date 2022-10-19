@@ -1,8 +1,7 @@
 package com.varsel.firechat
 
 import android.app.Application
-import android.util.Log
-import com.varsel.firechat.model.Image.ImageDatabase
+import com.varsel.firechat.model.Image.ProfileImageDatabase
 import com.varsel.firechat.model.Setting.SettingDatabase
 
 class FirechatApplication: Application() {
@@ -10,7 +9,7 @@ class FirechatApplication: Application() {
         SettingDatabase.getInstance(this)
     }
 
-    val imageDatabase: ImageDatabase by lazy {
-        ImageDatabase.getInstance(this)
+    val profileImageDatabase: ProfileImageDatabase by lazy {
+        ProfileImageDatabase.getInstance(this)
     }
 }
