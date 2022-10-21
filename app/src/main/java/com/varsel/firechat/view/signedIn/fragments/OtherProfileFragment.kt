@@ -44,6 +44,7 @@ class OtherProfileFragment : Fragment() {
         }, {
 
         })
+        // TODO: Receive user arg from parcelabel instead of refetching
 
         binding.backIcon.setOnClickListener {
             findNavController().navigateUp()
@@ -52,7 +53,6 @@ class OtherProfileFragment : Fragment() {
         // sets props to page
         firebaseViewModel.selectedUser.observe(viewLifecycleOwner, Observer {
             setBindings(it)
-
         })
 
         return view
@@ -60,6 +60,7 @@ class OtherProfileFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        firebaseViewModel.selectedUser.value = null
         _binding = null
     }
 
@@ -90,8 +91,10 @@ class OtherProfileFragment : Fragment() {
             binding.moreAboutClickable.visibility = View.GONE
         }
 
-        binding.addFriendBtn.setOnClickListener {
-            determineActionsheet(user)
+        if(user != null){
+            binding.addFriendBtn.setOnClickListener {
+                determineActionsheet(user)
+            }
         }
     }
 

@@ -102,6 +102,8 @@ class SignedinActivity : AppCompatActivity() {
 
         // Makes the chat fragment the default destination
         binding.bottomNavView.menu.findItem(R.id.chatsFragment).setChecked(true)
+
+//        profileImageViewModel.setClearBlacklistCountdown()
     }
 
     fun determineAuthType(intent: Intent?){
@@ -170,7 +172,6 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     private fun fetchCurrentUserProfileImage(){
-        Log.d("LLL", "Fetch image ran")
         firebaseViewModel.getProfileImage(firebaseAuth.currentUser!!.uid, mDbRef, {
             if(it != null){
                 profileImageViewModel.storeImage(it)
@@ -182,18 +183,13 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     private fun determineCurrentUserImgFetchMethod(user: User){
-        Log.d("LLL", "determine image ran")
 
         val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
-        Log.d("LLL", "imgChangeTimestamp user: ${user.imgChangeTimestamp}")
-        Log.d("LLL", "imgChangeTimestamp DB: ${imageLiveData?.value?.imgChangeTimestamp}")
 
         imageLiveData?.observeOnce(this, Observer {
             if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
                 profileImageViewModel.profileImageEncoded.value = it.image
-                Log.d("LLL", "Image not null")
             } else {
-                Log.d("LLL", "Image null")
                 fetchCurrentUserProfileImage()
             }
         })
@@ -202,39 +198,42 @@ class SignedinActivity : AppCompatActivity() {
     private fun fetchProfileImage(userId: String, afterCallback: (image: String?)-> Unit){
         firebaseViewModel.getProfileImage(userId, mDbRef, {
             if(it != null){
-                Log.d("LLL", "Fetch image ran and is not null ============================ ${it.ownerId}")
                 profileImageViewModel.storeImage(it)
                 afterCallback(it.image)
+            } else {
+                afterCallback(null)
             }
             // TODO: Remove image from DB if it is null
         }, {
-
+            afterCallback(null)
+            Log.d("LLL", "ddddddddddddddddddddddddddddddddddddddddd")
         })
     }
 
     fun determineOtherImgFetchMethod(user: User, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
-        Log.d("LLL", "determine other user image ran ${user.name}")
 
         val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
 
-
         imageLiveData?.observeOnce(this, Observer {
-            Log.d("LLL", "other user id arg: ${user.userUID}")
-            Log.d("LLL", "other user id in DB: ${it?.ownerId}")
 
             if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
 
                 dbCallback(it.image)
-                Log.d("LLL", "other user Image not null")
             } else {
-                Log.d("LLL", "other user Image null")
-                fetchProfileImage(user.userUID) {
-                    fetchCallback(it)
-                }
+                // TODO: Add the user id to an array of elements that should not be fetched until a condition is met
+                Log.d("LLL", "${profileImageViewModel.profileImageFetchBlacklist.value?.count()}")
+
+                profileImageViewModel.isNotUserInBlacklist(user,{
+                    profileImageViewModel.addUserToBlacklist(user)
+                    fetchProfileImage(user.userUID) {
+                        fetchCallback(it)
+                    }
+                }, {
+                    fetchCallback(null)
+                })
             }
         })
     }
-
 
     private fun checkConnectivity(){
         firebaseViewModel.checkFirebaseConnection {

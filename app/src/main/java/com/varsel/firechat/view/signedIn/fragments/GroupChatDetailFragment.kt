@@ -1,6 +1,8 @@
 package com.varsel.firechat.view.signedIn.fragments
 
 import android.animation.ObjectAnimator
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,8 +22,13 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActionSheetParticipantActionsBinding
+import com.varsel.firechat.databinding.ActionSheetProfileImageBinding
 import com.varsel.firechat.databinding.FragmentGroupChatDetailBinding
 import com.varsel.firechat.model.Chat.GroupRoom
+import com.varsel.firechat.model.ProfileImage.ProfileImage
+import com.varsel.firechat.utils.AnimationUtils
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
+import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ParticipantsListAdapter
@@ -57,7 +64,7 @@ class GroupChatDetailFragment : Fragment() {
             binding.groupSubject.text = it?.subject ?: getString(R.string.no_subject)
 
             binding.editGroupNameClickable.setOnClickListener { button ->
-                if (it != null) {
+                if (it != null && checkAdminStatus()) {
                     showEditGroupActionsheet(it)
                 }
             }
@@ -73,6 +80,14 @@ class GroupChatDetailFragment : Fragment() {
                 })
 
                 binding.partipantsRecyclerView.adapter = participantAdapter
+            }
+
+            if(checkAdminStatus()){
+                binding.profileImageSilhouette.setOnClickListener {
+                    showImageOptionsActionsheet()
+                }
+            } else {
+                // TODO: Include expand code here
             }
         })
 
@@ -101,6 +116,96 @@ class GroupChatDetailFragment : Fragment() {
         return view
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        ImageUtils.handleOnActivityResult(requestCode, resultCode, data, {
+            uploadImage(it, {})
+        }, {
+            if(it != null){
+                uploadImage(it, {})
+            }
+        })
+    }
+
+    // gallery
+    private fun uploadImage(uri: Uri, successCallback: ()-> Unit){
+        val base64: String? = ImageUtils.uriToBitmap(uri, parent)
+        val timestamp = System.currentTimeMillis()
+        val profileImage =
+            ProfileImage(groupId, base64!!, timestamp)
+
+        parent.firebaseViewModel.uploadGroupImage(profileImage, parent.mDbRef, groupId, {
+            parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
+                parent.profileImageViewModel.storeImage(profileImage)
+                successCallback()
+            }, {})
+        }, {
+            Toast.makeText(requireContext(), getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
+        })
+    }
+
+    // camera
+    private fun uploadImage(base64: String, successCallback: () -> Unit){
+        val timestamp = System.currentTimeMillis()
+        val profileImage =
+            ProfileImage( groupId, base64, timestamp)
+
+        parent.firebaseViewModel.uploadGroupImage(profileImage, parent.mDbRef, groupId, {
+            parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
+                parent.profileImageViewModel.storeImage(profileImage)
+                successCallback()
+            }, {})
+        }, {
+            Toast.makeText(requireContext(), getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
+        })
+    }
+
+    private fun removeImage(successCallback: () -> Unit){
+        val timestamp = System.currentTimeMillis()
+        parent.firebaseViewModel.removeGroupImage(parent.mDbRef, groupId, {
+            parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
+                val image = parent.profileImageViewModel.getImageById(groupId)
+
+                image.observeOnce(viewLifecycleOwner, Observer {
+                    if(it != null){
+                        parent.profileImageViewModel.deleteImage(it)
+                    }
+                })
+                successCallback()
+            }, {})
+        }, {})
+    }
+
+    private fun showImageOptionsActionsheet(){
+        val dialog = BottomSheetDialog(requireContext())
+        val dialogBinding = ActionSheetProfileImageBinding.inflate(layoutInflater, this.binding.root, false)
+        val view = dialogBinding.root
+
+        dialog.setContentView(view)
+
+        dialogBinding.expand.setOnClickListener {
+
+        }
+
+        dialogBinding.pickImage.setOnClickListener {
+            ImageUtils.openImagePicker(this)
+        }
+
+        dialogBinding.openCamera.setOnClickListener {
+            ImageUtils.openCamera(requireContext(), this, parent)
+        }
+
+        dialogBinding.removeImage.setOnClickListener {
+            removeImage {
+                binding.profileImage.setImageURI(null)
+                binding.profileImageParent.visibility = View.GONE
+            }
+        }
+
+        AnimationUtils.changeDialogDimAmount(dialog, 0f)
+        dialog.show()
+    }
 
     private fun toggleAddMemberVisibility(){
         if(checkAdminStatus()){

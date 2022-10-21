@@ -49,6 +49,7 @@ class EditProfilePage : Fragment() {
         parent.profileImageViewModel.profileImageEncoded.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
+                binding.profileImageParent.visibility = View.VISIBLE
             }
         })
 
@@ -71,6 +72,7 @@ class EditProfilePage : Fragment() {
         })
     }
 
+    // gallery
     private fun uploadImage(uri: Uri, successCallback: ()-> Unit){
         val base64: String? = ImageUtils.uriToBitmap(uri, parent)
         val currentUser = parent.firebaseAuth.currentUser!!.uid
@@ -89,6 +91,7 @@ class EditProfilePage : Fragment() {
         })
     }
 
+    // camera
     private fun uploadImage(base64: String, successCallback: () -> Unit){
         val currentUser = parent.firebaseAuth.currentUser!!.uid
         val timestamp = System.currentTimeMillis()
@@ -170,7 +173,7 @@ class EditProfilePage : Fragment() {
 
         dialog.setContentView(view)
 
-        dialogBinding.openCamera.setOnClickListener {
+        dialogBinding.expand.setOnClickListener {
 
         }
 

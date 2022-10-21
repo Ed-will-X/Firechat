@@ -10,7 +10,7 @@
         style="@style/equal_space_horizontal"
         />
     <LinearLayout
-        android:id="@+id/view_image"
+        android:id="@+id/expand"
         android:clickable="true"
         android:orientation="vertical"
         android:layout_gravity="center_vertical"

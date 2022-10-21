@@ -70,19 +70,42 @@
                 android:layout_height="wrap_content">
 
                 <FrameLayout
-                    android:layout_gravity="center"
                     android:id="@+id/profile_image_silhouette"
+                    android:clickable="true"
                     android:background="@drawable/bg_profile_background"
                     android:layout_width="55dp"
                     android:layout_height="55dp">
 
+                    <!--                silhouette-->
                     <ImageView
                         android:layout_width="25dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_people"
                         android:layout_height="25dp"
-                        app:tint="@color/white" />
+                        app:tint="@color/white"
+                        />
+
+                    <!--                actual profile pic-->
+                    <com.google.android.material.card.MaterialCardView
+                        android:visibility="gone"
+                        android:id="@+id/profile_image_parent"
+                        app:cardCornerRadius="360dp"
+                        app:cardElevation="0dp"
+                        android:elevation="0dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/profile_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            />
+
+                    </com.google.android.material.card.MaterialCardView>
+
                 </FrameLayout>
+
                 <LinearLayout
                     android:clickable="true"
                     android:id="@+id/edit_group_name_clickable"

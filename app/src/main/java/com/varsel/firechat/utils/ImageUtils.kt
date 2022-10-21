@@ -8,17 +8,15 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.CountDownTimer
 import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.google.android.material.card.MaterialCardView
-import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import java.io.ByteArrayOutputStream
@@ -102,16 +100,6 @@ class ImageUtils {
             return decoded
         }
 
-        fun setProfileImage(profileImage: ProfileImage, imageCard: MaterialCardView, imageView: ImageView){
-            if(profileImage.image != null){
-                val decodedImage = ImageUtils.base64ToBitmap(profileImage.image!!)
-                imageCard.visibility = View.VISIBLE
-                imageView.setImageBitmap(decodedImage)
-            } else {
-                imageCard.visibility = View.GONE
-            }
-        }
-
         fun setProfilePic(base64: String, view: ImageView, viewParent: View){
             val bitmap = ImageUtils.base64ToBitmap(base64)
 
@@ -122,13 +110,29 @@ class ImageUtils {
         fun setProfilePicOtherUser(user: User, view: ImageView, viewParent: View, parent: SignedinActivity){
             parent.determineOtherImgFetchMethod(user, {
                 if (it != null) {
-                    Log.d("LLL", "Fetch Callback")
                     setProfilePic(it, view, viewParent)
                 }
             }, {
                 if (it != null) {
-                    Log.d("LLL", "DB Callback")
                     setProfilePic(it, view, viewParent)
+                }
+            })
+        }
+
+        fun setProfilePicOtherUser(user: User, view: ImageView, viewParent: View, parent: SignedinActivity, imgCallback: (image: String?)-> Unit){
+            parent.determineOtherImgFetchMethod(user, {
+                if (it != null) {
+                    imgCallback(it)
+                    setProfilePic(it, view, viewParent)
+                } else {
+                    imgCallback(null)
+                }
+            }, {
+                if (it != null) {
+                    imgCallback(it)
+                    setProfilePic(it, view, viewParent)
+                } else {
+                    imgCallback(null)
                 }
             })
         }

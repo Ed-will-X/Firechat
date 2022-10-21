@@ -22,7 +22,7 @@ import com.varsel.firechat.view.signedIn.SignedinActivity
 
 class ChatListAdapter(
     val activity: SignedinActivity,
-    val parentClickListener: (userId: String, chatRoomId: String)-> Unit,
+    val parentClickListener: (userId: String, chatRoomId: String, user: User, base64: String?)-> Unit,
     val profileImageClickListener: ()-> Unit,
 ) : ListAdapter<ChatRoom, ChatListAdapter.ChatItemViewHolder>(ChatsListAdapterDiffItemCallback()) {
 
@@ -43,25 +43,28 @@ class ChatListAdapter(
 
     override fun onBindViewHolder(holder: ChatItemViewHolder, position: Int) {
         val item: ChatRoom = getItem(position)
-            if(item != null){
-                val id = getUserId(item.participants!!)
-                holder.lastMessage.text = UserUtils.truncate(getLastMessage(item), 38)
-                if(item.participants != null){
-                    // TODO: Replace with internal database code
-                    getUser(getUserId(item.participants!!)){
-                        holder.name.text = it.name
-                        ImageUtils.setProfilePicOtherUser(it, holder.profileImage, holder.profileImageParent, activity)
+
+
+        if(item != null){
+            val id = getUserId(item.participants!!)
+            holder.lastMessage.text = UserUtils.truncate(getLastMessage(item), 38)
+            if(item.participants != null){
+                // TODO: Replace with internal database code
+                getUser(getUserId(item.participants!!)){ user ->
+                    holder.name.text = user.name
+                    ImageUtils.setProfilePicOtherUser(user, holder.profileImage, holder.profileImageParent, activity) {
+                        holder.parent.setOnClickListener { _ ->
+                            parentClickListener(id, item.roomUID, user, it)
+                        }
                     }
-                }
-                if(item.messages != null){
-                    holder.timestamp.text = MessageUtils.formatStampChatsPage(getLastMessageTimestamp(item))
-                }
 
-                holder.parent.setOnClickListener {
-                    parentClickListener(id, item.roomUID!!)
                 }
-
             }
+            if(item.messages != null){
+                holder.timestamp.text = MessageUtils.formatStampChatsPage(getLastMessageTimestamp(item))
+            }
+
+        }
     }
 
     fun getUserId(participants: HashMap<String, String>): String{

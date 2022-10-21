@@ -35,7 +35,9 @@ class IndividualFragment : Fragment() {
         toggleShimmerVisibility(null)
 
         // adapter
-        val chatListAdapter = ChatListAdapter(parent, { userId, chatRoomId ->
+        val chatListAdapter = ChatListAdapter(parent, { userId, chatRoomId, user, base64 ->
+            parent.profileImageViewModel.profileImageEncoded.value = base64
+            parent.firebaseViewModel.selectedChatRoomUser.value = user
             val action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(chatRoomId, userId)
             view.findNavController().navigate(action)
         }, {})

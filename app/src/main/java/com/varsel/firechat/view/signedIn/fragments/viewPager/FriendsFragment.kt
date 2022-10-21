@@ -33,25 +33,22 @@ class FriendsFragment : Fragment() {
         postponeTransition()
 
 
-
         binding.addFriendsClickable.setOnClickListener {
             view.findNavController().navigate(R.id.action_chatsFragment_to_addFriends)
         }
 
         val friendsAdapter = FriendsAdapter(parent, {
-            if(it != null){
-                navigateToProfile(it.userUID!!)
-            }
-        },{
-            if(it != null){
-                navigateToChats(it.userUID.toString())
-            }
+            navigateToProfile(it.userUID!!)
+
+        },{ user, base64 ->
+            parent.profileImageViewModel.profileImageEncoded.value = base64
+            parent.firebaseViewModel.selectedChatRoomUser.value = user
+            navigateToChats(user.userUID)
         })
         binding.friendsRecyclerView.adapter = friendsAdapter
 
         parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
             toggleVisibility(it)
-
         })
 
         parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
@@ -104,20 +101,6 @@ class FriendsFragment : Fragment() {
             binding.shimmerFriends.visibility = View.VISIBLE
         }
     }
-
-//    private fun determineChatroom(userId: String): Boolean{
-//        // TODO: Fix potential null pointer exception
-//        val chatRooms = parent.firebaseViewModel.chatRooms.value!!
-//        var contains: Boolean = false
-//        for(i in chatRooms){
-//            if(i!!.participants!!.contains(userId)){
-//                contains = true
-//                currentChatRoomId = i.roomUID.toString()
-//                break
-//            }
-//        }
-//        return contains
-//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

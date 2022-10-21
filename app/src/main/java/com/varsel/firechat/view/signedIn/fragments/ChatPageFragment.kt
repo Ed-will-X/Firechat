@@ -11,6 +11,8 @@ import com.varsel.firechat.databinding.FragmentChatPageBinding
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageType
+import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ChatPageType
@@ -43,6 +45,7 @@ class ChatPageFragment : Fragment() {
         userUID = ChatPageFragmentArgs.fromBundle(requireArguments()).userUid
 
         getChatRoom()
+        observeUserProps()
 
         parent.firebaseViewModel.chatRooms.observe(viewLifecycleOwner, Observer {
             // Listen for first message from the other user
@@ -70,9 +73,6 @@ class ChatPageFragment : Fragment() {
             getMessages(it)
         })
 
-        parent.firebaseViewModel.selectedUser.observe(viewLifecycleOwner, Observer {
-            binding.nameText.text = it?.name
-        })
 
         binding.navTopClickable.setOnClickListener {
             navigateToDetail()
@@ -93,6 +93,18 @@ class ChatPageFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun observeUserProps(){
+        parent.profileImageViewModel.profileImageEncoded.observe(viewLifecycleOwner, Observer {
+            if(it != null){
+                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
+            }
+        })
+
+        parent.firebaseViewModel.selectedChatRoomUser.observe(viewLifecycleOwner, Observer {
+            binding.nameText.text = it?.name
+        })
     }
 
     private fun getMessages(it: ChatRoom?){
@@ -128,8 +140,6 @@ class ChatPageFragment : Fragment() {
             parent.firebaseViewModel.getChatRoomRecurrent(existingChatRoomId!!, parent.mDbRef, {
                 parent.firebaseViewModel.selectedChatRoom.value = it
             },{})
-        } else {
-
         }
     }
 

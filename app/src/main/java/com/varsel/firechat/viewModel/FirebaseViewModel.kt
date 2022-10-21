@@ -20,6 +20,7 @@ import com.varsel.firechat.model.Message.SystemMessageType
 class FirebaseViewModel: ViewModel() {
     val usersLiveData = MutableLiveData<List<User>>()
     val selectedUser = MutableLiveData<User?>()
+    var selectedChatRoomUser = MutableLiveData<User?>()
     val currentUser = MutableLiveData<User?>()
     val currentUserSingle = MutableLiveData<User?>()
     val friendRequests = MutableLiveData<List<User?>>()
@@ -157,6 +158,26 @@ class FirebaseViewModel: ViewModel() {
 
         })
     }
+
+    fun getUserById(uid: String, mDbRef: DatabaseReference, loopCallback: (user: User?) -> Unit) {
+        mDbRef.child("Users").orderByChild("userUID").equalTo(uid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                for(item in snapshot.children){
+                    val user = item.getValue(User::class.java)
+                    selectedUser.value = user
+                    loopCallback(user)
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+    }
+
 
     // used to fetch a user for a recycler view
     fun getUserSingle(UID: String, mDbRef: DatabaseReference, loopCallback: (user: User?) -> Unit, afterCallback: () -> Unit){
