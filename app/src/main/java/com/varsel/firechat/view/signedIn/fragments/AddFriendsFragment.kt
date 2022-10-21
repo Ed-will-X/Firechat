@@ -34,11 +34,12 @@ class AddFriendsFragment : Fragment() {
         val view = binding.root
         parent = activity as SignedinActivity
 
-        val friendsSearchAdapter = AddFriendsSearchAdapter(parent) {
-            if(it != null){
-                val action = AddFriendsFragmentDirections.actionAddFriendsToOtherProfileFragment(it)
-                view.findNavController().navigate(action)
-            }
+        val friendsSearchAdapter = AddFriendsSearchAdapter(parent) { id, user, base64 ->
+            parent.firebaseViewModel.selectedUser.value = user
+            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
+
+            val action = AddFriendsFragmentDirections.actionAddFriendsToOtherProfileFragment(id)
+            view.findNavController().navigate(action)
         }
 
         firebaseViewModel.getAllUsers(parent.mDbRef, parent.firebaseAuth, {

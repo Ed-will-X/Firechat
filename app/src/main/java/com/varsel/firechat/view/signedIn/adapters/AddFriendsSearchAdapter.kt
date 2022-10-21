@@ -15,7 +15,7 @@ import com.varsel.firechat.view.signedIn.SignedinActivity
 
 class AddFriendsSearchAdapter(
     val activity: SignedinActivity,
-    val clickListener: (UID: String?)-> Unit
+    val clickListener: (UID: String, user: User, base64: String?)-> Unit
 ): RecyclerView.Adapter<AddFriendsSearchAdapter.UserItemViewHolder>() {
 
     var users: ArrayList<User> = arrayListOf()
@@ -38,10 +38,10 @@ class AddFriendsSearchAdapter(
         holder.name.setText(item.name)
         holder.occupation.setText(item.occupation ?: "")
 
-        ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity)
-
-        holder.root.setOnClickListener {
-            clickListener(item.userUID)
+        ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity) { base64 ->
+            holder.root.setOnClickListener {
+                clickListener(item.userUID, item, base64)
+            }
         }
 
     }

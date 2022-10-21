@@ -17,7 +17,7 @@ import com.varsel.firechat.view.signedIn.SignedinActivity
 
 class FriendsAdapter(
     val activity: SignedinActivity,
-    val parentClickListener: (user: User)-> Unit,
+    val parentClickListener: (user: User, base64: String?)-> Unit,
     val chatIconClickListener: (user: User, base64: String?)-> Unit
 ): ListAdapter<User, FriendsAdapter.FriendItem>(FriendItemDiffCallback()){
     private lateinit var context: Context
@@ -44,7 +44,7 @@ class FriendsAdapter(
         holder.name.text = item.name
         ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity) { base64 ->
             holder.parentClickable.setOnClickListener {
-                parentClickListener(item)
+                parentClickListener(item, base64)
             }
 
             holder.messageIcon.setOnClickListener {

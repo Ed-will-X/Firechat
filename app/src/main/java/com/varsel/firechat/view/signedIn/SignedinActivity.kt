@@ -175,7 +175,7 @@ class SignedinActivity : AppCompatActivity() {
         firebaseViewModel.getProfileImage(firebaseAuth.currentUser!!.uid, mDbRef, {
             if(it != null){
                 profileImageViewModel.storeImage(it)
-                profileImageViewModel.profileImageEncoded.value = it.image
+                profileImageViewModel.profileImageEncodedCurrentUser.value = it.image
             }
         }, {
 
@@ -188,7 +188,7 @@ class SignedinActivity : AppCompatActivity() {
 
         imageLiveData?.observeOnce(this, Observer {
             if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
-                profileImageViewModel.profileImageEncoded.value = it.image
+                profileImageViewModel.profileImageEncodedCurrentUser.value = it.image
             } else {
                 fetchCurrentUserProfileImage()
             }
@@ -211,18 +211,12 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     fun determineOtherImgFetchMethod(user: User, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
-
         val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
 
         imageLiveData?.observeOnce(this, Observer {
-
             if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
-
                 dbCallback(it.image)
             } else {
-                // TODO: Add the user id to an array of elements that should not be fetched until a condition is met
-                Log.d("LLL", "${profileImageViewModel.profileImageFetchBlacklist.value?.count()}")
-
                 profileImageViewModel.isNotUserInBlacklist(user,{
                     profileImageViewModel.addUserToBlacklist(user)
                     fetchProfileImage(user.userUID) {

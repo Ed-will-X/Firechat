@@ -134,9 +134,12 @@ class GroupChatPageFragment : Fragment() {
         val dialog = BottomSheetDialog(requireContext())
         dialog.setContentView(R.layout.action_sheet_system_message)
         val recyclerView = dialog.findViewById<RecyclerView>(R.id.system_message_participant_recycler_view)
-        val adapter = FriendListAdapter(parent) {
+        val adapter = FriendListAdapter(parent) { id, user, base64 ->
+            parent.firebaseViewModel.selectedUser.value = user
+            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
+
             dialog.dismiss()
-            val action = GroupChatPageFragmentDirections.actionGroupChatPageFragmentToOtherProfileFragment(it)
+            val action = GroupChatPageFragmentDirections.actionGroupChatPageFragmentToOtherProfileFragment(id)
             binding.root.findNavController().navigate(action)
         }
 

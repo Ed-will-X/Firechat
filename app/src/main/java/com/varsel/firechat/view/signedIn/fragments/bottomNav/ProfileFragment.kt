@@ -100,7 +100,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun observeProfileImage(){
-        parent.profileImageViewModel.profileImageEncoded.observe(viewLifecycleOwner, Observer {
+        parent.profileImageViewModel.profileImageEncodedCurrentUser.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
             }
@@ -112,17 +112,17 @@ class ProfileFragment : Fragment() {
         dialog.setContentView(R.layout.action_sheet_friend_requests)
 
         val recyclerView = dialog.findViewById<RecyclerView>(R.id.friend_requests_recycler_view)
-        adapter = FriendRequestsAdapter(parent, {
-            if(it != null){
-                val action = ProfileFragmentDirections.actionProfileFragmentToOtherProfileFragment(it)
-                dialog.dismiss()
-                binding.root.findNavController().navigate(action)
-            }
-        }, {
-            if(it != null){
-                firebaseViewModel.acceptFriendRequest(it, parent.mDbRef, parent.firebaseAuth)
-                refreshRecyclerView()
-            }
+        adapter = FriendRequestsAdapter(parent, { id, user, base64 ->
+            val action = ProfileFragmentDirections.actionProfileFragmentToOtherProfileFragment(id)
+            parent.firebaseViewModel.selectedUser.value = user
+            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
+
+            dialog.dismiss()
+            binding.root.findNavController().navigate(action)
+
+        }, { user ->
+            firebaseViewModel.acceptFriendRequest(user, parent.mDbRef, parent.firebaseAuth)
+            refreshRecyclerView()
         })
         recyclerView?.adapter = adapter
 

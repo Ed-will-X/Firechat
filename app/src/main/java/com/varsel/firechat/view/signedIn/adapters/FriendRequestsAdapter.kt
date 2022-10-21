@@ -17,8 +17,8 @@ import com.varsel.firechat.view.signedIn.SignedinActivity
 // TODO: Change to ListAdapter
 class FriendRequestsAdapter(
     val activity: SignedinActivity,
-    val parentListener: (id: String?)-> Unit,
-    val btnListener: (user: User?)-> Unit
+    val parentListener: (id: String, user: User, base64: String?)-> Unit,
+    val btnListener: (user: User)-> Unit
 ): RecyclerView.Adapter<FriendRequestsAdapter.FriendRequestViewHolder>(){
 
     var users = arrayListOf<User>()
@@ -41,16 +41,15 @@ class FriendRequestsAdapter(
         val item: User = users[position]
 
         holder.name.text = item.name
-        ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity)
-
-
-        holder.parentClickable.setOnClickListener {
-            parentListener(item.userUID)
-        }
-
         holder.accept.setOnClickListener {
             btnListener(item)
         }
+        ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity) { base64 ->
+            holder.parentClickable.setOnClickListener {
+                parentListener(item.userUID, item, base64)
+            }
+        }
+
     }
 
     override fun getItemCount(): Int {

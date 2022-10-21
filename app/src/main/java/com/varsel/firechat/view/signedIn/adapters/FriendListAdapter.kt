@@ -15,7 +15,7 @@ import com.varsel.firechat.view.signedIn.SignedinActivity
 
 class FriendListAdapter(
     val activity: SignedinActivity,
-    val parentListener: (id: String)-> Unit
+    val parentListener: (id: String, user: User, base64: String?)-> Unit
 ): RecyclerView.Adapter<FriendListAdapter.FriendItemViewHolder>() {
     var friends: MutableList<User> = mutableListOf()
 
@@ -36,11 +36,10 @@ class FriendListAdapter(
         val item: User = friends[position]
 
         holder.name.text = item.name
-        ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity)
-
-
-        holder.parentClickable.setOnClickListener {
-            item.userUID?.let { it1 -> parentListener(it1) }
+        ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity) { base64 ->
+            holder.parentClickable.setOnClickListener {
+                parentListener(item.userUID, item, base64)
+            }
         }
     }
 

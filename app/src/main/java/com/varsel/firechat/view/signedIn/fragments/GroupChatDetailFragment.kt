@@ -73,10 +73,14 @@ class GroupChatDetailFragment : Fragment() {
                 groupPageViewModel.determineGetParticipants(it, parent)
             }
             if(it!= null){
-                participantAdapter = ParticipantsListAdapter(parent, requireContext(), parent.firebaseAuth, it, {
-                    navigateToOtherProfileFragment(it)
-                },{
-                    showParticipantOptionsActonsheet(it)
+                participantAdapter = ParticipantsListAdapter(parent, requireContext(), parent.firebaseAuth, it, { id, user, base64 ->
+                    navigateToOtherProfileFragment(id)
+                    parent.firebaseViewModel.selectedUser.value = user
+                    parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
+                },{ id, user, base64 ->
+                    showParticipantOptionsActonsheet(id)
+                    parent.firebaseViewModel.selectedChatRoomUser.value = user
+                    parent.profileImageViewModel.selectedOtherUserProfilePicChat.value = base64
                 })
 
                 binding.partipantsRecyclerView.adapter = participantAdapter

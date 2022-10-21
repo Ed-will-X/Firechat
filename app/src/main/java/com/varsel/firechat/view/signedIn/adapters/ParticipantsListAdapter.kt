@@ -24,8 +24,8 @@ class ParticipantsListAdapter(
     val context: Context,
     val firebaseAuth: FirebaseAuth,
     val groupRoom: GroupRoom,
-    val pressListener: (userId: String)-> Unit,
-    val longPressListener: (userId: String) -> Unit
+    val pressListener: (userId: String, user: User, base64: String?)-> Unit,
+    val longPressListener: (userId: String, user: User, base64: String?) -> Unit
     )
     : ListAdapter<User, ParticipantsListAdapter.ParticipantViewHolder>(ParticipantAdapterDiffUtilCallback()) {
     class ParticipantViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -45,29 +45,33 @@ class ParticipantsListAdapter(
     override fun onBindViewHolder(holder: ParticipantViewHolder, position: Int) {
         val item = getItem(position)
 
-        ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity)
-
-        if(item.userUID?.let { isAdmin(it) } == true){
+        if(isAdmin(item.userUID)){
             holder.admin.visibility = View.VISIBLE
         } else {
             holder.admin.visibility = View.GONE
         }
 
-        if(item.userUID?.let { isCurrentUser(it) } == true){
+        if(isCurrentUser(item.userUID)){
             holder.name.text = context.getString(R.string.you)
-            holder.parentClickable.setOnLongClickListener {
-                longPressListener(item.userUID!!)
-                true
-            }
         } else {
             holder.name.text = item.name
-            holder.parentClickable.setOnClickListener {
-                pressListener(item.userUID!!)
-            }
+        }
 
-            holder.parentClickable.setOnLongClickListener {
-                longPressListener(item.userUID!!)
-                true
+        ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity) { base64 ->
+            if(isCurrentUser(item.userUID)){
+                holder.parentClickable.setOnLongClickListener {
+                    longPressListener(item.userUID, item, base64)
+                    true
+                }
+            } else {
+                holder.parentClickable.setOnClickListener {
+                    pressListener(item.userUID, item, base64)
+                }
+
+                holder.parentClickable.setOnLongClickListener {
+                    longPressListener(item.userUID, item, base64)
+                    true
+                }
             }
         }
     }

@@ -12,6 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentOtherProfileBinding
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.viewModel.FirebaseViewModel
@@ -39,11 +40,11 @@ class OtherProfileFragment : Fragment() {
         userUtils = UserUtils(this)
 
         // fetches user from db
-        firebaseViewModel.getUserById(uid, parent.mDbRef, {
-
-        }, {
-
-        })
+//        firebaseViewModel.getUserById(uid, parent.mDbRef, {
+//
+//        }, {
+//
+//        })
         // TODO: Receive user arg from parcelabel instead of refetching
 
         binding.backIcon.setOnClickListener {
@@ -53,6 +54,13 @@ class OtherProfileFragment : Fragment() {
         // sets props to page
         firebaseViewModel.selectedUser.observe(viewLifecycleOwner, Observer {
             setBindings(it)
+            if (it != null) {
+                ImageUtils.setProfilePicOtherUser(it, binding.profileImage, binding.profileImageParent, parent) {
+                    if(it != null){
+                        parent.profileImageViewModel.selectedOtherUserProfilePic.value = it
+                    }
+                }
+            }
         })
 
         return view
@@ -61,6 +69,7 @@ class OtherProfileFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         firebaseViewModel.selectedUser.value = null
+        parent.profileImageViewModel.selectedOtherUserProfilePic.value = null
         _binding = null
     }
 

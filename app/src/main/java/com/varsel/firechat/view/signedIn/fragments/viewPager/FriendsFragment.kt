@@ -37,11 +37,13 @@ class FriendsFragment : Fragment() {
             view.findNavController().navigate(R.id.action_chatsFragment_to_addFriends)
         }
 
-        val friendsAdapter = FriendsAdapter(parent, {
-            navigateToProfile(it.userUID!!)
+        val friendsAdapter = FriendsAdapter(parent, { user, base64 ->
+            navigateToProfile(user.userUID)
+            parent.firebaseViewModel.selectedUser.value = user
+            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
 
         },{ user, base64 ->
-            parent.profileImageViewModel.profileImageEncoded.value = base64
+            parent.profileImageViewModel.selectedOtherUserProfilePicChat.value = base64
             parent.firebaseViewModel.selectedChatRoomUser.value = user
             navigateToChats(user.userUID)
         })

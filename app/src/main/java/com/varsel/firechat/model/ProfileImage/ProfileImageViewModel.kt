@@ -12,7 +12,8 @@ import kotlin.concurrent.fixedRateTimer
 
 class ProfileImageViewModel(val dao: ProfileImageDao): ViewModel() {
     val profileImage = MutableLiveData<ProfileImage>()
-    val profileImageEncoded = MutableLiveData<String>()
+    val profileImageEncodedCurrentUser = MutableLiveData<String>()
+    val selectedOtherUserProfilePicChat = MutableLiveData<String>()
     val selectedOtherUserProfilePic = MutableLiveData<String>()
     val selectedGroupImageEncoded = MutableLiveData<String>()
 

@@ -83,7 +83,28 @@
                         android:src="@drawable/ic_baseline_person_24"
                         android:layout_height="25dp"
                         app:tint="@color/white" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:visibility="gone"
+                        android:id="@+id/profile_image_parent"
+                        app:cardCornerRadius="360dp"
+                        app:cardElevation="0dp"
+                        android:elevation="0dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/profile_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            />
+
+                    </com.google.android.material.card.MaterialCardView>
+
                 </FrameLayout>
+
+
                 <LinearLayout
                     android:id="@+id/edit_group_name_clickable"
                     android:layout_gravity="center_vertical"
@@ -100,7 +121,6 @@
                             android:id="@+id/user_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="User Name Here"
                             android:textColor="@color/black"
                             android:textSize="18sp"
                             />
@@ -110,7 +130,6 @@
                         android:id="@+id/occupation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Occupation Here"
                         android:textColor="@color/grey"
                         android:textSize="13sp"
                         />

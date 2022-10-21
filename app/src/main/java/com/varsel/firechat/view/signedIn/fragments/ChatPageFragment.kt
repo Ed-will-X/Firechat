@@ -11,7 +11,6 @@ import com.varsel.firechat.databinding.FragmentChatPageBinding
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageType
-import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
@@ -73,6 +72,9 @@ class ChatPageFragment : Fragment() {
             getMessages(it)
         })
 
+        binding.chatBackButton.setOnClickListener {
+            popNavigation()
+        }
 
         binding.navTopClickable.setOnClickListener {
             navigateToDetail()
@@ -95,8 +97,11 @@ class ChatPageFragment : Fragment() {
         return view
     }
 
+    private fun popNavigation(){
+        findNavController().navigateUp()
+    }
     private fun observeUserProps(){
-        parent.profileImageViewModel.profileImageEncoded.observe(viewLifecycleOwner, Observer {
+        parent.profileImageViewModel.selectedOtherUserProfilePicChat.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
             }

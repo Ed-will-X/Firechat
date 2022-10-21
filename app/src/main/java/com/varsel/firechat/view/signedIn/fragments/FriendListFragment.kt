@@ -29,8 +29,11 @@ class FriendListFragment : Fragment() {
 
         parent = activity as SignedinActivity
 
-        adapter = FriendListAdapter(parent) {
-            val action = FriendListFragmentDirections.actionFriendListFragmentToOtherProfileFragment(it)
+        adapter = FriendListAdapter(parent) { id, user, base64 ->
+            parent.firebaseViewModel.selectedUser.value = user
+            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
+
+            val action = FriendListFragmentDirections.actionFriendListFragmentToOtherProfileFragment(id)
             view.findNavController().navigate(action)
         }
 
