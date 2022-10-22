@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
@@ -16,11 +17,20 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.GroupRoom
+import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.utils.AnimationUtils
+import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.UserUtils
+import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.viewModel.FirebaseViewModel
 
-class GroupChatsListAdapter(val mAuth: FirebaseAuth, val mDbRef: DatabaseReference, val context: Context, val firebaseViewModel: FirebaseViewModel, val addNewListener: ()-> Unit, val groupItemListener: (id: String)-> Unit): ListAdapter<GroupRoom, RecyclerView.ViewHolder>(GroupChatDiffUtilItemCallback()) {
+class GroupChatsListAdapter(
+    val activity: SignedinActivity,
+    val context: Context,
+    val addNewListener: ()-> Unit,
+    val groupItemListener: (id: String, base64: String?)-> Unit)
+
+    : ListAdapter<GroupRoom, RecyclerView.ViewHolder>(GroupChatDiffUtilItemCallback()) {
     private val ADD_NEW = 0
     private val GROUP_CHAT = 1
 
@@ -33,7 +43,8 @@ class GroupChatsListAdapter(val mAuth: FirebaseAuth, val mDbRef: DatabaseReferen
         val img_card_3 = itemView.findViewById<MaterialCardView>(R.id.gc_image_card_3)
         val img_card_4 = itemView.findViewById<MaterialCardView>(R.id.gc_image_card_4)
         val img_card_5 = itemView.findViewById<MaterialCardView>(R.id.gc_image_card_5)
-
+        val imageParent = itemView.findViewById<FrameLayout>(R.id.profile_image_parent)
+        val image = itemView.findViewById<ImageView>(R.id.profile_image)
     }
 
     class AddNewViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -70,9 +81,6 @@ class GroupChatsListAdapter(val mAuth: FirebaseAuth, val mDbRef: DatabaseReferen
             getParticipantCount(participants, viewHolder)
 
             viewHolder.groupName.text = item.groupName?.let { UserUtils.truncate(it, 15) }
-            viewHolder.parent.setOnClickListener {
-                item.roomUID?.let { it1 -> groupItemListener(it1) }
-            }
 
             if(isFavorite(item.roomUID)){
                 AnimationUtils.changeColor(holder.favoriteIcon, R.color.yellow, context)
@@ -83,17 +91,23 @@ class GroupChatsListAdapter(val mAuth: FirebaseAuth, val mDbRef: DatabaseReferen
             holder.favoriteIcon.setOnClickListener {
                 setFavorite(item.roomUID, holder.favoriteIcon)
             }
+
+            ImageUtils.setProfilePicGroup(item, holder.image, holder.imageParent, activity) { base64 ->
+                viewHolder.parent.setOnClickListener {
+                    groupItemListener(item.roomUID, base64)
+                }
+            }
         }
     }
 
     private fun setFavorite(groupId: String, icon: ImageView){
         if(!isFavorite(groupId)){
-            firebaseViewModel.addGroupToFavorites(groupId, mAuth, mDbRef, {
+            activity.firebaseViewModel.addGroupToFavorites(groupId, activity.firebaseAuth, activity.mDbRef, {
                 AnimationUtils.changeColor(icon, R.color.yellow, context)
             },{
             })
         } else {
-            firebaseViewModel.removeGroupFromFavorites(groupId, mAuth, mDbRef, {
+            activity.firebaseViewModel.removeGroupFromFavorites(groupId, activity.firebaseAuth, activity.mDbRef, {
                 AnimationUtils.changeColor(icon, R.color.light_grey_2, context)
             },{
 
@@ -102,7 +116,7 @@ class GroupChatsListAdapter(val mAuth: FirebaseAuth, val mDbRef: DatabaseReferen
     }
 
     private fun isFavorite(groupID: String): Boolean{
-        val favorites = firebaseViewModel.currentUser.value!!.favoriteGroups?.values
+        val favorites = activity.firebaseViewModel.currentUser.value!!.favoriteGroups?.values
 
         if (favorites != null) {
             for(i in favorites){
@@ -125,7 +139,7 @@ class GroupChatsListAdapter(val mAuth: FirebaseAuth, val mDbRef: DatabaseReferen
     }
 
     private fun filterOutCurrentUser(users: List<String>): List<String>{
-        val currentUser = mAuth.currentUser?.uid.toString()
+        val currentUser = activity.firebaseAuth.currentUser?.uid.toString()
         val otherUsers: MutableList<String> = mutableListOf()
 
         for(i in users){

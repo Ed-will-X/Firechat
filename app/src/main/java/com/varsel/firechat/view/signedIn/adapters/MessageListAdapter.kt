@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -21,7 +22,9 @@ import com.varsel.firechat.model.Message.MessageStatus
 import com.varsel.firechat.model.Message.MessageType
 import com.varsel.firechat.model.Message.SystemMessageType
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
+import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.viewModel.FirebaseViewModel
 import java.lang.Exception
 
@@ -33,8 +36,7 @@ class ChatPageType {
 }
 
 class MessageListAdapter(
-    val mAuth: FirebaseAuth,
-    val mDbRef: DatabaseReference,
+    val activity: SignedinActivity,
     val fragment: Fragment,
     val context: Context,
     val pageType: Int,
@@ -53,7 +55,9 @@ class MessageListAdapter(
     class ReceivedViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val parent = itemView.findViewById<LinearLayout>(R.id.parent)
         val text = itemView.findViewById<TextView>(R.id.text)
-        val empty_profile_pic = itemView.findViewById<FrameLayout>(R.id.profile_image_silhouette)
+        val profilePicContainer = itemView.findViewById<FrameLayout>(R.id.profile_image_silhouette)
+        val profileImageParent = itemView.findViewById<FrameLayout>(R.id.profile_image_parent)
+        val profileImage = itemView.findViewById<ImageView>(R.id.profile_image)
         val emptyPadding = itemView.findViewById<View>(R.id.empty_padding)
         val timestamp = itemView.findViewById<TextView>(R.id.timestamp)
     }
@@ -145,14 +149,20 @@ class MessageListAdapter(
             try {
                 val prev: Message? = getItem(position - 1)
                 if(prev?.sender.equals(item.sender)){
-                    viewHolder.empty_profile_pic.visibility = View.GONE
+                    viewHolder.profilePicContainer.visibility = View.GONE
                     viewHolder.emptyPadding.visibility = View.VISIBLE
                 } else {
-                    viewHolder.empty_profile_pic.visibility = View.VISIBLE
+                    getUser(item.sender){ user ->
+                        ImageUtils.setProfilePicOtherUser(user, holder.profileImage, holder.profileImageParent, activity)
+                    }
+                    viewHolder.profilePicContainer.visibility = View.VISIBLE
                     viewHolder.emptyPadding.visibility = View.GONE
                 }
             } catch (e: Exception) {
-                viewHolder.empty_profile_pic.visibility = View.VISIBLE
+                getUser(item.sender){ user ->
+                    ImageUtils.setProfilePicOtherUser(user, holder.profileImage, holder.profileImageParent, activity)
+                }
+                viewHolder.profilePicContainer.visibility = View.VISIBLE
                 viewHolder.emptyPadding.visibility = View.GONE
             }
         }
@@ -160,7 +170,7 @@ class MessageListAdapter(
 
     override fun getItemViewType(position: Int): Int {
         val item: Message = getItem(position)
-        if(item.sender.toString() == mAuth.currentUser?.uid.toString()){
+        if(item.sender.toString() == activity.firebaseAuth.currentUser?.uid.toString()){
             return MessageStatus.SENT
         } else if(item.sender == "SYSTEM"){
             return MessageStatus.SYSTEM
@@ -170,7 +180,7 @@ class MessageListAdapter(
     }
 
     private fun getUser(userId: String, callback: (user: User)-> Unit){
-        firebaseViewModel.getUserSingle(userId, mDbRef, {
+        firebaseViewModel.getUserSingle(userId, activity.mDbRef, {
             if(it != null){
                 callback(it)
             }
@@ -178,7 +188,7 @@ class MessageListAdapter(
     }
 
     private fun formatSystemMessage(message: Message, time: Long, afterCallback: (message: String)-> Unit){
-        val currentUser = mAuth.currentUser!!.uid
+        val currentUser = activity.firebaseAuth.currentUser!!.uid
         if(message.messageUID == SystemMessageType.GROUP_REMOVE){
             val messageArr: Array<String> = message.message.split(" ").toTypedArray()
 
@@ -244,7 +254,7 @@ class MessageListAdapter(
     }
 
     private fun formatPerson(userId: String, secondPersonCallback: ()-> Unit, thirdPersonCallback: ()-> Unit){
-        if(userId == mAuth.currentUser!!.uid){
+        if(userId == activity.firebaseAuth.currentUser!!.uid){
             secondPersonCallback()
         } else {
             thirdPersonCallback()

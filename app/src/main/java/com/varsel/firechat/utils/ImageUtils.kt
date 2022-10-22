@@ -8,15 +8,14 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.CountDownTimer
 import android.provider.MediaStore
 import android.util.Base64
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import java.io.ByteArrayOutputStream
@@ -136,6 +135,25 @@ class ImageUtils {
                 }
             })
         }
+
+        fun setProfilePicGroup(group: GroupRoom, view: ImageView, viewParent: View, parent: SignedinActivity, imgCallback: (image: String?)-> Unit){
+            parent.determineGroupFetchMethod(group, {
+                if (it != null) {
+                    imgCallback(it)
+                    setProfilePic(it, view, viewParent)
+                } else {
+                    imgCallback(null)
+                }
+            }, {
+                if (it != null) {
+                    imgCallback(it)
+                    setProfilePic(it, view, viewParent)
+                } else {
+                    imgCallback(null)
+                }
+            })
+        }
+
 
     }
 }

@@ -57,7 +57,7 @@ class ChatPageFragment : Fragment() {
         newChatRoomId = MessageUtils.generateUID(50)
         newChatRoom = ChatRoom(newChatRoomId, hashMapOf<String, String>(userUID to userUID, parent.firebaseAuth.uid.toString() to parent.firebaseAuth.uid.toString()))
 
-        messagesListAdapter = MessageListAdapter(parent.firebaseAuth, parent.mDbRef,this, requireContext() ,ChatPageType.INDIVIDUAL, parent.firebaseViewModel,
+        messagesListAdapter = MessageListAdapter(parent,this, requireContext() ,ChatPageType.INDIVIDUAL, parent.firebaseViewModel,
         { _, _, _ ->
 
         }, { _, _, _ ->

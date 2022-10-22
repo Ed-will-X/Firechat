@@ -58,6 +58,8 @@ class GroupChatDetailFragment : Fragment() {
         val view = binding.root
         parent = activity as SignedinActivity
 
+        observeGroupImage()
+
         // adapter init
         parent.firebaseViewModel.selectedGroupRoom.observe(viewLifecycleOwner, Observer {
             binding.groupName.text = it?.groupName
@@ -120,6 +122,15 @@ class GroupChatDetailFragment : Fragment() {
         return view
     }
 
+    private fun observeGroupImage(){
+        parent.profileImageViewModel.selectedGroupImageEncoded.observe(viewLifecycleOwner, Observer {
+            if(it != null){
+                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
+                binding.profileImageParent.visibility = View.VISIBLE
+            }
+        })
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -139,9 +150,10 @@ class GroupChatDetailFragment : Fragment() {
         val profileImage =
             ProfileImage(groupId, base64!!, timestamp)
 
-        parent.firebaseViewModel.uploadGroupImage(profileImage, parent.mDbRef, groupId, {
+        parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, groupId, {
             parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
                 parent.profileImageViewModel.storeImage(profileImage)
+                parent.profileImageViewModel.selectedGroupImageEncoded.value = profileImage.image
                 successCallback()
             }, {})
         }, {
@@ -155,9 +167,10 @@ class GroupChatDetailFragment : Fragment() {
         val profileImage =
             ProfileImage( groupId, base64, timestamp)
 
-        parent.firebaseViewModel.uploadGroupImage(profileImage, parent.mDbRef, groupId, {
+        parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, groupId, {
             parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
                 parent.profileImageViewModel.storeImage(profileImage)
+                parent.profileImageViewModel.selectedGroupImageEncoded.value = profileImage.image
                 successCallback()
             }, {})
         }, {
@@ -167,13 +180,14 @@ class GroupChatDetailFragment : Fragment() {
 
     private fun removeImage(successCallback: () -> Unit){
         val timestamp = System.currentTimeMillis()
-        parent.firebaseViewModel.removeGroupImage(parent.mDbRef, groupId, {
+        parent.firebaseViewModel.removeProfileImage(parent.mDbRef, groupId, {
             parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
                 val image = parent.profileImageViewModel.getImageById(groupId)
 
                 image.observeOnce(viewLifecycleOwner, Observer {
                     if(it != null){
                         parent.profileImageViewModel.deleteImage(it)
+                        parent.profileImageViewModel.selectedGroupImageEncoded.value = null
                     }
                 })
                 successCallback()

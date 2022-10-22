@@ -21,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.varsel.firechat.FirechatApplication
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActivitySignedinBinding
+import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.model.ProfileImage.ProfileImageViewModel
 import com.varsel.firechat.model.ProfileImage.ProfileImageViewModelFactory
@@ -220,6 +221,25 @@ class SignedinActivity : AppCompatActivity() {
                 profileImageViewModel.isNotUserInBlacklist(user,{
                     profileImageViewModel.addUserToBlacklist(user)
                     fetchProfileImage(user.userUID) {
+                        fetchCallback(it)
+                    }
+                }, {
+                    fetchCallback(null)
+                })
+            }
+        })
+    }
+
+    fun determineGroupFetchMethod(group: GroupRoom, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
+        val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(group.roomUID)
+
+        imageLiveData?.observeOnce(this, Observer {
+            if(it != null && group.imgChangeTimestamp == it.imgChangeTimestamp){
+                dbCallback(it.image)
+            } else {
+                profileImageViewModel.isNotGroupInBlacklist(group,{
+                    profileImageViewModel.addGroupToBlacklist(group)
+                    fetchProfileImage(group.roomUID) {
                         fetchCallback(it)
                     }
                 }, {

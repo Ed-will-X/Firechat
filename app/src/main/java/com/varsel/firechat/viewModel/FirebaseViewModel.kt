@@ -958,9 +958,8 @@ class FirebaseViewModel: ViewModel() {
         DebugUtils.log_firebase("sign out called")
     }
 
-    fun uploadProfileImage(profileImage: ProfileImage, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: ()-> Unit, failureCallback: ()-> Unit){
-        val currentUserId = mAuth.currentUser!!.uid
-        val reference = mDbRef.child("ProfileImages").child(currentUserId)
+    fun uploadProfileImage(profileImage: ProfileImage, mDbRef: DatabaseReference, userId: String, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+        val reference = mDbRef.child("ProfileImages").child(userId)
 
         reference
             .setValue(profileImage)
@@ -974,9 +973,8 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    fun removeProfileImage(mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: ()-> Unit, failureCallback: ()-> Unit){
-        val currentUserId = mAuth.currentUser!!.uid
-        val reference = mDbRef.child("ProfileImages").child(currentUserId)
+    fun removeProfileImage(mDbRef: DatabaseReference, userId: String, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+        val reference = mDbRef.child("ProfileImages").child(userId)
 
         reference
             .setValue(null)
@@ -1023,57 +1021,6 @@ class FirebaseViewModel: ViewModel() {
                     failureCallback()
                 }
             }
-    }
-
-    // TODO: implement upload group image
-    fun uploadGroupImage(profileImage: ProfileImage, mDbRef: DatabaseReference, groupId: String, successCallback: ()-> Unit, failureCallback: ()-> Unit){
-        val reference = mDbRef.child("GroupImages").child(groupId)
-
-        reference
-            .setValue(profileImage)
-            .addOnCompleteListener {
-                if(it.isSuccessful){
-                    successCallback()
-                    DebugUtils.log_firebase("upload group image successful")
-                } else {
-                    failureCallback()
-                }
-            }
-    }
-
-    // TODO: implement remove group image
-    fun removeGroupImage(mDbRef: DatabaseReference, groupId: String, successCallback: ()-> Unit, failureCallback: ()-> Unit){
-        val reference = mDbRef.child("GroupImages").child(groupId)
-
-        reference
-            .setValue(null)
-            .addOnCompleteListener {
-                if(it.isSuccessful){
-                    successCallback()
-                    DebugUtils.log_firebase("remove group image successful")
-                } else {
-                    failureCallback()
-                }
-            }
-    }
-
-    // TODO: implement get group image
-    fun getGroupImage(groupId: String, mDbRef: DatabaseReference, loopCallback: (profileImage: ProfileImage?) -> Unit, afterCallback: () -> Unit){
-        mDbRef.child("GroupImages").orderByChild("ownerId").equalTo(groupId).addListenerForSingleValueEvent(object: ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for(item in snapshot.children){
-
-                    val profileImage = item.getValue(ProfileImage::class.java)
-                    loopCallback(profileImage)
-                    DebugUtils.log_firebase("get group image successful")
-                }
-                afterCallback()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-        })
     }
 
     // TODO: implement append group image timestamp

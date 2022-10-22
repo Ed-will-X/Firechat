@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
 import kotlinx.coroutines.launch
 import kotlin.concurrent.fixedRateTimer
@@ -74,6 +75,24 @@ class ProfileImageViewModel(val dao: ProfileImageDao): ViewModel() {
 
     fun addUserToBlacklist(user: User){
         profileImageFetchBlacklist.value?.put(user.userUID, user.imgChangeTimestamp)
+    }
+
+    fun isNotGroupInBlacklist(group: GroupRoom, ifCallback: ()-> Unit, elseCallback: ()-> Unit){
+        if(profileImageFetchBlacklist.value?.contains(group.roomUID) == false){
+            ifCallback()
+        } else {
+            val userimgTimestampBlacklist = profileImageFetchBlacklist.value?.get(group.roomUID)
+
+            if(userimgTimestampBlacklist != group.imgChangeTimestamp){
+                ifCallback()
+            } else {
+                elseCallback()
+            }
+        }
+    }
+
+    fun addGroupToBlacklist(group: GroupRoom){
+        profileImageFetchBlacklist.value?.put(group.roomUID, group.imgChangeTimestamp)
     }
 
     fun clearBlacklist(){

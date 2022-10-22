@@ -31,10 +31,11 @@ class GroupFragment : Fragment() {
 
         parent = activity as SignedinActivity
 
-        adapter = GroupChatsListAdapter(parent.firebaseAuth, parent.mDbRef, requireContext(), parent.firebaseViewModel,{
+        adapter = GroupChatsListAdapter(parent, requireContext(),{
             navigateToCreateGroup()
-        }, {
-            navigateToGroupChatPage(it)
+        }, { id, base64 ->
+            navigateToGroupChatPage(id)
+            parent.profileImageViewModel.selectedGroupImageEncoded.value = base64
         })
 
         parent.firebaseViewModel.currentUser.observe(viewLifecycleOwner, Observer {

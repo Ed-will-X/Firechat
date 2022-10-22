@@ -44,19 +44,42 @@
         </LinearLayout>
 
         <FrameLayout
-            android:layout_gravity="center"
             android:id="@+id/profile_image_silhouette"
+            android:clickable="true"
+            android:layout_gravity="center"
             android:background="@drawable/bg_profile_background"
             android:layout_width="@dimen/gc_image_size"
             android:layout_height="@dimen/gc_image_size">
 
+            <!--                silhouette-->
             <ImageView
                 android:layout_width="25dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_people"
                 android:layout_height="25dp"
                 app:tint="@color/white" />
+
+            <!--                actual profile pic-->
+            <com.google.android.material.card.MaterialCardView
+                android:visibility="gone"
+                android:id="@+id/profile_image_parent"
+                app:cardCornerRadius="360dp"
+                app:cardElevation="0dp"
+                android:elevation="0dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/profile_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    />
+
+            </com.google.android.material.card.MaterialCardView>
+
         </FrameLayout>
+
 
         <TextView
             android:layout_marginTop="10dp"

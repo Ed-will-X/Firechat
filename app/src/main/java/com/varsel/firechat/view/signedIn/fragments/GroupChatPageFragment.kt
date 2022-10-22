@@ -18,6 +18,7 @@ import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageStatus
 import com.varsel.firechat.model.Message.MessageType
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
@@ -43,11 +44,14 @@ class GroupChatPageFragment : Fragment() {
         parent = activity as SignedinActivity
         roomId = GroupChatPageFragmentArgs.fromBundle(requireArguments()).groupRoomId
 
+        observeGroupImage()
+
         getGroupChatRoom()
         getMessages()
         observeParticipants()
 
-        messageAdapter = MessageListAdapter(parent.firebaseAuth, parent.mDbRef,this, requireContext(), ChatPageType.GROUP, parent.firebaseViewModel,
+
+        messageAdapter = MessageListAdapter(parent,this, requireContext(), ChatPageType.GROUP, parent.firebaseViewModel,
         { message, messageType, messageStatus ->
 
         }, { message, messageType, messageStatus ->
@@ -72,6 +76,15 @@ class GroupChatPageFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun observeGroupImage(){
+        parent.profileImageViewModel.selectedGroupImageEncoded.observe(viewLifecycleOwner, Observer {
+            if(it != null){
+                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
+                binding.profileImageParent.visibility = View.VISIBLE
+            }
+        })
     }
 
     private fun setShimmerVisibility(chatRoom: ChatRoom?){

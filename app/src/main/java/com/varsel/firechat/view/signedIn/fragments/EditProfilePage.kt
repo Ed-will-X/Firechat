@@ -71,7 +71,7 @@ class EditProfilePage : Fragment() {
         val profileImage =
             ProfileImage(currentUser, base64!!, timestamp)
 
-        parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, parent.firebaseAuth, {
+        parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, currentUser, {
             parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
                 parent.profileImageViewModel.storeImage(profileImage)
                 parent.profileImageViewModel.profileImageEncodedCurrentUser.value = profileImage.image
@@ -89,7 +89,7 @@ class EditProfilePage : Fragment() {
         val profileImage =
             ProfileImage( currentUser, base64, timestamp)
 
-        parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, parent.firebaseAuth, {
+        parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, currentUser, {
             parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
                 parent.profileImageViewModel.storeImage(profileImage)
                 parent.profileImageViewModel.profileImageEncodedCurrentUser.value = profileImage.image
@@ -103,7 +103,7 @@ class EditProfilePage : Fragment() {
     private fun removeImage(successCallback: () -> Unit){
         val currentUserId = parent.firebaseAuth.currentUser!!.uid
         val timestamp = System.currentTimeMillis()
-        parent.firebaseViewModel.removeProfileImage(parent.mDbRef, parent.firebaseAuth, {
+        parent.firebaseViewModel.removeProfileImage(parent.mDbRef, parent.firebaseAuth.currentUser!!.uid, {
             parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
                 val image = parent.profileImageViewModel.getImageById(currentUserId)
 
