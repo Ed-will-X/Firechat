@@ -195,27 +195,28 @@
                     android:layout_height="wrap_content">
 
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/name_checked"
-                        android:layout_width="@dimen/about_user_check_circle"
-                        android:layout_height="@dimen/about_user_check_circle"
-                        app:cardCornerRadius="360dp"
-                        app:cardBackgroundColor="?attr/colorPrimary"
-                        >
-                        <ImageView
-                            android:layout_width="@dimen/about_user_check"
-                            android:layout_height="@dimen/about_user_check_circle"
-                            android:src="@drawable/ic_baseline_check_24"
-                            android:layout_gravity="center"
-                            app:tint="@color/white" />
-                    </com.google.android.material.card.MaterialCardView>
-                    <com.google.android.material.card.MaterialCardView
-                        android:visibility="gone"
-                        android:id="@+id/name_unchecked"
                         android:layout_width="@dimen/about_user_check_circle"
                         android:layout_height="@dimen/about_user_check_circle"
                         app:cardCornerRadius="360dp"
                         app:cardBackgroundColor="@color/light_grey_2"
-                        />
+                        >
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:visibility="gone"
+                            android:id="@+id/name_checked"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:cardCornerRadius="360dp"
+                            app:cardBackgroundColor="?attr/colorPrimary"
+                            >
+                            <ImageView
+                                android:layout_width="@dimen/about_user_check"
+                                android:layout_height="@dimen/about_user_check_circle"
+                                android:src="@drawable/ic_baseline_check_24"
+                                android:layout_gravity="center"
+                                app:tint="@color/white" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </com.google.android.material.card.MaterialCardView>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -244,27 +245,28 @@
                     android:layout_height="wrap_content">
 
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/email_checked"
-                        android:layout_width="@dimen/about_user_check_circle"
-                        android:layout_height="@dimen/about_user_check_circle"
-                        app:cardCornerRadius="360dp"
-                        app:cardBackgroundColor="?attr/colorPrimary"
-                        >
-                        <ImageView
-                            android:layout_width="@dimen/about_user_check"
-                            android:layout_height="@dimen/about_user_check_circle"
-                            android:src="@drawable/ic_baseline_check_24"
-                            android:layout_gravity="center"
-                            app:tint="@color/white" />
-                    </com.google.android.material.card.MaterialCardView>
-                    <com.google.android.material.card.MaterialCardView
-                        android:visibility="gone"
-                        android:id="@+id/email_unchecked"
                         android:layout_width="@dimen/about_user_check_circle"
                         android:layout_height="@dimen/about_user_check_circle"
                         app:cardCornerRadius="360dp"
                         app:cardBackgroundColor="@color/light_grey_2"
-                        />
+                        >
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:visibility="gone"
+                            android:id="@+id/email_checked"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:cardCornerRadius="360dp"
+                            app:cardBackgroundColor="?attr/colorPrimary"
+                            >
+                            <ImageView
+                                android:layout_width="@dimen/about_user_check"
+                                android:layout_height="@dimen/about_user_check_circle"
+                                android:src="@drawable/ic_baseline_check_24"
+                                android:layout_gravity="center"
+                                app:tint="@color/white" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </com.google.android.material.card.MaterialCardView>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -293,27 +295,28 @@
                     android:layout_height="wrap_content">
 
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/phone_checked"
-                        android:layout_width="@dimen/about_user_check_circle"
-                        android:layout_height="@dimen/about_user_check_circle"
-                        app:cardCornerRadius="360dp"
-                        app:cardBackgroundColor="?attr/colorPrimary"
-                        >
-                        <ImageView
-                            android:layout_width="@dimen/about_user_check"
-                            android:layout_height="@dimen/about_user_check_circle"
-                            android:src="@drawable/ic_baseline_check_24"
-                            android:layout_gravity="center"
-                            app:tint="@color/white" />
-                    </com.google.android.material.card.MaterialCardView>
-                    <com.google.android.material.card.MaterialCardView
-                        android:visibility="gone"
-                        android:id="@+id/phone_unchecked"
                         android:layout_width="@dimen/about_user_check_circle"
                         android:layout_height="@dimen/about_user_check_circle"
                         app:cardCornerRadius="360dp"
                         app:cardBackgroundColor="@color/light_grey_2"
-                        />
+                        >
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:visibility="gone"
+                            android:id="@+id/phone_checked"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:cardCornerRadius="360dp"
+                            app:cardBackgroundColor="?attr/colorPrimary"
+                            >
+                            <ImageView
+                                android:layout_width="@dimen/about_user_check"
+                                android:layout_height="@dimen/about_user_check_circle"
+                                android:src="@drawable/ic_baseline_check_24"
+                                android:layout_gravity="center"
+                                app:tint="@color/white" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </com.google.android.material.card.MaterialCardView>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -342,27 +345,28 @@
                     android:layout_height="wrap_content">
 
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/occupation_checked"
-                        android:layout_width="@dimen/about_user_check_circle"
-                        android:layout_height="@dimen/about_user_check_circle"
-                        app:cardCornerRadius="360dp"
-                        app:cardBackgroundColor="?attr/colorPrimary"
-                        >
-                        <ImageView
-                            android:layout_width="@dimen/about_user_check"
-                            android:layout_height="@dimen/about_user_check_circle"
-                            android:src="@drawable/ic_baseline_check_24"
-                            android:layout_gravity="center"
-                            app:tint="@color/white" />
-                    </com.google.android.material.card.MaterialCardView>
-                    <com.google.android.material.card.MaterialCardView
-                        android:visibility="gone"
-                        android:id="@+id/occupation_unchecked"
                         android:layout_width="@dimen/about_user_check_circle"
                         android:layout_height="@dimen/about_user_check_circle"
                         app:cardCornerRadius="360dp"
                         app:cardBackgroundColor="@color/light_grey_2"
-                        />
+                        >
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:visibility="gone"
+                            android:id="@+id/occupation_checked"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:cardCornerRadius="360dp"
+                            app:cardBackgroundColor="?attr/colorPrimary"
+                            >
+                            <ImageView
+                                android:layout_width="@dimen/about_user_check"
+                                android:layout_height="@dimen/about_user_check_circle"
+                                android:src="@drawable/ic_baseline_check_24"
+                                android:layout_gravity="center"
+                                app:tint="@color/white" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </com.google.android.material.card.MaterialCardView>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -391,27 +395,28 @@
                     android:layout_height="wrap_content">
 
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/location_checked"
-                        android:layout_width="@dimen/about_user_check_circle"
-                        android:layout_height="@dimen/about_user_check_circle"
-                        app:cardCornerRadius="360dp"
-                        app:cardBackgroundColor="?attr/colorPrimary"
-                        >
-                        <ImageView
-                            android:layout_width="@dimen/about_user_check"
-                            android:layout_height="@dimen/about_user_check_circle"
-                            android:src="@drawable/ic_baseline_check_24"
-                            android:layout_gravity="center"
-                            app:tint="@color/white" />
-                    </com.google.android.material.card.MaterialCardView>
-                    <com.google.android.material.card.MaterialCardView
-                        android:visibility="gone"
-                        android:id="@+id/location_unchecked"
                         android:layout_width="@dimen/about_user_check_circle"
                         android:layout_height="@dimen/about_user_check_circle"
                         app:cardCornerRadius="360dp"
                         app:cardBackgroundColor="@color/light_grey_2"
-                        />
+                        >
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:visibility="gone"
+                            android:id="@+id/location_checked"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:cardCornerRadius="360dp"
+                            app:cardBackgroundColor="?attr/colorPrimary"
+                            >
+                            <ImageView
+                                android:layout_width="@dimen/about_user_check"
+                                android:layout_height="@dimen/about_user_check_circle"
+                                android:src="@drawable/ic_baseline_check_24"
+                                android:layout_gravity="center"
+                                app:tint="@color/white" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </com.google.android.material.card.MaterialCardView>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -440,27 +445,29 @@
                     android:layout_height="wrap_content">
 
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/gender_checked"
-                        android:layout_width="@dimen/about_user_check_circle"
-                        android:layout_height="@dimen/about_user_check_circle"
-                        app:cardCornerRadius="360dp"
-                        app:cardBackgroundColor="?attr/colorPrimary"
-                        >
-                        <ImageView
-                            android:layout_width="@dimen/about_user_check"
-                            android:layout_height="@dimen/about_user_check_circle"
-                            android:src="@drawable/ic_baseline_check_24"
-                            android:layout_gravity="center"
-                            app:tint="@color/white" />
-                    </com.google.android.material.card.MaterialCardView>
-                    <com.google.android.material.card.MaterialCardView
-                        android:visibility="gone"
-                        android:id="@+id/gender_unchecked"
                         android:layout_width="@dimen/about_user_check_circle"
                         android:layout_height="@dimen/about_user_check_circle"
                         app:cardCornerRadius="360dp"
                         app:cardBackgroundColor="@color/light_grey_2"
-                        />
+                        >
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:visibility="gone"
+                            android:id="@+id/gender_checked"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:cardCornerRadius="360dp"
+                            app:cardBackgroundColor="?attr/colorPrimary"
+                            >
+                            <ImageView
+                                android:layout_width="@dimen/about_user_check"
+                                android:layout_height="@dimen/about_user_check_circle"
+                                android:src="@drawable/ic_baseline_check_24"
+                                android:layout_gravity="center"
+                                app:tint="@color/white" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </com.google.android.material.card.MaterialCardView>
+
 
                     <TextView
                         android:layout_width="wrap_content"

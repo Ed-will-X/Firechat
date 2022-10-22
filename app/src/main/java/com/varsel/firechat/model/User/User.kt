@@ -12,7 +12,7 @@ open class User{
     @PrimaryKey
     lateinit var userUID: String
 
-    var email: String? = null
+    lateinit var email: String
 
     lateinit var name: String
 
