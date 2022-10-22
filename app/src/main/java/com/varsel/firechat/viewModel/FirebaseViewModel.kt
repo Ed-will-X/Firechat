@@ -16,6 +16,7 @@ import com.varsel.firechat.model.User.User
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageType
 import com.varsel.firechat.model.Message.SystemMessageType
+import com.varsel.firechat.utils.DebugUtils
 
 class FirebaseViewModel: ViewModel() {
     val usersLiveData = MutableLiveData<List<User>>()
@@ -42,6 +43,7 @@ class FirebaseViewModel: ViewModel() {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if(task.isSuccessful){
                 callbackSuccess()
+                DebugUtils.log_firebase("Signup successful")
             } else {
                 callbackFail()
             }
@@ -58,6 +60,7 @@ class FirebaseViewModel: ViewModel() {
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
             if(it.isSuccessful){
                 callbackSuccess()
+                DebugUtils.log_firebase("Signin successful")
             } else {
                 callbackFail()
             }
@@ -75,6 +78,8 @@ class FirebaseViewModel: ViewModel() {
         mDbRef.child("Users").child(UID).setValue(User(name, email, UID, null, null, false, null, null, null, null))
             .addOnCompleteListener {
                 if(it.isSuccessful){
+                    DebugUtils.log_firebase("save user to db successful")
+
                     onSuccessCallback()
                 } else {
                     onFailureCallback()
@@ -89,6 +94,7 @@ class FirebaseViewModel: ViewModel() {
                 val connected = snapshot.getValue(Boolean::class.java) ?: false
                 if (connected) {
                     callback(true)
+                    DebugUtils.log_firebase("connection established")
                 } else {
                     callback(false)
                 }
@@ -107,6 +113,8 @@ class FirebaseViewModel: ViewModel() {
 
                 for (item in snapshot.children){
                     val user = item.getValue(User::class.java)
+                    DebugUtils.log_firebase("fetch current user recurrent successful")
+
                     currentUser.value = user
                 }
                 afterCallback()
@@ -126,6 +134,7 @@ class FirebaseViewModel: ViewModel() {
 
                 for (item in snapshot.children){
                     val user = item.getValue(User::class.java)
+                    DebugUtils.log_firebase("fetch current user single successful")
                     currentUserSingle.value = user
                 }
                 afterCallback()
@@ -146,29 +155,12 @@ class FirebaseViewModel: ViewModel() {
 
                 for(item in snapshot.children){
                     val user = item.getValue(User::class.java)
+                    DebugUtils.log_firebase("get user by id single successful")
+
                     selectedUser.value = user
                 }
 
                 afterCallback()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-
-            }
-
-        })
-    }
-
-    fun getUserById(uid: String, mDbRef: DatabaseReference, loopCallback: (user: User?) -> Unit) {
-        mDbRef.child("Users").orderByChild("userUID").equalTo(uid).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-
-                for(item in snapshot.children){
-                    val user = item.getValue(User::class.java)
-                    selectedUser.value = user
-                    loopCallback(user)
-                }
-
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -185,6 +177,8 @@ class FirebaseViewModel: ViewModel() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (i in snapshot.children){
                     var user = i.getValue(User::class.java)
+                    DebugUtils.log_firebase("get user single successful")
+
                     loopCallback(user)
                 }
                 afterCallback()
@@ -202,6 +196,8 @@ class FirebaseViewModel: ViewModel() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (i in snapshot.children){
                     var user = i.getValue(User::class.java)
+                    DebugUtils.log_firebase("get user recurrent successful")
+
                     loopCallback(user)
                 }
                 afterCallback()
@@ -225,6 +221,7 @@ class FirebaseViewModel: ViewModel() {
                 val users = arrayListOf<User>()
                 for(item in snapshot.children){
                     val user = item.getValue(User::class.java)
+                    DebugUtils.log_firebase("get all users successful")
                     if(mAuth.currentUser?.uid != user?.userUID){
                         users.add(user!!)
                     }
@@ -248,6 +245,8 @@ class FirebaseViewModel: ViewModel() {
                     if(mAuth.currentUser?.uid != user?.userUID && queryString.isNotEmpty()){
                         users.add(user!!)
                     }
+                    DebugUtils.log_firebase("query users successful")
+
                 }
                 usersQuery.value = users
                 afterCallback()
@@ -273,6 +272,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("send friend request successful")
                 }else{
                     failureCallback()
                 }
@@ -289,6 +289,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("revoke friend request successful")
                 } else {
                     failureCallback()
                 }
@@ -324,6 +325,7 @@ class FirebaseViewModel: ViewModel() {
                                                 .addOnCompleteListener {
                                                     if (it.isSuccessful){
                                                         successCallback()
+                                                        DebugUtils.log_firebase("accept friend request successful")
                                                     } else {
                                                         failureCallback()
                                                     }
@@ -344,6 +346,7 @@ class FirebaseViewModel: ViewModel() {
 
     }
 
+    // TODO: Implement reject friend request
     fun rejectFriendRequest(user: User){
         // remove from request list
     }
@@ -370,6 +373,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("send message successful")
                 } else {
                     failureCallback()
                 }
@@ -385,6 +389,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("append participants successful")
                 } else {
                     failureCallback()
                 }
@@ -409,6 +414,7 @@ class FirebaseViewModel: ViewModel() {
                         .addOnCompleteListener {
                             if(it.isSuccessful){
                                 successCallback()
+                                DebugUtils.log_firebase("append chat room successful")
                             } else {
                                 failureCallback()
                             }
@@ -417,28 +423,6 @@ class FirebaseViewModel: ViewModel() {
                     failureCallback()
                 }
             }
-    }
-
-    fun getChatRoom(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (chatRoom: ChatRoom?) -> Unit, afterCallback: () -> Unit){
-        mDbRef
-            .child("chatRooms")
-            .orderByChild("roomUID")
-            .equalTo(chatRoomUID)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    for (i in snapshot.children){
-                        val item = i.getValue(ChatRoom::class.java)
-                        loopCallback(item)
-                    }
-
-                    afterCallback()
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-
-                }
-
-            })
     }
 
     fun getChatRoomRecurrent(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (chatRoom: ChatRoom?) -> Unit, afterCallback: () -> Unit){
@@ -451,6 +435,7 @@ class FirebaseViewModel: ViewModel() {
                     for (i in snapshot.children){
                         val item = i.getValue(ChatRoom::class.java)
                         loopCallback(item)
+                        DebugUtils.log_firebase("get chat room recurrent successful")
                     }
 
                     afterCallback()
@@ -472,6 +457,7 @@ class FirebaseViewModel: ViewModel() {
                 if(it.isSuccessful){
                     groupCreateMessage(mAuth.currentUser!!.uid, groupObj.roomUID, mDbRef,{
                         successCallback()
+                        DebugUtils.log_firebase("create group successful")
                     },{
                         failureCallback()
                     })
@@ -505,6 +491,7 @@ class FirebaseViewModel: ViewModel() {
                         .addOnCompleteListener {
                             if(it.isSuccessful){
                                 successCallback()
+                                DebugUtils.log_firebase("append group to user successful")
                             } else {
                                 failureCallback()
                             }
@@ -525,6 +512,8 @@ class FirebaseViewModel: ViewModel() {
                     for (i in snapshot.children){
                         val item = i.getValue(GroupRoom::class.java)
                         loopCallback(item)
+                        DebugUtils.log_firebase("get group room single successful")
+
                     }
 
                     afterCallback()
@@ -547,6 +536,7 @@ class FirebaseViewModel: ViewModel() {
                     for (i in snapshot.children){
                         val item = i.getValue(GroupRoom::class.java)
                         loopCallback(item)
+                        DebugUtils.log_firebase("get group room recurrent successful")
                     }
 
                     afterCallback()
@@ -576,6 +566,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("send group message successful")
                 } else {
                     failureCallback()
                 }
@@ -593,6 +584,7 @@ class FirebaseViewModel: ViewModel() {
                 if(it.isSuccessful){
                     groupNowAdminMessage(userId, roomId, mDbRef, {
                         successCallback()
+                        DebugUtils.log_firebase("make admin successful")
                     },{
                         failureCallback()
                     })
@@ -619,6 +611,7 @@ class FirebaseViewModel: ViewModel() {
                     if(it.isSuccessful){
                         groupNotAdminMessage(userId, roomId, mDbRef, {
                             successCallback()
+                            DebugUtils.log_firebase("remove admin successful")
                         }, {
                             failureCallback()
                         })
@@ -648,6 +641,7 @@ class FirebaseViewModel: ViewModel() {
                             .addOnCompleteListener {
                                 if(it.isSuccessful){
                                     successCallback()
+                                    DebugUtils.log_firebase("remove from group successful")
                                 } else {
                                     failureCallback()
                                 }
@@ -683,6 +677,8 @@ class FirebaseViewModel: ViewModel() {
                                 .addOnCompleteListener {
                                     if(it.isSuccessful){
                                         successCallback(v)
+                                        DebugUtils.log_firebase("add group members successful")
+
                                     } else {
                                         failureCallback(v)
                                     }
@@ -744,6 +740,7 @@ class FirebaseViewModel: ViewModel() {
                                 .addOnCompleteListener {
                                     if(it.isSuccessful){
                                         successCallback()
+                                        DebugUtils.log_firebase("leave group successful")
                                     } else {
                                         failureCallback()
                                     }
@@ -777,6 +774,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("group add message successful")
                 } else {
                     failureCallback()
                 }
@@ -795,6 +793,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("group exit message successful")
                 } else {
                     failureCallback()
                 }
@@ -813,6 +812,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("group remove message successful")
                 } else {
                     failureCallback()
                 }
@@ -831,6 +831,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("group now admin message successful")
                 } else {
                     failureCallback()
                 }
@@ -849,6 +850,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("group not admin message successful")
                 } else {
                     failureCallback()
                 }
@@ -867,6 +869,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("group create message successful")
                 } else {
                     failureCallback()
                 }
@@ -881,9 +884,15 @@ class FirebaseViewModel: ViewModel() {
         val databaseRef = mDbRef.child("Users").child(firebaseAuth.currentUser?.uid.toString())
 
         if(value.isEmpty()){
-            databaseRef.child(key).setValue(null)
+            databaseRef.child(key).setValue(null).addOnCompleteListener {
+                DebugUtils.log_firebase("edit user ${key} successful")
+            }
         } else {
-            databaseRef.child(key).setValue(value)
+            databaseRef.child(key).setValue(value).addOnCompleteListener {
+                if(it.isSuccessful){
+                    DebugUtils.log_firebase("edit user ${key} successful")
+                }
+            }
         }
         // TODO: Implement success and failure callbacks
     }
@@ -893,8 +902,11 @@ class FirebaseViewModel: ViewModel() {
 
         if(value.isEmpty()){
             databaseRef.child(key).setValue(null)
+            DebugUtils.log_firebase("edit group ${key} successful")
         } else {
             databaseRef.child(key).setValue(value)
+            DebugUtils.log_firebase("edit group ${key} successful")
+
         }
     }
 
@@ -909,6 +921,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("Add group to favorites successful")
                 } else {
                     failureCallback()
                 }
@@ -926,6 +939,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("remove group from favorites successful")
                 } else {
                     failureCallback()
                 }
@@ -941,6 +955,7 @@ class FirebaseViewModel: ViewModel() {
     fun signOut(mAuth: FirebaseAuth){
         // delete both user and image from the local db
         mAuth.signOut()
+        DebugUtils.log_firebase("sign out called")
     }
 
     fun uploadProfileImage(profileImage: ProfileImage, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: ()-> Unit, failureCallback: ()-> Unit){
@@ -952,6 +967,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("upload profile image successful")
                 } else {
                     failureCallback()
                 }
@@ -967,6 +983,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("remove profile image successful")
                 } else {
                     failureCallback()
                 }
@@ -980,6 +997,7 @@ class FirebaseViewModel: ViewModel() {
 
                     val profileImage = item.getValue(ProfileImage::class.java)
                     loopCallback(profileImage)
+                    DebugUtils.log_firebase("get profile image successful")
                 }
                 afterCallback()
             }
@@ -1000,6 +1018,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("Append profile image timestamp successful")
                 } else {
                     failureCallback()
                 }
@@ -1015,6 +1034,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("upload group image successful")
                 } else {
                     failureCallback()
                 }
@@ -1030,6 +1050,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("remove group image successful")
                 } else {
                     failureCallback()
                 }
@@ -1044,6 +1065,7 @@ class FirebaseViewModel: ViewModel() {
 
                     val profileImage = item.getValue(ProfileImage::class.java)
                     loopCallback(profileImage)
+                    DebugUtils.log_firebase("get group image successful")
                 }
                 afterCallback()
             }
@@ -1064,6 +1086,7 @@ class FirebaseViewModel: ViewModel() {
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
+                    DebugUtils.log_firebase("append group image timestamp successful")
                 } else {
                     failureCallback()
                 }

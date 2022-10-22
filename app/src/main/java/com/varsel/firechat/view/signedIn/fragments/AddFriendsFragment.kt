@@ -42,9 +42,6 @@ class AddFriendsFragment : Fragment() {
             view.findNavController().navigate(action)
         }
 
-        firebaseViewModel.getAllUsers(parent.mDbRef, parent.firebaseAuth, {
-            friendsSearchAdapter.users.clear()
-        })
 
         binding.searchRecyclerView.adapter = friendsSearchAdapter
 

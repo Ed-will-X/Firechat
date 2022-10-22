@@ -11,10 +11,14 @@ class DebugUtils {
             }
         }
 
-        fun log_array_users(array: List<User>, tag: String){
+        fun log_array_users(array: List<User>){
             for(i in array){
-                Log.d(tag, "${i.name}")
+                Log.d("LLL", "${i.name}")
             }
+        }
+
+        fun log_firebase(string: String){
+            Log.d("FIREBASE_VM", string)
         }
     }
 }
