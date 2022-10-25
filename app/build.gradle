@@ -7,6 +7,20 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('C:\\Users\\maste\\Desktop\\myKeyStore\\keystore1.jks')
+            storePassword '12345678'
+            keyAlias 'key0'
+            keyPassword '12345678'
+        }
+        release {
+            storeFile file('C:\\Users\\maste\\Desktop\\myKeyStore\\keystore1.jks')
+            storePassword '12345678'
+            keyAlias 'key0'
+            keyPassword '12345678'
+        }
+    }
     compileSdk 32
 
     defaultConfig {

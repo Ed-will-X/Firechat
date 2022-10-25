@@ -41,6 +41,9 @@ class CreateGroupFragment : Fragment() {
         }
         binding.friendsRecyclerView.adapter = adapter
 
+        // set selected group image to null
+        parent.profileImageViewModel.selectedGroupImageEncoded.value = null
+
         if(parent.firebaseViewModel.friends.value?.isNotEmpty() == true){
             adapter.friends = parent.firebaseViewModel.friends.value as ArrayList<User?>
             adapter.notifyDataSetChanged()
