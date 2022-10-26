@@ -203,6 +203,8 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     private fun fetchProfileImage(userId: String, afterCallback: (image: String?)-> Unit){
+        Log.d("IMAGE", "Get image called for ${userId}")
+
         firebaseViewModel.getProfileImage(userId, mDbRef, {
             if(it != null){
                 profileImageViewModel.storeImage(it)
@@ -213,7 +215,6 @@ class SignedinActivity : AppCompatActivity() {
             // TODO: Remove image from DB if it is null
         }, {
             afterCallback(null)
-            Log.d("LLL", "ddddddddddddddddddddddddddddddddddddddddd")
         })
     }
 

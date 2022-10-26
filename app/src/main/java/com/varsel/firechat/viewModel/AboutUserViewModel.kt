@@ -49,9 +49,4 @@ class AboutUserViewModel: ViewModel() {
         animator.duration = 300
         animator.start()
     }
-
-    fun navigateToUserPage(view: View, userId: String){
-        val action = AboutUserFragmentDirections.actionAboutUserFragmentToOtherProfileFragment(userId)
-        view.findNavController().navigate(action)
-    }
 }

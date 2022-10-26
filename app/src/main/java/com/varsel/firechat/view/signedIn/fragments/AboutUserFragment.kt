@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentAboutUserBinding
@@ -21,6 +22,8 @@ class AboutUserFragment : Fragment() {
     private lateinit var parent: SignedinActivity
     private val viewModel: AboutUserViewModel by activityViewModels()
     private lateinit var userId: String
+    private lateinit var user: User
+    private var userImg: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,12 +50,20 @@ class AboutUserFragment : Fragment() {
 
     private fun setBindings(){
         binding.navToUserPage.setOnClickListener {
-            viewModel.navigateToUserPage(binding.root, userId)
+            navigateToUserPage(binding.root, userId)
         }
 
         binding.backButton.setOnClickListener {
             popNavigation()
         }
+    }
+
+    private fun navigateToUserPage(view: View, userId: String){
+        val action = AboutUserFragmentDirections.actionAboutUserFragmentToOtherProfileFragment(userId)
+        parent.profileImageViewModel.selectedOtherUserProfilePic.value = userImg
+        parent.firebaseViewModel.selectedUser.value = user
+
+        view.findNavController().navigate(action)
     }
 
     private fun popNavigation(){
@@ -63,6 +74,7 @@ class AboutUserFragment : Fragment() {
         parent.profileImageViewModel.selectedOtherUserProfilePicChat.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
+                userImg = it
             }
         })
 
@@ -71,6 +83,8 @@ class AboutUserFragment : Fragment() {
                 binding.userName.text = it.name
                 binding.occupation.text = it.occupation ?: context?.getString(R.string.no_occupation)
                 bindUserDetailProps(it)
+
+                user = it
             }
         })
     }

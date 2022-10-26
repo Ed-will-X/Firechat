@@ -1,6 +1,7 @@
 package com.varsel.firechat.view.signedIn.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.TextView
@@ -93,10 +94,10 @@ class OtherProfileFragment : Fragment() {
         }
 
         if (user?.about != null){
-            binding.aboutTextHeader.text = userUtils.getFirstName(user?.name!!)
-            binding.aboutTextBody.setText(UserUtils.truncate(user?.about!!, 150))
+            binding.aboutTextHeader.text = userUtils.getFirstName(user.name)
+            binding.aboutTextBody.setText(UserUtils.truncate(user.about!!, 150))
             binding.moreAboutClickable.setOnClickListener { it2 ->
-                showAboutActionSheet(userUtils.getFirstName(user?.name!!), user?.about!!)
+                showAboutActionSheet(userUtils.getFirstName(user.name), user?.about!!)
             }
             binding.aboutTextBody.visibility = View.VISIBLE
             binding.aboutTextHeader.visibility = View.VISIBLE

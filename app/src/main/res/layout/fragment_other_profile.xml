@@ -32,14 +32,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="400dp">
 
-<!--                <ImageView-->
-<!--                    android:id="@+id/user_image"-->
-<!--                    android:scaleType="centerCrop"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:src="@drawable/profile_pic_1"-->
-<!--                    app:layout_collapseMode="parallax"-->
-<!--                    />-->
                 <FrameLayout
                     android:id="@+id/profile_image_silhouette"
                     android:background="@drawable/bg_profile_backgroung_no_circle"
@@ -139,14 +131,12 @@
                                 android:id="@+id/first_name"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Nancy Wheeler"
                                 style="@style/other_profile_header_text"
                                 />
                             <TextView
                                 android:id="@+id/occupation"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Software developer"
                                 style="@style/other_profile_body_text"
                                 />
                         </LinearLayout>
@@ -208,7 +198,6 @@
                             android:id="@+id/about_text_header"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="About Nancy"
                             style="@style/other_profile_header_text"
                             />
                         <View
@@ -230,7 +219,6 @@
                         android:id="@+id/about_text_body"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eu aliquam quam. Donec nec laoreet sem, in sodales justo. Mauris egestas nulla ut luctus facilisis."
                         />
                 </LinearLayout>
 
