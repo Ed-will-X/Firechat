@@ -14,6 +14,7 @@ import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentProfileBinding
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.FriendRequestsAdapter
@@ -37,6 +38,12 @@ class ProfileFragment : Fragment() {
         parent = activity as SignedinActivity
 
         userUtils = UserUtils(this)
+
+        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+            binding.friendRequestsClickable.isEnabled = true
+        }, {
+            binding.friendRequestsClickable.isEnabled = false
+        })
 
         observeProfileImage()
 

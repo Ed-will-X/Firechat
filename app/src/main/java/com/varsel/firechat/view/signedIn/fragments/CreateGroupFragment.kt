@@ -9,12 +9,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentCreateGroupBinding
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.CreateGroupAdapter
@@ -35,6 +37,13 @@ class CreateGroupFragment : Fragment() {
         val view = binding.root
         parent = activity as SignedinActivity
 
+        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+            if(adapter.selected.count() > 0){
+                binding.createGroupBtn.isEnabled = true
+            }
+        }, {
+            binding.createGroupBtn.isEnabled = false
+        })
 
         adapter = CreateGroupAdapter(parent) {
             toggleBtnEnable()
@@ -63,12 +72,14 @@ class CreateGroupFragment : Fragment() {
     }
 
     private fun toggleBtnEnable(){
-        if(adapter.selected.count() > 0){
-            binding.createGroupBtn.isEnabled = true
-            binding.doneClickable.visibility = View.VISIBLE
-        } else {
-            binding.createGroupBtn.isEnabled = false
-            binding.doneClickable.visibility = View.GONE
+        if(parent.firebaseViewModel.isConnectedToDatabase.value == true){
+            if(adapter.selected.count() > 0){
+                binding.createGroupBtn.isEnabled = true
+                binding.doneClickable.visibility = View.VISIBLE
+            } else {
+                binding.createGroupBtn.isEnabled = false
+                binding.doneClickable.visibility = View.GONE
+            }
         }
     }
 

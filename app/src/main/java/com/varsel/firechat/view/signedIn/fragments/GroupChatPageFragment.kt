@@ -19,6 +19,7 @@ import com.varsel.firechat.model.Message.MessageStatus
 import com.varsel.firechat.model.Message.MessageType
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
@@ -43,6 +44,12 @@ class GroupChatPageFragment : Fragment() {
         val view = binding.root
         parent = activity as SignedinActivity
         roomId = GroupChatPageFragmentArgs.fromBundle(requireArguments()).groupRoomId
+
+        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+            binding.sendMessageBtn.isEnabled = true
+        }, {
+            binding.sendMessageBtn.isEnabled = false
+        })
 
         observeGroupImage()
 

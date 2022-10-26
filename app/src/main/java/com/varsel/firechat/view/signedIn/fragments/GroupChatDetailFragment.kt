@@ -29,6 +29,7 @@ import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.utils.AnimationUtils
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ParticipantsListAdapter
@@ -59,6 +60,12 @@ class GroupChatDetailFragment : Fragment() {
         parent = activity as SignedinActivity
 
         observeGroupImage()
+
+        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+            binding.addMemberClickable.isEnabled = true
+        }, {
+            binding.addMemberClickable.isEnabled = false
+        })
 
         // adapter init
         parent.firebaseViewModel.selectedGroupRoom.observe(viewLifecycleOwner, Observer {
@@ -201,6 +208,16 @@ class GroupChatDetailFragment : Fragment() {
         val view = dialogBinding.root
 
         dialog.setContentView(view)
+
+        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+            dialogBinding.pickImage.isEnabled = true
+            dialogBinding.openCamera.isEnabled = true
+            dialogBinding.removeImage.isEnabled = true
+        }, {
+            dialogBinding.pickImage.isEnabled = false
+            dialogBinding.openCamera.isEnabled = false
+            dialogBinding.removeImage.isEnabled = false
+        })
 
         dialogBinding.expand.setOnClickListener {
 

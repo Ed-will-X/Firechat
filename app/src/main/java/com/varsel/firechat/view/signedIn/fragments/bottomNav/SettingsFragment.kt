@@ -15,6 +15,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentFriendsBinding
 import com.varsel.firechat.databinding.FragmentSettingsBinding
+import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.viewModel.*
 import kotlinx.coroutines.launch
@@ -34,6 +35,12 @@ class SettingsFragment : Fragment() {
 
         parent = activity as SignedinActivity
         val view = binding.root
+
+        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+            binding.settingsLogoutClickable.isEnabled = true
+        }, {
+            binding.settingsLogoutClickable.isEnabled = false
+        })
 
         binding.settingsLogoutClickable.setOnClickListener {
             showLogoutConfirmationDialog {

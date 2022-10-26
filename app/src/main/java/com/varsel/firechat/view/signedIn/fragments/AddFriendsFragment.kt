@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.databinding.FragmentAddFriendsBinding
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.AddFriendsSearchAdapter
 import com.varsel.firechat.viewModel.AddFriendsViewModel
@@ -33,6 +34,12 @@ class AddFriendsFragment : Fragment() {
         _binding = FragmentAddFriendsBinding.inflate(inflater, container, false)
         val view = binding.root
         parent = activity as SignedinActivity
+
+        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+            binding.addFriendsSearchBox.isEnabled = true
+        }, {
+            binding.addFriendsSearchBox.isEnabled = false
+        })
 
         val friendsSearchAdapter = AddFriendsSearchAdapter(parent) { id, user, base64 ->
             parent.firebaseViewModel.selectedUser.value = user

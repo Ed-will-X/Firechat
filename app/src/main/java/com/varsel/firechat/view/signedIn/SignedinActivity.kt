@@ -18,6 +18,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.varsel.firechat.FirechatApplication
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActivitySignedinBinding
@@ -105,6 +107,10 @@ class SignedinActivity : AppCompatActivity() {
         binding.bottomNavView.menu.findItem(R.id.chatsFragment).setChecked(true)
 
 //        profileImageViewModel.setClearBlacklistCountdown()
+    }
+
+    private fun enablePersistence(){
+        Firebase.database.setPersistenceEnabled(true)
     }
 
     fun determineAuthType(intent: Intent?){
@@ -252,11 +258,15 @@ class SignedinActivity : AppCompatActivity() {
     private fun checkConnectivity(){
         firebaseViewModel.checkFirebaseConnection {
             if(it){
+                firebaseViewModel.isConnectedToDatabase.value = true
+
                 if(timer != null){
                     timer?.cancel()
                 }
                 binding.networkErrorOverlay.visibility = View.GONE
             } else {
+                firebaseViewModel.isConnectedToDatabase.value = false
+
                 timer = signedinViewModel.setNetworkOverlayTimer {
                     binding.networkErrorOverlay.visibility = View.VISIBLE
                 }

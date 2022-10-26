@@ -13,6 +13,7 @@ import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentOtherProfileBinding
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.viewModel.FirebaseViewModel
@@ -33,6 +34,12 @@ class OtherProfileFragment : Fragment() {
         val view = binding.root
 
         parent = activity as SignedinActivity
+
+        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+            binding.addFriendBtn.isEnabled = true
+        }, {
+            binding.addFriendBtn.isEnabled = false
+        })
 
 
         val uid = OtherProfileFragmentArgs.fromBundle(requireArguments()).userId
@@ -175,7 +182,8 @@ class OtherProfileFragment : Fragment() {
     private fun showUnfriendActionsheet(user: User){
         val dialog = BottomSheetDialog(parent)
         dialog.setContentView(R.layout.action_sheet_unfriend)
-
+        val unfriendUserBody = dialog.findViewById<TextView>(R.id.unfriend_user_body)
+        unfriendUserBody?.text = getString(R.string.unfriend_user_body, user.name)
 
 
         dialog.show()

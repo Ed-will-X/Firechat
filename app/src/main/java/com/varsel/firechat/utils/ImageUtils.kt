@@ -78,7 +78,7 @@ class ImageUtils {
         // returns a base64 string
         fun encodeImage(bm: Bitmap): String? {
             val baos = ByteArrayOutputStream()
-            bm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            bm.compress(Bitmap.CompressFormat.JPEG, 50, baos)
             val b: ByteArray = baos.toByteArray()
             return Base64.encodeToString(b, Base64.DEFAULT)
         }

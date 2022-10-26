@@ -12,6 +12,7 @@ import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageType
 import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ChatPageType
@@ -37,6 +38,12 @@ class ChatPageFragment : Fragment() {
         _binding = FragmentChatPageBinding.inflate(inflater, container, false)
         val view = binding.root
         parent = activity as SignedinActivity
+
+        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+            binding.sendMessageBtn.isEnabled = true
+        }, {
+            binding.sendMessageBtn.isEnabled = false
+        })
 
         firstMessageSent = false
 

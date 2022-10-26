@@ -21,11 +21,10 @@
         />
 
     <TextView
-        android:id="@+id/revoke_request_body"
+        android:id="@+id/unfriend_user_body"
         android:layout_marginBottom="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/unfriend_user_body"
         />
 
     <Button
