@@ -141,7 +141,7 @@ class GroupChatDetailFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        ImageUtils.handleOnActivityResult(requestCode, resultCode, data, {
+        ImageUtils.handleOnActivityResult(requireContext(), requestCode, resultCode, data, {
             uploadImage(it, {})
         }, {
             if(it != null){
@@ -152,20 +152,22 @@ class GroupChatDetailFragment : Fragment() {
 
     // gallery
     private fun uploadImage(uri: Uri, successCallback: ()-> Unit){
-        val base64: String? = ImageUtils.uriToBitmap(uri, parent)
-        val timestamp = System.currentTimeMillis()
-        val profileImage =
-            ProfileImage(groupId, base64!!, timestamp)
+        val base64: String? = ImageUtils.encodeUri(uri, parent)
+        if(base64 != null){
+            val timestamp = System.currentTimeMillis()
+            val profileImage =
+                ProfileImage(groupId, base64!!, timestamp)
 
-        parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, groupId, {
-            parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
-                parent.profileImageViewModel.storeImage(profileImage)
-                parent.profileImageViewModel.selectedGroupImageEncoded.value = profileImage.image
-                successCallback()
-            }, {})
-        }, {
-            Toast.makeText(requireContext(), getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
-        })
+            parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, groupId, {
+                parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
+                    parent.profileImageViewModel.storeImage(profileImage)
+                    parent.profileImageViewModel.selectedGroupImageEncoded.value = profileImage.image
+                    successCallback()
+                }, {})
+            }, {
+                Toast.makeText(requireContext(), getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
+            })
+        }
     }
 
     // camera

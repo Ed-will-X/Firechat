@@ -2,6 +2,7 @@ package com.varsel.firechat.utils
 
 import android.Manifest
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,6 +14,7 @@ import android.util.Base64
 import android.view.View
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.varsel.firechat.model.Chat.GroupRoom
@@ -21,10 +23,19 @@ import com.varsel.firechat.view.signedIn.SignedinActivity
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
+
 val REQUEST_TAKE_PHOTO = 0
 val REQUEST_SELECT_IMAGE_IN_ALBUM = 1
 class ImageUtils {
     companion object {
+        val FHD_width = 1920
+        val FHD_height = 1080
+        val HD_width = 1280
+        val HD_height = 720
+
+        val img_limit_width = 4000
+        val img_limit_height = 4000
+
         fun openImagePicker(fragment: Fragment){
             val intent = Intent()
             intent.type = "image/*"
@@ -41,7 +52,7 @@ class ImageUtils {
                 requestCameraPermission(activiy)
             }
         }
-
+        
         private fun requestCameraPermission(activity: SignedinActivity){
             ActivityCompat.requestPermissions(
                 activity,
@@ -55,7 +66,7 @@ class ImageUtils {
                 context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
         }
 
-        fun handleOnActivityResult(requestCode: Int, resultCode: Int, data: Intent?, albumCallback: (uri: Uri)-> Unit, cameraCallback: (imageEncoded: String?)-> Unit){
+        fun handleOnActivityResult(context: Context, requestCode: Int, resultCode: Int, data: Intent?, albumCallback: (uri: Uri)-> Unit, cameraCallback: (imageEncoded: String?)-> Unit){
             if(requestCode == REQUEST_SELECT_IMAGE_IN_ALBUM && resultCode == Activity.RESULT_OK){
                 var uri: Uri? = data?.data
                 if(uri != null) {
@@ -64,29 +75,65 @@ class ImageUtils {
             }
             else if(requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK){
                 val image: Bitmap = data?.extras?.get("data") as Bitmap
+                // TODO: Fix overcompression bug
+                val base64: String? = ImageUtils.encodeImage(image)
+                cameraCallback(base64)
 
-                if(image != null) {
-                    val base64: String? = ImageUtils.encodeImage(image)
-                    cameraCallback(base64)
-                }
+//                checkImageSize(image, {
+//                    val base64: String? = ImageUtils.encodeImage(image)
+//                    cameraCallback(base64)
+//                }, {
+//                    // Show toast
+//                    LifecycleUtils.showToast(context, "Image too large")
+//                }, {
+////                    val resized = resizeImage(image)
+//                    val base64: String? = encodeImage(image)
+//                    cameraCallback(base64)
+//                })
             }
         }
 
+        private fun checkImageSize(image: Bitmap, withinBounds: ()-> Unit, outOfBounds: ()-> Unit, compressedCallback: ()-> Unit){
+            // TODO: Add for image upload and experiment for FHD
+            if(image.height < FHD_height || image.width < FHD_width){
+                withinBounds()
+            } else if(image.height > img_limit_height || image.width > img_limit_width) {
+                outOfBounds()
+            } else {
+                compressedCallback()
+            }
+        }
 
-
-
-        // returns a base64 string
+        // returns a base64 string and compresses
         fun encodeImage(bm: Bitmap): String? {
             val baos = ByteArrayOutputStream()
-            bm.compress(Bitmap.CompressFormat.JPEG, 50, baos)
+            bm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
             val b: ByteArray = baos.toByteArray()
             return Base64.encodeToString(b, Base64.DEFAULT)
         }
 
-        fun uriToBitmap(imageUri: Uri, activity: Activity): String? {
+        fun encodeImage(){
+
+        }
+
+        fun encodeUri(imageUri: Uri, activity: Activity): String? {
             val imageStream: InputStream? = activity.getContentResolver().openInputStream(imageUri)
             val selectedImage = BitmapFactory.decodeStream(imageStream)
-            val encodedImage = encodeImage(selectedImage)
+            // TODO: Convert to bitmap, resize, convert back and upload
+
+            var encodedImage: String? = null
+            checkImageSize(selectedImage, {
+                val base64: String? = ImageUtils.encodeImage(selectedImage)
+                encodedImage = base64
+            }, {
+                // Show toast
+                LifecycleUtils.showToast(activity, "Image too large")
+               encodedImage = null
+            }, {
+                val resized = resizeImage(selectedImage)
+                val base64: String? = encodeImage(resized)
+                encodedImage = base64
+            })
 
             return encodedImage
         }
@@ -100,10 +147,12 @@ class ImageUtils {
         }
 
         fun setProfilePic(base64: String, view: ImageView, viewParent: View){
-            val bitmap = ImageUtils.base64ToBitmap(base64)
+            if(base64.isNotEmpty()){
+                val bitmap = base64ToBitmap(base64)
 
-            view.setImageBitmap(bitmap)
-            viewParent.visibility = View.VISIBLE
+                view.setImageBitmap(bitmap)
+                viewParent.visibility = View.VISIBLE
+            }
         }
 
         fun setProfilePicOtherUser(user: User, view: ImageView, viewParent: View, parent: SignedinActivity){
@@ -154,6 +203,26 @@ class ImageUtils {
             })
         }
 
+        fun resizeImage(image: Bitmap): Bitmap {
+
+            val width = image.width
+            val height = image.height
+            var widthExcess = 0
+            var heightExcess = 0
+
+            if(width > FHD_width){
+                widthExcess = width - FHD_width
+            }
+
+            if (height > FHD_height){
+                heightExcess = height - FHD_height
+            }
+
+            if (image.byteCount <= 1000000)
+                return image
+
+            return Bitmap.createScaledBitmap(image, width - widthExcess, height - heightExcess, false)
+        }
 
     }
 }

@@ -55,7 +55,7 @@ class EditProfilePage : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        ImageUtils.handleOnActivityResult(requestCode, resultCode, data, {
+        ImageUtils.handleOnActivityResult(requireContext(), requestCode, resultCode, data, {
             uploadImage(it, {})
         }, {
             if(it != null){
@@ -66,21 +66,23 @@ class EditProfilePage : Fragment() {
 
     // gallery
     private fun uploadImage(uri: Uri, successCallback: ()-> Unit){
-        val base64: String? = ImageUtils.uriToBitmap(uri, parent)
-        val currentUser = parent.firebaseAuth.currentUser!!.uid
-        val timestamp = System.currentTimeMillis()
-        val profileImage =
-            ProfileImage(currentUser, base64!!, timestamp)
+        val base64: String? = ImageUtils.encodeUri(uri, parent)
+        if(base64 != null){
+            val currentUser = parent.firebaseAuth.currentUser!!.uid
+            val timestamp = System.currentTimeMillis()
+            val profileImage =
+                ProfileImage(currentUser, base64, timestamp)
 
-        parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, currentUser, {
-            parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
-                parent.profileImageViewModel.storeImage(profileImage)
-                parent.profileImageViewModel.profileImageEncodedCurrentUser.value = profileImage.image
-                successCallback()
-            }, {})
-        }, {
-            Toast.makeText(requireContext(), getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
-        })
+            parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, currentUser, {
+                parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
+                    parent.profileImageViewModel.storeImage(profileImage)
+                    parent.profileImageViewModel.profileImageEncodedCurrentUser.value = profileImage.image
+                    successCallback()
+                }, {})
+            }, {
+                Toast.makeText(requireContext(), getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
+            })
+        }
     }
 
     // camera
