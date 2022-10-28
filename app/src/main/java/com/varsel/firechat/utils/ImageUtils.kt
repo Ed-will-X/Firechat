@@ -52,7 +52,7 @@ class ImageUtils {
                 requestCameraPermission(activiy)
             }
         }
-        
+
         private fun requestCameraPermission(activity: SignedinActivity){
             ActivityCompat.requestPermissions(
                 activity,
