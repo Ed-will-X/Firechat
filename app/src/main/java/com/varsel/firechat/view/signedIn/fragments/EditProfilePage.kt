@@ -126,10 +126,22 @@ class EditProfilePage : Fragment() {
         val dialogBinding = ActionSheetEditProfileBinding.inflate(layoutInflater, this.binding.root, false)
         val view = dialogBinding.root
 
+        val nameEditText = dialogBinding.nameEditText
+        val locationEditText = dialogBinding.locationEditText
+        val phoneEditText = dialogBinding.phoneEditText
+        val occupationEditText = dialogBinding.occupationEditText
+        val aboutEditText = dialogBinding.aboutEditText
+
         setActionsheetBindings(dialogBinding)
         dialog.setContentView(view)
 
         dialogBinding.editProfileBtn.setOnClickListener {
+            nameEditText.setText(nameEditText.text.trim())
+            locationEditText.setText(locationEditText.text.trim())
+            phoneEditText.setText(phoneEditText.text.trim())
+            occupationEditText.setText(occupationEditText.text.trim())
+            aboutEditText.setText(aboutEditText.text.trim())
+
             editUser(dialogBinding)
             dialog.dismiss()
         }

@@ -21,9 +21,7 @@ import com.varsel.firechat.view.signedOut.SignedoutActivity
 import kotlinx.coroutines.launch
 
 class SignedoutViewModel: ViewModel() {
-    val emailText = MutableLiveData<String>("")
     val passwordText = MutableLiveData<String>("")
-    val nameText = MutableLiveData<String>("")
     val confirmPasswordText = MutableLiveData<String>("")
 
     fun validateSignup(fullname: EditText?, email: EditText?, password: EditText?, confirmPassword: EditText?, btn: Button?, agreement: CheckBox?){
@@ -44,11 +42,13 @@ class SignedoutViewModel: ViewModel() {
         }
 
         password?.doAfterTextChanged {
+            passwordText.value = password.text.toString()
             isValidPassword = password?.text.toString().length >= 8
             btn?.isEnabled = enableSignupBtn(isValidFullname, isValidEmail, isValidPassword, isValidConfirmation, isValidAgreement)
         }
 
         confirmPassword?.doAfterTextChanged {
+            confirmPasswordText.value = confirmPassword.text.toString()
             isValidConfirmation = confirmPassword?.text.toString().length >= 8
             btn?.isEnabled = enableSignupBtn(isValidFullname, isValidEmail, isValidPassword, isValidConfirmation, isValidAgreement)
         }
@@ -75,7 +75,11 @@ class SignedoutViewModel: ViewModel() {
     }
 
     private fun enableSignupBtn(fullname: Boolean, email: Boolean, password: Boolean, confirmPassword: Boolean, agreement: Boolean): Boolean{
-        return fullname && email && password && confirmPassword && agreement
+        if(passwordText.value != confirmPasswordText.value){
+            return false
+        } else {
+            return fullname && email && password && confirmPassword && agreement
+        }
     }
 
     private fun enableSigninBtn(email: Boolean, password: Boolean): Boolean{

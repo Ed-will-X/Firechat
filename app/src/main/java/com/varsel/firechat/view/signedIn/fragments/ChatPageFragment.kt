@@ -88,7 +88,8 @@ class ChatPageFragment : Fragment() {
         }
         // send button
         binding.sendMessageBtn.setOnClickListener {
-            var message = Message(MessageUtils.generateUID(50), binding.messageEditText.text.toString(), System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
+            val messageText = binding.messageEditText.text.toString().trim()
+            var message = Message(MessageUtils.generateUID(50), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
 
             if(binding.messageEditText.text.toString() != ""){
                 sendMessage(message)
@@ -108,11 +109,11 @@ class ChatPageFragment : Fragment() {
         findNavController().navigateUp()
     }
     private fun observeUserProps(){
-        parent.profileImageViewModel.selectedOtherUserProfilePicChat.observe(viewLifecycleOwner, Observer {
-            if(it != null){
-                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
-            }
-        })
+//        parent.profileImageViewModel.selectedOtherUserProfilePicChat.observe(viewLifecycleOwner, Observer {
+//            if(it != null){
+//                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
+//            }
+//        })
 
         parent.firebaseViewModel.selectedChatRoomUser.observe(viewLifecycleOwner, Observer {
             binding.nameText.text = it?.name

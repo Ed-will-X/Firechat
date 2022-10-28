@@ -41,7 +41,7 @@
                 />
 
             <EditText
-                android:maxLength="50"
+                android:maxLength="30"
                 android:id="@+id/location_edit_text"
                 android:background="@drawable/edit_text_shape"
                 android:layout_width="match_parent"

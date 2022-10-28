@@ -90,8 +90,8 @@ class AuthRootFragment : Fragment() {
     fun showSigninDialog(callback: () -> Unit){
         val dialog = BottomSheetDialog(requireContext())
         dialog.setContentView(R.layout.action_sheet_signin)
-        val email = dialog.findViewById<EditText>(R.id.email_edit_text)
-        val password = dialog.findViewById<EditText>(R.id.password_edit_text)
+        val email = dialog.findViewById<EditText>(R.id.email_edit_text)!!
+        val password = dialog.findViewById<EditText>(R.id.password_edit_text)!!
         val btn = dialog.findViewById<Button>(R.id.sign_in_btn_actionsheet)
 
         signedOutViewModel.validateSignin(email, password, btn)
@@ -105,6 +105,9 @@ class AuthRootFragment : Fragment() {
         }
 
         btn?.setOnClickListener {
+            val sanitisedEmail = email_login.trim()
+
+            email_login = sanitisedEmail
             callback()
         }
 
@@ -121,6 +124,7 @@ class AuthRootFragment : Fragment() {
         val password = dialog.findViewById<EditText>(R.id.password_edit_text)
         val confirmPassword = dialog.findViewById<EditText>(R.id.confirm_password_edit_text)
 
+
         fullname?.doAfterTextChanged {
             fullnameText = it.toString()
         }
@@ -136,6 +140,12 @@ class AuthRootFragment : Fragment() {
         signedOutViewModel.validateSignup(fullname, email, password, confirmPassword, btn, agreement)
 
         btn.setOnClickListener {
+            val sanitisedFullname = fullnameText.trim()
+            val sanitisedEmail = emailText.trim()
+
+            fullnameText = sanitisedFullname
+            emailText = sanitisedEmail
+
             callback()
         }
 

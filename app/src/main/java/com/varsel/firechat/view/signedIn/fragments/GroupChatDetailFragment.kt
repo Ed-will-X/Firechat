@@ -268,7 +268,10 @@ class GroupChatDetailFragment : Fragment() {
         subjectEditText?.setText(group.subject)
 
         editGroupBtn?.setOnClickListener {
-            editGroup(groupNameEditText?.text.toString(), subjectEditText?.text.toString())
+            val groupNameSanitised = groupNameEditText?.text.toString().trim()
+            val subjectSanitised = subjectEditText?.text.toString().trim()
+
+            editGroup(groupNameSanitised, subjectSanitised)
             dialog.dismiss()
         }
 

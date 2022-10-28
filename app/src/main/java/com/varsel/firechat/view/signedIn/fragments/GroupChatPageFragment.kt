@@ -126,7 +126,8 @@ class GroupChatPageFragment : Fragment() {
     }
 
     private fun sendMessage(){
-        val message = Message(MessageUtils.generateUID(50), binding.messageEditText.text.toString(), System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
+        val messageText = binding.messageEditText.text.toString().trim()
+        val message = Message(MessageUtils.generateUID(50), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
         parent.firebaseViewModel.sendGroupMessage(message, roomId, parent.mDbRef, {
             clearEditText()
         }, {})

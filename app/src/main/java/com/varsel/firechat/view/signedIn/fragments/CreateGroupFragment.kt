@@ -97,7 +97,8 @@ class CreateGroupFragment : Fragment() {
         btn?.setOnClickListener {
             val newRoomId = MessageUtils.generateUID(50)
             val participants = addParticipants()
-            val group = GroupRoom(newRoomId, participants, groupName?.text.toString(), makeCurrentUserAdmin())
+            val groupNameText = groupName?.text.toString().trim()
+            val group = GroupRoom(newRoomId, participants, groupNameText, makeCurrentUserAdmin())
 
             parent.firebaseViewModel.createGroup(group, parent.mDbRef, parent.firebaseAuth, {
                appendRoomIdToUsers(participants.values.toList(), newRoomId) {
