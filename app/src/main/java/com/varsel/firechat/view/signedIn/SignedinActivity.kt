@@ -24,9 +24,13 @@ import com.varsel.firechat.FirechatApplication
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActivitySignedinBinding
 import com.varsel.firechat.model.Chat.GroupRoom
-import com.varsel.firechat.model.User.User
+import com.varsel.firechat.model.Image.Image
+import com.varsel.firechat.model.Image.ImageViewModel
+import com.varsel.firechat.model.Image.ImageViewModelFactory
+import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.ProfileImage.ProfileImageViewModel
 import com.varsel.firechat.model.ProfileImage.ProfileImageViewModelFactory
+import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.view.signedOut.SignedoutActivity
 import com.varsel.firechat.view.signedOut.fragments.AuthType
@@ -40,6 +44,7 @@ class SignedinActivity : AppCompatActivity() {
     lateinit var mDbRef: DatabaseReference
     lateinit var firebaseViewModel: FirebaseViewModel
     lateinit var signedinViewModel: SignedinViewModel
+    lateinit var imageViewModel: ImageViewModel
     var timer: CountDownTimer? = null
 //    lateinit var settingViewModel: SettingViewModel
     lateinit var profileImageViewModel: ProfileImageViewModel
@@ -54,7 +59,7 @@ class SignedinActivity : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         mDbRef = FirebaseDatabase.getInstance().reference
 
-//        initialiseSettingViewModel()
+        initialiseProfileImageViewModel()
         initialiseImageViewModel()
 
         determineAuthType(intent)
@@ -113,6 +118,11 @@ class SignedinActivity : AppCompatActivity() {
         Firebase.database.setPersistenceEnabled(true)
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        Log.d("LLL", "Back pressed")
+    }
+
     fun determineAuthType(intent: Intent?){
         val authType = intent?.extras?.getString("AUTH_TYPE").toString()
 
@@ -136,32 +146,25 @@ class SignedinActivity : AppCompatActivity() {
             binding.bottomNavView.visibility = View.VISIBLE
             if(destination.id == R.id.addFriends){
                 binding.bottomNavView.visibility = View.GONE
-            }
-            if(destination.id == R.id.otherProfileFragment){
+            } else if(destination.id == R.id.otherProfileFragment){
                 binding.bottomNavView.visibility = View.GONE
-            }
-            if(destination.id == R.id.chatPageFragment){
+            } else if(destination.id == R.id.chatPageFragment){
                 binding.bottomNavView.visibility = View.GONE
-            }
-            if(destination.id == R.id.editProfilePage){
+            }else if(destination.id == R.id.editProfilePage){
                 binding.bottomNavView.visibility = View.GONE
-            }
-            if(destination.id == R.id.friendListFragment){
+            } else if(destination.id == R.id.friendListFragment){
                 binding.bottomNavView.visibility = View.GONE
-            }
-            if(destination.id == R.id.createGroupFragment){
+            } else if(destination.id == R.id.createGroupFragment){
                 binding.bottomNavView.visibility = View.GONE
-            }
-            if(destination.id == R.id.groupChatPageFragment){
+            }else if(destination.id == R.id.groupChatPageFragment){
                 binding.bottomNavView.visibility = View.GONE
-            }
-            if(destination.id == R.id.aboutUserFragment){
+            }else if(destination.id == R.id.aboutUserFragment){
                 binding.bottomNavView.visibility = View.GONE
-            }
-            if (destination.id == R.id.groupChatDetailFragment){
+            } else if (destination.id == R.id.groupChatDetailFragment){
                 binding.bottomNavView.visibility = View.GONE
-            }
-            if (destination.id == R.id.addGroupMembersFragment){
+            } else if (destination.id == R.id.addGroupMembersFragment){
+                binding.bottomNavView.visibility = View.GONE
+            } else if(destination.id == R.id.profileImageFragment){
                 binding.bottomNavView.visibility = View.GONE
             }
         }
@@ -173,9 +176,14 @@ class SignedinActivity : AppCompatActivity() {
 //        settingViewModel = ViewModelProvider(this, vmFactory).get(SettingViewModel::class.java)
 //    }
 
-    private fun initialiseImageViewModel(){
+    private fun initialiseProfileImageViewModel(){
         val vmFactory = ProfileImageViewModelFactory((this.application as FirechatApplication).profileImageDatabase.profileImageDao)
         profileImageViewModel = ViewModelProvider(this, vmFactory).get(ProfileImageViewModel::class.java)
+    }
+
+    private fun initialiseImageViewModel(){
+        val vmFactory = ImageViewModelFactory((this.application as FirechatApplication).imageDatabase.imageDao)
+        imageViewModel = ViewModelProvider(this, vmFactory).get(ImageViewModel::class.java)
     }
 
     private fun fetchCurrentUserProfileImage(){
@@ -252,6 +260,75 @@ class SignedinActivity : AppCompatActivity() {
                 }, {
                     fetchCallback(null)
                 })
+            }
+        })
+    }
+
+    fun fetchChatImage(imageId: String, afterCallback: (image: String?)-> Unit){
+        Log.d("IMAGE", "Get image called for ${imageId}")
+
+        firebaseViewModel.getChatImage(imageId, mDbRef, {
+            if(it != null){
+                // TODO: store image
+                imageViewModel.storeImage(it)
+                afterCallback(it.image)
+            } else {
+                afterCallback(null)
+            }
+            // TODO: Remove image from DB if it is null
+        }, {
+            afterCallback(null)
+        })
+    }
+
+
+
+    // TODO: Implement determine chat image fetch
+    fun determineMessageImgFetchMethod(message: Message, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
+        val imageLiveData = imageViewModel.checkForImgInRoom(message.message)
+
+        imageLiveData.observeOnce(this, Observer {
+            if(it != null){
+                Log.d("LLL", "Chat image gotten from database")
+                dbCallback(it.image)
+            } else {
+                Log.d("LLL", "Chat image gotten from firebase")
+                fetchChatImage(message.message) {
+                    fetchCallback(it)
+                }
+            }
+        })
+    }
+
+    fun fetchChatImage_fullObject(imageId: String, afterCallback: (image: Image?)-> Unit){
+        Log.d("IMAGE", "Get image called for ${imageId}")
+
+        firebaseViewModel.getChatImage(imageId, mDbRef, {
+            if(it != null){
+                // TODO: store image
+                imageViewModel.storeImage(it)
+                afterCallback(it)
+            } else {
+                afterCallback(null)
+            }
+            // TODO: Remove image from DB if it is null
+        }, {
+            afterCallback(null)
+        })
+    }
+
+    fun determineMessageImgFetchMethod_fullObject(message: Message, imgCallback: (image: Image?)-> Unit){
+        val imageLiveData = imageViewModel.checkForImgInRoom(message.message)
+
+        imageLiveData.observeOnce(this, Observer {
+            if(it != null){
+                Log.d("LLL", "Chat image gotten from database")
+                imgCallback(it)
+            } else {
+                Log.d("LLL", "Chat image gotten from firebase")
+                fetchChatImage_fullObject(message.message) {
+                    imgCallback(it)
+                }
             }
         })
     }

@@ -43,6 +43,9 @@
             app:popEnterAnim="@anim/enter_left_to_right"
             app:popExitAnim="@anim/exit_left_to_right"
             app:destination="@id/groupChatPageFragment" />
+        <action
+            android:id="@+id/action_chatsFragment_to_profileImageFragment"
+            app:destination="@id/profileImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -70,6 +73,9 @@
             app:popEnterAnim="@anim/enter_left_to_right"
             app:popExitAnim="@anim/exit_left_to_right"
             app:destination="@id/friendListFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_profileImageFragment"
+            app:destination="@id/profileImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -88,6 +94,9 @@
             app:popExitAnim="@anim/exit_left_to_right"
             android:id="@+id/action_addFriends_to_otherProfileFragment"
             app:destination="@id/otherProfileFragment" />
+        <action
+            android:id="@+id/action_addFriends_to_profileImageFragment"
+            app:destination="@id/profileImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/otherProfileFragment"
@@ -97,6 +106,9 @@
         <argument
             android:name="user_id"
             app:argType="string" />
+        <action
+            android:id="@+id/action_otherProfileFragment_to_profileImageFragment"
+            app:destination="@id/profileImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/chatPageFragment"
@@ -116,12 +128,19 @@
             app:popEnterAnim="@anim/enter_left_to_right"
             app:popExitAnim="@anim/exit_left_to_right"
             app:destination="@id/aboutUserFragment" />
+        <action
+            android:id="@+id/action_chatPageFragment_to_profileImageFragment"
+            app:destination="@id/profileImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/editProfilePage"
         android:name="com.varsel.firechat.view.signedIn.fragments.EditProfilePage"
         android:label="fragment_edit_profile_page"
-        tools:layout="@layout/fragment_edit_profile_page" />
+        tools:layout="@layout/fragment_edit_profile_page" >
+        <action
+            android:id="@+id/action_editProfilePage_to_profileImageFragment"
+            app:destination="@id/profileImageFragment" />
+    </fragment>
     <fragment
         android:id="@+id/friendListFragment"
         android:name="com.varsel.firechat.view.signedIn.fragments.FriendListFragment"
@@ -134,6 +153,9 @@
             app:popExitAnim="@anim/exit_left_to_right"
             android:id="@+id/action_friendListFragment_to_otherProfileFragment"
             app:destination="@id/otherProfileFragment" />
+        <action
+            android:id="@+id/action_friendListFragment_to_profileImageFragment"
+            app:destination="@id/profileImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/createGroupFragment"
@@ -148,6 +170,9 @@
             app:popExitAnim="@anim/exit_left_to_right"
             app:destination="@id/groupChatPageFragment"
             app:popUpTo="@id/chatsFragment" />
+        <action
+            android:id="@+id/action_createGroupFragment_to_profileImageFragment"
+            app:destination="@id/profileImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/groupChatPageFragment"
@@ -171,6 +196,9 @@
             app:popExitAnim="@anim/exit_left_to_right"
             android:id="@+id/action_groupChatPageFragment_to_otherProfileFragment"
             app:destination="@id/otherProfileFragment" />
+        <action
+            android:id="@+id/action_groupChatPageFragment_to_profileImageFragment"
+            app:destination="@id/profileImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/groupChatDetailFragment"
@@ -202,6 +230,9 @@
             app:popEnterAnim="@anim/enter_left_to_right"
             app:popExitAnim="@anim/exit_left_to_right"
             app:destination="@id/addGroupMembersFragment" />
+        <action
+            android:id="@+id/action_groupChatDetailFragment_to_profileImageFragment"
+            app:destination="@id/profileImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/addGroupMembersFragment"
@@ -211,6 +242,9 @@
         <argument
             android:name="groupId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_addGroupMembersFragment_to_profileImageFragment"
+            app:destination="@id/profileImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/aboutUserFragment"
@@ -230,6 +264,27 @@
             app:nullable="true" />
         <argument
             android:name="userId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_aboutUserFragment_to_profileImageFragment"
+            app:destination="@id/profileImageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileImageFragment"
+        android:name="com.varsel.firechat.view.signedIn.fragments.ProfileImageFragment"
+        android:label="fragment_profile_image"
+        tools:layout="@layout/fragment_profile_image" >
+        <argument
+            android:name="user_name"
+            app:argType="string" />
+        <argument
+            android:name="type"
+            app:argType="string" />
+        <argument
+            android:name="timestamp"
+            app:argType="long" />
+        <argument
+            android:name="image"
             app:argType="string" />
     </fragment>
 </navigation>

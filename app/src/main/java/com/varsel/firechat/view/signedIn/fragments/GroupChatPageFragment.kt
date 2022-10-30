@@ -1,5 +1,7 @@
 package com.varsel.firechat.view.signedIn.fragments
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,6 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentGroupChatPageBinding
 import com.varsel.firechat.model.Chat.ChatRoom
+import com.varsel.firechat.model.Image.Image
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageStatus
 import com.varsel.firechat.model.Message.MessageType
@@ -26,6 +29,7 @@ import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ChatPageType
 import com.varsel.firechat.view.signedIn.adapters.FriendListAdapter
 import com.varsel.firechat.view.signedIn.adapters.MessageListAdapter
+import com.varsel.firechat.viewModel.ChatPageViewModel
 import com.varsel.firechat.viewModel.GroupChatDetailViewModel
 
 class GroupChatPageFragment : Fragment() {
@@ -35,6 +39,7 @@ class GroupChatPageFragment : Fragment() {
     private lateinit var roomId: String
     private lateinit var messageAdapter: MessageListAdapter
     private val groupPageViewModel: GroupChatDetailViewModel by activityViewModels()
+    private val chatPageViewModel: ChatPageViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,7 +64,7 @@ class GroupChatPageFragment : Fragment() {
 
 
         messageAdapter = MessageListAdapter(parent,this, requireContext(), ChatPageType.GROUP, parent.firebaseViewModel,
-        { message, messageType, messageStatus ->
+        { message, image ->
 
         }, { message, messageType, messageStatus ->
             if(messageType == MessageType.TEXT && messageStatus == MessageStatus.SYSTEM){
@@ -67,6 +72,15 @@ class GroupChatPageFragment : Fragment() {
                 showSystemMessageActionsheet(users)
             }
         })
+
+        chatPageViewModel.actionBarVisibility.observe(viewLifecycleOwner, Observer {
+            if(it){
+                binding.messageActionBar.visibility = View.VISIBLE
+            } else {
+                binding.messageActionBar.visibility = View.GONE
+            }
+        })
+
         binding.messagesRecyclerView.adapter = messageAdapter
 
         binding.sendMessageBtn.setOnClickListener {
@@ -82,7 +96,38 @@ class GroupChatPageFragment : Fragment() {
             navigateToGroupChatDetail(roomId)
         }
 
+        binding.actionBarSwitch.setOnClickListener {
+            chatPageViewModel.toggleActionbarVisibility()
+        }
+
+        binding.gallery.setOnClickListener {
+            ImageUtils.openImagePicker(this)
+        }
+
         return view
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        ImageUtils.handleOnActivityResult(requireContext(), requestCode, resultCode, data, {
+            uploadImage(it)
+        }, {})
+    }
+
+    private fun uploadImage(uri: Uri){
+        val encoded = ImageUtils.encodeUri(uri, parent)
+        if(encoded != null){
+            val imageId = MessageUtils.generateUID(50)
+            val image = Image(imageId, parent.firebaseAuth.currentUser!!.uid, encoded)
+            val message = Message(MessageUtils.generateUID(50), imageId, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.IMAGE)
+
+            parent.firebaseViewModel.uploadChatImage(image, parent.mDbRef, {
+                sendImgMessage(message) {
+
+                }
+            }, {})
+        }
     }
 
     private fun observeGroupImage(){
@@ -123,6 +168,12 @@ class GroupChatPageFragment : Fragment() {
                 messageAdapter.submitList(sorted)
             }
         })
+    }
+
+    private fun sendImgMessage(message: Message, success: ()-> Unit){
+        parent.firebaseViewModel.sendGroupMessage(message, roomId, parent.mDbRef, {
+            success()
+        }, {})
     }
 
     private fun sendMessage(){

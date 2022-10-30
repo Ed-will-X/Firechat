@@ -14,9 +14,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
 import com.varsel.firechat.R
+import com.varsel.firechat.model.Image.Image
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageStatus
 import com.varsel.firechat.model.Message.MessageType
@@ -41,25 +40,29 @@ class MessageListAdapter(
     val context: Context,
     val pageType: Int,
     val firebaseViewModel: FirebaseViewModel,
-    val onClickListener: (message: Message, messageType: Int, messageStatus: Int)-> Unit,
+    val imgClickListener: (message: Message, image: Image)-> Unit,
     val onLongClickListener: (message: Message, messageType: Int, messageStatus: Int)-> Unit
     )
     : ListAdapter<Message, RecyclerView.ViewHolder>(MessagesCallback()) {
 
     class SentViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        val parent = itemView.findViewById<LinearLayout>(R.id.parent)
-        val text = itemView.findViewById<TextView>(R.id.text)
+        val textParent = itemView.findViewById<LinearLayout>(R.id.text_parent)
+        val text = itemView.findViewById<TextView>(R.id.sent_text)
         val timestamp = itemView.findViewById<TextView>(R.id.timestamp)
+        val sentImage = itemView.findViewById<ImageView>(R.id.sent_image)
+        val sentImageSecond = itemView.findViewById<ImageView>(R.id.sent_image_second)
     }
 
     class ReceivedViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        val parent = itemView.findViewById<LinearLayout>(R.id.parent)
-        val text = itemView.findViewById<TextView>(R.id.text)
+        val textParent = itemView.findViewById<LinearLayout>(R.id.text_parent)
+        val text = itemView.findViewById<TextView>(R.id.received_text)
         val profilePicContainer = itemView.findViewById<FrameLayout>(R.id.profile_image_silhouette)
         val profileImageParent = itemView.findViewById<FrameLayout>(R.id.profile_image_parent)
         val profileImage = itemView.findViewById<ImageView>(R.id.profile_image)
         val emptyPadding = itemView.findViewById<View>(R.id.empty_padding)
         val timestamp = itemView.findViewById<TextView>(R.id.timestamp)
+        val receivedImage = itemView.findViewById<ImageView>(R.id.received_image)
+        val receivedImageSecond = itemView.findViewById<ImageView>(R.id.received_image_second)
     }
 
     class SystemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -86,19 +89,52 @@ class MessageListAdapter(
         if(holder.javaClass == SentViewHolder::class.java){
             // Sent Holder
             val viewHolder = holder as SentViewHolder
-            viewHolder.text.text = item.message
 
-            viewHolder.timestamp.text = MessageUtils.formatStampMessage(item.time.toString())
+            if(item.type == MessageType.TEXT){
+                viewHolder.text.text = item.message
+                viewHolder.sentImage.visibility = View.GONE
+                viewHolder.sentImageSecond.visibility = View.GONE
+                viewHolder.textParent.visibility = View.VISIBLE
+            } else if(item.type == MessageType.IMAGE){
+                viewHolder.textParent.visibility = View.GONE
+            }
 
             try {
                 val prev: Message? = getItem(position - 1)
                 if(prev?.sender.equals(item.sender) && MessageUtils.calculateTimestampDifferenceLess(item.time!!, prev?.time!!)){
-                    viewHolder.parent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat_second) }
+                    viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat_second) }
+                    if(item.type == MessageType.IMAGE){
+                        ImageUtils.getAndSetChatImage_fullObject(item, viewHolder.sentImageSecond, activity) { image ->
+                            viewHolder.sentImageSecond.setOnClickListener {
+                                imgClickListener(item, image)
+                            }
+                        }
+                        viewHolder.sentImageSecond.visibility = View.VISIBLE
+                        viewHolder.sentImage.visibility = View.GONE
+                    }
                 } else {
-                    viewHolder.parent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat) }
+                    viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat) }
+                    if(item.type == MessageType.IMAGE){
+                        ImageUtils.getAndSetChatImage_fullObject(item, viewHolder.sentImage, activity) { image ->
+                            viewHolder.sentImage.setOnClickListener {
+                                imgClickListener(item, image)
+                            }
+                        }
+                        viewHolder.sentImage.visibility = View.VISIBLE
+                        viewHolder.sentImageSecond.visibility = View.GONE
+                    }
                 }
             } catch(e: Exception){
-                viewHolder.parent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat) }
+                viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat) }
+                if(item.type == MessageType.IMAGE){
+                    ImageUtils.getAndSetChatImage_fullObject(item, viewHolder.sentImage, activity) { image ->
+                        viewHolder.sentImage.setOnClickListener {
+                            imgClickListener(item, image)
+                        }
+                    }
+                    viewHolder.sentImage.visibility = View.VISIBLE
+                    viewHolder.sentImageSecond.visibility = View.GONE
+                }
             }
 
             try {
@@ -107,9 +143,11 @@ class MessageListAdapter(
                     viewHolder.timestamp.visibility = View.GONE
                 } else {
                     viewHolder.timestamp.visibility = View.VISIBLE
+                    viewHolder.timestamp.text = MessageUtils.formatStampMessage(item.time.toString())
                 }
             } catch(e: Exception) {
                 viewHolder.timestamp.visibility = View.VISIBLE
+                viewHolder.timestamp.text = MessageUtils.formatStampMessage(item.time.toString())
             }
 
         } else if(holder.javaClass == SystemViewHolder::class.java){
@@ -128,21 +166,59 @@ class MessageListAdapter(
         }else {
             // Received Holder
             val viewHolder = holder as ReceivedViewHolder
-            viewHolder.text.text = item.message
-            setOtherUserTimestamp(viewHolder, item)
+
+            if(item.type == MessageType.TEXT){
+                viewHolder.text.text = item.message
+                viewHolder.receivedImage.visibility = View.GONE
+                viewHolder.receivedImageSecond.visibility = View.GONE
+                viewHolder.textParent.visibility = View.VISIBLE
+            } else if(item.type == MessageType.IMAGE){
+                viewHolder.textParent.visibility = View.GONE
+            }
 
             try {
                 val next: Message? = getItem(position + 1)
                 if(next?.sender.equals(item.sender)){
-                    viewHolder.parent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_other_user_chat) }
+                    viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_other_user_chat) }
                     viewHolder.timestamp.visibility = View.GONE
+                    if(item.type == MessageType.IMAGE){
+                        ImageUtils.getAndSetChatImage_fullObject(item, viewHolder.receivedImage, activity) { image ->
+                            viewHolder.receivedImage.setOnClickListener {
+                                imgClickListener(item, image)
+                            }
+                        }
+                        viewHolder.receivedImage.visibility = View.VISIBLE
+                        viewHolder.receivedImageSecond.visibility = View.GONE
+                    }
                 } else {
-                    viewHolder.parent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_other_user_chat_second) }
+                    viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_other_user_chat_second) }
                     viewHolder.timestamp.visibility = View.VISIBLE
+
+                    if(item.type == MessageType.IMAGE){
+                        ImageUtils.getAndSetChatImage_fullObject(item, viewHolder.receivedImageSecond, activity) { image ->
+                            viewHolder.receivedImageSecond.setOnClickListener {
+                                imgClickListener(item, image)
+                            }
+                        }
+                        viewHolder.receivedImage.visibility = View.GONE
+                        viewHolder.receivedImageSecond.visibility = View.VISIBLE
+                    }
+                    setOtherUserTimestamp(viewHolder, item)
                 }
             } catch (e: Exception) {
-                viewHolder.parent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_other_user_chat_second) }
+                viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_other_user_chat_second) }
                 viewHolder.timestamp.visibility = View.VISIBLE
+
+                if(item.type == MessageType.IMAGE){
+                    ImageUtils.getAndSetChatImage_fullObject(item, viewHolder.receivedImageSecond, activity) { image ->
+                        viewHolder.receivedImageSecond.setOnClickListener {
+                            imgClickListener(item, image)
+                        }
+                    }
+                    viewHolder.receivedImage.visibility = View.GONE
+                    viewHolder.receivedImageSecond.visibility = View.VISIBLE
+                }
+                setOtherUserTimestamp(viewHolder, item)
             }
 
 

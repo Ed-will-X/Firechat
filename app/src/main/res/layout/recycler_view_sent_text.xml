@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:layout_width="wrap_content"
+<LinearLayout android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <View
@@ -11,7 +11,8 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="4"
         android:layout_height="wrap_content">
 
         <LinearLayout
@@ -20,13 +21,12 @@
             android:layout_marginTop="1dp"
             android:layout_gravity="right"
             android:background="@drawable/bg_current_user_chat"
-            android:layout_marginLeft="60dp"
-            android:id="@+id/parent"
+            android:id="@+id/text_parent"
             android:layout_marginRight="10dp"
             >
 
             <TextView
-                android:id="@+id/text"
+                android:id="@+id/sent_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="17dp"
@@ -36,6 +36,34 @@
                 android:text="Ad voluptua definiebas dnd vim, te vim omnes postulant. mnesarchum fifpepn ifpf [vn cum ut nec fabulas evertitur vituperata. In eos natum populo malorum, equidem ancillae invenire nec ut, no his quas tation ponderum."
                 />
         </LinearLayout>
+
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:visibility="gone"
+            android:id="@+id/sent_image"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="10dp"
+            android:layout_width="250dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="2dp"
+            android:layout_gravity="right"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/rounded_corners_sent"
+            />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:visibility="gone"
+            android:id="@+id/sent_image_second"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="10dp"
+            android:layout_width="250dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="2dp"
+            android:layout_gravity="right"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/rounded_corners_sent_second"
+            />
+
         <TextView
             android:layout_marginRight="10dp"
             android:layout_marginTop="3dp"

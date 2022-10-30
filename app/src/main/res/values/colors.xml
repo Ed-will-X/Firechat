@@ -32,7 +32,11 @@
     <color name="cream">#F6F6F6</color>
     <color name="cream_2">#F7F7F7</color>
 
+    <color name="hot_pink">#FE1E62</color>
+
     <color name="yellow">#F7C84A</color>
+    <color name="deep_yellow">#FFC31F</color>
+
 
     <color name="dark_overlay">#23000000</color>
     <color name="dark_overlay_2">#42000000</color>

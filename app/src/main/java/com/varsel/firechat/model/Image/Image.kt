@@ -12,7 +12,7 @@ class Image {
     @ColumnInfo(name = "owner_id")
     lateinit var ownerId: String
 
-    var image: String? = null
+    lateinit var image: String
 
     constructor(imageId: String, ownerId: String, image: String){
         this.imageId = imageId

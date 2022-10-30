@@ -11,6 +11,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Chat.GroupRoom
+import com.varsel.firechat.model.Image.Image
 import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.model.Message.Message
@@ -1039,6 +1040,40 @@ class FirebaseViewModel: ViewModel() {
                     failureCallback()
                 }
             }
+    }
+
+    fun uploadChatImage(image: Image, mDbRef: DatabaseReference, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+        val reference = mDbRef.child("chatImages")
+
+        reference
+            .push()
+            .setValue(image)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                    DebugUtils.log_firebase("upload chat image successful")
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun getChatImage(imageId: String, mDbRef: DatabaseReference, loopCallback: (image: Image?) -> Unit, afterCallback: () -> Unit){
+        mDbRef.child("chatImages").orderByChild("imageId").equalTo(imageId).addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for(item in snapshot.children){
+
+                    val image = item.getValue(Image::class.java)
+                    loopCallback(image)
+                    DebugUtils.log_firebase("get chat image successful")
+                }
+                afterCallback()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 
     // TODO: Implement delete account

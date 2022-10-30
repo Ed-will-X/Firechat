@@ -142,9 +142,17 @@
     <string name="remove_image">Remove</string>
     <string name="expand">Expand</string>
 
+    <string name="gallery">Gallery</string>
+    <string name="file">File</string>
+    <string name="gif">Gif</string>
+    <string name="audio">Audio</string>
+
+    <string name="chat_image">Chat Image</string>
+    <string name="from_user">From %s</string>
+
     <string name="image_upload_error">"Something went wrong with image upload"</string>
 
-
+    <string name="image_with_emoji">"Image 🖼️"</string>
 
 
     <string name="hello_blank_fragment">Hello blank fragment</string>

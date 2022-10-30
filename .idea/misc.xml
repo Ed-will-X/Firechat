@@ -42,7 +42,7 @@
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_add_group_members.xml" value="0.176" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_auth_root.xml" value="0.264" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_chat_detail.xml" value="0.1778537836682343" />
-        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_chat_page.xml" value="0.4" />
+        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_chat_page.xml" value="0.264" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_chats.xml" value="0.1778537836682343" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_create_group.xml" value="0.264" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_customise_user.xml" value="0.1778537836682343" />
@@ -55,6 +55,7 @@
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_individual.xml" value="0.264" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_other_profile.xml" value="0.264" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_profile.xml" value="0.6" />
+        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_profile_image.xml" value="0.33539412673879443" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/fragment_settings.xml" value="0.264" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/item_edit_profile.xml" value="0.4" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/recycler_view_add_friends_list_item.xml" value="0.536" />
@@ -66,8 +67,8 @@
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/recycler_view_group_chat_item.xml" value="0.38475177304964536" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/recycler_view_group_participant_item.xml" value="0.536" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/recycler_view_individual_chat_item.xml" value="0.1778537836682343" />
-        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/recycler_view_received_text.xml" value="0.4656652360515021" />
-        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/recycler_view_sent_text.xml" value="0.444672131147541" />
+        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/recycler_view_received_text.xml" value="0.4" />
+        <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/recycler_view_sent_text.xml" value="0.4" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/recycler_view_system_text.xml" value="0.264" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/shimmer_chat.xml" value="0.136" />
         <entry key="..\:/Users/maste/Desktop/Projects/android/personal projects/Firechat/app/src/main/res/layout/shimmer_chats.xml" value="0.17699871740059855" />

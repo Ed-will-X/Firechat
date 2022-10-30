@@ -2,7 +2,6 @@ package com.varsel.firechat.utils
 
 import android.Manifest
 import android.app.Activity
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,10 +13,11 @@ import android.util.Base64
 import android.view.View
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.varsel.firechat.model.Chat.GroupRoom
+import com.varsel.firechat.model.Image.Image
+import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import java.io.ByteArrayOutputStream
@@ -222,6 +222,49 @@ class ImageUtils {
                 return image
 
             return Bitmap.createScaledBitmap(image, width - widthExcess, height - heightExcess, false)
+        }
+
+        fun setChatImage(base64: String?, image: ImageView){
+            if(base64?.isNotEmpty() == true){
+                val bitmap = base64ToBitmap(base64)
+
+                image.setImageBitmap(bitmap)
+            }
+        }
+
+        fun getAndSetChatImage(message: Message, image: ImageView,  activity: SignedinActivity){
+            activity.determineMessageImgFetchMethod(message, {
+                if(it != null){
+                    setChatImage(it, image)
+                }
+            }, {
+                if(it != null){
+                    setChatImage(it,  image)
+                }
+            })
+        }
+
+        fun getAndSetChatImage(message: Message, image: ImageView,  activity: SignedinActivity, imgCallback: (image: String)-> Unit){
+            activity.determineMessageImgFetchMethod(message, {
+                if(it != null){
+                    setChatImage(it, image)
+                    imgCallback(it)
+                }
+            }, {
+                if(it != null){
+                    setChatImage(it,  image)
+                    imgCallback(it)
+                }
+            })
+        }
+
+        fun getAndSetChatImage_fullObject(message: Message, imageView: ImageView, activity: SignedinActivity, imgCallback: (image: Image)-> Unit){
+            activity.determineMessageImgFetchMethod_fullObject(message) {
+                if(it != null){
+                    setChatImage(it.image, imageView)
+                    imgCallback(it)
+                }
+            }
         }
 
     }

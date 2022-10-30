@@ -15,6 +15,7 @@ import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.model.Message.Message
+import com.varsel.firechat.model.Message.MessageType
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.UserUtils
@@ -47,7 +48,11 @@ class ChatListAdapter(
 
         if(item != null){
             val id = getUserId(item.participants!!)
-            holder.lastMessage.text = UserUtils.truncate(getLastMessage(item), 38)
+            if(getLastMessageObject(item)?.type == MessageType.TEXT){
+                holder.lastMessage.text = UserUtils.truncate(getLastMessage(item), 38)
+            } else if(getLastMessageObject(item)?.type == MessageType.IMAGE){
+                holder.lastMessage.text = activity.getString(R.string.image_with_emoji)
+            }
             if(item.participants != null){
                 // TODO: Replace with internal database code
                 getUser(getUserId(item.participants!!)){ user ->
@@ -82,6 +87,12 @@ class ChatListAdapter(
         val sortedMessages: List<Message>? = MessageUtils.sortMessages(chatRoom)
 
         return (sortedMessages?.last()?.message ?: "")
+    }
+
+    private fun getLastMessageObject(chatRoom: ChatRoom): Message? {
+        val sortedMessages: List<Message>? = MessageUtils.sortMessages(chatRoom)
+
+        return (sortedMessages?.last())
     }
 
     private fun getLastMessageTimestamp(chatRoom: ChatRoom): String {
