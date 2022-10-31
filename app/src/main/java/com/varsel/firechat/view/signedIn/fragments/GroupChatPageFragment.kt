@@ -111,23 +111,13 @@ class GroupChatPageFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         ImageUtils.handleOnActivityResult(requireContext(), requestCode, resultCode, data, {
-            uploadImage(it)
-        }, {})
-    }
-
-    private fun uploadImage(uri: Uri){
-        val encoded = ImageUtils.encodeUri(uri, parent)
-        if(encoded != null){
-            val imageId = MessageUtils.generateUID(50)
-            val image = Image(imageId, parent.firebaseAuth.currentUser!!.uid, encoded)
-            val message = Message(MessageUtils.generateUID(50), imageId, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.IMAGE)
-
-            parent.firebaseViewModel.uploadChatImage(image, parent.mDbRef, {
-                sendImgMessage(message) {
+            ImageUtils.uploadChatImage(it, parent) {
+                sendImgMessage(it) {
 
                 }
-            }, {})
-        }
+            }
+//            uploadImage(it)
+        }, {})
     }
 
     private fun observeGroupImage(){

@@ -11,6 +11,7 @@ import androidx.navigation.findNavController
 import com.varsel.firechat.databinding.FragmentIndividualBinding
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ChatListAdapter
@@ -40,7 +41,9 @@ class IndividualFragment : Fragment() {
             parent.firebaseViewModel.selectedChatRoomUser.value = user
             val action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(chatRoomId, userId)
             view.findNavController().navigate(action)
-        }, {})
+        }, {
+//            ImageUtils.displayProfilePicture(it, parent)
+        })
 
         binding.individualChatsRecyclerView.adapter = chatListAdapter
 

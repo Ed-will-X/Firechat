@@ -39,6 +39,7 @@
 
 
         <com.google.android.material.imageview.ShapeableImageView
+            android:foreground="?selectableItemBackground"
             android:visibility="gone"
             android:id="@+id/sent_image"
             android:layout_marginLeft="60dp"
@@ -52,6 +53,7 @@
             />
 
         <com.google.android.material.imageview.ShapeableImageView
+            android:foreground="?selectableItemBackground"
             android:visibility="gone"
             android:id="@+id/sent_image_second"
             android:layout_marginLeft="60dp"

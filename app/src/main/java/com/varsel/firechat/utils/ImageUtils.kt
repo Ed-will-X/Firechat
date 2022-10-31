@@ -15,9 +15,12 @@ import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.Image.Image
 import com.varsel.firechat.model.Message.Message
+import com.varsel.firechat.model.Message.MessageType
+import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import java.io.ByteArrayOutputStream
@@ -185,6 +188,24 @@ class ImageUtils {
             })
         }
 
+        fun setProfilePicOtherUser_fullObject(user: User, view: ImageView, viewParent: View, parent: SignedinActivity, imgCallback: (image: ProfileImage?)-> Unit){
+            parent.determineOtherImgFetchMethod_fullObject(user, {
+                if (it?.image != null) {
+                    imgCallback(it)
+                    setProfilePic(it.image!!, view, viewParent)
+                } else {
+                    imgCallback(null)
+                }
+            }, {
+                if (it?.image != null) {
+                    imgCallback(it)
+                    setProfilePic(it.image!!, view, viewParent)
+                } else {
+                    imgCallback(null)
+                }
+            })
+        }
+
         fun setProfilePicGroup(group: GroupRoom, view: ImageView, viewParent: View, parent: SignedinActivity, imgCallback: (image: String?)-> Unit){
             parent.determineGroupFetchMethod(group, {
                 if (it != null) {
@@ -267,5 +288,66 @@ class ImageUtils {
             }
         }
 
+        fun displayImageMessage(image: Image, message: Message, activity: SignedinActivity){
+            val otherUser = activity.firebaseViewModel.selectedChatRoomUser.value
+            val currentUserId = activity.firebaseViewModel.currentUser.value
+
+            if(otherUser != null){
+                var imageOwnerFormat = ""
+
+                if(image.ownerId.equals(currentUserId)){
+                    imageOwnerFormat = activity.getString(R.string.from_you)
+                } else {
+                    imageOwnerFormat = activity.getString(R.string.from_user, otherUser.name)
+                }
+
+                activity.imageViewModel.setOverlayProps(
+                    imageOwnerFormat,
+                    activity.getString(R.string.chat_image),
+                    message.time,
+                    image.image
+                )
+
+                activity.imageViewModel.setShowProfileImage(true)
+            }
+        }
+
+        fun displayProfilePicture(image: ProfileImage, activity: SignedinActivity){
+            val otherUser = activity.firebaseViewModel.selectedChatRoomUser.value
+            val currentUserId = activity.firebaseViewModel.currentUser.value
+
+            if(otherUser != null && image.image != null){
+                var imageOwnerFormat = ""
+
+                if(image.ownerId.equals(currentUserId)){
+                    imageOwnerFormat = activity.getString(R.string.you)
+                } else {
+                    imageOwnerFormat = otherUser.name
+                }
+
+                activity.imageViewModel.setOverlayProps(
+                    imageOwnerFormat,
+                    activity.getString(R.string.profile_image),
+                    image.imgChangeTimestamp,
+                    image.image!!
+                )
+
+                activity.imageViewModel.setShowProfileImage(true)
+            }
+        }
+
+        fun uploadChatImage(uri: Uri, activity: SignedinActivity, success: (message: Message)-> Unit){
+            val encoded = ImageUtils.encodeUri(uri, activity)
+            if(encoded != null){
+                val imageId = MessageUtils.generateUID(50)
+                // TODO: Change owner id from current user to current chat room
+                val image = Image(imageId, activity.firebaseAuth.currentUser!!.uid, encoded)
+                val message = Message(MessageUtils.generateUID(50), imageId, System.currentTimeMillis(), activity.firebaseAuth.currentUser!!.uid, MessageType.IMAGE)
+
+                activity.firebaseViewModel.uploadChatImage(image, activity.mDbRef, {
+                    success(message)
+                }, {})
+            }
+        }
     }
 }

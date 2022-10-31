@@ -40,6 +40,9 @@
 
     <color name="dark_overlay">#23000000</color>
     <color name="dark_overlay_2">#42000000</color>
+    <color name="dark_overlay_3">#A3000000</color>
+    <color name="dark_overlay_4">#B2000000</color>
+    <color name="dark_overlay_5">#E4000000</color>
 
 
 </resources>

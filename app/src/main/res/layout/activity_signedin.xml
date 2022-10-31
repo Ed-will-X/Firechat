@@ -31,6 +31,111 @@
             app:menu="@menu/bottom_nav_menu"/>
     </LinearLayout>
 
+
+
+
+<!--    Profile Image Overlay-->
+    <LinearLayout
+        android:clickable="true"
+        android:id="@+id/img_overlay_parent"
+        android:orientation="vertical"
+        android:background="@color/black"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_marginLeft="10dp"
+                android:id="@+id/img_overlay_back"
+                android:layout_gravity="center_vertical"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_arrow_back_android"
+                />
+
+            <LinearLayout
+                android:paddingLeft="10dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/img_overlay_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" · "
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        />
+
+                    <TextView
+                        android:id="@+id/img_overlay_timestamp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/img_overlay_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:textSize="17sp"
+                    />
+            </LinearLayout>
+
+            <ImageView
+                android:clickable="true"
+                android:id="@+id/img_overlay_more_btn"
+                android:layout_gravity="center_vertical"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_more_vert"
+                android:layout_marginRight="10dp"
+                />
+
+        </LinearLayout>
+
+
+        <ImageView
+            android:clickable="true"
+            android:id="@+id/img_overlay_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </LinearLayout>
+
+
+
+
+
+    <!--    Network error overlay-->
     <LinearLayout
         android:visibility="gone"
         android:clickable="true"

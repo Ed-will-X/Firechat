@@ -1,5 +1,6 @@
 package com.varsel.firechat.model.Image
 
+import androidx.datastore.preferences.protobuf.Timestamp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,29 @@ import kotlinx.coroutines.launch
 
 class ImageViewModel(val dao: ImageDao): ViewModel() {
     val imageToExpand = MutableLiveData<String?>()
+    val showProfileImage = MutableLiveData<Boolean>(false)
+    val username = MutableLiveData<String?>()
+    val type = MutableLiveData<String?>()
+    val timestamp = MutableLiveData<Long>(0L)
+    val image = MutableLiveData<String?>()
+
+    fun setShowProfileImage(bool: Boolean){
+        showProfileImage.value = bool
+    }
+
+    fun setOverlayProps(username: String, type: String, timestamp: Long, image: String){
+        this.username.value = username
+        this.type.value = type
+        this.timestamp.value = timestamp
+        this.image.value = image
+    }
+
+    fun clearOverlayProps(){
+        this.username.value = null
+        this.type.value = null
+        this.timestamp.value = 0L
+        this.image.value = null
+    }
 
     fun getImageById(id: String): LiveData<Image> {
         val image = dao.get(id)

@@ -49,7 +49,6 @@ class AddFriendsFragment : Fragment() {
             view.findNavController().navigate(action)
         }
 
-
         binding.searchRecyclerView.adapter = friendsSearchAdapter
 
         parent.firebaseViewModel.usersQuery.observe(viewLifecycleOwner, Observer {

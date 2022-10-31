@@ -1,5 +1,6 @@
 package com.varsel.firechat.viewModel
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -993,13 +994,22 @@ class FirebaseViewModel: ViewModel() {
     fun getProfileImage(userId: String, mDbRef: DatabaseReference, loopCallback: (profileImage: ProfileImage?) -> Unit, afterCallback: () -> Unit){
         mDbRef.child("ProfileImages").orderByChild("ownerId").equalTo(userId).addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                for(item in snapshot.children){
+                if(snapshot.exists()){
+                    Log.d("SNAPSHOT_IMG", "profile image exists for ${userId}")
 
-                    val profileImage = item.getValue(ProfileImage::class.java)
-                    loopCallback(profileImage)
-                    DebugUtils.log_firebase("get profile image successful")
+                    for(item in snapshot.children){
+                        val profileImage = item.getValue(ProfileImage::class.java)
+                        loopCallback(profileImage)
+
+                        DebugUtils.log_firebase("get profile image successful")
+                    }
+                    afterCallback()
+
+//                    snapshotExistenceCallback(true)
+                } else {
+                    Log.d("SNAPSHOT_IMG", "profile image does not exist for ${userId}")
+//                    snapshotExistenceCallback(false)
                 }
-                afterCallback()
             }
 
             override fun onCancelled(error: DatabaseError) {

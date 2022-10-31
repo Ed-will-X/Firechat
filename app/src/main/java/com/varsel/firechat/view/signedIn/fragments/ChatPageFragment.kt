@@ -83,7 +83,7 @@ class ChatPageFragment : Fragment() {
 
         messagesListAdapter = MessageListAdapter(parent,this, requireContext(), ChatPageType.INDIVIDUAL, parent.firebaseViewModel,
         { message, image ->
-            navigateToImagePage(image, message)
+            ImageUtils.displayImageMessage(image, message, parent)
         }, { _, _, _ ->
 
         })
@@ -133,45 +133,19 @@ class ChatPageFragment : Fragment() {
         return view
     }
 
-    private fun navigateToImagePage(image: Image, message: Message){
-//        parent.imageViewModel.imageToExpand.value = image.image
-
-        var username = ""
-        if(message.sender == parent.firebaseAuth.currentUser!!.uid){
-            username = parent.firebaseViewModel.currentUser.value!!.name
-        } else {
-            if(parent.firebaseViewModel.selectedChatRoomUser.value != null){
-                username = parent.firebaseViewModel.selectedChatRoomUser.value!!.name
-            }
-        }
-
-        val action = ChatPageFragmentDirections.actionChatPageFragmentToProfileImageFragment(parent.getString(R.string.from_user, username), parent.getString(R.string.chat_image), message.time, image.image)
-        findNavController().navigate(action)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         ImageUtils.handleOnActivityResult(requireContext(), requestCode, resultCode, data, {
-            uploadImage(it)
+            ImageUtils.uploadChatImage(it, parent) {
+                sendMessage(it) {
+
+                }
+            }
         },{})
     }
 
-    private fun uploadImage(uri: Uri){
-        val encoded = ImageUtils.encodeUri(uri, parent)
-        if(encoded != null){
-            val imageId = MessageUtils.generateUID(50)
-            // TODO: Change owner id from current user to current chat room
-            val image = Image(imageId, parent.firebaseAuth.currentUser!!.uid, encoded)
-            val message = Message(MessageUtils.generateUID(50), imageId, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.IMAGE)
 
-            parent.firebaseViewModel.uploadChatImage(image, parent.mDbRef, {
-                sendMessage(message) {
-
-                }
-            }, {})
-        }
-    }
 
     private fun popNavigation(){
         chatPageViewModel.actionBarVisibility.value = false

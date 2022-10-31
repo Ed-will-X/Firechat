@@ -28,10 +28,13 @@ import com.varsel.firechat.model.Image.Image
 import com.varsel.firechat.model.Image.ImageViewModel
 import com.varsel.firechat.model.Image.ImageViewModelFactory
 import com.varsel.firechat.model.Message.Message
+import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.model.ProfileImage.ProfileImageViewModel
 import com.varsel.firechat.model.ProfileImage.ProfileImageViewModelFactory
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
+import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedOut.SignedoutActivity
 import com.varsel.firechat.view.signedOut.fragments.AuthType
 import com.varsel.firechat.viewModel.FirebaseViewModel
@@ -111,15 +114,42 @@ class SignedinActivity : AppCompatActivity() {
         // Makes the chat fragment the default destination
         binding.bottomNavView.menu.findItem(R.id.chatsFragment).setChecked(true)
 
+        setOverlayBindings()
+
 //        profileImageViewModel.setClearBlacklistCountdown()
     }
 
-    private fun enablePersistence(){
-        Firebase.database.setPersistenceEnabled(true)
+    fun setOverlayBindings(){
+        imageViewModel.showProfileImage.observe(this, Observer {
+            if(it){
+                binding.imgOverlayParent.visibility = View.VISIBLE
+                binding.imgOverlayName.setText(imageViewModel.username.value.toString())
+                binding.imgOverlayType.setText(imageViewModel.type.value.toString())
+                binding.imgOverlayTimestamp.setText(MessageUtils.formatStampMessage(imageViewModel.timestamp.value.toString()))
+                if(imageViewModel.image != null){
+                    binding.imgOverlayImage.setImageBitmap(ImageUtils.base64ToBitmap(imageViewModel.image.value!!))
+                }
+            } else {
+                binding.imgOverlayParent.visibility = View.GONE
+                imageViewModel.clearOverlayProps()
+            }
+        })
+
+        binding.imgOverlayBack.setOnClickListener {
+            imageViewModel.showProfileImage.value = false
+        }
+
+        binding.imgOverlayParent.setOnClickListener {
+            imageViewModel.showProfileImage.value = false
+        }
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
+        if(imageViewModel.showProfileImage.value != true){
+            super.onBackPressed()
+        } else {
+            imageViewModel.showProfileImage.value = false
+        }
         Log.d("LLL", "Back pressed")
     }
 
@@ -187,6 +217,7 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     private fun fetchCurrentUserProfileImage(){
+        Log.d("IMAGE_FETCH", "Get image called for CURRENT USER")
         firebaseViewModel.getProfileImage(firebaseAuth.currentUser!!.uid, mDbRef, {
             if(it != null){
                 profileImageViewModel.storeImage(it)
@@ -203,15 +234,17 @@ class SignedinActivity : AppCompatActivity() {
 
         imageLiveData?.observeOnce(this, Observer {
             if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
+                Log.d("IMAGE_CHECK", "current user display image gotten from database")
                 profileImageViewModel.profileImageEncodedCurrentUser.value = it.image
             } else {
+                Log.d("IMAGE_CHECK", "CURRENT USER DISPLAY IMAGE GOTTEN FROM FIREBASE")
                 fetchCurrentUserProfileImage()
             }
         })
     }
 
     private fun fetchProfileImage(userId: String, afterCallback: (image: String?)-> Unit){
-        Log.d("IMAGE", "Get image called for ${userId}")
+        Log.d("IMAGE_FETCH", "Get image called for ${userId}")
 
         firebaseViewModel.getProfileImage(userId, mDbRef, {
             if(it != null){
@@ -226,16 +259,55 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
+    private fun fetchProfileImage_fullObject(userId: String, afterCallback: (image: ProfileImage?)-> Unit){
+        Log.d("IMAGE_FETCH", "Get image called for ${userId}")
+
+        firebaseViewModel.getProfileImage(userId, mDbRef, {
+            if(it != null){
+                profileImageViewModel.storeImage(it)
+                afterCallback(it)
+            } else {
+                afterCallback(null)
+            }
+            // TODO: Remove image from DB if it is null
+        }, {
+            afterCallback(null)
+        })
+    }
+
     fun determineOtherImgFetchMethod(user: User, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
         val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
 
         imageLiveData?.observeOnce(this, Observer {
             if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
+                Log.d("IMAGE_CHECK", "other user display image gotten from database")
                 dbCallback(it.image)
             } else {
                 profileImageViewModel.isNotUserInBlacklist(user,{
                     profileImageViewModel.addUserToBlacklist(user)
+                    Log.d("IMAGE_CHECK", "OTHER USER DISPLAY IMAGE GOTTEN FROM FIREBASE")
                     fetchProfileImage(user.userUID) {
+                        fetchCallback(it)
+                    }
+                }, {
+                    fetchCallback(null)
+                })
+            }
+        })
+    }
+
+    fun determineOtherImgFetchMethod_fullObject(user: User, fetchCallback: (image: ProfileImage?)-> Unit, dbCallback: (image: ProfileImage?)-> Unit){
+        val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
+
+        imageLiveData?.observeOnce(this, Observer {
+            if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
+                Log.d("IMAGE_CHECK", "other user display image gotten from database")
+                dbCallback(it)
+            } else {
+                profileImageViewModel.isNotUserInBlacklist(user,{
+                    profileImageViewModel.addUserToBlacklist(user)
+                    Log.d("IMAGE_CHECK", "OTHER USER DISPLAY IMAGE GOTTEN FROM FIREBASE")
+                    fetchProfileImage_fullObject(user.userUID) {
                         fetchCallback(it)
                     }
                 }, {
@@ -250,10 +322,12 @@ class SignedinActivity : AppCompatActivity() {
 
         imageLiveData?.observeOnce(this, Observer {
             if(it != null && group.imgChangeTimestamp == it.imgChangeTimestamp){
+                Log.d("IMAGE_CHECK", "Group display image gotten from database")
                 dbCallback(it.image)
             } else {
                 profileImageViewModel.isNotGroupInBlacklist(group,{
                     profileImageViewModel.addGroupToBlacklist(group)
+                    Log.d("IMAGE_CHECK", "GROUP DISPLAY IMAGE GOTTEN FROM FIREBASE")
                     fetchProfileImage(group.roomUID) {
                         fetchCallback(it)
                     }
@@ -265,7 +339,7 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     fun fetchChatImage(imageId: String, afterCallback: (image: String?)-> Unit){
-        Log.d("IMAGE", "Get image called for ${imageId}")
+        Log.d("IMAGE_FETCH", "Get image called for ${imageId}")
 
         firebaseViewModel.getChatImage(imageId, mDbRef, {
             if(it != null){
@@ -289,10 +363,10 @@ class SignedinActivity : AppCompatActivity() {
 
         imageLiveData.observeOnce(this, Observer {
             if(it != null){
-                Log.d("LLL", "Chat image gotten from database")
+                Log.d("IMAGE_CHECK", "Chat image gotten from database")
                 dbCallback(it.image)
             } else {
-                Log.d("LLL", "Chat image gotten from firebase")
+                Log.d("IMAGE_CHECK", "CHAT IMAGE GOTTEN FROM FIREBASE")
                 fetchChatImage(message.message) {
                     fetchCallback(it)
                 }
@@ -301,7 +375,7 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     fun fetchChatImage_fullObject(imageId: String, afterCallback: (image: Image?)-> Unit){
-        Log.d("IMAGE", "Get image called for ${imageId}")
+        Log.d("IMAGE_FETCH", "Get image from firebase called for ${imageId}")
 
         firebaseViewModel.getChatImage(imageId, mDbRef, {
             if(it != null){
@@ -322,10 +396,10 @@ class SignedinActivity : AppCompatActivity() {
 
         imageLiveData.observeOnce(this, Observer {
             if(it != null){
-                Log.d("LLL", "Chat image gotten from database")
+                Log.d("IMAGE_CHECK", "Chat image gotten from database")
                 imgCallback(it)
             } else {
-                Log.d("LLL", "Chat image gotten from firebase")
+                Log.d("IMAGE_CHECK", "CHAT IMAGE GOTTEN FROM FIREBASE")
                 fetchChatImage_fullObject(message.message) {
                     imgCallback(it)
                 }
