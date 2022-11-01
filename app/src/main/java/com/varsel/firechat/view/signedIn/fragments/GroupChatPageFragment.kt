@@ -111,12 +111,13 @@ class GroupChatPageFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         ImageUtils.handleOnActivityResult(requireContext(), requestCode, resultCode, data, {
-            ImageUtils.uploadChatImage(it, parent) {
-                sendImgMessage(it) {
+            ImageUtils.uploadChatImage(it, parent) { message, image ->
+                parent.imageViewModel.storeImage(image) {
+                    sendImgMessage(message) {
 
+                    }
                 }
             }
-//            uploadImage(it)
         }, {})
     }
 

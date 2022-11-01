@@ -195,7 +195,8 @@ class GroupChatDetailFragment : Fragment() {
 
                 image.observeOnce(viewLifecycleOwner, Observer {
                     if(it != null){
-                        parent.profileImageViewModel.deleteImage(it)
+                        parent.profileImageViewModel.nullifyImageInRoom(groupId)
+
                         parent.profileImageViewModel.selectedGroupImageEncoded.value = null
                     }
                 })

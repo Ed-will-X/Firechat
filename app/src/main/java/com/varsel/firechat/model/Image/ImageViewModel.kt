@@ -44,6 +44,13 @@ class ImageViewModel(val dao: ImageDao): ViewModel() {
         }
     }
 
+    fun storeImage(image: Image, afterCallback: ()-> Unit){
+        viewModelScope.launch {
+            dao.insert(image)
+            afterCallback()
+        }
+    }
+
     fun deleteImage(image: Image){
         viewModelScope.launch {
             dao.delete(image)

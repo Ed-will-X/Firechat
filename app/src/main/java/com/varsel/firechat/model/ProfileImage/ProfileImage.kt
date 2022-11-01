@@ -14,7 +14,7 @@ class ProfileImage {
 
     var image: String? = null
 
-    constructor(ownerId: String, image: String, imgChangeTimestamp: Long){
+    constructor(ownerId: String, image: String?, imgChangeTimestamp: Long){
         this.ownerId = ownerId
         this.image = image
         this.imgChangeTimestamp = imgChangeTimestamp

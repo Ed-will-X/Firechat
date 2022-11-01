@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:paddingHorizontal="30dp"
+    android:background="@drawable/bg_load_btn"
+    android:orientation="horizontal"
+    app:cardCornerRadius="50dp"
+    android:backgroundTint="@color/grey"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="140dp"
+    android:layout_height="50dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_cloud_download"
+            app:tint="@color/white"
+            android:layout_gravity="center_vertical"
+            />
+
+        <TextView
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/load"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            />
+</LinearLayout>

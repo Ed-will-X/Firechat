@@ -46,30 +46,32 @@ class ChatListAdapter(
         val item: ChatRoom = getItem(position)
 
 
-        if(item != null){
-            val id = getUserId(item.participants!!)
-            if(getLastMessageObject(item)?.type == MessageType.TEXT){
-                holder.lastMessage.text = UserUtils.truncate(getLastMessage(item), 38)
-            } else if(getLastMessageObject(item)?.type == MessageType.IMAGE){
-                holder.lastMessage.text = activity.getString(R.string.image_with_emoji)
-            }
-            if(item.participants != null){
-                // TODO: Replace with internal database code
-                getUser(getUserId(item.participants!!)){ user ->
-                    holder.name.text = user.name
-                    ImageUtils.setProfilePicOtherUser(user, holder.profileImage, holder.profileImageParent, activity) {
-                        holder.parent.setOnClickListener { _ ->
-                            parentClickListener(id, item.roomUID, user, it)
-                        }
-                    }
-
-                }
-            }
-            if(item.messages != null){
-                holder.timestamp.text = MessageUtils.formatStampChatsPage(getLastMessageTimestamp(item))
-            }
-
+        val id = getUserId(item.participants!!)
+        if(getLastMessageObject(item)?.type == MessageType.TEXT){
+            holder.lastMessage.text = UserUtils.truncate(getLastMessage(item), 38)
+        } else if(getLastMessageObject(item)?.type == MessageType.IMAGE){
+            holder.lastMessage.text = activity.getString(R.string.image_with_emoji)
         }
+
+        if(item.participants != null){
+            // TODO: Replace with internal database code
+            getUser(getUserId(item.participants!!)){ user ->
+                holder.parent.setOnClickListener { _ ->
+                    parentClickListener(id, item.roomUID, user, null)
+                }
+                holder.name.text = user.name
+                ImageUtils.setProfilePicOtherUser(user, holder.profileImage, holder.profileImageParent, activity) {
+                    holder.parent.setOnClickListener { _ ->
+                        parentClickListener(id, item.roomUID, user, it)
+                    }
+                }
+
+            }
+        }
+        if(item.messages != null){
+            holder.timestamp.text = MessageUtils.formatStampChatsPage(getLastMessageTimestamp(item))
+        }
+
     }
 
     fun getUserId(participants: HashMap<String, String>): String{

@@ -39,7 +39,15 @@ class FriendsAdapter(
     }
 
     override fun onBindViewHolder(holder: FriendItem, position: Int) {
-        val item = getItem(position)
+        val item: User = getItem(position)
+
+        holder.parentClickable.setOnClickListener {
+            parentClickListener(item, null)
+        }
+
+        holder.messageIcon.setOnClickListener {
+            chatIconClickListener(item, null)
+        }
 
         holder.name.text = item.name
         ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity) { base64 ->

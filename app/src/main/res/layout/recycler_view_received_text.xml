@@ -78,31 +78,61 @@
         </LinearLayout>
 
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:foreground="?selectableItemBackground"
+        <FrameLayout
             android:visibility="gone"
-            android:layout_marginRight="60dp"
-            android:layout_gravity="left"
-            android:id="@+id/received_image"
+            android:id="@+id/image_view_parent"
+            android:foreground="?selectableItemBackground"
+            android:background="@drawable/bg_loading_shimmer_message_received"
             android:layout_width="220dp"
             android:layout_height="120dp"
-            android:layout_marginTop="2dp"
-            android:scaleType="centerCrop"
-            app:shapeAppearanceOverlay="@style/rounded_corners_received"
-            />
+            android:layout_marginRight="60dp"
+            android:layout_gravity="left"
+            android:layout_marginTop="2dp">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:foreground="?selectableItemBackground"
+            <include
+                layout="@layout/load_button"
+                android:layout_width="130dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:foreground="?selectableItemBackground"
+                android:id="@+id/received_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/rounded_corners_received"
+                />
+        </FrameLayout>
+
+        <FrameLayout
             android:visibility="gone"
-            android:layout_marginRight="60dp"
-            android:layout_gravity="left"
-            android:id="@+id/received_image_second"
+            android:id="@+id/image_view_parent_second"
+            android:foreground="?selectableItemBackground"
             android:layout_width="220dp"
             android:layout_height="120dp"
+            android:background="@drawable/bg_loading_shimmer_message_received_second"
+            android:layout_marginRight="60dp"
             android:layout_marginTop="2dp"
-            android:scaleType="centerCrop"
-            app:shapeAppearanceOverlay="@style/rounded_corners_received_second"
-            />
+            android:layout_gravity="left">
+
+            <include
+                layout="@layout/load_button"
+                android:layout_width="130dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:foreground="?selectableItemBackground"
+                android:id="@+id/received_image_second"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/rounded_corners_received_second"
+                />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/timestamp"

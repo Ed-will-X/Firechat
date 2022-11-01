@@ -20,6 +20,11 @@ class ProfileImageViewModel(val dao: ProfileImageDao): ViewModel() {
 
     val profileImageFetchBlacklist = MutableLiveData<HashMap<String, Long>>(hashMapOf())
 
+    fun nullifyImageInRoom(id: String){
+        val profileImage = ProfileImage(id, null, 0L)
+        storeImage(profileImage)
+    }
+
     fun getImageById(id: String): LiveData<ProfileImage> {
         val image = dao.get(id)
         return image

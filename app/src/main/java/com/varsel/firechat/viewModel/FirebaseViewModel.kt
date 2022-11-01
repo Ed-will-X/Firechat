@@ -991,7 +991,7 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    fun getProfileImage(userId: String, mDbRef: DatabaseReference, loopCallback: (profileImage: ProfileImage?) -> Unit, afterCallback: () -> Unit){
+    fun getProfileImage(userId: String, mDbRef: DatabaseReference, loopCallback: (profileImage: ProfileImage?) -> Unit, afterCallback: () -> Unit, snapshotExistenceCallback: (bool: Boolean)-> Unit){
         mDbRef.child("ProfileImages").orderByChild("ownerId").equalTo(userId).addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if(snapshot.exists()){
@@ -1005,10 +1005,10 @@ class FirebaseViewModel: ViewModel() {
                     }
                     afterCallback()
 
-//                    snapshotExistenceCallback(true)
+                    snapshotExistenceCallback(true)
                 } else {
                     Log.d("SNAPSHOT_IMG", "profile image does not exist for ${userId}")
-//                    snapshotExistenceCallback(false)
+                    snapshotExistenceCallback(false)
                 }
             }
 

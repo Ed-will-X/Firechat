@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -18,7 +19,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.varsel.firechat.FirechatApplication
 import com.varsel.firechat.R
@@ -92,7 +92,9 @@ class SignedinActivity : AppCompatActivity() {
         firebaseViewModel.currentUser.observe(this, Observer {
             if (it != null) {
                 compareUsers(it)
-                determineCurrentUserImgFetchMethod(it)
+
+                // TODO: Disable this when user updates or removes profile pic
+//                determineCurrentUserImgFetchMethod(it)
             }
 
             if(it?.friendRequests != null){
@@ -105,6 +107,12 @@ class SignedinActivity : AppCompatActivity() {
                 getAllFriends(it?.friends?.values!!.toList())
             } else {
                 firebaseViewModel.friends.value = mutableListOf<User>()
+            }
+        })
+
+        firebaseViewModel.currentUser.observeOnce(this, Observer {
+            if(it != null){
+                determineCurrentUserImgFetchMethod(it)
             }
         })
 
@@ -129,9 +137,14 @@ class SignedinActivity : AppCompatActivity() {
                 if(imageViewModel.image != null){
                     binding.imgOverlayImage.setImageBitmap(ImageUtils.base64ToBitmap(imageViewModel.image.value!!))
                 }
+
+                // TODO: Hide status bar
+                hideStatusBar()
             } else {
                 binding.imgOverlayParent.visibility = View.GONE
                 imageViewModel.clearOverlayProps()
+                // TODO: Unhide status bar
+                showStatusBar()
             }
         })
 
@@ -142,6 +155,14 @@ class SignedinActivity : AppCompatActivity() {
         binding.imgOverlayParent.setOnClickListener {
             imageViewModel.showProfileImage.value = false
         }
+    }
+
+    private fun hideStatusBar(){
+        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+    }
+
+    private fun showStatusBar(){
+        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     override fun onBackPressed() {
@@ -225,6 +246,11 @@ class SignedinActivity : AppCompatActivity() {
             }
         }, {
 
+        }, { exists ->
+            if(!exists){
+                val currentUser = firebaseAuth.currentUser!!.uid
+                profileImageViewModel.nullifyImageInRoom(currentUser)
+            }
         })
     }
 
@@ -235,7 +261,12 @@ class SignedinActivity : AppCompatActivity() {
         imageLiveData?.observeOnce(this, Observer {
             if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
                 Log.d("IMAGE_CHECK", "current user display image gotten from database")
-                profileImageViewModel.profileImageEncodedCurrentUser.value = it.image
+                if(it.image != null){
+                    profileImageViewModel.profileImageEncodedCurrentUser.value = it.image
+                }
+            } else if(it != null && it.imgChangeTimestamp == 0L){
+                // Runs if the img change timestamp was empty the first time
+                Log.d("IMAGE_CHECK", "current user display image NULL from database")
             } else {
                 Log.d("IMAGE_CHECK", "CURRENT USER DISPLAY IMAGE GOTTEN FROM FIREBASE")
                 fetchCurrentUserProfileImage()
@@ -256,6 +287,10 @@ class SignedinActivity : AppCompatActivity() {
             // TODO: Remove image from DB if it is null
         }, {
             afterCallback(null)
+        }, { exists ->
+            if(!exists){
+                profileImageViewModel.nullifyImageInRoom(userId)
+            }
         })
     }
 
@@ -272,6 +307,10 @@ class SignedinActivity : AppCompatActivity() {
             // TODO: Remove image from DB if it is null
         }, {
             afterCallback(null)
+        }, { exists ->
+            if(!exists){
+                profileImageViewModel.nullifyImageInRoom(userId)
+            }
         })
     }
 
@@ -281,7 +320,11 @@ class SignedinActivity : AppCompatActivity() {
         imageLiveData?.observeOnce(this, Observer {
             if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
                 Log.d("IMAGE_CHECK", "other user display image gotten from database")
-                dbCallback(it.image)
+                if(it.image != null){
+                    dbCallback(it.image)
+                }
+            } else if(it != null && it.imgChangeTimestamp == 0L){
+                Log.d("IMAGE_CHECK", "other user display NULL from database")
             } else {
                 profileImageViewModel.isNotUserInBlacklist(user,{
                     profileImageViewModel.addUserToBlacklist(user)
@@ -302,7 +345,11 @@ class SignedinActivity : AppCompatActivity() {
         imageLiveData?.observeOnce(this, Observer {
             if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
                 Log.d("IMAGE_CHECK", "other user display image gotten from database")
-                dbCallback(it)
+                if(it.image != null){
+                    dbCallback(it)
+                }
+            } else if(it != null && it.imgChangeTimestamp == 0L){
+                Log.d("IMAGE_CHECK", "other user display NULL from database")
             } else {
                 profileImageViewModel.isNotUserInBlacklist(user,{
                     profileImageViewModel.addUserToBlacklist(user)
@@ -323,8 +370,12 @@ class SignedinActivity : AppCompatActivity() {
         imageLiveData?.observeOnce(this, Observer {
             if(it != null && group.imgChangeTimestamp == it.imgChangeTimestamp){
                 Log.d("IMAGE_CHECK", "Group display image gotten from database")
-                dbCallback(it.image)
-            } else {
+                if(it.image != null){
+                    dbCallback(it.image)
+                }
+            } else if(it != null && it.imgChangeTimestamp == 0L){
+                Log.d("IMAGE_CHECK", "Group display NULL from database")
+            }else {
                 profileImageViewModel.isNotGroupInBlacklist(group,{
                     profileImageViewModel.addGroupToBlacklist(group)
                     Log.d("IMAGE_CHECK", "GROUP DISPLAY IMAGE GOTTEN FROM FIREBASE")
@@ -355,9 +406,6 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-
-
-    // TODO: Implement determine chat image fetch
     fun determineMessageImgFetchMethod(message: Message, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
         val imageLiveData = imageViewModel.checkForImgInRoom(message.message)
 
@@ -374,6 +422,11 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
+    /*
+        Fetches chat image from firebase,
+        If it exists, it stores the image in room and provides it in a callback,
+        else, it returns null in that callback
+    */
     fun fetchChatImage_fullObject(imageId: String, afterCallback: (image: Image?)-> Unit){
         Log.d("IMAGE_FETCH", "Get image from firebase called for ${imageId}")
 
@@ -385,7 +438,6 @@ class SignedinActivity : AppCompatActivity() {
             } else {
                 afterCallback(null)
             }
-            // TODO: Remove image from DB if it is null
         }, {
             afterCallback(null)
         })
@@ -403,6 +455,25 @@ class SignedinActivity : AppCompatActivity() {
                 fetchChatImage_fullObject(message.message) {
                     imgCallback(it)
                 }
+            }
+        })
+    }
+
+
+    /*
+        Just check if the image is in the database,
+        It does not fetch
+    */
+    fun checkIfImgMessageInDb(message: Message, image: (image: Image?)-> Unit){
+        val imageLiveData = imageViewModel.checkForImgInRoom(message.message)
+
+        imageLiveData.observeOnce(this, Observer {
+            if(it != null){
+                Log.d("IMAGE_CHECK", "Chat exists database")
+                image(it)
+            } else {
+                Log.d("IMAGE_CHECK", "CHAT IMAGE DOES NOT EXIST IN DATABASE")
+                image(null)
             }
         })
     }

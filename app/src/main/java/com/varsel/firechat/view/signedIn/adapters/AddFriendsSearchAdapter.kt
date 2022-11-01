@@ -35,6 +35,11 @@ class AddFriendsSearchAdapter(
 
     override fun onBindViewHolder(holder: UserItemViewHolder, position: Int) {
         val item: User = users[position]
+
+        holder.root.setOnClickListener {
+            clickListener(item.userUID, item, null)
+        }
+
         holder.name.setText(item.name)
         holder.occupation.setText(item.occupation ?: "")
 

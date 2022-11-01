@@ -2,6 +2,7 @@ package com.varsel.firechat.view.signedIn.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,6 +52,9 @@ class MessageListAdapter(
         val timestamp = itemView.findViewById<TextView>(R.id.timestamp)
         val sentImage = itemView.findViewById<ImageView>(R.id.sent_image)
         val sentImageSecond = itemView.findViewById<ImageView>(R.id.sent_image_second)
+        val imageViewParent = itemView.findViewById<FrameLayout>(R.id.image_view_parent)
+        val imageViewParentSecond = itemView.findViewById<FrameLayout>(R.id.image_view_parent_second)
+
     }
 
     class ReceivedViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -63,6 +67,8 @@ class MessageListAdapter(
         val timestamp = itemView.findViewById<TextView>(R.id.timestamp)
         val receivedImage = itemView.findViewById<ImageView>(R.id.received_image)
         val receivedImageSecond = itemView.findViewById<ImageView>(R.id.received_image_second)
+        val imageViewParent = itemView.findViewById<FrameLayout>(R.id.image_view_parent)
+        val imageViewParentSecond = itemView.findViewById<FrameLayout>(R.id.image_view_parent_second)
     }
 
     class SystemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -92,8 +98,8 @@ class MessageListAdapter(
 
             if(item.type == MessageType.TEXT){
                 viewHolder.text.text = item.message
-                viewHolder.sentImage.visibility = View.GONE
-                viewHolder.sentImageSecond.visibility = View.GONE
+                viewHolder.imageViewParent.visibility = View.GONE
+                viewHolder.imageViewParentSecond.visibility = View.GONE
                 viewHolder.textParent.visibility = View.VISIBLE
             } else if(item.type == MessageType.IMAGE){
                 viewHolder.textParent.visibility = View.GONE
@@ -104,36 +110,21 @@ class MessageListAdapter(
                 if(prev?.sender.equals(item.sender) && MessageUtils.calculateTimestampDifferenceLess(item.time!!, prev?.time!!)){
                     viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat_second) }
                     if(item.type == MessageType.IMAGE){
-                        ImageUtils.getAndSetChatImage_fullObject(item, viewHolder.sentImageSecond, activity) { image ->
-                            viewHolder.sentImageSecond.setOnClickListener {
-                                imgClickListener(item, image)
-                            }
-                        }
-                        viewHolder.sentImageSecond.visibility = View.VISIBLE
-                        viewHolder.sentImage.visibility = View.GONE
+                        handleDownloadOnClick(item, viewHolder.sentImageSecond, holder.imageViewParentSecond, holder.imageViewParent)
+
                     }
                 } else {
                     viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat) }
                     if(item.type == MessageType.IMAGE){
-                        ImageUtils.getAndSetChatImage_fullObject(item, viewHolder.sentImage, activity) { image ->
-                            viewHolder.sentImage.setOnClickListener {
-                                imgClickListener(item, image)
-                            }
-                        }
-                        viewHolder.sentImage.visibility = View.VISIBLE
-                        viewHolder.sentImageSecond.visibility = View.GONE
+                        handleDownloadOnClick(item, viewHolder.sentImage, holder.imageViewParent, holder.imageViewParentSecond)
+
                     }
                 }
             } catch(e: Exception){
                 viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat) }
                 if(item.type == MessageType.IMAGE){
-                    ImageUtils.getAndSetChatImage_fullObject(item, viewHolder.sentImage, activity) { image ->
-                        viewHolder.sentImage.setOnClickListener {
-                            imgClickListener(item, image)
-                        }
-                    }
-                    viewHolder.sentImage.visibility = View.VISIBLE
-                    viewHolder.sentImageSecond.visibility = View.GONE
+                    handleDownloadOnClick(item, viewHolder.sentImage, holder.imageViewParent, holder.imageViewParentSecond)
+
                 }
             }
 
@@ -164,7 +155,7 @@ class MessageListAdapter(
             }
 
         }else {
-            // Received Holder
+            // RECEIVED VIEW HOLDER
             val viewHolder = holder as ReceivedViewHolder
 
             if(item.type == MessageType.TEXT){
@@ -182,26 +173,15 @@ class MessageListAdapter(
                     viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_other_user_chat) }
                     viewHolder.timestamp.visibility = View.GONE
                     if(item.type == MessageType.IMAGE){
-                        ImageUtils.getAndSetChatImage_fullObject(item, viewHolder.receivedImage, activity) { image ->
-                            viewHolder.receivedImage.setOnClickListener {
-                                imgClickListener(item, image)
-                            }
-                        }
-                        viewHolder.receivedImage.visibility = View.VISIBLE
-                        viewHolder.receivedImageSecond.visibility = View.GONE
+                        handleDownloadOnClick(item, viewHolder.receivedImage, viewHolder.imageViewParent, viewHolder.imageViewParentSecond)
                     }
                 } else {
                     viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_other_user_chat_second) }
                     viewHolder.timestamp.visibility = View.VISIBLE
 
                     if(item.type == MessageType.IMAGE){
-                        ImageUtils.getAndSetChatImage_fullObject(item, viewHolder.receivedImageSecond, activity) { image ->
-                            viewHolder.receivedImageSecond.setOnClickListener {
-                                imgClickListener(item, image)
-                            }
-                        }
-                        viewHolder.receivedImage.visibility = View.GONE
-                        viewHolder.receivedImageSecond.visibility = View.VISIBLE
+                        handleDownloadOnClick(item, viewHolder.receivedImageSecond, viewHolder.imageViewParentSecond, viewHolder.imageViewParent)
+
                     }
                     setOtherUserTimestamp(viewHolder, item)
                 }
@@ -210,13 +190,8 @@ class MessageListAdapter(
                 viewHolder.timestamp.visibility = View.VISIBLE
 
                 if(item.type == MessageType.IMAGE){
-                    ImageUtils.getAndSetChatImage_fullObject(item, viewHolder.receivedImageSecond, activity) { image ->
-                        viewHolder.receivedImageSecond.setOnClickListener {
-                            imgClickListener(item, image)
-                        }
-                    }
-                    viewHolder.receivedImage.visibility = View.GONE
-                    viewHolder.receivedImageSecond.visibility = View.VISIBLE
+                    handleDownloadOnClick(item, viewHolder.receivedImageSecond, viewHolder.imageViewParentSecond, viewHolder.imageViewParent)
+
                 }
                 setOtherUserTimestamp(viewHolder, item)
             }
@@ -253,6 +228,52 @@ class MessageListAdapter(
         }else {
             return MessageStatus.RECEIVED
         }
+    }
+
+    private fun handleDownloadOnClick(
+        item: Message,
+        imageView: ImageView,
+        imageViewParent: FrameLayout,
+        image_view_parent_to_hide: FrameLayout,
+    ){
+        var has_been_clicked = false
+
+        imageViewParent.visibility = View.VISIBLE
+        image_view_parent_to_hide.visibility = View.GONE
+
+        // check if the img is present in the database
+        ImageUtils.check_if_chat_image_in_db(item, activity) {
+            if(it != null){
+                // if: bind it directly (the same way it was before)
+                ImageUtils.setChatImage(it.image, imageView)
+                imageView.setOnClickListener { it2 ->
+                    imgClickListener(item, it)
+                }
+
+            } else {
+                // else set the parent click listener
+                imageViewParent.setOnClickListener {
+                    if(!has_been_clicked){
+                        Log.d("LLL", "download button clicked")
+                        // Fetch image
+                        ImageUtils.fetch_chat_image_from_firebase(item, activity) { image ->
+                            ImageUtils.setChatImage(image.image, imageView)
+                            imageView.setOnClickListener {
+                                imgClickListener(item, image)
+                            }
+                        }
+
+                        // Disable btn
+                        imageViewParent.isEnabled = false
+                        // set has been clicked to true
+                        has_been_clicked = true
+                    } else {
+                        imageViewParent.isEnabled = false
+                    }
+                }
+            }
+        }
+
     }
 
     private fun getUser(userId: String, callback: (user: User)-> Unit){

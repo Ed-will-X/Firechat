@@ -56,16 +56,20 @@ class EditProfilePage : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         ImageUtils.handleOnActivityResult(requireContext(), requestCode, resultCode, data, {
-            uploadImage(it, {})
+            uploadImage(it) {
+
+            }
         }, {
             if(it != null){
-                uploadImage(it, {})
+                uploadImage(it) {
+
+                }
             }
         })
     }
 
     // gallery
-    private fun uploadImage(uri: Uri, successCallback: ()-> Unit){
+    private fun uploadImage(uri: Uri, successCallback: (profileImage: ProfileImage)-> Unit){
         val base64: String? = ImageUtils.encodeUri(uri, parent)
         if(base64 != null){
             val currentUser = parent.firebaseAuth.currentUser!!.uid
@@ -77,7 +81,7 @@ class EditProfilePage : Fragment() {
                 parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
                     parent.profileImageViewModel.storeImage(profileImage)
                     parent.profileImageViewModel.profileImageEncodedCurrentUser.value = profileImage.image
-                    successCallback()
+                    successCallback(profileImage)
                 }, {})
             }, {
                 Toast.makeText(requireContext(), getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
@@ -112,7 +116,7 @@ class EditProfilePage : Fragment() {
 
                 image.observeOnce(viewLifecycleOwner, Observer {
                     if(it != null){
-                        parent.profileImageViewModel.deleteImage(it)
+                        parent.profileImageViewModel.nullifyImageInRoom(currentUserId)
                         parent.profileImageViewModel.profileImageEncodedCurrentUser.value = null
                     }
                 })

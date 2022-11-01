@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Base64
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
@@ -31,9 +32,9 @@ val REQUEST_TAKE_PHOTO = 0
 val REQUEST_SELECT_IMAGE_IN_ALBUM = 1
 class ImageUtils {
     companion object {
-        val FHD_width = 1920
+        val FHD_width = 1080
         val FHD_height = 1080
-        val HD_width = 1280
+        val HD_width = 720
         val HD_height = 720
 
         val img_limit_width = 4000
@@ -82,27 +83,21 @@ class ImageUtils {
                 val base64: String? = ImageUtils.encodeImage(image)
                 cameraCallback(base64)
 
-//                checkImageSize(image, {
-//                    val base64: String? = ImageUtils.encodeImage(image)
-//                    cameraCallback(base64)
-//                }, {
-//                    // Show toast
-//                    LifecycleUtils.showToast(context, "Image too large")
-//                }, {
-////                    val resized = resizeImage(image)
-//                    val base64: String? = encodeImage(image)
-//                    cameraCallback(base64)
-//                })
             }
         }
 
-        private fun checkImageSize(image: Bitmap, withinBounds: ()-> Unit, outOfBounds: ()-> Unit, compressedCallback: ()-> Unit){
+        private fun checkImageDimensions(image: Bitmap, withinBounds: ()-> Unit, outOfBounds: ()-> Unit, compressedCallback: ()-> Unit){
             // TODO: Add for image upload and experiment for FHD
-            if(image.height < FHD_height || image.width < FHD_width){
+            Log.d("LLL", "width: ${image.width}")
+            Log.d("LLL", "height: ${image.height}")
+            if(image.height < FHD_height && image.width < FHD_width){
+                Log.d("LLL", "Within bounds")
                 withinBounds()
             } else if(image.height > img_limit_height || image.width > img_limit_width) {
+                Log.d("LLL", "out of bounds")
                 outOfBounds()
             } else {
+                Log.d("LLL", "compress callback")
                 compressedCallback()
             }
         }
@@ -122,10 +117,9 @@ class ImageUtils {
         fun encodeUri(imageUri: Uri, activity: Activity): String? {
             val imageStream: InputStream? = activity.getContentResolver().openInputStream(imageUri)
             val selectedImage = BitmapFactory.decodeStream(imageStream)
-            // TODO: Convert to bitmap, resize, convert back and upload
 
             var encodedImage: String? = null
-            checkImageSize(selectedImage, {
+            checkImageDimensions(selectedImage, {
                 val base64: String? = ImageUtils.encodeImage(selectedImage)
                 encodedImage = base64
             }, {
@@ -133,8 +127,8 @@ class ImageUtils {
                 LifecycleUtils.showToast(activity, "Image too large")
                encodedImage = null
             }, {
-                val resized = resizeImage(selectedImage)
-                val base64: String? = encodeImage(resized)
+//                val resized = resizeImage(selectedImage)
+                val base64: String? = encodeImage(selectedImage)
                 encodedImage = base64
             })
 
@@ -224,26 +218,15 @@ class ImageUtils {
             })
         }
 
-        fun resizeImage(image: Bitmap): Bitmap {
-
-            val width = image.width
-            val height = image.height
-            var widthExcess = 0
-            var heightExcess = 0
-
-            if(width > FHD_width){
-                widthExcess = width - FHD_width
-            }
-
-            if (height > FHD_height){
-                heightExcess = height - FHD_height
-            }
-
-            if (image.byteCount <= 1000000)
-                return image
-
-            return Bitmap.createScaledBitmap(image, width - widthExcess, height - heightExcess, false)
-        }
+        // TODO: Write algorithm to resize image
+//        fun resizeImage(image: Bitmap): Bitmap {
+//            // return image if less than 1 mb regardless of the resolution
+//            Log.d("LLL", "Image compress ran")
+//            if (image.byteCount <= 1000000){
+//                return image
+//            }
+//
+//        }
 
         fun setChatImage(base64: String?, image: ImageView){
             if(base64?.isNotEmpty() == true){
@@ -288,12 +271,31 @@ class ImageUtils {
             }
         }
 
+        fun check_if_chat_image_in_db(message: Message, activity: SignedinActivity, imageCallback: (image: Image?) -> Unit){
+            activity.checkIfImgMessageInDb(message) {
+                if(it != null){
+                    imageCallback(it)
+                } else {
+                    imageCallback(null)
+                }
+            }
+        }
+
+        fun fetch_chat_image_from_firebase(message: Message, activity: SignedinActivity, imgCallback: (image: Image) -> Unit){
+            activity.fetchChatImage_fullObject(message.message) {
+                if(it != null){
+                    imgCallback(it)
+                }
+            }
+        }
+
         fun displayImageMessage(image: Image, message: Message, activity: SignedinActivity){
             val otherUser = activity.firebaseViewModel.selectedChatRoomUser.value
-            val currentUserId = activity.firebaseViewModel.currentUser.value
+            val currentUserId = activity.firebaseAuth.currentUser!!.uid
 
             if(otherUser != null){
                 var imageOwnerFormat = ""
+                Log.d("LLL", "Image owner id: ${image.ownerId}")
 
                 if(image.ownerId.equals(currentUserId)){
                     imageOwnerFormat = activity.getString(R.string.from_you)
@@ -336,8 +338,8 @@ class ImageUtils {
             }
         }
 
-        fun uploadChatImage(uri: Uri, activity: SignedinActivity, success: (message: Message)-> Unit){
-            val encoded = ImageUtils.encodeUri(uri, activity)
+        fun uploadChatImage(uri: Uri, activity: SignedinActivity, success: (message: Message, image: Image)-> Unit){
+            val encoded = encodeUri(uri, activity)
             if(encoded != null){
                 val imageId = MessageUtils.generateUID(50)
                 // TODO: Change owner id from current user to current chat room
@@ -345,7 +347,7 @@ class ImageUtils {
                 val message = Message(MessageUtils.generateUID(50), imageId, System.currentTimeMillis(), activity.firebaseAuth.currentUser!!.uid, MessageType.IMAGE)
 
                 activity.firebaseViewModel.uploadChatImage(image, activity.mDbRef, {
-                    success(message)
+                    success(message, image)
                 }, {})
             }
         }

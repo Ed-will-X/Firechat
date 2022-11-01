@@ -80,6 +80,10 @@ class GroupChatsListAdapter(
 
             getParticipantCount(participants, viewHolder)
 
+            viewHolder.parent.setOnClickListener {
+                groupItemListener(item.roomUID, null)
+            }
+
             viewHolder.groupName.text = item.groupName?.let { UserUtils.truncate(it, 15) }
 
             if(isFavorite(item.roomUID)){
