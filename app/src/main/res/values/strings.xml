@@ -151,6 +151,7 @@
     <string name="from_user">From %s</string>
     <string name="from_you">From You</string>
     <string name="profile_image">Profile Image</string>
+    <string name="group_image">Group Image</string>
     <string name="load">Load</string>
 
     <string name="image_upload_error">"Something went wrong with image upload"</string>

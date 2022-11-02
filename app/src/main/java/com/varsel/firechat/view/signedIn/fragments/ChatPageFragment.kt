@@ -86,6 +86,8 @@ class ChatPageFragment : Fragment() {
             ImageUtils.displayImageMessage(image, message, parent)
         }, { _, _, _ ->
 
+        }, { profileImage, user ->
+            ImageUtils.displayProfilePicture(profileImage, user, parent)
         })
         binding.messagesRecyclerView.adapter = messagesListAdapter
 

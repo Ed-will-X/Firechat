@@ -1,6 +1,7 @@
 package com.varsel.firechat.view.signedIn.fragments.bottomNav
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -107,9 +108,23 @@ class ProfileFragment : Fragment() {
     }
 
     private fun observeProfileImage(){
-        parent.profileImageViewModel.profileImageEncodedCurrentUser.observe(viewLifecycleOwner, Observer {
-            if(it != null){
-                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
+        // TODO: Delete
+//        parent.profileImageViewModel.profileImageEncodedCurrentUser.observe(viewLifecycleOwner, Observer {
+//            if(it != null){
+//                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
+//            }
+//        })
+
+        parent.profileImageViewModel.profileImage_currentUser.observe(viewLifecycleOwner, Observer {
+            if(it?.image != null){
+                ImageUtils.setProfilePic(it.image!!, binding.profileImage, binding.profileImageParent)
+                binding.profileImageParent.visibility = View.VISIBLE
+                binding.profileImage.setOnClickListener { it2 ->
+                    val currentUser = parent.firebaseViewModel.currentUser.value
+                    if(currentUser != null){
+                        ImageUtils.displayProfilePicture(it, currentUser, parent)
+                    }
+                }
             }
         })
     }

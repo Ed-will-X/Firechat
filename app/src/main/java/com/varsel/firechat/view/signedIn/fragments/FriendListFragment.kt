@@ -7,9 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentFriendListBinding
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.FriendListAdapter
@@ -29,13 +31,15 @@ class FriendListFragment : Fragment() {
 
         parent = activity as SignedinActivity
 
-        adapter = FriendListAdapter(parent) { id, user, base64 ->
+        adapter = FriendListAdapter(parent, { id, user, base64 ->
             parent.firebaseViewModel.selectedUser.value = user
             parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
 
             val action = FriendListFragmentDirections.actionFriendListFragmentToOtherProfileFragment(id)
             view.findNavController().navigate(action)
-        }
+        }, { profileImage, user ->
+            ImageUtils.displayProfilePicture(profileImage, user, parent)
+        })
 
         if(parent.firebaseViewModel.friends.value?.size == 1){
             binding.friendCount.text = getString(R.string.people_count_one)
@@ -53,9 +57,16 @@ class FriendListFragment : Fragment() {
             }
         })
 
+        binding.backButton.setOnClickListener {
+            popNavigation()
+        }
 
 
         return view
+    }
+
+    private fun popNavigation(){
+        findNavController().navigateUp()
     }
 
     override fun onDestroyView() {

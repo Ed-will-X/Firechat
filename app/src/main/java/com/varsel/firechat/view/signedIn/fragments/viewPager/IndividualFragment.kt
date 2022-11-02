@@ -41,8 +41,8 @@ class IndividualFragment : Fragment() {
             parent.firebaseViewModel.selectedChatRoomUser.value = user
             val action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(chatRoomId, userId)
             view.findNavController().navigate(action)
-        }, {
-//            ImageUtils.displayProfilePicture(it, parent)
+        }, { profileImage, user ->
+            ImageUtils.displayProfilePicture(profileImage, user, parent)
         })
 
         binding.individualChatsRecyclerView.adapter = chatListAdapter

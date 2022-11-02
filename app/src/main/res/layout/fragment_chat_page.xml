@@ -137,6 +137,7 @@
 
 <!--                TODO: Expand edit text based on the number of lines of the message-->
                 <EditText
+                    android:maxLength="50000"
                     android:id="@+id/message_edit_text"
                     android:background="@color/transparent"
                     android:layout_weight="1"

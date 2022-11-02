@@ -16,6 +16,7 @@ import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageType
+import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.UserUtils
@@ -24,7 +25,7 @@ import com.varsel.firechat.view.signedIn.SignedinActivity
 class ChatListAdapter(
     val activity: SignedinActivity,
     val parentClickListener: (userId: String, chatRoomId: String, user: User, base64: String?)-> Unit,
-    val profileImageClickListener: ()-> Unit,
+    val profileImageClickListener: (profileImage: ProfileImage, user: User)-> Unit,
 ) : ListAdapter<ChatRoom, ChatListAdapter.ChatItemViewHolder>(ChatsListAdapterDiffItemCallback()) {
 
     class ChatItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -60,9 +61,15 @@ class ChatListAdapter(
                     parentClickListener(id, item.roomUID, user, null)
                 }
                 holder.name.text = user.name
-                ImageUtils.setProfilePicOtherUser(user, holder.profileImage, holder.profileImageParent, activity) {
+                ImageUtils.setProfilePicOtherUser_fullObject(user, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
                     holder.parent.setOnClickListener { _ ->
-                        parentClickListener(id, item.roomUID, user, it)
+                        parentClickListener(id, item.roomUID, user, profileImage?.image)
+                    }
+
+                    if(profileImage != null){
+                        holder.profileImage.setOnClickListener {
+                            profileImageClickListener(profileImage, user)
+                        }
                     }
                 }
 

@@ -28,9 +28,9 @@ class GroupChatsListAdapter(
     val activity: SignedinActivity,
     val context: Context,
     val addNewListener: ()-> Unit,
-    val groupItemListener: (id: String, base64: String?)-> Unit)
-
-    : ListAdapter<GroupRoom, RecyclerView.ViewHolder>(GroupChatDiffUtilItemCallback()) {
+    val groupItemListener: (id: String, base64: ProfileImage?)-> Unit,
+    val imageClickListener: (groupImage: ProfileImage, group: GroupRoom) -> Unit
+) : ListAdapter<GroupRoom, RecyclerView.ViewHolder>(GroupChatDiffUtilItemCallback()) {
     private val ADD_NEW = 0
     private val GROUP_CHAT = 1
 
@@ -96,9 +96,18 @@ class GroupChatsListAdapter(
                 setFavorite(item.roomUID, holder.favoriteIcon)
             }
 
-            ImageUtils.setProfilePicGroup(item, holder.image, holder.imageParent, activity) { base64 ->
+            ImageUtils.setProfilePicGroup_fullObject(item, holder.image, holder.imageParent, activity) { profileImage ->
                 viewHolder.parent.setOnClickListener {
-                    groupItemListener(item.roomUID, base64)
+                    if(profileImage != null){
+                        groupItemListener(item.roomUID, profileImage)
+                    }
+                }
+
+                if(profileImage != null){
+                    holder.image.setOnClickListener {
+                        imageClickListener(profileImage, item)
+
+                    }
                 }
             }
         }

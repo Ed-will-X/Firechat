@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActionSheetEditProfileBinding
@@ -38,10 +39,15 @@ class EditProfilePage : Fragment() {
 
         setBindings()
 
-        parent.profileImageViewModel.profileImageEncodedCurrentUser.observe(viewLifecycleOwner, Observer {
-            if(it != null){
-                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
+        binding.backButton.setOnClickListener {
+            popNavigation()
+        }
+
+        parent.profileImageViewModel.profileImage_currentUser.observe(viewLifecycleOwner, Observer {
+            if(it?.image != null){
+                ImageUtils.setProfilePic(it.image!!, binding.profileImage, binding.profileImageParent)
                 binding.profileImageParent.visibility = View.VISIBLE
+
             }
         })
 
@@ -68,6 +74,10 @@ class EditProfilePage : Fragment() {
         })
     }
 
+    private fun popNavigation(){
+        findNavController().navigateUp()
+    }
+
     // gallery
     private fun uploadImage(uri: Uri, successCallback: (profileImage: ProfileImage)-> Unit){
         val base64: String? = ImageUtils.encodeUri(uri, parent)
@@ -80,7 +90,8 @@ class EditProfilePage : Fragment() {
             parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, currentUser, {
                 parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
                     parent.profileImageViewModel.storeImage(profileImage)
-                    parent.profileImageViewModel.profileImageEncodedCurrentUser.value = profileImage.image
+                    parent.profileImageViewModel.profileImage_currentUser.value = profileImage
+//                    parent.profileImageViewModel.profileImageEncodedCurrentUser.value = profileImage.image
                     successCallback(profileImage)
                 }, {})
             }, {
@@ -99,7 +110,8 @@ class EditProfilePage : Fragment() {
         parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, currentUser, {
             parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
                 parent.profileImageViewModel.storeImage(profileImage)
-                parent.profileImageViewModel.profileImageEncodedCurrentUser.value = profileImage.image
+                parent.profileImageViewModel.profileImage_currentUser.value = profileImage
+//                parent.profileImageViewModel.profileImageEncodedCurrentUser.value = profileImage.image
                 successCallback()
             }, {})
         }, {
@@ -117,7 +129,8 @@ class EditProfilePage : Fragment() {
                 image.observeOnce(viewLifecycleOwner, Observer {
                     if(it != null){
                         parent.profileImageViewModel.nullifyImageInRoom(currentUserId)
-                        parent.profileImageViewModel.profileImageEncodedCurrentUser.value = null
+                        parent.profileImageViewModel.profileImage_currentUser.value = null
+//                        parent.profileImageViewModel.profileImageEncodedCurrentUser.value = null
                     }
                 })
                 successCallback()
@@ -194,7 +207,12 @@ class EditProfilePage : Fragment() {
         })
 
         dialogBinding.expand.setOnClickListener {
-
+            val currentUser = parent.firebaseViewModel.currentUser.value
+            val image = parent.profileImageViewModel.profileImage_currentUser.value
+            if(currentUser != null && image != null){
+                ImageUtils.displayProfilePicture(image, currentUser, parent)
+                dialog.dismiss()
+            }
         }
 
         dialogBinding.pickImage.setOnClickListener {

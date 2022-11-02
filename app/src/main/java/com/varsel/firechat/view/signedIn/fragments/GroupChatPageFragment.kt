@@ -65,12 +65,14 @@ class GroupChatPageFragment : Fragment() {
 
         messageAdapter = MessageListAdapter(parent,this, requireContext(), ChatPageType.GROUP, parent.firebaseViewModel,
         { message, image ->
-
+            ImageUtils.displayImageMessage_group(image, message, parent)
         }, { message, messageType, messageStatus ->
             if(messageType == MessageType.TEXT && messageStatus == MessageStatus.SYSTEM){
                 val users = splitUsersString(message.message)
                 showSystemMessageActionsheet(users)
             }
+        }, { profileImage, user ->
+            ImageUtils.displayProfilePicture(profileImage, user, parent)
         })
 
         chatPageViewModel.actionBarVisibility.observe(viewLifecycleOwner, Observer {
@@ -104,6 +106,14 @@ class GroupChatPageFragment : Fragment() {
             ImageUtils.openImagePicker(this)
         }
 
+        binding.profileImage.setOnClickListener {
+            val selectedGroupImage = parent.profileImageViewModel.selectedGroupImage.value
+            val selectedGroupRoom = parent.firebaseViewModel.selectedGroupRoom.value
+            if(selectedGroupImage != null && selectedGroupRoom != null){
+                ImageUtils.displayGroupImage(selectedGroupImage, selectedGroupRoom, parent)
+            }
+        }
+
         return view
     }
 
@@ -122,9 +132,16 @@ class GroupChatPageFragment : Fragment() {
     }
 
     private fun observeGroupImage(){
-        parent.profileImageViewModel.selectedGroupImageEncoded.observe(viewLifecycleOwner, Observer {
-            if(it != null){
-                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
+//        parent.profileImageViewModel.selectedGroupImageEncoded.observe(viewLifecycleOwner, Observer {
+//            if(it != null){
+//                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
+//                binding.profileImageParent.visibility = View.VISIBLE
+//            }
+//        })
+
+        parent.profileImageViewModel.selectedGroupImage.observe(viewLifecycleOwner, Observer { profileImage ->
+            if(profileImage.image != null){
+                ImageUtils.setProfilePic(profileImage.image!!, binding.profileImage, binding.profileImageParent)
                 binding.profileImageParent.visibility = View.VISIBLE
             }
         })
@@ -197,14 +214,17 @@ class GroupChatPageFragment : Fragment() {
         val dialog = BottomSheetDialog(requireContext())
         dialog.setContentView(R.layout.action_sheet_system_message)
         val recyclerView = dialog.findViewById<RecyclerView>(R.id.system_message_participant_recycler_view)
-        val adapter = FriendListAdapter(parent) { id, user, base64 ->
+        val adapter = FriendListAdapter(parent, { id, user, base64 ->
             parent.firebaseViewModel.selectedUser.value = user
             parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
 
             dialog.dismiss()
             val action = GroupChatPageFragmentDirections.actionGroupChatPageFragmentToOtherProfileFragment(id)
             binding.root.findNavController().navigate(action)
-        }
+        }, { profileImage, user ->
+            ImageUtils.displayProfilePicture(profileImage, user, parent)
+            dialog.dismiss()
+        })
 
         recyclerView?.adapter = adapter
 

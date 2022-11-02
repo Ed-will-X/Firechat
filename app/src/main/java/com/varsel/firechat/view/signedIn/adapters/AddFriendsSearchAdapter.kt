@@ -9,13 +9,15 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
+import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 
 class AddFriendsSearchAdapter(
     val activity: SignedinActivity,
-    val clickListener: (UID: String, user: User, base64: String?)-> Unit
+    val clickListener: (UID: String, user: User, base64: String?)-> Unit,
+    val imageClickListener: (profileImage: ProfileImage, user: User) -> Unit
 ): RecyclerView.Adapter<AddFriendsSearchAdapter.UserItemViewHolder>() {
 
     var users: ArrayList<User> = arrayListOf()
@@ -43,12 +45,17 @@ class AddFriendsSearchAdapter(
         holder.name.setText(item.name)
         holder.occupation.setText(item.occupation ?: "")
 
-        ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity) { base64 ->
+        ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
             holder.root.setOnClickListener {
-                clickListener(item.userUID, item, base64)
+                clickListener(item.userUID, item, profileImage?.image)
+            }
+
+            if(profileImage != null){
+                holder.profileImage.setOnClickListener {
+                    imageClickListener(profileImage, item)
+                }
             }
         }
-
     }
 
     override fun getItemCount(): Int {

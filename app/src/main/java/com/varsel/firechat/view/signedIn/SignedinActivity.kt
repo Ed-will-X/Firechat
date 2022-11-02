@@ -171,7 +171,6 @@ class SignedinActivity : AppCompatActivity() {
         } else {
             imageViewModel.showProfileImage.value = false
         }
-        Log.d("LLL", "Back pressed")
     }
 
     fun determineAuthType(intent: Intent?){
@@ -242,7 +241,8 @@ class SignedinActivity : AppCompatActivity() {
         firebaseViewModel.getProfileImage(firebaseAuth.currentUser!!.uid, mDbRef, {
             if(it != null){
                 profileImageViewModel.storeImage(it)
-                profileImageViewModel.profileImageEncodedCurrentUser.value = it.image
+//                profileImageViewModel.profileImageEncodedCurrentUser.value = it.image
+                profileImageViewModel.profileImage_currentUser.value = it
             }
         }, {
 
@@ -262,7 +262,7 @@ class SignedinActivity : AppCompatActivity() {
             if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
                 Log.d("IMAGE_CHECK", "current user display image gotten from database")
                 if(it.image != null){
-                    profileImageViewModel.profileImageEncodedCurrentUser.value = it.image
+                    profileImageViewModel.profileImage_currentUser.value = it
                 }
             } else if(it != null && it.imgChangeTimestamp == 0L){
                 // Runs if the img change timestamp was empty the first time
@@ -388,6 +388,30 @@ class SignedinActivity : AppCompatActivity() {
             }
         })
     }
+
+    fun determineGroupFetchMethod_fullObject(group: GroupRoom, fetchCallback: (image: ProfileImage?)-> Unit, dbCallback: (image: ProfileImage?)-> Unit){
+        val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(group.roomUID)
+
+        imageLiveData?.observeOnce(this, Observer {
+            if(it != null && group.imgChangeTimestamp == it.imgChangeTimestamp){
+                Log.d("IMAGE_CHECK", "Group display image gotten from database")
+                dbCallback(it)
+            } else if(it != null && it.imgChangeTimestamp == 0L){
+                Log.d("IMAGE_CHECK", "Group display NULL from database")
+            }else {
+                profileImageViewModel.isNotGroupInBlacklist(group,{
+                    profileImageViewModel.addGroupToBlacklist(group)
+                    Log.d("IMAGE_CHECK", "GROUP DISPLAY IMAGE GOTTEN FROM FIREBASE")
+                    fetchProfileImage_fullObject(group.roomUID) {
+                        fetchCallback(it)
+                    }
+                }, {
+                    fetchCallback(null)
+                })
+            }
+        })
+    }
+
 
     fun fetchChatImage(imageId: String, afterCallback: (image: String?)-> Unit){
         Log.d("IMAGE_FETCH", "Get image called for ${imageId}")

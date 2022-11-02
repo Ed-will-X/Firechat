@@ -22,7 +22,7 @@
                 android:src="@drawable/ic_arrow_back_android"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="10dp"
-                android:id="@+id/add_friends_back_button"
+                android:id="@+id/back_button"
                 android:clickable="true"
                 />
             <TextView

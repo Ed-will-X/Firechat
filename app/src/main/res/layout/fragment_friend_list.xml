@@ -24,7 +24,7 @@
                 android:layout_height="25dp"
                 android:src="@drawable/ic_arrow_back_android"
                 android:layout_gravity="center_vertical"
-                android:id="@+id/chat_back_button"
+                android:id="@+id/back_button"
                 android:clickable="true"
                 />
 

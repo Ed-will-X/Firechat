@@ -9,13 +9,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
-import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentCreateGroupBinding
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
@@ -45,13 +45,16 @@ class CreateGroupFragment : Fragment() {
             binding.createGroupBtn.isEnabled = false
         })
 
-        adapter = CreateGroupAdapter(parent) {
+        adapter = CreateGroupAdapter(parent, {
             toggleBtnEnable()
-        }
+        }, { profileImage, user ->
+            ImageUtils.displayProfilePicture(profileImage, user, parent)
+        })
         binding.friendsRecyclerView.adapter = adapter
 
         // set selected group image to null
-        parent.profileImageViewModel.selectedGroupImageEncoded.value = null
+//        parent.profileImageViewModel.selectedGroupImageEncoded.value = null
+        parent.profileImageViewModel.selectedGroupImage.value = null
 
         if(parent.firebaseViewModel.friends.value?.isNotEmpty() == true){
             adapter.friends = parent.firebaseViewModel.friends.value as ArrayList<User?>

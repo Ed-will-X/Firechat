@@ -152,6 +152,15 @@ class ImageUtils {
             }
         }
 
+        fun setProfilePic_fullObject(profileImage: ProfileImage, view: ImageView, viewParent: View){
+            if(profileImage.image?.isNotEmpty() == true){
+                val bitmap = base64ToBitmap(profileImage.image!!)
+
+                view.setImageBitmap(bitmap)
+                viewParent.visibility = View.VISIBLE
+            }
+        }
+
         fun setProfilePicOtherUser(user: User, view: ImageView, viewParent: View, parent: SignedinActivity){
             parent.determineOtherImgFetchMethod(user, {
                 if (it != null) {
@@ -218,6 +227,29 @@ class ImageUtils {
             })
         }
 
+        fun setProfilePicGroup_fullObject(group: GroupRoom, view: ImageView, viewParent: View, parent: SignedinActivity, imgCallback: (image: ProfileImage?)-> Unit){
+            parent.determineGroupFetchMethod_fullObject(group, {
+                if (it != null) {
+                    imgCallback(it)
+                    if(it.image != null){
+                        setProfilePic(it.image!!, view, viewParent)
+                    }
+                } else {
+                    imgCallback(null)
+                }
+            }, {
+                if (it != null) {
+                    imgCallback(it)
+                    if(it.image != null){
+                        setProfilePic(it.image!!, view, viewParent)
+                    }
+                } else {
+                    imgCallback(null)
+                }
+            })
+        }
+
+
         // TODO: Write algorithm to resize image
 //        fun resizeImage(image: Bitmap): Bitmap {
 //            // return image if less than 1 mb regardless of the resolution
@@ -262,6 +294,11 @@ class ImageUtils {
             })
         }
 
+        /*
+            First checks the DB if there is an existing chat image
+            if: It sets the image from the DB in the image view
+            else: It fetches the image from firebase and sets it in the image view
+        */
         fun getAndSetChatImage_fullObject(message: Message, imageView: ImageView, activity: SignedinActivity, imgCallback: (image: Image)-> Unit){
             activity.determineMessageImgFetchMethod_fullObject(message) {
                 if(it != null){
@@ -282,8 +319,11 @@ class ImageUtils {
         }
 
         fun fetch_chat_image_from_firebase(message: Message, activity: SignedinActivity, imgCallback: (image: Image) -> Unit){
+            Log.d("LLL", "Fetch chat image from firebase called")
+
             activity.fetchChatImage_fullObject(message.message) {
                 if(it != null){
+                    Log.d("LLL", "image from firebase not null")
                     imgCallback(it)
                 }
             }
@@ -295,7 +335,6 @@ class ImageUtils {
 
             if(otherUser != null){
                 var imageOwnerFormat = ""
-                Log.d("LLL", "Image owner id: ${image.ownerId}")
 
                 if(image.ownerId.equals(currentUserId)){
                     imageOwnerFormat = activity.getString(R.string.from_you)
@@ -314,17 +353,49 @@ class ImageUtils {
             }
         }
 
-        fun displayProfilePicture(image: ProfileImage, activity: SignedinActivity){
-            val otherUser = activity.firebaseViewModel.selectedChatRoomUser.value
+        fun displayImageMessage_group(image: Image, message: Message, activity: SignedinActivity){
+            val currentUserId = activity.firebaseAuth.currentUser!!.uid
+            val selectedGroupRoomParticipants = activity.firebaseViewModel.selectedGroupParticipants.value
+
+            if(selectedGroupRoomParticipants != null){
+                var selectedUser: User? = null
+                for(i in selectedGroupRoomParticipants){
+                    if(i.userUID == image.ownerId){
+                        selectedUser = i
+                    }
+                }
+                if(selectedUser != null){
+                    var imageOwnerFormat = ""
+
+                    if(image.ownerId.equals(currentUserId)){
+                        imageOwnerFormat = activity.getString(R.string.from_you)
+                    } else {
+                        imageOwnerFormat = activity.getString(R.string.from_user, selectedUser.name)
+                    }
+
+                    activity.imageViewModel.setOverlayProps(
+                        imageOwnerFormat,
+                        activity.getString(R.string.chat_image),
+                        message.time,
+                        image.image
+                    )
+
+                    activity.imageViewModel.setShowProfileImage(true)
+                }
+            }
+        }
+
+
+        fun displayProfilePicture(image: ProfileImage, user: User, activity: SignedinActivity){
             val currentUserId = activity.firebaseViewModel.currentUser.value
 
-            if(otherUser != null && image.image != null){
+            if(image.image != null){
                 var imageOwnerFormat = ""
 
                 if(image.ownerId.equals(currentUserId)){
                     imageOwnerFormat = activity.getString(R.string.you)
                 } else {
-                    imageOwnerFormat = otherUser.name
+                    imageOwnerFormat = user.name
                 }
 
                 activity.imageViewModel.setOverlayProps(
@@ -337,6 +408,22 @@ class ImageUtils {
                 activity.imageViewModel.setShowProfileImage(true)
             }
         }
+
+        fun displayGroupImage(image: ProfileImage, group: GroupRoom, activity: SignedinActivity){
+            if(image.image != null){
+                var imageOwnerFormat = group.groupName.toString()
+
+                activity.imageViewModel.setOverlayProps(
+                    imageOwnerFormat,
+                    activity.getString(R.string.group_image),
+                    image.imgChangeTimestamp,
+                    image.image!!
+                )
+
+                activity.imageViewModel.setShowProfileImage(true)
+            }
+        }
+
 
         fun uploadChatImage(uri: Uri, activity: SignedinActivity, success: (message: Message, image: Image)-> Unit){
             val encoded = encodeUri(uri, activity)

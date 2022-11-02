@@ -21,6 +21,7 @@ import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageStatus
 import com.varsel.firechat.model.Message.MessageType
 import com.varsel.firechat.model.Message.SystemMessageType
+import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
@@ -42,7 +43,8 @@ class MessageListAdapter(
     val pageType: Int,
     val firebaseViewModel: FirebaseViewModel,
     val imgClickListener: (message: Message, image: Image)-> Unit,
-    val onLongClickListener: (message: Message, messageType: Int, messageStatus: Int)-> Unit
+    val onLongClickListener: (message: Message, messageType: Int, messageStatus: Int)-> Unit,
+    val profileImgClickListener: (profileImage: ProfileImage, user: User) -> Unit
     )
     : ListAdapter<Message, RecyclerView.ViewHolder>(MessagesCallback()) {
 
@@ -130,7 +132,7 @@ class MessageListAdapter(
 
             try {
                 val next: Message? = getItem(position + 1)
-                if(next?.sender == item.sender  && MessageUtils.calculateTimestampDifferenceLess(next?.time!!, item.time!!)){
+                if(next?.sender == item.sender && MessageUtils.calculateTimestampDifferenceLess(next?.time!!, item.time!!)){
                     viewHolder.timestamp.visibility = View.GONE
                 } else {
                     viewHolder.timestamp.visibility = View.VISIBLE
@@ -204,14 +206,26 @@ class MessageListAdapter(
                     viewHolder.emptyPadding.visibility = View.VISIBLE
                 } else {
                     getUser(item.sender){ user ->
-                        ImageUtils.setProfilePicOtherUser(user, holder.profileImage, holder.profileImageParent, activity)
+                        ImageUtils.setProfilePicOtherUser_fullObject(user, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
+                            holder.profileImage.setOnClickListener {
+                                if (profileImage != null){
+                                    profileImgClickListener(profileImage, user)
+                                }
+                            }
+                        }
                     }
                     viewHolder.profilePicContainer.visibility = View.VISIBLE
                     viewHolder.emptyPadding.visibility = View.GONE
                 }
             } catch (e: Exception) {
                 getUser(item.sender){ user ->
-                    ImageUtils.setProfilePicOtherUser(user, holder.profileImage, holder.profileImageParent, activity)
+                    ImageUtils.setProfilePicOtherUser_fullObject(user, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
+                        holder.profileImage.setOnClickListener {
+                            if (profileImage != null){
+                                profileImgClickListener(profileImage, user)
+                            }
+                        }
+                    }
                 }
                 viewHolder.profilePicContainer.visibility = View.VISIBLE
                 viewHolder.emptyPadding.visibility = View.GONE
@@ -256,8 +270,15 @@ class MessageListAdapter(
                     if(!has_been_clicked){
                         Log.d("LLL", "download button clicked")
                         // Fetch image
-                        ImageUtils.fetch_chat_image_from_firebase(item, activity) { image ->
-                            ImageUtils.setChatImage(image.image, imageView)
+//                        ImageUtils.fetch_chat_image_from_firebase(item, activity) { image ->
+//                            Log.d("LLL", "About to set image")
+//                            ImageUtils.setChatImage(image.image, imageView)
+//                            imageView.setOnClickListener {
+//                                imgClickListener(item, image)
+//                            }
+//                        }
+                        ImageUtils.getAndSetChatImage_fullObject(item, imageView, activity) { image ->
+                            Log.d("LLL", "About to set image")
                             imageView.setOnClickListener {
                                 imgClickListener(item, image)
                             }

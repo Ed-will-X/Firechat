@@ -1,23 +1,27 @@
 package com.varsel.firechat.view.signedIn.fragments
 
+import android.app.Activity
 import android.os.Bundle
 import android.os.CountDownTimer
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.databinding.FragmentAddFriendsBinding
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.AddFriendsSearchAdapter
 import com.varsel.firechat.viewModel.AddFriendsViewModel
 import com.varsel.firechat.viewModel.FirebaseViewModel
+
 
 class AddFriendsFragment : Fragment() {
     private var _binding: FragmentAddFriendsBinding? = null
@@ -41,13 +45,16 @@ class AddFriendsFragment : Fragment() {
             binding.addFriendsSearchBox.isEnabled = false
         })
 
-        val friendsSearchAdapter = AddFriendsSearchAdapter(parent) { id, user, base64 ->
+        val friendsSearchAdapter = AddFriendsSearchAdapter(parent, { id, user, base64 ->
             parent.firebaseViewModel.selectedUser.value = user
             parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
 
             val action = AddFriendsFragmentDirections.actionAddFriendsToOtherProfileFragment(id)
             view.findNavController().navigate(action)
-        }
+        }, { profileImage, user ->
+            ImageUtils.displayProfilePicture(profileImage, user, parent)
+            hideKeyboard(parent)
+        })
 
         binding.searchRecyclerView.adapter = friendsSearchAdapter
 
@@ -65,6 +72,17 @@ class AddFriendsFragment : Fragment() {
         searchBar()
 
         return view
+    }
+
+    fun hideKeyboard(activity: Activity) {
+        val imm = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view = activity.currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(activity)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     private fun toggleCancelIconVisibility(){

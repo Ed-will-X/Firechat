@@ -12,6 +12,7 @@ import androidx.navigation.findNavController
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentFriendsBinding
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.FriendsAdapter
 import com.varsel.firechat.view.signedIn.fragments.bottomNav.ChatsFragmentDirections
@@ -46,6 +47,8 @@ class FriendsFragment : Fragment() {
             parent.profileImageViewModel.selectedOtherUserProfilePicChat.value = base64
             parent.firebaseViewModel.selectedChatRoomUser.value = user
             navigateToChats(user.userUID)
+        }, { profileImage, user ->
+            ImageUtils.displayProfilePicture(profileImage, user, parent)
         })
         binding.friendsRecyclerView.adapter = friendsAdapter
 

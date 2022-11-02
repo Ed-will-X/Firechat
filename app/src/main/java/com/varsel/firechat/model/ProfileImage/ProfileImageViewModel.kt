@@ -13,10 +13,14 @@ import kotlin.concurrent.fixedRateTimer
 
 class ProfileImageViewModel(val dao: ProfileImageDao): ViewModel() {
     val profileImage = MutableLiveData<ProfileImage>()
-    val profileImageEncodedCurrentUser = MutableLiveData<String>()
+
+    // TODO: Switch from encoded strings to the actual ProfileImageObjects
+    val profileImage_currentUser = MutableLiveData<ProfileImage>()
+
     val selectedOtherUserProfilePicChat = MutableLiveData<String>()
     val selectedOtherUserProfilePic = MutableLiveData<String>()
-    val selectedGroupImageEncoded = MutableLiveData<String>()
+
+    val selectedGroupImage = MutableLiveData<ProfileImage>()
 
     val profileImageFetchBlacklist = MutableLiveData<HashMap<String, Long>>(hashMapOf())
 
@@ -51,12 +55,10 @@ class ProfileImageViewModel(val dao: ProfileImageDao): ViewModel() {
         val timer = object : CountDownTimer(4000, 1000) {
 
             override fun onTick(millisUntilFinished: Long) {
-                Log.d("LLL", "Ticking")
                 TODO("Not yet implemented")
             }
 
             override fun onFinish() {
-                Log.d("LLL", "Finished")
                 onEnd()
             }
         }.start()

@@ -52,6 +52,22 @@ class ParticipantsListAdapter(
         }
 
         if(isCurrentUser(item.userUID)){
+            holder.parentClickable.setOnLongClickListener {
+                longPressListener(item.userUID, item, null)
+                true
+            }
+        } else {
+            holder.parentClickable.setOnClickListener {
+                pressListener(item.userUID, item, null)
+            }
+
+            holder.parentClickable.setOnLongClickListener {
+                longPressListener(item.userUID, item, null)
+                true
+            }
+        }
+
+        if(isCurrentUser(item.userUID)){
             holder.name.text = context.getString(R.string.you)
         } else {
             holder.name.text = item.name

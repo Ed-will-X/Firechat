@@ -11,6 +11,7 @@ import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentGroupBinding
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.GroupChatsListAdapter
@@ -33,9 +34,13 @@ class GroupFragment : Fragment() {
 
         adapter = GroupChatsListAdapter(parent, requireContext(),{
             navigateToCreateGroup()
-        }, { id, base64 ->
+        }, { id, image ->
             navigateToGroupChatPage(id)
-            parent.profileImageViewModel.selectedGroupImageEncoded.value = base64
+//            parent.profileImageViewModel.selectedGroupImageEncoded.value = base64
+            parent.profileImageViewModel.selectedGroupImage.value = image
+
+        }, { groupImage, group ->
+            ImageUtils.displayGroupImage(groupImage, group, parent)
         })
 
         parent.firebaseViewModel.currentUser.observe(viewLifecycleOwner, Observer {

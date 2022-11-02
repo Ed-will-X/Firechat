@@ -101,6 +101,9 @@ class GroupChatDetailFragment : Fragment() {
                 }
             } else {
                 // TODO: Include expand code here
+                binding.profileImage.setOnClickListener {
+                    displayImage()
+                }
             }
         })
 
@@ -129,10 +132,25 @@ class GroupChatDetailFragment : Fragment() {
         return view
     }
 
+    private fun displayImage(){
+        val selectedGroupImage = parent.profileImageViewModel.selectedGroupImage.value
+        val selectedGroupRoom = parent.firebaseViewModel.selectedGroupRoom.value
+        if(selectedGroupImage != null && selectedGroupRoom != null){
+            ImageUtils.displayGroupImage(selectedGroupImage, selectedGroupRoom, parent)
+        }
+    }
+
     private fun observeGroupImage(){
-        parent.profileImageViewModel.selectedGroupImageEncoded.observe(viewLifecycleOwner, Observer {
-            if(it != null){
-                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
+//        parent.profileImageViewModel.selectedGroupImageEncoded.observe(viewLifecycleOwner, Observer {
+//            if(it != null){
+//                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
+//                binding.profileImageParent.visibility = View.VISIBLE
+//            }
+//        })
+
+        parent.profileImageViewModel.selectedGroupImage.observe(viewLifecycleOwner, Observer { profileImage ->
+            if(profileImage.image != null){
+                ImageUtils.setProfilePic(profileImage.image!!, binding.profileImage, binding.profileImageParent)
                 binding.profileImageParent.visibility = View.VISIBLE
             }
         })
@@ -161,7 +179,8 @@ class GroupChatDetailFragment : Fragment() {
             parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, groupId, {
                 parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
                     parent.profileImageViewModel.storeImage(profileImage)
-                    parent.profileImageViewModel.selectedGroupImageEncoded.value = profileImage.image
+//                    parent.profileImageViewModel.selectedGroupImageEncoded.value = profileImage.image
+                    parent.profileImageViewModel.selectedGroupImage.value = profileImage
                     successCallback()
                 }, {})
             }, {
@@ -179,7 +198,8 @@ class GroupChatDetailFragment : Fragment() {
         parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, groupId, {
             parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
                 parent.profileImageViewModel.storeImage(profileImage)
-                parent.profileImageViewModel.selectedGroupImageEncoded.value = profileImage.image
+//                parent.profileImageViewModel.selectedGroupImageEncoded.value = profileImage.image
+                parent.profileImageViewModel.selectedGroupImage.value = profileImage
                 successCallback()
             }, {})
         }, {
@@ -197,7 +217,8 @@ class GroupChatDetailFragment : Fragment() {
                     if(it != null){
                         parent.profileImageViewModel.nullifyImageInRoom(groupId)
 
-                        parent.profileImageViewModel.selectedGroupImageEncoded.value = null
+//                        parent.profileImageViewModel.selectedGroupImageEncoded.value = null
+                        parent.profileImageViewModel.selectedGroupImage.value = null
                     }
                 })
                 successCallback()
@@ -223,7 +244,7 @@ class GroupChatDetailFragment : Fragment() {
         })
 
         dialogBinding.expand.setOnClickListener {
-
+            displayImage()
         }
 
         dialogBinding.pickImage.setOnClickListener {

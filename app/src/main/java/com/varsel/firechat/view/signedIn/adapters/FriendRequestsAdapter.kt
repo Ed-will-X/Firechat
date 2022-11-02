@@ -41,6 +41,9 @@ class FriendRequestsAdapter(
         val item: User = users[position]
 
         holder.name.text = item.name
+        holder.parentClickable.setOnClickListener {
+            parentListener(item.userUID, item, null)
+        }
         holder.accept.setOnClickListener {
             btnListener(item)
         }

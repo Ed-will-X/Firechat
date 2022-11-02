@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
+import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
@@ -18,7 +19,8 @@ import com.varsel.firechat.view.signedIn.SignedinActivity
 class FriendsAdapter(
     val activity: SignedinActivity,
     val parentClickListener: (user: User, base64: String?)-> Unit,
-    val chatIconClickListener: (user: User, base64: String?)-> Unit
+    val chatIconClickListener: (user: User, base64: String?)-> Unit,
+    val imageClickListener: (profileImage: ProfileImage, user: User) -> Unit
 ): ListAdapter<User, FriendsAdapter.FriendItem>(FriendItemDiffCallback()){
     private lateinit var context: Context
     class FriendItem(itemView: View) : RecyclerView.ViewHolder(itemView){
@@ -50,13 +52,19 @@ class FriendsAdapter(
         }
 
         holder.name.text = item.name
-        ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity) { base64 ->
+        ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { image ->
             holder.parentClickable.setOnClickListener {
-                parentClickListener(item, base64)
+                parentClickListener(item, image?.image)
             }
 
             holder.messageIcon.setOnClickListener {
-                chatIconClickListener(item, base64)
+                chatIconClickListener(item, image?.image)
+            }
+
+            if(image != null){
+                holder.profileImage.setOnClickListener {
+                    imageClickListener(image, item)
+                }
             }
         }
 

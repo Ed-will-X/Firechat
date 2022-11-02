@@ -47,14 +47,6 @@ class OtherProfileFragment : Fragment() {
 
         userUtils = UserUtils(this)
 
-        // fetches user from db
-//        firebaseViewModel.getUserById(uid, parent.mDbRef, {
-//
-//        }, {
-//
-//        })
-        // TODO: Receive user arg from parcelabel instead of refetching
-
         binding.backIcon.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -63,9 +55,13 @@ class OtherProfileFragment : Fragment() {
         firebaseViewModel.selectedUser.observe(viewLifecycleOwner, Observer {
             setBindings(it)
             if (it != null) {
-                ImageUtils.setProfilePicOtherUser(it, binding.profileImage, binding.profileImageParent, parent) {
-                    if(it != null){
-                        parent.profileImageViewModel.selectedOtherUserProfilePic.value = it
+                ImageUtils.setProfilePicOtherUser_fullObject(it, binding.profileImage, binding.profileImageParent, parent) { profileImage ->
+                    parent.profileImageViewModel.selectedOtherUserProfilePic.value = profileImage?.image
+
+                    if(profileImage != null){
+                        binding.profileImage.setOnClickListener { it2 ->
+                            ImageUtils.displayProfilePicture(profileImage, it, parent)
+                        }
                     }
                 }
             }

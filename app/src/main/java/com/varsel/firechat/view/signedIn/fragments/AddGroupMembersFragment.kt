@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.databinding.FragmentAddGroupMembersBinding
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.AddGroupMembersAdapter
 
@@ -28,9 +29,11 @@ class AddGroupMembersFragment : Fragment() {
         val view = binding.root
         groupId = AddGroupMembersFragmentArgs.fromBundle(requireArguments()).groupId
         parent = activity as SignedinActivity
-        adapter = AddGroupMembersAdapter(parent) {
+        adapter = AddGroupMembersAdapter(parent, {
             toggleBtnEnable()
-        }
+        }, { profileImage, user ->
+            ImageUtils.displayProfilePicture(profileImage, user, parent)
+        })
         binding.usersRecyclerView.adapter = adapter
 
         parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
