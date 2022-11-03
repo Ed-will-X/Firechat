@@ -98,7 +98,7 @@ class CreateGroupFragment : Fragment() {
 
         // TODO: Disable if <1 is selected
         btn?.setOnClickListener {
-            val newRoomId = MessageUtils.generateUID(50)
+            val newRoomId = MessageUtils.generateUID(30)
             val participants = addParticipants()
             val groupNameText = groupName?.text.toString().trim()
             val group = GroupRoom(newRoomId, participants, groupNameText, makeCurrentUserAdmin())

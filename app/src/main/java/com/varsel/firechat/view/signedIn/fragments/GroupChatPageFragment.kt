@@ -141,7 +141,7 @@ class GroupChatPageFragment : Fragment() {
 
         parent.profileImageViewModel.selectedGroupImage.observe(viewLifecycleOwner, Observer { profileImage ->
             if(profileImage.image != null){
-                ImageUtils.setProfilePic(profileImage.image!!, binding.profileImage, binding.profileImageParent)
+                ImageUtils.setProfilePic(profileImage.image!!, binding.profileImage, binding.profileImageParent, parent)
                 binding.profileImageParent.visibility = View.VISIBLE
             }
         })
@@ -174,6 +174,7 @@ class GroupChatPageFragment : Fragment() {
                 val sorted = MessageUtils.sortMessages(it)
                 binding.groupNameText.text = it?.groupName
                 messageAdapter.submitList(sorted)
+                messageAdapter.notifyDataSetChanged()
             }
         })
     }
@@ -186,7 +187,7 @@ class GroupChatPageFragment : Fragment() {
 
     private fun sendMessage(){
         val messageText = binding.messageEditText.text.toString().trim()
-        val message = Message(MessageUtils.generateUID(50), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
+        val message = Message(MessageUtils.generateUID(30), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
         parent.firebaseViewModel.sendGroupMessage(message, roomId, parent.mDbRef, {
             clearEditText()
         }, {})

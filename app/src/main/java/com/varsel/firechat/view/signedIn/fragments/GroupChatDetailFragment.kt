@@ -150,7 +150,7 @@ class GroupChatDetailFragment : Fragment() {
 
         parent.profileImageViewModel.selectedGroupImage.observe(viewLifecycleOwner, Observer { profileImage ->
             if(profileImage.image != null){
-                ImageUtils.setProfilePic(profileImage.image!!, binding.profileImage, binding.profileImageParent)
+                ImageUtils.setProfilePic(profileImage.image!!, binding.profileImage, binding.profileImageParent, parent)
                 binding.profileImageParent.visibility = View.VISIBLE
             }
         })

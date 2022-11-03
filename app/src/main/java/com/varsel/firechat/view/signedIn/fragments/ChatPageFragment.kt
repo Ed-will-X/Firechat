@@ -78,7 +78,7 @@ class ChatPageFragment : Fragment() {
         })
 
         // Chatroom initialisation
-        newChatRoomId = MessageUtils.generateUID(50)
+        newChatRoomId = MessageUtils.generateUID(30)
         newChatRoom = ChatRoom(newChatRoomId, hashMapOf<String, String>(userUID to userUID, parent.firebaseAuth.uid.toString() to parent.firebaseAuth.uid.toString()))
 
         messagesListAdapter = MessageListAdapter(parent,this, requireContext(), ChatPageType.INDIVIDUAL, parent.firebaseViewModel,
@@ -115,7 +115,7 @@ class ChatPageFragment : Fragment() {
             val messageText = binding.messageEditText.text.toString().trim()
 
             // TODO: Amend to accomodate other message types
-            val message = Message(MessageUtils.generateUID(50), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
+            val message = Message(MessageUtils.generateUID(30), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
 
             if(binding.messageEditText.text.toString() != ""){
                 sendMessage(message) {}
@@ -175,6 +175,7 @@ class ChatPageFragment : Fragment() {
 
             setShimmerVisibility(it)
             messagesListAdapter.submitList(sorted)
+            messagesListAdapter.notifyDataSetChanged()
         }
     }
 

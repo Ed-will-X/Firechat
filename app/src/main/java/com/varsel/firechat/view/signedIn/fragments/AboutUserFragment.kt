@@ -73,7 +73,7 @@ class AboutUserFragment : Fragment() {
     private fun observeUserProps(){
         parent.profileImageViewModel.selectedOtherUserProfilePicChat.observe(viewLifecycleOwner, Observer {
             if(it != null){
-                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
+                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent, parent)
                 userImg = it
             }
         })

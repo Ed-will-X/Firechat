@@ -117,7 +117,7 @@ class ProfileFragment : Fragment() {
 
         parent.profileImageViewModel.profileImage_currentUser.observe(viewLifecycleOwner, Observer {
             if(it?.image != null){
-                ImageUtils.setProfilePic(it.image!!, binding.profileImage, binding.profileImageParent)
+                ImageUtils.setProfilePic(it.image!!, binding.profileImage, binding.profileImageParent, parent)
                 binding.profileImageParent.visibility = View.VISIBLE
                 binding.profileImage.setOnClickListener { it2 ->
                     val currentUser = parent.firebaseViewModel.currentUser.value

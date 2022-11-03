@@ -119,7 +119,6 @@ class MessageListAdapter(
                     viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat) }
                     if(item.type == MessageType.IMAGE){
                         handleDownloadOnClick(item, viewHolder.sentImage, holder.imageViewParent, holder.imageViewParentSecond)
-
                     }
                 }
             } catch(e: Exception){
@@ -162,8 +161,8 @@ class MessageListAdapter(
 
             if(item.type == MessageType.TEXT){
                 viewHolder.text.text = item.message
-                viewHolder.receivedImage.visibility = View.GONE
-                viewHolder.receivedImageSecond.visibility = View.GONE
+                viewHolder.imageViewParent.visibility = View.GONE
+                viewHolder.imageViewParentSecond.visibility = View.GONE
                 viewHolder.textParent.visibility = View.VISIBLE
             } else if(item.type == MessageType.IMAGE){
                 viewHolder.textParent.visibility = View.GONE
@@ -193,7 +192,6 @@ class MessageListAdapter(
 
                 if(item.type == MessageType.IMAGE){
                     handleDownloadOnClick(item, viewHolder.receivedImageSecond, viewHolder.imageViewParentSecond, viewHolder.imageViewParent)
-
                 }
                 setOtherUserTimestamp(viewHolder, item)
             }
@@ -259,7 +257,7 @@ class MessageListAdapter(
         ImageUtils.check_if_chat_image_in_db(item, activity) {
             if(it != null){
                 // if: bind it directly (the same way it was before)
-                ImageUtils.setChatImage(it.image, imageView)
+                ImageUtils.setChatImage(it.image, imageView, imageViewParent, activity)
                 imageView.setOnClickListener { it2 ->
                     imgClickListener(item, it)
                 }
@@ -269,15 +267,7 @@ class MessageListAdapter(
                 imageViewParent.setOnClickListener {
                     if(!has_been_clicked){
                         Log.d("LLL", "download button clicked")
-                        // Fetch image
-//                        ImageUtils.fetch_chat_image_from_firebase(item, activity) { image ->
-//                            Log.d("LLL", "About to set image")
-//                            ImageUtils.setChatImage(image.image, imageView)
-//                            imageView.setOnClickListener {
-//                                imgClickListener(item, image)
-//                            }
-//                        }
-                        ImageUtils.getAndSetChatImage_fullObject(item, imageView, activity) { image ->
+                        ImageUtils.getAndSetChatImage_fullObject(item, imageView, imageViewParent, activity) { image ->
                             Log.d("LLL", "About to set image")
                             imageView.setOnClickListener {
                                 imgClickListener(item, image)
