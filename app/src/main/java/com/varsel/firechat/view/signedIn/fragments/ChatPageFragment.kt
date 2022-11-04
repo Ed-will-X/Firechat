@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentChatPageBinding
@@ -23,6 +24,10 @@ import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ChatPageType
 import com.varsel.firechat.view.signedIn.adapters.MessageListAdapter
 import com.varsel.firechat.viewModel.ChatPageViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 class ChatPageFragment : Fragment() {
@@ -81,22 +86,29 @@ class ChatPageFragment : Fragment() {
         newChatRoomId = MessageUtils.generateUID(30)
         newChatRoom = ChatRoom(newChatRoomId, hashMapOf<String, String>(userUID to userUID, parent.firebaseAuth.uid.toString() to parent.firebaseAuth.uid.toString()))
 
-        messagesListAdapter = MessageListAdapter(parent,this, requireContext(), ChatPageType.INDIVIDUAL, parent.firebaseViewModel,
-        { message, image ->
-            ImageUtils.displayImageMessage(image, message, parent)
-        }, { _, _, _ ->
+        val fragment = this
+        lifecycleScope.launch(Dispatchers.Main) {
+            delay(300)
+            messagesListAdapter = MessageListAdapter(parent, fragment, requireContext(), ChatPageType.INDIVIDUAL, parent.firebaseViewModel,
+                { message, image ->
+                    ImageUtils.displayImageMessage(image, message, parent)
+                }, { _, _, _ ->
 
-        }, { profileImage, user ->
-            ImageUtils.displayProfilePicture(profileImage, user, parent)
-        })
-        binding.messagesRecyclerView.adapter = messagesListAdapter
+                }, { profileImage, user ->
+                    ImageUtils.displayProfilePicture(profileImage, user, parent)
+                })
+            binding.messagesRecyclerView.adapter = messagesListAdapter
+
+
+            parent.firebaseViewModel.selectedChatRoom.observe(viewLifecycleOwner, Observer {
+                getMessages(it)
+            })
+        }
 
         if(existingChatRoomId == null) {
             binding.shimmerMessages.visibility = View.GONE
         }
-        parent.firebaseViewModel.selectedChatRoom.observe(viewLifecycleOwner, Observer {
-            getMessages(it)
-        })
+
 
         binding.chatBackButton.setOnClickListener {
             popNavigation()

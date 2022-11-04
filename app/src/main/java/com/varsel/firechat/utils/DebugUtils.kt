@@ -2,6 +2,7 @@ package com.varsel.firechat.utils
 
 import android.util.Log
 import com.varsel.firechat.model.User.User
+import kotlin.system.measureTimeMillis
 
 class DebugUtils {
     companion object {
@@ -19,6 +20,11 @@ class DebugUtils {
 
         fun log_firebase(string: String){
             Log.d("FIREBASE_VM", string)
+        }
+
+        fun measure(text: String, code: () -> Unit) {
+            val time = measureTimeMillis(code)
+            Log.d("LLL", "execution time of ${text}: ${time}ms")
         }
     }
 }

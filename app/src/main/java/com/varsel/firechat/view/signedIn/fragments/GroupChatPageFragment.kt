@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +32,9 @@ import com.varsel.firechat.view.signedIn.adapters.FriendListAdapter
 import com.varsel.firechat.view.signedIn.adapters.MessageListAdapter
 import com.varsel.firechat.viewModel.ChatPageViewModel
 import com.varsel.firechat.viewModel.GroupChatDetailViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class GroupChatPageFragment : Fragment() {
     private var _binding: FragmentGroupChatPageBinding? = null
@@ -59,21 +63,30 @@ class GroupChatPageFragment : Fragment() {
         observeGroupImage()
 
         getGroupChatRoom()
-        getMessages()
         observeParticipants()
 
 
-        messageAdapter = MessageListAdapter(parent,this, requireContext(), ChatPageType.GROUP, parent.firebaseViewModel,
-        { message, image ->
-            ImageUtils.displayImageMessage_group(image, message, parent)
-        }, { message, messageType, messageStatus ->
-            if(messageType == MessageType.TEXT && messageStatus == MessageStatus.SYSTEM){
-                val users = splitUsersString(message.message)
-                showSystemMessageActionsheet(users)
-            }
-        }, { profileImage, user ->
-            ImageUtils.displayProfilePicture(profileImage, user, parent)
-        })
+        val fragment = this
+        lifecycleScope.launch(Dispatchers.Main) {
+            delay(300)
+            messageAdapter = MessageListAdapter(parent,fragment, requireContext(), ChatPageType.GROUP, parent.firebaseViewModel,
+                { message, image ->
+                    ImageUtils.displayImageMessage_group(image, message, parent)
+                }, { message, messageType, messageStatus ->
+                    if(messageType == MessageType.TEXT && messageStatus == MessageStatus.SYSTEM){
+                        val users = splitUsersString(message.message)
+                        showSystemMessageActionsheet(users)
+                    }
+                }, { profileImage, user ->
+                    ImageUtils.displayProfilePicture(profileImage, user, parent)
+                })
+
+            binding.messagesRecyclerView.adapter = messageAdapter
+
+            getMessages()
+        }
+
+
 
         chatPageViewModel.actionBarVisibility.observe(viewLifecycleOwner, Observer {
             if(it){
@@ -83,7 +96,6 @@ class GroupChatPageFragment : Fragment() {
             }
         })
 
-        binding.messagesRecyclerView.adapter = messageAdapter
 
         binding.sendMessageBtn.setOnClickListener {
             sendMessage()
