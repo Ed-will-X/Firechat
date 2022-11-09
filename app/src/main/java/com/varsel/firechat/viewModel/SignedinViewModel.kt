@@ -46,6 +46,7 @@ class SignedinViewModel(): ViewModel() {
 
         })
     }
+
     private fun getAllChats(activity: SignedinActivity, chatRoomsUID: List<String>){
         val chatRooms = mutableListOf<ChatRoom?>()
         for(i in chatRoomsUID){

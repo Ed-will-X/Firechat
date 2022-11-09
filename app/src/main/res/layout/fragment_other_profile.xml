@@ -181,48 +181,105 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
+
+                <!--            About-->
                 <LinearLayout
-                    android:clickable="true"
                     android:id="@+id/more_about_clickable"
-                    android:layout_marginTop="10dp"
-                    android:paddingHorizontal="30dp"
-                    android:layout_width="match_parent"
+                    android:clickable="true"
                     android:orientation="vertical"
-                    android:layout_height="wrap_content">
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
                     <LinearLayout
-                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp"
+                        android:paddingHorizontal="30dp"
                         android:layout_width="match_parent"
+                        android:orientation="vertical"
                         android:layout_height="wrap_content">
-                        <!-- TODO: Target placeholder from fragment -->
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <!-- TODO: Target placeholder from fragment -->
+                            <TextView
+                                android:id="@+id/about_text_header"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                style="@style/other_profile_header_text"
+                                />
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="10dp"
+                                android:layout_weight="1"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/more"
+                                android:textColor="@color/ios_blue"
+                                />
+                        </LinearLayout>
+
                         <TextView
-                            android:id="@+id/about_text_header"
+                            style="@style/other_profile_body_text"
+                            android:id="@+id/about_text_body"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            style="@style/other_profile_header_text"
-                            />
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="10dp"
-                            android:layout_weight="1"/>
-
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/more"
-                            android:textColor="@color/ios_blue"
                             />
                     </LinearLayout>
 
-                    <TextView
-                        style="@style/other_profile_body_text"
-                        android:id="@+id/about_text_body"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        />
                 </LinearLayout>
 
+                <!--            Public posts-->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <LinearLayout
+                        android:clickable="true"
+                        android:id="@+id/public_posts_see_all"
+                        android:layout_marginTop="10dp"
+                        android:paddingHorizontal="30dp"
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <!-- TODO: Target placeholder from fragment -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                style="@style/other_profile_header_text"
+                                android:text="@string/public_posts"
+                                />
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="10dp"
+                                android:layout_weight="1"/>
+
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/see_all"
+                                android:textColor="@color/ios_blue"
+                                />
+                        </LinearLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/mini_public_posts_recycler_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            android:orientation="horizontal"
+                            />
+                    </LinearLayout>
+
+                </LinearLayout>
             </LinearLayout>
+
         </androidx.core.widget.NestedScrollView>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

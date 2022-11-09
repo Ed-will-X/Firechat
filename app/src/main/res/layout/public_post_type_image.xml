@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_marginHorizontal="5dp"
+    android:layout_marginVertical="5dp"
+    android:gravity="center"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:foreground="?selectableItemBackground"
+        android:id="@+id/public_post_image_view"
+        android:src="@drawable/auth_root_img_1"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/rounded_corners"
+        />
+</LinearLayout>

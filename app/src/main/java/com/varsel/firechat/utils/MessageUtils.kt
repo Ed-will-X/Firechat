@@ -2,6 +2,7 @@ package com.varsel.firechat.utils
 
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Message.Message
+import com.varsel.firechat.model.PublicPost.PublicPost
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 
@@ -52,6 +53,14 @@ class MessageUtils {
                 val sortedMessages = sortMessages(it)
 
                 sortedMessages?.last()?.time
+            }?.reversed()?.toMutableList()
+
+            return sorted
+        }
+
+        fun sortPublicPosts(publicPosts: List<PublicPost>?): MutableList<PublicPost>?{
+            val sorted = publicPosts?.sortedBy {
+                it.postTimestamp
             }?.reversed()?.toMutableList()
 
             return sorted

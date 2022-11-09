@@ -22,11 +22,6 @@ open class User{
 
     var phone: String? = null
 
-//    @ColumnInfo(name = "profile_image")
-//    var profileImage: Array<Byte>? = null
-
-//    val profileImage: String? = null
-
     @ColumnInfo(name = "profile_lock")
     var profileLock: Boolean = false
 
@@ -58,6 +53,8 @@ open class User{
     var favorite_chats: HashMap<String, String>? = null
 
     var favorite_friends: HashMap<String, String>? = null
+
+    var public_posts: HashMap<String, String>? = null
 
     // Firebase Constructor
     constructor(name: String,

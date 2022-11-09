@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:gravity="center_horizontal"
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:gravity="center_horizontal"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <include
+            android:layout_marginTop="10dp"
+            layout="@layout/shimmer_square"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            />
+
+        <include
+            android:layout_marginTop="10dp"
+            layout="@layout/shimmer_square"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            />
+
+        <include
+            android:layout_marginTop="10dp"
+            layout="@layout/shimmer_square"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            />
+
+        <include
+            android:layout_marginTop="10dp"
+            layout="@layout/shimmer_square"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            />
+
+        <include
+            android:layout_marginTop="10dp"
+            layout="@layout/shimmer_square"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:gravity="center_horizontal"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <include
+            android:layout_marginTop="10dp"
+            layout="@layout/shimmer_square"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            />
+
+        <include
+            android:layout_marginTop="10dp"
+            layout="@layout/shimmer_square"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            />
+
+        <include
+            android:layout_marginTop="10dp"
+            layout="@layout/shimmer_square"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            />
+
+        <include
+            android:layout_marginTop="10dp"
+            layout="@layout/shimmer_square"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            />
+
+        <include
+            android:layout_marginTop="10dp"
+            layout="@layout/shimmer_square"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            />
+    </LinearLayout>
+
+</LinearLayout>

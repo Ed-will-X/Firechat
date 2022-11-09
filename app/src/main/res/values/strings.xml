@@ -153,8 +153,11 @@
     <string name="profile_image">Profile Image</string>
     <string name="group_image">Group Image</string>
     <string name="load">Load</string>
-
     <string name="image_upload_error">"Something went wrong with image upload"</string>
+    <string name="all_posts">All Posts</string>
+
+    <string name="open_gallery">Open Gallery</string>
+    <string name="public_post_image">Public Post Image</string>
 
     <string name="image_with_emoji">"Image 🖼️"</string>
 

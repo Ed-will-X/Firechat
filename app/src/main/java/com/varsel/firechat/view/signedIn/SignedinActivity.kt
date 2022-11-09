@@ -19,7 +19,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.ktx.Firebase
 import com.varsel.firechat.FirechatApplication
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActivitySignedinBinding
@@ -31,6 +30,9 @@ import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.model.ProfileImage.ProfileImageViewModel
 import com.varsel.firechat.model.ProfileImage.ProfileImageViewModelFactory
+import com.varsel.firechat.model.PublicPost.PublicPost
+import com.varsel.firechat.model.PublicPost.PublicPostViewModel
+import com.varsel.firechat.model.PublicPost.PublicPostViewModelFactory
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.utils.ImageUtils
@@ -51,6 +53,7 @@ class SignedinActivity : AppCompatActivity() {
     var timer: CountDownTimer? = null
 //    lateinit var settingViewModel: SettingViewModel
     lateinit var profileImageViewModel: ProfileImageViewModel
+    lateinit var publicPostViewModel: PublicPostViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +67,7 @@ class SignedinActivity : AppCompatActivity() {
 
         initialiseProfileImageViewModel()
         initialiseImageViewModel()
+        initialisePublicPostViewModel()
 
         determineAuthType(intent)
 
@@ -93,8 +97,9 @@ class SignedinActivity : AppCompatActivity() {
             if (it != null) {
                 compareUsers(it)
 
-                // TODO: Disable this when user updates or removes profile pic
-//                determineCurrentUserImgFetchMethod(it)
+                if(it.public_posts != null && it.public_posts!!.isNotEmpty()){
+                    getPublicPosts(it.public_posts?.values?.toList()!!)
+                }
             }
 
             if(it?.friendRequests != null){
@@ -113,6 +118,8 @@ class SignedinActivity : AppCompatActivity() {
         firebaseViewModel.currentUser.observeOnce(this, Observer {
             if(it != null){
                 determineCurrentUserImgFetchMethod(it)
+
+
             }
         })
 
@@ -154,6 +161,22 @@ class SignedinActivity : AppCompatActivity() {
 
         binding.imgOverlayParent.setOnClickListener {
             imageViewModel.showProfileImage.value = false
+        }
+    }
+
+    private fun getPublicPosts(publicPosts: List<String>?){
+        publicPostViewModel.currentUserPublicPosts.value = mutableListOf()
+
+        if(publicPosts != null && publicPosts.isNotEmpty()){
+            for(i in publicPosts){
+                determinePublicPostFetchMethod_fullObject(i) {
+                    if(it != null){
+                        publicPostViewModel.currentUserPublicPosts.value?.add(it)
+                        Log.d("LLL", "Post count ${publicPostViewModel.currentUserPublicPosts.value?.size}")
+                    }
+                }
+            }
+
         }
     }
 
@@ -234,6 +257,11 @@ class SignedinActivity : AppCompatActivity() {
     private fun initialiseImageViewModel(){
         val vmFactory = ImageViewModelFactory((this.application as FirechatApplication).imageDatabase.imageDao)
         imageViewModel = ViewModelProvider(this, vmFactory).get(ImageViewModel::class.java)
+    }
+
+    private fun initialisePublicPostViewModel(){
+        val vmFactory = PublicPostViewModelFactory((this.application as FirechatApplication).publicPostDatabase.publicPostDao)
+        publicPostViewModel = ViewModelProvider(this, vmFactory).get(PublicPostViewModel::class.java)
     }
 
     private fun fetchCurrentUserProfileImage(){
@@ -483,9 +511,51 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
+    /*
+        Fetches PUBLIC POST from firebase,
+        If it exists, it stores the PUBLIC POST in room and provides it in a callback,
+        else, it returns null in that callback
+    */
+    fun fetchPublicPost_fullObject(postId: String, afterCallback: (publicPost: PublicPost?)-> Unit){
+        Log.d("POST_FETCH", "Get public post from firebase called for ${postId}")
+
+        firebaseViewModel.getPublicPost(postId, mDbRef, {
+            if(it != null){
+                // TODO: store image
+                publicPostViewModel.storePost(it)
+                afterCallback(it)
+            } else {
+                afterCallback(null)
+            }
+        }, {
+            afterCallback(null)
+        })
+    }
 
     /*
-        Just check if the image is in the database,
+        Checks if the public post is in room,
+        if: returns the post from room in a callback
+        else: fetches from firebase and returns it in a callback
+    */
+    fun determinePublicPostFetchMethod_fullObject(postId: String, postCallback: (publicPost: PublicPost?)-> Unit){
+        val postLiveData = publicPostViewModel.checkIfPostInRoom(postId)
+
+        postLiveData.observeOnce(this, Observer {
+            if(it != null){
+                Log.d("POST_CHECK", "Public post gotten from database")
+                postCallback(it)
+            } else {
+                Log.d("POST_CHECK", "PUBLIC POST GOTTEN FROM FIREBASE")
+                fetchPublicPost_fullObject(postId) {
+                    postCallback(it)
+                }
+            }
+        })
+    }
+
+
+    /*
+        Just checks if the image is in the database,
         It does not fetch
     */
     fun checkIfImgMessageInDb(message: Message, image: (image: Image?)-> Unit){

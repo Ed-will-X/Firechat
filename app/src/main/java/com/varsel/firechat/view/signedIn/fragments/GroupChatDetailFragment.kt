@@ -100,7 +100,6 @@ class GroupChatDetailFragment : Fragment() {
                     showImageOptionsActionsheet()
                 }
             } else {
-                // TODO: Include expand code here
                 binding.profileImage.setOnClickListener {
                     displayImage()
                 }

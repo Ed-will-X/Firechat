@@ -8,16 +8,22 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentOtherProfileBinding
+import com.varsel.firechat.model.PublicPost.PublicPost
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
+import com.varsel.firechat.view.signedIn.adapters.PublicPostAdapter
 import com.varsel.firechat.viewModel.FirebaseViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class OtherProfileFragment : Fragment() {
     private var _binding: FragmentOtherProfileBinding? = null
@@ -25,6 +31,7 @@ class OtherProfileFragment : Fragment() {
     private lateinit var parent: SignedinActivity
     private val firebaseViewModel: FirebaseViewModel by activityViewModels()
     private lateinit var userUtils: UserUtils
+    private lateinit var postAdapter: PublicPostAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,7 +74,48 @@ class OtherProfileFragment : Fragment() {
             }
         })
 
+        setPublicPostRecyclerView()
+
         return view
+    }
+
+    private fun getPublicPosts_first_8(selectedUser: User, postCallback: (post: PublicPost)-> Unit, afterCallback: ()-> Unit){
+        if(selectedUser.public_posts != null && selectedUser.public_posts!!.isNotEmpty()){
+            val first_8 = selectedUser.public_posts!!.values.take(8)
+            for(i in first_8){
+                parent.determinePublicPostFetchMethod_fullObject(i) {
+                    if(it != null){
+                        postCallback(it)
+                    }
+                }
+            }
+
+            afterCallback()
+        }
+    }
+
+    private fun setPublicPostRecyclerView(){
+        lifecycleScope.launch(Dispatchers.Main) {
+            delay(300)
+            postAdapter = PublicPostAdapter(parent) {
+
+            }
+            binding.miniPublicPostsRecyclerView.adapter = postAdapter
+
+            val first_8 = mutableListOf<PublicPost>()
+            getPublicPosts_first_8(parent.firebaseViewModel.selectedUser.value!!, {
+                Log.d("LLL", "${it.postTimestamp}")
+                first_8.add(it)
+            }, {
+                Log.d("LLL", "${first_8.count()}")
+
+                postAdapter.submitList(first_8)
+                postAdapter.notifyDataSetChanged()
+            })
+
+
+        }
+
     }
 
     override fun onDestroyView() {
@@ -194,6 +242,17 @@ class OtherProfileFragment : Fragment() {
         }
         else {
             showSendRequestActionSheet(user)
+        }
+    }
+
+    private fun determineBtn(user: User?){
+        if(user?.friendRequests?.contains(parent.firebaseAuth.currentUser?.uid) == true){
+            // TODO: Show revoke request button
+        } else if(user?.friends?.contains(parent.firebaseAuth.currentUser?.uid) == true){
+            // TODO: Show unfriend user button
+        }
+        else {
+            // TODO: Show send request button
         }
     }
 

@@ -24,6 +24,7 @@ import com.varsel.firechat.model.Image.Image
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageType
 import com.varsel.firechat.model.ProfileImage.ProfileImage
+import com.varsel.firechat.model.PublicPost.PublicPost
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import java.io.ByteArrayOutputStream
@@ -34,8 +35,8 @@ val REQUEST_TAKE_PHOTO = 0
 val REQUEST_SELECT_IMAGE_IN_ALBUM = 1
 class ImageUtils {
     companion object {
-        val FHD_width = 1080
-        val FHD_height = 1080
+        val FHD_width = 1920
+        val FHD_height = 1920
         val HD_width = 720
         val HD_height = 720
 
@@ -73,34 +74,38 @@ class ImageUtils {
         }
 
         fun handleOnActivityResult(context: Context, requestCode: Int, resultCode: Int, data: Intent?, albumCallback: (uri: Uri)-> Unit, cameraCallback: (imageEncoded: String?)-> Unit){
-            if(requestCode == REQUEST_SELECT_IMAGE_IN_ALBUM && resultCode == Activity.RESULT_OK){
-                var uri: Uri? = data?.data
-                if(uri != null) {
-                    albumCallback(uri)
+            // TODO: Re-test camera callback because of the new conditional
+            if(resultCode != Activity.RESULT_CANCELED){
+                if(requestCode == REQUEST_SELECT_IMAGE_IN_ALBUM && resultCode == Activity.RESULT_OK){
+                    var uri: Uri? = data?.data
+                    if(uri != null) {
+                        albumCallback(uri)
+                    }
                 }
-            }
-            else if(requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK){
-                val image: Bitmap = data?.extras?.get("data") as Bitmap
-                // TODO: Fix overcompression bug
-                val base64: String? = ImageUtils.encodeImage(image)
-                cameraCallback(base64)
+                else if(requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK){
+                    val image: Bitmap = data?.extras?.get("data") as Bitmap
+                    // TODO: Fix overcompression bug
+                    val base64: String? = ImageUtils.encodeImage(image)
+                    cameraCallback(base64)
 
+                }
             }
         }
 
-        private fun checkImageDimensions(image: Bitmap, withinBounds: ()-> Unit, outOfBounds: ()-> Unit, compressedCallback: ()-> Unit){
+        private fun checkImageDimensions(image: Bitmap, withinBounds: ()-> Unit, outOfBounds: ()-> Unit, compressCallback: ()-> Unit){
             // TODO: Add for image upload and experiment for FHD
             Log.d("LLL", "width: ${image.width}")
             Log.d("LLL", "height: ${image.height}")
-            if(image.height < FHD_height && image.width < FHD_width){
+            if(image.height < 1280 && image.width < 1280){
                 Log.d("LLL", "Within bounds")
                 withinBounds()
-            } else if(image.height > img_limit_height || image.width > img_limit_width) {
+            } else if(image.height > 8000 || image.width > 8000) {
                 Log.d("LLL", "out of bounds")
                 outOfBounds()
             } else {
-                Log.d("LLL", "compress callback")
-                compressedCallback()
+                // minor compress
+                Log.d("LLL", "Minor compress callback")
+                compressCallback()
             }
         }
 
@@ -129,8 +134,8 @@ class ImageUtils {
                 LifecycleUtils.showToast(activity, "Image too large")
                encodedImage = null
             }, {
-//                val resized = resizeImage(selectedImage)
-                val base64: String? = encodeImage(selectedImage)
+                val resized = resizeImage(selectedImage)
+                val base64: String? = encodeImage(resized)
                 encodedImage = base64
             })
 
@@ -262,6 +267,64 @@ class ImageUtils {
 //            }
 //
 //        }
+
+        fun resizeImage(image: Bitmap): Bitmap {
+
+            val width = image.width
+            val height = image.height
+            var aspectRatio: Float = 0F
+
+            // check the lower value before division
+            if(image.width != image.height){
+                val max = maxOf(image.width, image.height)
+                val min = minOf(image.width, image.height)
+                aspectRatio = min.toFloat() / max.toFloat()
+                var scaledWidth = 0
+                var scaledHeight = 0
+
+                Log.d("LLL", "----------------------------------------------------------")
+
+                Log.d("LLL", "Bitmap size: ${image.byteCount}")
+
+                Log.d("LLL", "old Bitmap width: ${image.width}")
+                Log.d("LLL", "old bitmap height: ${image.height}")
+
+                if (image.byteCount <= 200_000){
+                    return image
+                }
+
+                if(width > height){
+                    scaledWidth = 1280
+                    scaledHeight = (1280 * aspectRatio).toInt()
+                } else {
+                    scaledWidth  = (1280 * aspectRatio).toInt()
+                    scaledHeight = 1280
+                }
+
+//                Log.d("LLL", "Aspect ratio: ${aspectRatio}")
+//                Log.d("LLL", "scaled width: ${scaledWidth}, scaled height: ${scaledHeight}")
+
+                val scaledBitmap = Bitmap.createScaledBitmap(image, scaledWidth, scaledHeight, false)
+
+                Log.d("LLL", "Scaled bitmap size: ${scaledBitmap.byteCount}")
+
+                Log.d("LLL", "new Bitmap width: ${scaledBitmap.width}")
+                Log.d("LLL", "new bitmap height: ${scaledBitmap.height}")
+
+                return scaledBitmap
+
+            } else {
+                // When the width and height are the same
+                val scaledBitmap = Bitmap.createScaledBitmap(image, 1280, 1280, false)
+
+                Log.d("LLL", "Scaled bitmap size: ${scaledBitmap.byteCount}")
+
+                Log.d("LLL", "new Bitmap width: ${scaledBitmap.width}")
+                Log.d("LLL", "new bitmap height: ${scaledBitmap.height}")
+
+                return scaledBitmap
+            }
+        }
 
         fun setChatImage(base64: String?, image: ImageView, viewParent: FrameLayout, activity: SignedinActivity){
             if(base64?.isNotEmpty() == true){
@@ -429,6 +492,21 @@ class ImageUtils {
             }
         }
 
+        fun displayPublicPostImage(post: PublicPost, user: User, activity: SignedinActivity){
+            if(post.image != null){
+                var imageOwnerFormat = user.name
+
+                activity.imageViewModel.setOverlayProps(
+                    imageOwnerFormat,
+                    activity.getString(R.string.public_post_image),
+                    post.postTimestamp,
+                    post.image
+                )
+
+                activity.imageViewModel.setShowProfileImage(true)
+            }
+        }
+
 
         fun uploadChatImage(uri: Uri, activity: SignedinActivity, success: (message: Message, image: Image)-> Unit){
             val encoded = encodeUri(uri, activity)
@@ -443,5 +521,7 @@ class ImageUtils {
                 }, {})
             }
         }
+
+
     }
 }

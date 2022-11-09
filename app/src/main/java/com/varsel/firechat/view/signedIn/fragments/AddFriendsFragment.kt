@@ -46,6 +46,8 @@ class AddFriendsFragment : Fragment() {
         })
 
         val friendsSearchAdapter = AddFriendsSearchAdapter(parent, { id, user, base64 ->
+            hideKeyboard(parent)
+
             parent.firebaseViewModel.selectedUser.value = user
             parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
 

@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentCreateGroupBinding
@@ -71,6 +72,10 @@ class CreateGroupFragment : Fragment() {
             showActionsheet()
         }
 
+        binding.backButton.setOnClickListener {
+            popNavigation()
+        }
+
         return view
     }
 
@@ -84,6 +89,10 @@ class CreateGroupFragment : Fragment() {
                 binding.doneClickable.visibility = View.GONE
             }
         }
+    }
+
+    private fun popNavigation(){
+        findNavController().navigateUp()
     }
 
     private fun showActionsheet(){

@@ -18,6 +18,7 @@ import com.varsel.firechat.model.User.User
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageType
 import com.varsel.firechat.model.Message.SystemMessageType
+import com.varsel.firechat.model.PublicPost.PublicPost
 import com.varsel.firechat.utils.DebugUtils
 
 class FirebaseViewModel: ViewModel() {
@@ -1084,6 +1085,58 @@ class FirebaseViewModel: ViewModel() {
                 TODO("Not yet implemented")
             }
         })
+    }
+
+    fun uploadPublicPost(publicPost: PublicPost, mDbRef: DatabaseReference, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+        val reference = mDbRef.child("public_posts")
+
+        reference
+            .child(publicPost.postId)
+            .setValue(publicPost)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                    DebugUtils.log_firebase("upload public post successful")
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun getPublicPost(postId: String, mDbRef: DatabaseReference, loopCallback: (publicPost: PublicPost?) -> Unit, afterCallback: () -> Unit){
+        mDbRef.child("public_posts").orderByChild("postId").equalTo(postId).addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for(item in snapshot.children){
+
+                    val post = item.getValue(PublicPost::class.java)
+                    loopCallback(post)
+                    DebugUtils.log_firebase("get public post successful")
+                }
+                afterCallback()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+    }
+
+    fun appendPublicPostIdToUser(mAuth: FirebaseAuth, mDbRef: DatabaseReference, postId: String, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val databaseReference = mDbRef.child("Users").child(mAuth.currentUser!!.uid)
+
+        databaseReference
+            .child("public_posts")
+            .child(postId)
+            .setValue(postId)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                    DebugUtils.log_firebase("append public post id to user successful")
+                } else {
+                    failureCallback()
+                }
+            }
+
     }
 
     // TODO: Implement delete account
