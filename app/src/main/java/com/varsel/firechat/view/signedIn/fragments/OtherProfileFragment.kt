@@ -3,6 +3,7 @@ package com.varsel.firechat.view.signedIn.fragments
 import android.os.Bundle
 import android.view.*
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -16,6 +17,7 @@ import com.varsel.firechat.databinding.FragmentOtherProfileBinding
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
+import com.varsel.firechat.utils.PostUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.PublicPostAdapter
@@ -113,6 +115,10 @@ class OtherProfileFragment : Fragment() {
     }
 
     fun setBindings(user: User?){
+        if(user?.name != null){
+            binding.aboutTextHeader.text = userUtils.getFirstName(user.name)
+        }
+
         if(user?.occupation != null){
             binding.firstName.setText(user?.name)
             binding.occupation.setText(user?.occupation)
@@ -125,18 +131,20 @@ class OtherProfileFragment : Fragment() {
         }
 
         if (user?.about != null){
-            binding.aboutTextHeader.text = userUtils.getFirstName(user.name)
             binding.aboutTextBody.setText(UserUtils.truncate(user.about!!, 150))
             binding.moreAboutClickable.setOnClickListener { it2 ->
-                showAboutActionSheet(userUtils.getFirstName(user.name), user?.about!!)
+                showAboutActionSheet(userUtils.getFirstName(user.name), user.about)
             }
             binding.aboutTextBody.visibility = View.VISIBLE
-            binding.aboutTextHeader.visibility = View.VISIBLE
-            binding.moreAboutClickable.visibility = View.VISIBLE
         } else {
             binding.aboutTextBody.visibility = View.GONE
-            binding.aboutTextHeader.visibility = View.GONE
-            binding.moreAboutClickable.visibility = View.GONE
+
+            binding.moreAboutClickable.setOnClickListener {
+                showAboutActionSheet(userUtils.getFirstName(user?.name ?: ""), null)
+            }
+
+            // TODO: Show no about ux thingy
+            binding.noAbout.visibility = View.VISIBLE
         }
 
         if(user != null){
@@ -174,7 +182,8 @@ class OtherProfileFragment : Fragment() {
 
             val otherUserPosts = parent.firebaseViewModel.selectedUser.value?.public_posts?.values?.toList()
             if(otherUserPosts != null && otherUserPosts.isNotEmpty()){
-                adapter.publicPostStrings = otherUserPosts
+                val reversed = PostUtils.sortPublicPosts_reversed(otherUserPosts)
+                adapter.publicPostStrings = reversed
                 dialogBinding.otherUserPublicPostsRecyclerViewFull.visibility = View.VISIBLE
                 dialogBinding.shimmerPublicPosts.visibility = View.GONE
 
@@ -190,15 +199,27 @@ class OtherProfileFragment : Fragment() {
         dialog.show()
     }
 
-    fun showAboutActionSheet(headerText: String, bodyText: String){
+    fun showAboutActionSheet(headerText: String, bodyText: String?){
         val dialog = BottomSheetDialog(parent)
         dialog.setContentView(R.layout.action_sheet_about_user)
 
         val header = dialog.findViewById<TextView>(R.id.dialog_about_header)
         val body = dialog.findViewById<TextView>(R.id.dialog_about_body)
+        val no_about = dialog.findViewById<LinearLayout>(R.id.no_about)
+        val no_about_body = dialog.findViewById<TextView>(R.id.no_about_body)
+
+        val selectedUser = parent.firebaseViewModel.selectedUser.value
 
         header?.text = headerText
-        body?.text = bodyText
+
+        if (bodyText == null){
+            // TODO: Display UX thingy
+            no_about?.visibility = View.VISIBLE
+            no_about_body?.setText(getString(R.string.no_about_body, selectedUser?.name))
+        } else {
+            body?.text = bodyText
+            no_about?.visibility = View.GONE
+        }
 
         dialog.show()
     }

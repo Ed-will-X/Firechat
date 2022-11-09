@@ -19,10 +19,7 @@ import com.varsel.firechat.databinding.FragmentProfileBinding
 import com.varsel.firechat.model.PublicPost.PublicPost
 import com.varsel.firechat.model.PublicPost.PublicPostType
 import com.varsel.firechat.model.User.User
-import com.varsel.firechat.utils.ImageUtils
-import com.varsel.firechat.utils.LifecycleUtils
-import com.varsel.firechat.utils.MessageUtils
-import com.varsel.firechat.utils.UserUtils
+import com.varsel.firechat.utils.*
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.FriendRequestsAdapter
 import com.varsel.firechat.view.signedIn.adapters.PublicPostAdapter
@@ -111,7 +108,7 @@ class ProfileFragment : Fragment() {
     private fun uploadPublicPost_image(uri: Uri, caption: String?){
         val encoded = ImageUtils.encodeUri(uri, parent)
         if(encoded != null){
-            val uid = MessageUtils.generateUID(30)
+            val uid = ":${System.currentTimeMillis()}-${MessageUtils.generateUID(30)}"
             val timestamp = System.currentTimeMillis()
             val currentUserId = parent.firebaseAuth.currentUser!!.uid
             val publicPost = PublicPost(currentUserId, uid, PublicPostType.IMAGE, caption, encoded, timestamp)
@@ -140,7 +137,9 @@ class ProfileFragment : Fragment() {
 
             val currentUserPosts = parent.firebaseViewModel.currentUser.value?.public_posts?.values?.toList()
             if(currentUserPosts != null && currentUserPosts.isNotEmpty()){
-                publicPostAdapter.publicPostStrings = currentUserPosts
+                // TODO: Extract timestamps then reverse
+                val reversed = PostUtils.sortPublicPosts_reversed(currentUserPosts)
+                publicPostAdapter.publicPostStrings = reversed
 
                 dialogBinding.postsShimmer.visibility = View.GONE
                 dialogBinding.allPostsRecyclerView.visibility = View.VISIBLE

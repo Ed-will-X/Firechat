@@ -58,14 +58,6 @@ class MessageUtils {
             return sorted
         }
 
-        fun sortPublicPosts(publicPosts: List<PublicPost>?): MutableList<PublicPost>?{
-            val sorted = publicPosts?.sortedBy {
-                it.postTimestamp
-            }?.reversed()?.toMutableList()
-
-            return sorted
-        }
-
         // TODO: Fix bug
         fun calculateTimestampDifferenceLess(currentMessageTime: Long, previousMessageTime: Long): Boolean{
             val day: Long = 86400000

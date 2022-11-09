@@ -164,6 +164,11 @@
     <string name="no_public_post_body">You haven\'t added any public posts yet. You can add by clicking open gallery</string>
 
     <string name="no_public_posts_yet">No Public Post Yet</string>
+
+    <string name="no_about_">No About</string>
+    <string name="no_about_body">%s hasn\'t added any bio here. Their bio will appear here once they add one</string>
+
+
     <string name="no_public_post_yet__body">%s hasn\'t uploaded any public posts yet. Their posts will appear here when they do</string>
 
 
