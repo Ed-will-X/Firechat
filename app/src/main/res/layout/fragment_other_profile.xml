@@ -182,11 +182,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-
                 <!--            About-->
                 <LinearLayout
                     android:id="@+id/more_about_clickable"
                     android:clickable="true"
+                    android:foreground="?selectableItemBackground"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
@@ -232,18 +232,20 @@
 
                 <!--            Public posts-->
                 <LinearLayout
+                    android:clickable="true"
+                    android:foreground="?selectableItemBackground"
+                    android:id="@+id/public_posts_see_all"
+                    android:paddingTop="10dp"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                     <LinearLayout
-                        android:clickable="true"
-                        android:id="@+id/public_posts_see_all"
                         android:layout_marginTop="10dp"
-                        android:paddingHorizontal="30dp"
                         android:layout_width="match_parent"
                         android:orientation="vertical"
                         android:layout_height="wrap_content">
                         <LinearLayout
+                            android:paddingHorizontal="30dp"
                             android:orientation="horizontal"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
@@ -269,12 +271,68 @@
                         </LinearLayout>
 
                         <androidx.recyclerview.widget.RecyclerView
+                            android:paddingHorizontal="30dp"
+                            android:clipToPadding="false"
+                            android:visibility="gone"
+                            android:layout_marginTop="10dp"
                             android:id="@+id/mini_public_posts_recycler_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                             android:orientation="horizontal"
                             />
+
+                        <LinearLayout
+                            android:id="@+id/shimmer_public_posts"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            >
+                            <include
+                                layout="@layout/shimmer_public_posts_horizontal"
+
+                                />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:layout_marginTop="20dp"
+                            android:id="@+id/no_public_posts"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+                                <ImageView
+                                    android:layout_gravity="center_horizontal"
+                                    android:src="@drawable/picture"
+                                    android:layout_width="100dp"
+                                    android:layout_height="100dp"
+                                    android:layout_marginHorizontal="130dp"
+                                    />
+
+                                <LinearLayout
+                                    android:id="@+id/create_public_post_clickable"
+                                    android:clickable="true"
+                                    android:layout_marginHorizontal="100dp"
+                                    android:layout_gravity="center_horizontal"
+                                    android:orientation="vertical"
+                                    android:layout_width="200dp"
+                                    android:layout_height="wrap_content">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/no_public_posts_yet"
+                                        android:textSize="15sp"
+                                        android:textStyle="bold"
+                                        android:layout_gravity="center"
+                                        />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                        </LinearLayout>
+
                     </LinearLayout>
 
                 </LinearLayout>

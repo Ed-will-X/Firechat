@@ -160,6 +160,11 @@
     <string name="public_post_image">Public Post Image</string>
 
     <string name="image_with_emoji">"Image 🖼️"</string>
+    <string name="no_public_post">No Public Post</string>
+    <string name="no_public_post_body">You haven\'t added any public posts yet. You can add by clicking open gallery</string>
+
+    <string name="no_public_posts_yet">No Public Post Yet</string>
+    <string name="no_public_post_yet__body">%s hasn\'t uploaded any public posts yet. Their posts will appear here when they do</string>
 
 
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_marginHorizontal="5dp"
+<LinearLayout
+    android:layout_marginHorizontal="5dp"
     android:layout_marginVertical="5dp"
     android:gravity="center"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -9,11 +10,31 @@
 
 
     <com.google.android.material.imageview.ShapeableImageView
+        android:visibility="gone"
         android:foreground="?selectableItemBackground"
-        android:id="@+id/public_post_image_view"
-        android:src="@drawable/auth_root_img_1"
+        android:id="@+id/image_square"
         android:layout_width="150dp"
         android:layout_height="150dp"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/rounded_corners"
+        />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:visibility="gone"
+        android:foreground="?selectableItemBackground"
+        android:id="@+id/image_rectangle"
+        android:layout_width="150dp"
+        android:layout_height="300dp"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/rounded_corners"
+        />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:visibility="gone"
+        android:foreground="?selectableItemBackground"
+        android:id="@+id/image_rectangle_small"
+        android:layout_width="100dp"
+        android:layout_height="200dp"
         android:scaleType="centerCrop"
         app:shapeAppearanceOverlay="@style/rounded_corners"
         />

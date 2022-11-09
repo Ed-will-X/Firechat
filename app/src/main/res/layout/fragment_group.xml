@@ -9,7 +9,7 @@
     tools:context=".view.signedIn.fragments.viewPager.GroupFragment"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<LinearLayout
+    <LinearLayout
     android:visibility="gone"
     android:id="@+id/no_groups"
     android:layout_width="match_parent"

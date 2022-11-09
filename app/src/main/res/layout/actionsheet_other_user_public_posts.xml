@@ -8,63 +8,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <View
-        style="@style/action_sheet_handlebar"/>
-
-    <LinearLayout
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/all_posts"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:textSize="17sp"
-            />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            />
-
-        <TextView
-            android:id="@+id/open_gallery_clickable"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/open_gallery"
-            android:textColor="@color/ios_blue"
-            android:clickable="true"
-            />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/posts_shimmer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <include layout="@layout/shimmer_public_posts" />
-    </LinearLayout>
+        style="@style/action_sheet_handlebar"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:visibility="gone"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginTop="20dp"
-        android:id="@+id/all_posts_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_marginTop="30dp"
+        android:id="@+id/other_user_public_posts_recycler_view_full"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         />
 
     <LinearLayout
+        android:id="@+id/shimmer_public_posts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            layout="@layout/shimmer_public_posts"
+            />
+    </LinearLayout>
+
+    <LinearLayout
         android:visibility="gone"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:id="@+id/no_public_posts"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -84,7 +53,7 @@
                 android:id="@+id/create_public_post_clickable"
                 android:clickable="true"
                 android:layout_marginHorizontal="100dp"
-                android:layout_gravity="bottom|center_horizontal"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="70dp"
                 android:orientation="vertical"
@@ -94,7 +63,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/no_public_post"
+                    android:text="@string/no_public_posts_yet"
                     android:textSize="@dimen/no_chat_header"
                     android:textStyle="bold"
                     android:textColor="@color/black"
@@ -102,10 +71,10 @@
                     />
 
                 <TextView
+                    android:id="@+id/no_public_posts_yet_body"
                     android:layout_marginTop="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/no_public_post_body"
                     android:textSize="@dimen/no_chat_body"
                     android:textColor="@color/grey"
                     />
@@ -113,6 +82,5 @@
         </LinearLayout>
 
     </LinearLayout>
-
 
 </LinearLayout>

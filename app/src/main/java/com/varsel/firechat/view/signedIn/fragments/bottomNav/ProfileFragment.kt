@@ -3,19 +3,15 @@ package com.varsel.firechat.view.signedIn.fragments.bottomNav
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActionSheetPublicPostBinding
@@ -30,6 +26,7 @@ import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.FriendRequestsAdapter
 import com.varsel.firechat.view.signedIn.adapters.PublicPostAdapter
+import com.varsel.firechat.view.signedIn.adapters.PublicPostAdapterShapes
 import com.varsel.firechat.viewModel.FirebaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -64,21 +61,27 @@ class ProfileFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.Main){
             delay(300)
 
-            publicPostAdapter = PublicPostAdapter(parent) {
+            publicPostAdapter = PublicPostAdapter(parent, PublicPostAdapterShapes.SQUARE) {
                 showPublicPostActionSheet()
             }
 
             binding.publicPostRecyclerView.adapter = publicPostAdapter
-            parent.publicPostViewModel.currentUserPublicPosts.observe(viewLifecycleOwner, Observer {
-                val firstFour = it?.take(4)
-                if(it != null){
-                    binding.postsShimmer.visibility = View.GONE
-                    binding.publicPostRecyclerView.visibility = View.VISIBLE
 
-                    publicPostAdapter.submitList(firstFour)
-                    publicPostAdapter.notifyDataSetChanged()
-                }
-            })
+            /*
+            *   Adds the first 4 public post string IDs to the recycler view
+            *
+            * */
+            val currentUserPosts_first_4 = parent.firebaseViewModel.currentUser.value?.public_posts?.values?.take(4)?.toList()
+            if(currentUserPosts_first_4 != null && currentUserPosts_first_4.isNotEmpty()){
+                publicPostAdapter.publicPostStrings = currentUserPosts_first_4
+                publicPostAdapter.notifyDataSetChanged()
+                binding.postsShimmer.visibility = View.GONE
+                binding.publicPostRecyclerView.visibility = View.VISIBLE
+            } else {
+                binding.postsShimmer.visibility = View.GONE
+                binding.noPublicPosts.visibility = View.VISIBLE
+            }
+
 
             binding.publicPostsClickable.setOnClickListener {
                 showPublicPostActionSheet()
@@ -94,27 +97,6 @@ class ProfileFragment : Fragment() {
         })
 
         return view
-    }
-
-
-
-    // TODO: implement get first 5 public posts here
-    private fun getPublicPosts_firstFive(postCallback: (posts: List<PublicPost>)-> Unit){
-        val publicPosts = parent.firebaseViewModel.currentUser.value?.public_posts
-        val first_5 = publicPosts?.values?.take(5)
-        val postsToReturn = mutableListOf<PublicPost>()
-
-        if(first_5 != null && first_5.isNotEmpty() == true){
-            for(i in first_5){
-                parent.determinePublicPostFetchMethod_fullObject(i) {
-                    if(it != null){
-                        postsToReturn.add(it)
-                    }
-                }
-            }
-
-            postCallback(postsToReturn)
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -149,22 +131,27 @@ class ProfileFragment : Fragment() {
 
         lifecycleScope.launch(Dispatchers.Main){
             delay(300)
-            val publicPostAdapter = PublicPostAdapter(parent) {
+            val publicPostAdapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANCLE) {
                 dialog.dismiss()
                 displayPublicPostImage(it)
             }
 
             dialogBinding.allPostsRecyclerView.adapter = publicPostAdapter
-            parent.publicPostViewModel.currentUserPublicPosts.observe(viewLifecycleOwner, Observer {
-                Log.d("LLL", "${it?.count()}")
-                if(it != null){
-                    val sorted = MessageUtils.sortPublicPosts(it)
-                    publicPostAdapter.submitList(sorted)
-                    publicPostAdapter.notifyDataSetChanged()
-                    dialogBinding.allPostsRecyclerView.visibility = View.VISIBLE
-                    dialogBinding.postsShimmer.visibility = View.GONE
-                }
-            })
+
+            val currentUserPosts = parent.firebaseViewModel.currentUser.value?.public_posts?.values?.toList()
+            if(currentUserPosts != null && currentUserPosts.isNotEmpty()){
+                publicPostAdapter.publicPostStrings = currentUserPosts
+
+                dialogBinding.postsShimmer.visibility = View.GONE
+                dialogBinding.allPostsRecyclerView.visibility = View.VISIBLE
+            } else {
+                dialogBinding.postsShimmer.visibility = View.GONE
+                dialogBinding.allPostsRecyclerView.visibility = View.GONE
+                dialogBinding.noPublicPosts.visibility = View.VISIBLE
+
+                // TODO: Display no public posts yet
+
+            }
         }
 
         dialogBinding.openGalleryClickable.setOnClickListener {
@@ -191,8 +178,8 @@ class ProfileFragment : Fragment() {
             binding.aboutTextBody.text = UserUtils.truncate(user?.about!!, 150)
         }
 
-        if(user.posts != null){
-            binding.postCount.text = user?.posts?.count().toString()
+        if(user.public_posts != null){
+            binding.postCount.text = user?.public_posts?.count().toString()
         } else {
             binding.postCount.text = getString(R.string.zero)
         }

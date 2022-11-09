@@ -18,36 +18,23 @@
             android:layout_marginTop="10dp"
             layout="@layout/shimmer_square"
             android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_height="300dp"
             />
 
         <include
             android:layout_marginTop="10dp"
             layout="@layout/shimmer_square"
             android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_height="300dp"
             />
 
         <include
             android:layout_marginTop="10dp"
             layout="@layout/shimmer_square"
             android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_height="300dp"
             />
 
-        <include
-            android:layout_marginTop="10dp"
-            layout="@layout/shimmer_square"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            />
-
-        <include
-            android:layout_marginTop="10dp"
-            layout="@layout/shimmer_square"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            />
     </LinearLayout>
 
     <LinearLayout
@@ -62,35 +49,21 @@
             android:layout_marginTop="10dp"
             layout="@layout/shimmer_square"
             android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_height="300dp"
             />
 
         <include
             android:layout_marginTop="10dp"
             layout="@layout/shimmer_square"
             android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_height="300dp"
             />
 
         <include
             android:layout_marginTop="10dp"
             layout="@layout/shimmer_square"
             android:layout_width="150dp"
-            android:layout_height="150dp"
-            />
-
-        <include
-            android:layout_marginTop="10dp"
-            layout="@layout/shimmer_square"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            />
-
-        <include
-            android:layout_marginTop="10dp"
-            layout="@layout/shimmer_square"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_height="300dp"
             />
     </LinearLayout>
 

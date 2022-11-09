@@ -1,7 +1,6 @@
 package com.varsel.firechat.view.signedIn.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.TextView
@@ -12,14 +11,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
+import com.varsel.firechat.databinding.ActionsheetOtherUserPublicPostsBinding
 import com.varsel.firechat.databinding.FragmentOtherProfileBinding
-import com.varsel.firechat.model.PublicPost.PublicPost
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.PublicPostAdapter
+import com.varsel.firechat.view.signedIn.adapters.PublicPostAdapterShapes
 import com.varsel.firechat.viewModel.FirebaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -79,41 +79,28 @@ class OtherProfileFragment : Fragment() {
         return view
     }
 
-    private fun getPublicPosts_first_8(selectedUser: User, postCallback: (post: PublicPost)-> Unit, afterCallback: ()-> Unit){
-        if(selectedUser.public_posts != null && selectedUser.public_posts!!.isNotEmpty()){
-            val first_8 = selectedUser.public_posts!!.values.take(8)
-            for(i in first_8){
-                parent.determinePublicPostFetchMethod_fullObject(i) {
-                    if(it != null){
-                        postCallback(it)
-                    }
-                }
-            }
-
-            afterCallback()
-        }
-    }
-
     private fun setPublicPostRecyclerView(){
         lifecycleScope.launch(Dispatchers.Main) {
             delay(300)
-            postAdapter = PublicPostAdapter(parent) {
+            postAdapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANGLE_SMALL) {
+                showPublicPostActionsheet()
+            }
 
+            binding.publicPostsSeeAll.setOnClickListener {
+                showPublicPostActionsheet()
             }
             binding.miniPublicPostsRecyclerView.adapter = postAdapter
 
-            val first_8 = mutableListOf<PublicPost>()
-            getPublicPosts_first_8(parent.firebaseViewModel.selectedUser.value!!, {
-                Log.d("LLL", "${it.postTimestamp}")
-                first_8.add(it)
-            }, {
-                Log.d("LLL", "${first_8.count()}")
+            val otherUserPosts = parent.firebaseViewModel.selectedUser.value?.public_posts?.values?.take(5)?.toList()
 
-                postAdapter.submitList(first_8)
-                postAdapter.notifyDataSetChanged()
-            })
-
-
+            if(otherUserPosts != null && otherUserPosts.isNotEmpty()){
+                postAdapter.publicPostStrings = otherUserPosts
+                binding.shimmerPublicPosts.visibility = View.GONE
+                binding.miniPublicPostsRecyclerView.visibility = View.VISIBLE
+            } else {
+                binding.shimmerPublicPosts.visibility = View.GONE
+                binding.noPublicPosts.visibility = View.VISIBLE
+            }
         }
 
     }
@@ -166,6 +153,41 @@ class OtherProfileFragment : Fragment() {
 
     private fun hideSpinner(){
 
+    }
+
+    fun showPublicPostActionsheet(){
+        val dialog = BottomSheetDialog(requireContext())
+        val dialogBinding = ActionsheetOtherUserPublicPostsBinding.inflate(layoutInflater, this.binding.root, false)
+        dialog.setContentView(dialogBinding.root)
+
+        lifecycleScope.launch(Dispatchers.Main){
+            delay(300)
+
+            val adapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANCLE) {
+                val otherUser: User? = parent.firebaseViewModel.selectedUser.value
+                if(otherUser != null){
+                    dialog.dismiss()
+                    ImageUtils.displayPublicPostImage(it, otherUser, parent)
+                }
+            }
+            dialogBinding.otherUserPublicPostsRecyclerViewFull.adapter = adapter
+
+            val otherUserPosts = parent.firebaseViewModel.selectedUser.value?.public_posts?.values?.toList()
+            if(otherUserPosts != null && otherUserPosts.isNotEmpty()){
+                adapter.publicPostStrings = otherUserPosts
+                dialogBinding.otherUserPublicPostsRecyclerViewFull.visibility = View.VISIBLE
+                dialogBinding.shimmerPublicPosts.visibility = View.GONE
+
+            } else {
+                dialogBinding.shimmerPublicPosts.visibility = View.GONE
+                dialogBinding.noPublicPosts.visibility = View.VISIBLE
+
+                val selectedUser = parent.firebaseViewModel.selectedUser.value
+                dialogBinding.noPublicPostsYetBody.setText(getString(R.string.no_public_post_yet__body, selectedUser?.name))
+            }
+        }
+
+        dialog.show()
     }
 
     fun showAboutActionSheet(headerText: String, bodyText: String){

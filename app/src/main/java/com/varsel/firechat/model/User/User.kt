@@ -39,8 +39,6 @@ open class User{
 
     var friends: HashMap<String, String>? = null
 
-    var posts: HashMap<String, String>? = null
-
     var gender: String? = null
 
     var location: String? = null
