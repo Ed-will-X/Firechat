@@ -24,7 +24,6 @@ class DebugUtils {
 
         fun measure(text: String, code: () -> Unit) {
             val time = measureTimeMillis(code)
-            Log.d("LLL", "execution time of ${text}: ${time}ms")
         }
     }
 }

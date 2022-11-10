@@ -68,9 +68,11 @@ class ProfileFragment : Fragment() {
             *   Adds the first 4 public post string IDs to the recycler view
             *
             * */
-            val currentUserPosts_first_4 = parent.firebaseViewModel.currentUser.value?.public_posts?.values?.take(4)?.toList()
-            if(currentUserPosts_first_4 != null && currentUserPosts_first_4.isNotEmpty()){
-                publicPostAdapter.publicPostStrings = currentUserPosts_first_4
+            val IDs = parent.firebaseViewModel.currentUser.value?.public_posts?.values?.toList()
+            if(IDs != null && IDs.isNotEmpty()){
+                val reversed = PostUtils.sortPublicPosts_reversed(IDs).take(4)
+
+                publicPostAdapter.publicPostStrings = reversed
                 publicPostAdapter.notifyDataSetChanged()
                 binding.postsShimmer.visibility = View.GONE
                 binding.publicPostRecyclerView.visibility = View.VISIBLE

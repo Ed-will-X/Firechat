@@ -29,7 +29,6 @@ class PublicPostViewModel(val dao: PublicPostDao): ViewModel() {
 
     fun checkIfPostInRoom(ownerId: String): LiveData<PublicPost>{
         val post = dao.get(ownerId)
-        Log.d("LLL", "Post id from db${post.value?.postId}")
         return post
     }
 }

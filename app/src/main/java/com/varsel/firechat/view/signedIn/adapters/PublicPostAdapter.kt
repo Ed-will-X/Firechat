@@ -1,13 +1,17 @@
 package com.varsel.firechat.view.signedIn.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
 import com.varsel.firechat.model.PublicPost.PublicPost
 import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.utils.PostUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 
 /*
@@ -34,6 +38,9 @@ class PublicPostAdapter(
         val image_square = itemView.findViewById<ImageView>(R.id.image_square)
         val image_rectangle = itemView.findViewById<ImageView>(R.id.image_rectangle)
         val image_rectangle_small = itemView.findViewById<ImageView>(R.id.image_rectangle_small)
+
+        val image_rectangle_small_parent = itemView.findViewById<MaterialCardView>(R.id.image_rectangle_small_parent)
+        val image_rectangle_parent = itemView.findViewById<MaterialCardView>(R.id.image_rectangle_parent)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
@@ -45,33 +52,72 @@ class PublicPostAdapter(
         val item: String = publicPostStrings[position]
 
         if(shape == PublicPostAdapterShapes.SQUARE){
-            handleBindImage(holder.image_square, item)
+            handleBindImage(holder.image_square, null, item, position)
         } else if(shape == PublicPostAdapterShapes.RECTANCLE){
-            handleBindImage(holder.image_rectangle, item)
+            handleBindImage(holder.image_rectangle, holder.image_rectangle_parent, item, position)
         } else if(shape == PublicPostAdapterShapes.RECTANGLE_SMALL){
-            handleBindImage(holder.image_rectangle_small, item)
-
+            handleBindImage(holder.image_rectangle_small, holder.image_rectangle_small_parent, item, position)
         }
 
     }
 
-    fun handleBindImage(image: ImageView, item: String){
-        // TODO: Add optional download
-        // check if position is anywhere between 0 and 4
+    fun handleBindImage(image: ImageView, parent: MaterialCardView?, item: String, position: Int){
+        var hasBeenClicked = false
+        parent?.visibility = View.VISIBLE
+
+        // check if item-to-load is not the full image
+        if(shape != PublicPostAdapterShapes.RECTANCLE){
+            Log.d("LLL", "Position: ${position}, ID: ${item}")
             // if: Call the determine code directly
-            // else: Check if it is in DB, then call the deternime code on item press
-        activity.determinePublicPostFetchMethod_fullObject(item) {
-            if(it != null){
-                val decoded = ImageUtils.base64ToBitmap(it.image)
-
-                image.visibility = View.VISIBLE
-
-                image.setImageBitmap(decoded)
-
-                image.setOnClickListener { it2 ->
-                    postClickListener(it)
+            activity.determinePublicPostFetchMethod_fullObject(item) {
+                if(it != null){
+                    setImage(it, image, parent)
                 }
             }
+        } else {
+            // else: Check if it is in DB, then call the determine code on item press
+            PostUtils.check_if_post_in_room(item, activity) {
+                // check if in room
+                if(it != null && parent != null){
+                    // if: Bind it directly
+                    setImage(it, image, parent)
+                } else {
+                    // else: Set on click listener that downloads it from firebase
+                    parent?.setOnClickListener {
+                        if(!hasBeenClicked){
+                            Log.d("LLL", "Ran")
+                            hasBeenClicked = true
+
+                            // TODO: Get and set image
+                            activity.fetchPublicPost_fullObject(item) {
+                                Log.d("LLL", "This is not supposed to run")
+                                if(it != null){
+                                    setImage(it, image, parent)
+                                }
+                            }
+
+                        }
+                    }
+
+                }
+            }
+
+        }
+    }
+
+    fun setImage(post: PublicPost, image: ImageView, parent: MaterialCardView?){
+        val decoded = ImageUtils.base64ToBitmap(post.image)
+
+        image.visibility = View.VISIBLE
+
+        if(parent != null){
+            parent.visibility = View.VISIBLE
+        }
+
+        image.setImageBitmap(decoded)
+
+        image.setOnClickListener { it2 ->
+            postClickListener(post)
         }
     }
 

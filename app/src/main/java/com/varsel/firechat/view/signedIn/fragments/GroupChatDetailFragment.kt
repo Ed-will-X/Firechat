@@ -70,7 +70,7 @@ class GroupChatDetailFragment : Fragment() {
         // adapter init
         parent.firebaseViewModel.selectedGroupRoom.observe(viewLifecycleOwner, Observer {
             binding.groupName.text = it?.groupName
-            binding.groupSubject.text = it?.subject ?: getString(R.string.no_subject)
+            binding.groupSubject.text = it?.subject ?: parent.getString(R.string.no_subject)
 
             binding.editGroupNameClickable.setOnClickListener { button ->
                 if (it != null && checkAdminStatus()) {
@@ -150,7 +150,7 @@ class GroupChatDetailFragment : Fragment() {
 //        })
 
         parent.profileImageViewModel.selectedGroupImage.observe(viewLifecycleOwner, Observer { profileImage ->
-            if(profileImage.image != null){
+            if(profileImage != null && profileImage.image != null){
                 ImageUtils.setProfilePic(profileImage.image!!, binding.profileImage, binding.profileImageParent, parent)
                 binding.profileImageParent.visibility = View.VISIBLE
             }
@@ -185,7 +185,7 @@ class GroupChatDetailFragment : Fragment() {
                     successCallback()
                 }, {})
             }, {
-                Toast.makeText(requireContext(), getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), parent.getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
             })
         }
     }
@@ -204,7 +204,7 @@ class GroupChatDetailFragment : Fragment() {
                 successCallback()
             }, {})
         }, {
-            Toast.makeText(requireContext(), getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), parent.getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
         })
     }
 

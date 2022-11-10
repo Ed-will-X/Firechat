@@ -87,7 +87,7 @@ class OtherProfileFragment : Fragment() {
             postAdapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANGLE_SMALL) {
                 val otherUser = parent.firebaseViewModel.selectedUser.value
                 if(otherUser != null){
-                    ImageUtils.displayPublicPostImage(it, otherUser!!, parent)
+                    ImageUtils.displayPublicPostImage(it, otherUser, parent)
                 }
             }
 
@@ -96,10 +96,12 @@ class OtherProfileFragment : Fragment() {
             }
             binding.miniPublicPostsRecyclerView.adapter = postAdapter
 
-            val otherUserPosts = parent.firebaseViewModel.selectedUser.value?.public_posts?.values?.take(5)?.toList()
+            val otherUserPosts = parent.firebaseViewModel.selectedUser.value?.public_posts?.values?.toList()
 
             if(otherUserPosts != null && otherUserPosts.isNotEmpty()){
-                postAdapter.publicPostStrings = otherUserPosts
+                val reversed = PostUtils.sortPublicPosts_reversed(otherUserPosts).take(4)
+
+                postAdapter.publicPostStrings = reversed
                 binding.shimmerPublicPosts.visibility = View.GONE
                 binding.miniPublicPostsRecyclerView.visibility = View.VISIBLE
             } else {

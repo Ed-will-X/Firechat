@@ -266,9 +266,7 @@ class MessageListAdapter(
                 // else set the parent click listener
                 imageViewParent.setOnClickListener {
                     if(!has_been_clicked){
-                        Log.d("LLL", "download button clicked")
                         ImageUtils.getAndSetChatImage_fullObject(item, imageView, imageViewParent, activity) { image ->
-                            Log.d("LLL", "About to set image")
                             imageView.setOnClickListener {
                                 imgClickListener(item, image)
                             }

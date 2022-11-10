@@ -94,17 +94,17 @@ class ImageUtils {
 
         private fun checkImageDimensions(image: Bitmap, withinBounds: ()-> Unit, outOfBounds: ()-> Unit, compressCallback: ()-> Unit){
             // TODO: Add for image upload and experiment for FHD
-            Log.d("LLL", "width: ${image.width}")
-            Log.d("LLL", "height: ${image.height}")
+            Log.d("COMPRESS", "width: ${image.width}")
+            Log.d("COMPRESS", "height: ${image.height}")
             if(image.height < 1280 && image.width < 1280){
-                Log.d("LLL", "Within bounds")
+                Log.d("COMPRESS", "Within bounds")
                 withinBounds()
             } else if(image.height > 8000 || image.width > 8000) {
-                Log.d("LLL", "out of bounds")
+                Log.d("COMPRESS", "out of bounds")
                 outOfBounds()
             } else {
                 // minor compress
-                Log.d("LLL", "Minor compress callback")
+                Log.d("COMPRESS", "Minor compress callback")
                 compressCallback()
             }
         }
@@ -282,12 +282,12 @@ class ImageUtils {
                 var scaledWidth = 0
                 var scaledHeight = 0
 
-                Log.d("LLL", "----------------------------------------------------------")
+                Log.d("COMPRESS", "----------------------------------------------------------")
 
-                Log.d("LLL", "Bitmap size: ${image.byteCount}")
+                Log.d("COMPRESS", "Bitmap size: ${image.byteCount}")
 
-                Log.d("LLL", "old Bitmap width: ${image.width}")
-                Log.d("LLL", "old bitmap height: ${image.height}")
+                Log.d("COMPRESS", "old Bitmap width: ${image.width}")
+                Log.d("COMPRESS", "old bitmap height: ${image.height}")
 
                 if (image.byteCount <= 200_000){
                     return image
@@ -301,15 +301,13 @@ class ImageUtils {
                     scaledHeight = 1280
                 }
 
-//                Log.d("LLL", "Aspect ratio: ${aspectRatio}")
-//                Log.d("LLL", "scaled width: ${scaledWidth}, scaled height: ${scaledHeight}")
 
                 val scaledBitmap = Bitmap.createScaledBitmap(image, scaledWidth, scaledHeight, false)
 
-                Log.d("LLL", "Scaled bitmap size: ${scaledBitmap.byteCount}")
+                Log.d("COMPRESS", "Scaled bitmap size: ${scaledBitmap.byteCount}")
 
-                Log.d("LLL", "new Bitmap width: ${scaledBitmap.width}")
-                Log.d("LLL", "new bitmap height: ${scaledBitmap.height}")
+                Log.d("COMPRESS", "new Bitmap width: ${scaledBitmap.width}")
+                Log.d("COMPRESS", "new bitmap height: ${scaledBitmap.height}")
 
                 return scaledBitmap
 
@@ -317,10 +315,10 @@ class ImageUtils {
                 // When the width and height are the same
                 val scaledBitmap = Bitmap.createScaledBitmap(image, 1280, 1280, false)
 
-                Log.d("LLL", "Scaled bitmap size: ${scaledBitmap.byteCount}")
+                Log.d("COMPRESS", "Scaled bitmap size: ${scaledBitmap.byteCount}")
 
-                Log.d("LLL", "new Bitmap width: ${scaledBitmap.width}")
-                Log.d("LLL", "new bitmap height: ${scaledBitmap.height}")
+                Log.d("COMPRESS", "new Bitmap width: ${scaledBitmap.width}")
+                Log.d("COMPRESS", "new bitmap height: ${scaledBitmap.height}")
 
                 return scaledBitmap
             }
@@ -387,11 +385,9 @@ class ImageUtils {
         }
 
         fun fetch_chat_image_from_firebase(message: Message, activity: SignedinActivity, imgCallback: (image: Image) -> Unit){
-            Log.d("LLL", "Fetch chat image from firebase called")
 
             activity.fetchChatImage_fullObject(message.message) {
                 if(it != null){
-                    Log.d("LLL", "image from firebase not null")
                     imgCallback(it)
                 }
             }

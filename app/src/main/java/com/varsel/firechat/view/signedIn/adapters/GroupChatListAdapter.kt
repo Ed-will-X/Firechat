@@ -28,7 +28,7 @@ class GroupChatsListAdapter(
     val activity: SignedinActivity,
     val context: Context,
     val addNewListener: ()-> Unit,
-    val groupItemListener: (id: String, base64: ProfileImage?)-> Unit,
+    val groupItemListener: (id: String, image: ProfileImage?)-> Unit,
     val imageClickListener: (groupImage: ProfileImage, group: GroupRoom) -> Unit
 ) : ListAdapter<GroupRoom, RecyclerView.ViewHolder>(GroupChatDiffUtilItemCallback()) {
     private val ADD_NEW = 0
@@ -81,6 +81,7 @@ class GroupChatsListAdapter(
             getParticipantCount(participants, viewHolder)
 
             viewHolder.parent.setOnClickListener {
+                Log.d("LLL", "Parent clicked")
                 groupItemListener(item.roomUID, null)
             }
 

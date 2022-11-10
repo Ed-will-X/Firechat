@@ -37,6 +37,7 @@ import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
+import com.varsel.firechat.utils.PostUtils
 import com.varsel.firechat.view.signedOut.SignedoutActivity
 import com.varsel.firechat.view.signedOut.fragments.AuthType
 import com.varsel.firechat.viewModel.FirebaseViewModel
@@ -98,7 +99,7 @@ class SignedinActivity : AppCompatActivity() {
                 compareUsers(it)
 
                 if(it.public_posts != null && it.public_posts!!.isNotEmpty()){
-                    getPublicPosts(it.public_posts?.values?.toList()!!)
+//                    getPublicPosts_first_5(it.public_posts?.values?.toList()!!)
                 }
             }
 
@@ -172,7 +173,24 @@ class SignedinActivity : AppCompatActivity() {
                 determinePublicPostFetchMethod_fullObject(i) {
                     if(it != null){
                         publicPostViewModel.currentUserPublicPosts.value?.add(it)
-                        Log.d("LLL", "Post count ${publicPostViewModel.currentUserPublicPosts.value?.size}")
+                    }
+                }
+            }
+
+        }
+    }
+
+    private fun getPublicPosts_first_5(publicPosts: List<String>?){
+        publicPostViewModel.currentUserPublicPosts.value = mutableListOf()
+        val first_5 = publicPosts?.take(5)
+
+        if(first_5 != null && first_5.isNotEmpty()){
+            val reversed = PostUtils.sortPublicPosts_reversed(first_5)
+
+            for(i in reversed){
+                determinePublicPostFetchMethod_fullObject(i) {
+                    if(it != null){
+                        publicPostViewModel.currentUserPublicPosts.value?.add(it)
                     }
                 }
             }
@@ -568,6 +586,20 @@ class SignedinActivity : AppCompatActivity() {
             } else {
                 Log.d("IMAGE_CHECK", "CHAT IMAGE DOES NOT EXIST IN DATABASE")
                 image(null)
+            }
+        })
+    }
+
+    fun checkIfPostInDb(ID: String, post: (post: PublicPost?)-> Unit){
+        val postLiveData = publicPostViewModel.checkIfPostInRoom(ID)
+
+        postLiveData.observeOnce(this, Observer {
+            if(it != null){
+                Log.d("POST_CHECK", "Post exists database")
+                post(it)
+            } else {
+                Log.d("POST_CHECK", "POST DOES NOT EXIST IN DATABASE")
+                post(null)
             }
         })
     }

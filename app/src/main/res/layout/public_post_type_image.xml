@@ -19,23 +19,72 @@
         app:shapeAppearanceOverlay="@style/rounded_corners"
         />
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:visibility="gone"
-        android:foreground="?selectableItemBackground"
-        android:id="@+id/image_rectangle"
-        android:layout_width="150dp"
-        android:layout_height="300dp"
-        android:scaleType="centerCrop"
-        app:shapeAppearanceOverlay="@style/rounded_corners"
-        />
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:visibility="gone"
+
+    <com.google.android.material.card.MaterialCardView
+        android:clickable="true"
         android:foreground="?selectableItemBackground"
-        android:id="@+id/image_rectangle_small"
+        android:visibility="gone"
+        android:id="@+id/image_rectangle_parent"
+        app:cardCornerRadius="10dp"
+        android:layout_width="150dp"
+        android:layout_height="300dp">
+
+        <FrameLayout
+            android:background="@drawable/bg_loading_shimmer_background_long"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_gravity="center"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_cloud_download"
+                app:tint="@color/white" />
+
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:visibility="gone"
+                android:foreground="?selectableItemBackground"
+                android:id="@+id/image_rectangle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/rounded_corners"
+                />
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:clickable="true"
+        android:foreground="?selectableItemBackground"
+        android:visibility="gone"
+        android:id="@+id/image_rectangle_small_parent"
+        app:cardCornerRadius="10dp"
         android:layout_width="100dp"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        app:shapeAppearanceOverlay="@style/rounded_corners"
-        />
+        android:layout_height="200dp">
+
+        <FrameLayout
+            android:background="@drawable/bg_loading_shimmer_background_long"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+<!--            <ImageView-->
+<!--                android:layout_gravity="center"-->
+<!--                android:layout_width="50dp"-->
+<!--                android:layout_height="50dp"-->
+<!--                android:src="@drawable/ic_cloud_download"-->
+<!--                app:tint="@color/white" />-->
+
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:visibility="gone"
+                android:foreground="?selectableItemBackground"
+                android:id="@+id/image_rectangle_small"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/rounded_corners"
+                />
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+
 </LinearLayout>
