@@ -105,10 +105,15 @@ class ProfileFragment : Fragment() {
 
     }
 
+    /*
+    *   Embedded both the timestamp and the post type in the ID
+    *   Timestamp is located at the start of the ID prefixed with a ":" and suffixed with a "-"
+    *   The public post type is located at the end of the ID prefixed with a ":"
+    * */
     private fun uploadPublicPost_image(uri: Uri, caption: String?){
         val encoded = ImageUtils.encodeUri(uri, parent)
         if(encoded != null){
-            val uid = ":${System.currentTimeMillis()}-${MessageUtils.generateUID(30)}"
+            val uid = ":${System.currentTimeMillis()}-${MessageUtils.generateUID(15)}:${PublicPostType.IMAGE}"
             val timestamp = System.currentTimeMillis()
             val currentUserId = parent.firebaseAuth.currentUser!!.uid
             val publicPost = PublicPost(currentUserId, uid, PublicPostType.IMAGE, caption, encoded, timestamp)
@@ -256,6 +261,9 @@ class ProfileFragment : Fragment() {
         }, { user ->
             firebaseViewModel.acceptFriendRequest(user, parent.mDbRef, parent.firebaseAuth)
             refreshRecyclerView()
+        }, { image, user ->
+            dialog.dismiss()
+            ImageUtils.displayProfilePicture(image, user, parent)
         })
         recyclerView?.adapter = friendRequestsAdapter
 

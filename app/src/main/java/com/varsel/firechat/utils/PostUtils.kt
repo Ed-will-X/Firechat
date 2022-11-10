@@ -29,5 +29,13 @@ class PostUtils {
 
             return extracted
         }
+
+        fun extractType(string: String): Int {
+            if(string.substring(string.length - 2, string.length -1) == ":"){
+                return string.substring(string.length - 1, string.length).toInt()
+            } else {
+                return 0
+            }
+        }
     }
 }

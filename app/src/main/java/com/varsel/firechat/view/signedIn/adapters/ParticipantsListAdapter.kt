@@ -15,6 +15,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.GroupRoom
+import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
@@ -25,7 +26,8 @@ class ParticipantsListAdapter(
     val firebaseAuth: FirebaseAuth,
     val groupRoom: GroupRoom,
     val pressListener: (userId: String, user: User, base64: String?)-> Unit,
-    val longPressListener: (userId: String, user: User, base64: String?) -> Unit
+    val longPressListener: (userId: String, user: User, base64: String?) -> Unit,
+    val imageClickListener: (image: ProfileImage, user: User) -> Unit
     )
     : ListAdapter<User, ParticipantsListAdapter.ParticipantViewHolder>(ParticipantAdapterDiffUtilCallback()) {
     class ParticipantViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -73,19 +75,24 @@ class ParticipantsListAdapter(
             holder.name.text = item.name
         }
 
-        ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity) { base64 ->
+        ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { image ->
+            if(image != null){
+                holder.profileImage.setOnClickListener {
+                    imageClickListener(image, item)
+                }
+            }
             if(isCurrentUser(item.userUID)){
                 holder.parentClickable.setOnLongClickListener {
-                    longPressListener(item.userUID, item, base64)
+                    longPressListener(item.userUID, item, image?.image)
                     true
                 }
             } else {
                 holder.parentClickable.setOnClickListener {
-                    pressListener(item.userUID, item, base64)
+                    pressListener(item.userUID, item, image?.image)
                 }
 
                 holder.parentClickable.setOnLongClickListener {
-                    longPressListener(item.userUID, item, base64)
+                    longPressListener(item.userUID, item, image?.image)
                     true
                 }
             }

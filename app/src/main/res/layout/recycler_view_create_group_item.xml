@@ -43,26 +43,22 @@
 
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_marginLeft="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:text="Ligma Balls"
-        android:textSize="14sp"
-        android:layout_gravity="center_vertical"
-        />
 
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        />
+<!--    <View-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_weight="1"-->
+<!--        />-->
 
     <com.google.android.material.checkbox.MaterialCheckBox
-        android:layout_width="wrap_content"
+        android:paddingHorizontal="10dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/checkbox"
+        android:text="Balls"
+        android:textSize="14sp"
+        android:textColor="@color/black"
+        android:layoutDirection="rtl"
+        android:layout_marginRight="10dp"
         />
 </LinearLayout>

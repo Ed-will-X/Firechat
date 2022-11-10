@@ -27,7 +27,6 @@ class AddGroupMembersAdapter(
     class AddMemberViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val parent = itemView.findViewById<LinearLayout>(R.id.parent_clickable)
         val checkbox = itemView.findViewById<CheckBox>(R.id.checkbox)
-        val name = itemView.findViewById<TextView>(R.id.name)
         val profileImageParent = itemView.findViewById<MaterialCardView>(R.id.profile_image_parent)
         val profileImage = itemView.findViewById<ImageView>(R.id.profile_image)
     }
@@ -40,7 +39,7 @@ class AddGroupMembersAdapter(
     override fun onBindViewHolder(holder: AddMemberViewHolder, position: Int) {
         val item: User = users[position]
 
-        holder.name.text = item.name
+        holder.checkbox.text = item.name
         ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) {
             if(it != null){
                 holder.profileImage.setOnClickListener { it2 ->

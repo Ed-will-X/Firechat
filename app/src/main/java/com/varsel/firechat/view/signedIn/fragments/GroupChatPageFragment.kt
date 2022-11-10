@@ -151,9 +151,9 @@ class GroupChatPageFragment : Fragment() {
 //            }
 //        })
 
-        parent.profileImageViewModel.selectedGroupImage.observe(viewLifecycleOwner, Observer { profileImage ->
-            if(profileImage.image != null){
-                ImageUtils.setProfilePic(profileImage.image!!, binding.profileImage, binding.profileImageParent, parent)
+        parent.profileImageViewModel.selectedGroupImage.observe(viewLifecycleOwner, Observer { groupImage ->
+            if(groupImage != null && groupImage.image != null){
+                ImageUtils.setProfilePic(groupImage.image!!, binding.profileImage, binding.profileImageParent, parent)
                 binding.profileImageParent.visibility = View.VISIBLE
             }
         })

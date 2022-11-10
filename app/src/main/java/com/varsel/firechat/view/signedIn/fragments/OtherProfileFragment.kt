@@ -85,7 +85,10 @@ class OtherProfileFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.Main) {
             delay(300)
             postAdapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANGLE_SMALL) {
-                showPublicPostActionsheet()
+                val otherUser = parent.firebaseViewModel.selectedUser.value
+                if(otherUser != null){
+                    ImageUtils.displayPublicPostImage(it, otherUser!!, parent)
+                }
             }
 
             binding.publicPostsSeeAll.setOnClickListener {
@@ -273,6 +276,7 @@ class OtherProfileFragment : Fragment() {
         val unfriendUserBody = dialog.findViewById<TextView>(R.id.unfriend_user_body)
         unfriendUserBody?.text = getString(R.string.unfriend_user_body, user.name)
 
+        // TODO: Implement unfriend user
 
         dialog.show()
     }

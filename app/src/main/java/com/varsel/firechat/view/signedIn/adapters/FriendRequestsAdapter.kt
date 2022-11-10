@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
+import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
@@ -18,7 +19,8 @@ import com.varsel.firechat.view.signedIn.SignedinActivity
 class FriendRequestsAdapter(
     val activity: SignedinActivity,
     val parentListener: (id: String, user: User, base64: String?)-> Unit,
-    val btnListener: (user: User)-> Unit
+    val btnListener: (user: User)-> Unit,
+    val imageClickListener: (image: ProfileImage, user: User) -> Unit
 ): RecyclerView.Adapter<FriendRequestsAdapter.FriendRequestViewHolder>(){
 
     var users = arrayListOf<User>()
@@ -47,9 +49,15 @@ class FriendRequestsAdapter(
         holder.accept.setOnClickListener {
             btnListener(item)
         }
-        ImageUtils.setProfilePicOtherUser(item, holder.profileImage, holder.profileImageParent, activity) { base64 ->
-            holder.parentClickable.setOnClickListener {
-                parentListener(item.userUID, item, base64)
+        ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { image ->
+            if(image != null){
+                holder.parentClickable.setOnClickListener {
+                    parentListener(item.userUID, item, image?.image)
+                }
+
+                holder.profileImage.setOnClickListener {
+                    imageClickListener(image, item)
+                }
             }
         }
 

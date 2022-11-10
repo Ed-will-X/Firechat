@@ -90,6 +90,8 @@ class GroupChatDetailFragment : Fragment() {
                     showParticipantOptionsActonsheet(id)
                     parent.firebaseViewModel.selectedChatRoomUser.value = user
                     parent.profileImageViewModel.selectedOtherUserProfilePicChat.value = base64
+                }, { image, user ->
+                    ImageUtils.displayProfilePicture(image, user, parent)
                 })
 
                 binding.partipantsRecyclerView.adapter = participantAdapter

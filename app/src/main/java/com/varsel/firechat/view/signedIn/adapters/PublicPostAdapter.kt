@@ -56,6 +56,10 @@ class PublicPostAdapter(
     }
 
     fun handleBindImage(image: ImageView, item: String){
+        // TODO: Add optional download
+        // check if position is anywhere between 0 and 4
+            // if: Call the determine code directly
+            // else: Check if it is in DB, then call the deternime code on item press
         activity.determinePublicPostFetchMethod_fullObject(item) {
             if(it != null){
                 val decoded = ImageUtils.base64ToBitmap(it.image)

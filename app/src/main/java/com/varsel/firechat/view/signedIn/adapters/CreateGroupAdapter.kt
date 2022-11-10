@@ -26,7 +26,6 @@ class CreateGroupAdapter(
     class CreateGroupViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val parent = itemView.findViewById<LinearLayout>(R.id.parent_clickable)
         val checkbox = itemView.findViewById<CheckBox>(R.id.checkbox)
-        val name = itemView.findViewById<TextView>(R.id.name)
         val profileImageParent = itemView.findViewById<MaterialCardView>(R.id.profile_image_parent)
         val profileImage = itemView.findViewById<ImageView>(R.id.profile_image)
     }
@@ -37,10 +36,11 @@ class CreateGroupAdapter(
     }
 
     // TODO: Fix potential bug where the item is scrolled off in the view
+        // TODO: Fix by checking if it is in the selected Array each time onBind() is called
     override fun onBindViewHolder(holder: CreateGroupViewHolder, position: Int) {
         val item: User? = friends[position]
         if (item != null) {
-            holder.name.text = item.name
+            holder.checkbox.text = item.name
             ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { image: ProfileImage? ->
                 if(image != null){
                     holder.profileImage.setOnClickListener {
