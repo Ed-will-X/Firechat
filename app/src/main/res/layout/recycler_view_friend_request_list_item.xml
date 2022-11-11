@@ -4,8 +4,8 @@
     android:foreground="?attr/selectableItemBackground"
     android:clickable="true"
     android:orientation="horizontal"
-    android:paddingHorizontal="30dp"
-    android:paddingVertical="5dp"
+    android:paddingHorizontal="15dp"
+    android:paddingVertical="10dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -15,8 +15,8 @@
         android:layout_gravity="center_vertical"
         android:id="@+id/profile_image_silhouette"
         android:background="@drawable/bg_profile_background"
-        android:layout_width="40dp"
-        android:layout_height="40dp">
+        android:layout_width="45dp"
+        android:layout_height="45dp">
 
         <ImageView
             android:layout_width="20dp"
@@ -60,14 +60,14 @@
         android:layout_weight="1"
         />
 
-    <Button
-        android:id="@+id/btn_accept"
-        android:layout_gravity="center_vertical"
-        android:layout_width="80dp"
-        android:layout_height="32dp"
-        android:text="@string/accept"
-        android:textSize="10sp"
-        android:background="@drawable/bg_other_profile_button"
-        />
+<!--    <Button-->
+<!--        android:id="@+id/btn_accept"-->
+<!--        android:layout_gravity="center_vertical"-->
+<!--        android:layout_width="80dp"-->
+<!--        android:layout_height="32dp"-->
+<!--        android:text="@string/accept"-->
+<!--        android:textSize="10sp"-->
+<!--        android:background="@drawable/bg_other_profile_button"-->
+<!--        />-->
 
 </LinearLayout>

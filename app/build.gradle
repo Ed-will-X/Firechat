@@ -105,4 +105,7 @@ dependencies {
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.14.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
+
+    // Swipe decorator
+    implementation 'com.github.xabaras:RecyclerViewSwipeDecorator:1.3'
 }

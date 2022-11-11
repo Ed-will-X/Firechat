@@ -129,6 +129,7 @@
                             />
 
                         <ImageView
+                            android:id="@+id/edit_icon"
                             android:layout_marginLeft="5dp"
                             android:layout_gravity="center_vertical"
                             android:layout_width="20dp"

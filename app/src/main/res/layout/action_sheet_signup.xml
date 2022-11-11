@@ -7,9 +7,9 @@
     <View
         style="@style/action_sheet_handlebar"/>
 
-<!--    TODO: Make actionsheet dynamic by swapping the width for padding-->
     <LinearLayout
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="40dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginVertical="20dp"

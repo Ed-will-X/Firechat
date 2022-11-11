@@ -350,14 +350,51 @@ class FirebaseViewModel: ViewModel() {
 
     }
 
-    // TODO: Implement reject friend request
-    fun rejectFriendRequest(user: User){
-        // remove from request list
+    fun rejectFriendRequest(user: User, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
+        val currentUserId = mAuth.currentUser!!.uid
+        val currentUserRef = mDbRef.child("Users").child(currentUserId)
+
+        currentUserRef
+            .child("friendRequests")
+            .child(user.userUID)
+            .removeValue()
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
     }
 
-    // TODO: Implement unfriend user
-    fun unfriendUser(user: User){
+    // TODO: Not tested
+    fun unfriendUser(user: User, mAuth: FirebaseAuth, mDbRef: DatabaseReference, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
 
+        val currentUserId = mAuth.currentUser!!.uid
+        val currentUserRef = mDbRef.child("Users").child(currentUserId)
+        val otherUserRef = mDbRef.child("Users").child(user.userUID.toString())
+
+        currentUserRef
+            .child("friends")
+            .child(user.userUID)
+            .removeValue()
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    otherUserRef
+                        .child("friends")
+                        .child(currentUserId)
+                        .removeValue()
+                        .addOnCompleteListener {
+                            if(it.isSuccessful){
+                                successCallback()
+                            } else {
+                                failureCallback()
+                            }
+                        }
+                } else {
+                    failureCallback()
+                }
+            }
     }
 
     fun sendMessage(

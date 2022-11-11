@@ -3,14 +3,16 @@ package com.varsel.firechat.view.signedIn.fragments.bottomNav
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
@@ -20,6 +22,7 @@ import com.varsel.firechat.model.PublicPost.PublicPost
 import com.varsel.firechat.model.PublicPost.PublicPostType
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.*
+import com.varsel.firechat.utils.gestures.FriendRequestSwipeGesture
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.FriendRequestsAdapter
 import com.varsel.firechat.view.signedIn.adapters.PublicPostAdapter
@@ -28,6 +31,7 @@ import com.varsel.firechat.viewModel.FirebaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
 
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
@@ -247,11 +251,20 @@ class ProfileFragment : Fragment() {
         })
     }
 
+    private fun removeFromAdapter(adapter: FriendRequestsAdapter, viewHolder: RecyclerView.ViewHolder){
+        val currentList = adapter.users.toMutableList()
+        currentList.removeAt(viewHolder.absoluteAdapterPosition)
+        adapter.users = currentList as ArrayList<User>
+
+        adapter.notifyDataSetChanged()
+    }
+
     private fun showFriendRequestsActionsheet(){
         val dialog = BottomSheetDialog(parent)
         dialog.setContentView(R.layout.action_sheet_friend_requests)
 
         val recyclerView = dialog.findViewById<RecyclerView>(R.id.friend_requests_recycler_view)
+
         friendRequestsAdapter = FriendRequestsAdapter(parent, { id, user, base64 ->
             val action = ProfileFragmentDirections.actionProfileFragmentToOtherProfileFragment(id)
             parent.firebaseViewModel.selectedUser.value = user
@@ -269,10 +282,35 @@ class ProfileFragment : Fragment() {
         })
         recyclerView?.adapter = friendRequestsAdapter
 
+
+        val friendRequestSwipeGesture = object : FriendRequestSwipeGesture(parent){
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                if(direction == ItemTouchHelper.LEFT){
+                    firebaseViewModel.rejectFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
+                    removeFromAdapter(friendRequestsAdapter, viewHolder)
+
+                } else if (direction == ItemTouchHelper.RIGHT){
+                    firebaseViewModel.acceptFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
+                    removeFromAdapter(friendRequestsAdapter, viewHolder)
+
+                }
+            }
+        }
+
+        val touchHelper = ItemTouchHelper(friendRequestSwipeGesture)
+        touchHelper.attachToRecyclerView(recyclerView)
+
+        recyclerView?.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
+
         firebaseViewModel.friendRequests.observe(viewLifecycleOwner, Observer {
             if(it != null){
+                // TODO: Fix potential bug
                 friendRequestsAdapter.run {
-                    friendRequestsAdapter.users = arrayListOf<User>()
                     friendRequestsAdapter.users = it as ArrayList<User>
                     friendRequestsAdapter.notifyDataSetChanged()
                 }

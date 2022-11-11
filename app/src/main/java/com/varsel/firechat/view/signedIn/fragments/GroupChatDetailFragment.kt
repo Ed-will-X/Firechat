@@ -72,6 +72,12 @@ class GroupChatDetailFragment : Fragment() {
             binding.groupName.text = it?.groupName
             binding.groupSubject.text = it?.subject ?: parent.getString(R.string.no_subject)
 
+            if(checkAdminStatus()){
+                binding.editIcon.visibility = View.VISIBLE
+            } else {
+                binding.editIcon.visibility = View.GONE
+            }
+
             binding.editGroupNameClickable.setOnClickListener { button ->
                 if (it != null && checkAdminStatus()) {
                     showEditGroupActionsheet(it)
@@ -400,6 +406,9 @@ class GroupChatDetailFragment : Fragment() {
         findNavController().navigateUp()
     }
 
+    /*
+    *   Returns true if the current user is an admin
+    * */
     private fun checkAdminStatus(): Boolean{
         for(i in parent.firebaseViewModel.selectedGroupRoom.value?.admins?.values!!){
             if(i == parent.firebaseAuth.currentUser?.uid){

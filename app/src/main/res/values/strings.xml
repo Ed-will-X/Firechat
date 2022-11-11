@@ -52,6 +52,7 @@
     <string name="zero">0</string>
     <string name="zero_in_brackets">(0)</string>
     <string name="accept">Accept</string>
+    <string name="reject">Reject</string>
     <string name="no_about">No About....Navigate to Edit profile to start writing</string>
     <string name="no_occupation">*** No Occupation ***</string>
     <string name="online">Online</string>
@@ -87,6 +88,7 @@
     <string name="no_conversations_body">You don\'t have any conversations yet, you can start by having conversations with friends</string>
     <string name="chat_people">Chat People</string>
     <string name="unfriend_user">Unfriend User?</string>
+    <string name="unfriend">Unfriend</string>
     <string name="unfriend_user_body">Are you sure you want to unfriend %s</string>
     <string name="unfriend_user_confirm_btn">Yes, unfriend</string>
     <string name="unfriend_user_cancel_btn">No, I still want to be friends</string>

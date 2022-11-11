@@ -1,6 +1,7 @@
 package com.varsel.firechat.view.signedIn.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -8,13 +9,17 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentFriendListBinding
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.UserUtils
+import com.varsel.firechat.utils.gestures.FriendsSwipeGesture
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.FriendListAdapter
+import com.varsel.firechat.view.signedIn.adapters.FriendRequestsAdapter
 
 class FriendListFragment : Fragment() {
     private var _binding: FragmentFriendListBinding? = null
@@ -40,22 +45,34 @@ class FriendListFragment : Fragment() {
         }, { profileImage, user ->
             ImageUtils.displayProfilePicture(profileImage, user, parent)
         })
-
-        if(parent.firebaseViewModel.friends.value?.size == 1){
-            binding.friendCount.text = getString(R.string.people_count_one)
-        } else {
-            binding.friendCount.text = getString(R.string.people_count, parent.firebaseViewModel.friends.value?.size)
-        }
         binding.allFriendsRecyclerView.adapter = adapter
 
-        parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
-            val sorted = UserUtils.sortUsersByName(it)
+        val swipeGesture = object : FriendsSwipeGesture(parent){
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                if(direction == ItemTouchHelper.LEFT){
+                    Log.d("LLL", "Unfriend swiped")
+                    if(adapter != null){
+                        parent.firebaseViewModel.unfriendUser(adapter!!.friends[viewHolder.adapterPosition], parent.firebaseAuth, parent.mDbRef)
+                        removeFromAdapter(adapter!!, viewHolder)
+                    }
+                }
+            }
+        }
+
+        val touchHelper = ItemTouchHelper(swipeGesture)
+        touchHelper.attachToRecyclerView(binding.allFriendsRecyclerView)
+
+        val friends = parent.firebaseViewModel.friends.value
+        if(friends != null){
+            val sorted = UserUtils.sortUsersByName(friends)
+
+            setFriendCount(friends)
 
             if(adapter != null){
                 adapter!!.friends.addAll(sorted as ArrayList<User>)
                 adapter!!.notifyDataSetChanged()
             }
-        })
+        }
 
         binding.backButton.setOnClickListener {
             popNavigation()
@@ -63,6 +80,24 @@ class FriendListFragment : Fragment() {
 
 
         return view
+    }
+
+    private fun setFriendCount(friends: List<User?>){
+        if(friends.size == 1){
+            binding.friendCount.text = getString(R.string.people_count_one)
+        } else {
+            binding.friendCount.text = getString(R.string.people_count, friends.size)
+        }
+    }
+
+    private fun removeFromAdapter(adapter: FriendListAdapter, viewHolder: RecyclerView.ViewHolder){
+        val currentList = adapter.friends.toMutableList()
+        currentList.removeAt(viewHolder.absoluteAdapterPosition)
+        adapter.friends = currentList as ArrayList<User>
+
+        setFriendCount(currentList)
+
+        adapter.notifyDataSetChanged()
     }
 
     private fun popNavigation(){

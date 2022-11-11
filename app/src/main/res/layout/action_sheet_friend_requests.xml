@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout android:orientation="vertical"
-    android:minHeight="300dp"
+    android:minHeight="350dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,6 +9,16 @@
     <View
         style="@style/action_sheet_handlebar"
         />
+
+<!--    <TextView-->
+<!--        android:layout_marginLeft="30dp"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        style="@style/auth_root_signin_large_text"-->
+<!--        android:textSize="30sp"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginBottom="15dp"-->
+<!--        android:text="@string/friend_requests" />-->
 
     <androidx.recyclerview.widget.RecyclerView
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

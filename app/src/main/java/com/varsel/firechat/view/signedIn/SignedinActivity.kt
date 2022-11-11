@@ -157,11 +157,11 @@ class SignedinActivity : AppCompatActivity() {
         })
 
         binding.imgOverlayBack.setOnClickListener {
-            imageViewModel.showProfileImage.value = false
+            handleImgBackPress()
         }
 
         binding.imgOverlayParent.setOnClickListener {
-            imageViewModel.showProfileImage.value = false
+            handleImgBackPress()
         }
     }
 
@@ -210,8 +210,12 @@ class SignedinActivity : AppCompatActivity() {
         if(imageViewModel.showProfileImage.value != true){
             super.onBackPressed()
         } else {
-            imageViewModel.showProfileImage.value = false
+            handleImgBackPress()
         }
+    }
+
+    fun handleImgBackPress(){
+        imageViewModel.showProfileImage.value = false
     }
 
     fun determineAuthType(intent: Intent?){

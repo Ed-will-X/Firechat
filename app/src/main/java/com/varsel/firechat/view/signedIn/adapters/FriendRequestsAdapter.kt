@@ -27,7 +27,7 @@ class FriendRequestsAdapter(
 
     class FriendRequestViewHolder(item: View): RecyclerView.ViewHolder(item){
         val name: TextView = item.findViewById<TextView>(R.id.name_friend_request)
-        val accept: Button = item.findViewById<Button>(R.id.btn_accept)
+//        val accept: Button = item.findViewById<Button>(R.id.btn_accept)
         val parentClickable: LinearLayout = item.findViewById(R.id.parent_clickable)
         val profileImageParent = itemView.findViewById<MaterialCardView>(R.id.profile_image_parent)
         val profileImage = itemView.findViewById<ImageView>(R.id.profile_image)
@@ -46,9 +46,9 @@ class FriendRequestsAdapter(
         holder.parentClickable.setOnClickListener {
             parentListener(item.userUID, item, null)
         }
-        holder.accept.setOnClickListener {
-            btnListener(item)
-        }
+//        holder.accept.setOnClickListener {
+//            btnListener(item)
+//        }
         ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { image ->
             if(image != null){
                 holder.parentClickable.setOnClickListener {
