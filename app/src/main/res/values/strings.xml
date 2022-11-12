@@ -176,6 +176,13 @@
 
 
     <string name="a_to_z_sorting">A-Z Sorting</string>
+    <string name="z_to_a_sorting">Z-A Sorting</string>
+    <string name="newest_first">Newest First</string>
+    <string name="oldest_first">Oldest First</string>
+    <string name="last_edited">Last Edited</string>
+    <string name="default_">Default</string>
+
+
 
 
     <string name="hello_blank_fragment">Hello blank fragment</string>

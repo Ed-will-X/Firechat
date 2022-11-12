@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+<!--    Main content-->
     <LinearLayout
         tools:context=".view.signedIn.SignedinActivity"
         android:layout_width="match_parent"

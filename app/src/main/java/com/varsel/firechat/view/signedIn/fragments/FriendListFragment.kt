@@ -1,13 +1,11 @@
 package com.varsel.firechat.view.signedIn.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -27,6 +25,7 @@ import com.varsel.firechat.utils.gestures.FriendsSwipeGesture
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.FriendListAdapter
 import com.varsel.firechat.viewModel.FriendListFragmentViewModel
+import com.varsel.firechat.viewModel.SortTypes
 
 class FriendListFragment : Fragment() {
     private var _binding: FragmentFriendListBinding? = null
@@ -45,6 +44,7 @@ class FriendListFragment : Fragment() {
         parent = activity as SignedinActivity
 
         setupSearchBar()
+
 
         binding.addFriendsClickable.setOnClickListener {
             navigateToAddfriends()
@@ -76,27 +76,112 @@ class FriendListFragment : Fragment() {
         val touchHelper = ItemTouchHelper(swipeGesture)
         touchHelper.attachToRecyclerView(binding.allFriendsRecyclerView)
 
-        val friends = parent.firebaseViewModel.friends.value
-        if(friends != null && friends.isNotEmpty()){
-            val sorted = UserUtils.sortUsersByName(friends)
+        binding.backButton.setOnClickListener {
+            popNavigation()
+        }
 
+        setupSortDialogOverlay()
+
+        return view
+    }
+
+    private fun addFriendsToAdapter_initial(friends: List<User?>?, sortType: Int){
+
+        adapter?.friends?.clear()
+
+        if(friends != null && friends.isNotEmpty()){
             setFriendCount(friends)
 
-            if(adapter != null){
-                adapter!!.friends.addAll(sorted as ArrayList<User>)
-                adapter!!.notifyDataSetChanged()
+            if(sortType == SortTypes.ASCENDING){
+                val sorted = UserUtils.sortUsersByName(friends)
+
+                if(adapter != null){
+                    adapter!!.friends.addAll(sorted as ArrayList<User>)
+                    adapter!!.notifyDataSetChanged()
+                }
+            } else if(sortType == SortTypes.DESCENDING){
+                val sorted = UserUtils.sortUsersByName(friends).reversed()
+
+                if(adapter != null){
+                    adapter!!.friends.addAll(sorted as ArrayList<User>)
+                    adapter!!.notifyDataSetChanged()
+                }
+            } else if(sortType == SortTypes.DEFAULT){
+                if(adapter != null){
+                    adapter!!.friends.addAll(friends as ArrayList<User>)
+                    adapter!!.notifyDataSetChanged()
+                }
             }
         } else {
             setFriendCount(0)
 
         }
+    }
 
-        binding.backButton.setOnClickListener {
-            popNavigation()
+    private fun setupSortDialogOverlay(){
+        viewModel.setBinding(binding)
+
+        viewModel.changeSortMethod(SortTypes.ASCENDING)
+
+        setSortDialogClickListeners()
+        binding.filterClickable.setOnClickListener {
+            viewModel.isSortDialogOverlayOpen.value = true
         }
 
+        binding.sortDialogOverlay.setOnClickListener {
+            viewModel.isSortDialogOverlayOpen.value = false
+        }
 
-        return view
+        viewModel.isSortDialogOverlayOpen.observe(viewLifecycleOwner, Observer {
+            if(it){
+                binding.sortDialogOverlay.visibility = View.VISIBLE
+            } else {
+                binding.sortDialogOverlay.visibility = View.GONE
+            }
+        })
+
+        viewModel.sortMethod.observe(viewLifecycleOwner, Observer {
+            setSortFilterText(it)
+        })
+    }
+
+    private fun setSortDialogClickListeners(){
+        binding.aToZParent.setOnClickListener {
+            viewModel.changeSortMethod(SortTypes.ASCENDING)
+        }
+
+        binding.zToAParent.setOnClickListener {
+            viewModel.changeSortMethod(SortTypes.DESCENDING)
+        }
+
+        binding.oldestFirstParent.setOnClickListener {
+            viewModel.changeSortMethod(SortTypes.OLDEST)
+        }
+
+        binding.newestFirstParent.setOnClickListener {
+            viewModel.changeSortMethod(SortTypes.NEWEST)
+        }
+
+        binding.defaultParent.setOnClickListener {
+            viewModel.changeSortMethod(SortTypes.DEFAULT)
+        }
+    }
+
+    private fun setSortFilterText(sortType: Int){
+        val friends = parent.firebaseViewModel.friends.value
+        addFriendsToAdapter_initial(friends, sortType)
+
+        if(sortType == SortTypes.ASCENDING){
+            binding.sortFilterText.setText(parent.getString(R.string.a_to_z_sorting))
+        } else if(sortType == SortTypes.DESCENDING){
+            binding.sortFilterText.setText(parent.getText(R.string.z_to_a_sorting))
+        } else if(sortType == SortTypes.NEWEST){
+            binding.sortFilterText.setText(parent.getString(R.string.newest_first))
+        } else if(sortType == SortTypes.OLDEST){
+            binding.sortFilterText.setText(parent.getString(R.string.oldest_first))
+        } else if(sortType == SortTypes.DEFAULT){
+            binding.sortFilterText.setText(parent.getString(R.string.default_))
+        }
     }
 
     private fun navigateToAddfriends(){
@@ -228,6 +313,7 @@ class FriendListFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewModel.isSortDialogOverlayOpen.value = false
         _binding = null
     }
 }
