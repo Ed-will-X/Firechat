@@ -10,12 +10,12 @@
     <com.google.android.material.appbar.AppBarLayout
         android:clickable="true"
         android:id="@+id/appbar"
-        android:layout_height="55dp"
+        android:layout_height="wrap_content"
         style="@style/appbar">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/mini_app_bar_height"
+            android:layout_height="55dp"
             android:layout_marginRight="20dp"
             android:layout_marginLeft="10dp"
             >
@@ -51,15 +51,64 @@
 
             <ImageView
                 android:layout_gravity="center_vertical"
-                android:id="@+id/icon_3"
+                android:id="@+id/search_icon"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:src="@drawable/ic_search"
                 />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_search_bar_background"
+            android:layout_marginHorizontal="20dp"
+            android:paddingLeft="20dp"
+            android:layout_marginBottom="10dp"
+            >
+
+            <ImageView
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="1dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_search"
+                />
+
+            <EditText
+                android:id="@+id/search_box"
+                android:layout_marginLeft="10dp"
+                android:focusable="true"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:inputType="textCapWords"
+                android:textColor="@color/white"
+                android:background="@null"
+                android:textSize="14sp"
+                android:textColorHint="@color/transparent_white"
+                android:hint="@string/search_friends" />
+
+            <ImageView
+                android:id="@+id/cancel_button"
+                android:clickable="true"
+                android:visibility="gone"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_cancel"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.1"
+                />
+        </LinearLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
+        android:paddingLeft="15dp"
+        android:paddingRight="10dp"
+        android:orientation="horizontal"
         android:background="@color/light_grey"
         android:layout_width="match_parent"
         android:layout_height="35dp">
@@ -68,14 +117,134 @@
             android:textColor="@color/grey"
             android:layout_gravity="center_vertical"
             android:id="@+id/friend_count"
-            android:layout_marginLeft="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="13sp"
             />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:id="@+id/filter_clickable"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/sort_filter_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/a_to_z_sorting"
+                android:textColor="@color/ios_blue"
+                android:textSize="13sp"
+                />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_arrow_down"
+                app:tint="@color/ios_blue" />
+        </LinearLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/no_friends"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:src="@drawable/women"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="100dp"
+                />
+
+            <LinearLayout
+                android:id="@+id/add_friends_clickable"
+                android:clickable="true"
+                android:layout_marginHorizontal="100dp"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="70dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_friends"
+                    android:textSize="@dimen/no_chat_header"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:layout_gravity="center"
+                    />
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_friends_body"
+                    android:textSize="@dimen/no_chat_body"
+                    android:textColor="@color/grey"
+                    />
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_friends"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/ios_blue"
+                    />
+            </LinearLayout>
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/no_match"
+        android:layout_marginTop="100dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/searching"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/user_not_found"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/user_not_found_body"
+            android:textColor="@color/grey"
+            android:textSize="12sp"
+            />
+    </LinearLayout>
+
+
+
     <androidx.recyclerview.widget.RecyclerView
+        android:visibility="gone"
         android:id="@+id/all_friends_recycler_view"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:layout_width="match_parent"

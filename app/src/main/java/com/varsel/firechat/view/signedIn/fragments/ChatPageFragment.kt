@@ -1,8 +1,8 @@
 package com.varsel.firechat.view.signedIn.fragments
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,10 +11,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.varsel.firechat.R
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.varsel.firechat.databinding.FragmentChatPageBinding
 import com.varsel.firechat.model.Chat.ChatRoom
-import com.varsel.firechat.model.Image.Image
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageType
 import com.varsel.firechat.utils.ImageUtils
@@ -27,7 +26,8 @@ import com.varsel.firechat.viewModel.ChatPageViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 
 
 class ChatPageFragment : Fragment() {
@@ -67,6 +67,15 @@ class ChatPageFragment : Fragment() {
         getChatRoom()
         observeUserProps()
 
+        KeyboardVisibilityEvent.setEventListener(
+            parent,
+            object : KeyboardVisibilityEventListener {
+                override fun onVisibilityChanged(isOpen: Boolean) {
+
+                }
+            }
+        )
+
         parent.firebaseViewModel.chatRooms.observe(viewLifecycleOwner, Observer {
             // Listen for first message from the other user
             if(existingChatRoomId == null){
@@ -98,7 +107,6 @@ class ChatPageFragment : Fragment() {
                     ImageUtils.displayProfilePicture(profileImage, user, parent)
                 })
             binding.messagesRecyclerView.adapter = messagesListAdapter
-
 
             parent.firebaseViewModel.selectedChatRoom.observe(viewLifecycleOwner, Observer {
                 getMessages(it)
@@ -161,6 +169,9 @@ class ChatPageFragment : Fragment() {
         },{})
     }
 
+    private fun scrollToBottom(){
+        binding.messagesRecyclerView.scrollToPosition(messagesListAdapter.itemCount - 1)
+    }
 
 
     private fun popNavigation(){
@@ -277,21 +288,6 @@ class ChatPageFragment : Fragment() {
     private fun clearEditText(){
         binding.messageEditText.setText("")
     }
-    // TODO: Fix buggy code
-//    private fun getOtherUserFromParticipants(participants: List<String>): String?{
-//        val currentUser = parent.firebaseAuth.currentUser!!.uid
-//        for(i in participants){
-//            if(i != currentUser){
-//                return i
-//            }
-//        }
-//
-//        return null
-//    }
-//
-//    private fun getOtherUserFromFirebase(id: String){
-//        parent.firebaseViewModel.getUserById(id, parent.mDbRef, {},{})
-//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

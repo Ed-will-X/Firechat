@@ -108,4 +108,7 @@ dependencies {
 
     // Swipe decorator
     implementation 'com.github.xabaras:RecyclerViewSwipeDecorator:1.3'
+
+    // Keyboard visibility event library
+    implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:3.0.0-RC3'
 }

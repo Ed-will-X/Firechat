@@ -18,7 +18,7 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         />
 
-<LinearLayout
+    <LinearLayout
     android:visibility="gone"
     android:id="@+id/no_friends"
     android:layout_width="match_parent"
@@ -74,6 +74,7 @@
     </FrameLayout>
 
 </LinearLayout>
+
     <LinearLayout
         android:id="@+id/shimmer_friends"
         android:orientation="vertical"

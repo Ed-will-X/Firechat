@@ -160,6 +160,10 @@ class ImageUtils {
             }
         }
 
+        fun hideViewParent(viewParent: FrameLayout){
+            viewParent.visibility = View.GONE
+        }
+
         fun setProfilePic_fullObject(profileImage: ProfileImage, view: ImageView, viewParent: FrameLayout){
             if(profileImage.image?.isNotEmpty() == true){
                 val bitmap = base64ToBitmap(profileImage.image!!)
@@ -206,6 +210,7 @@ class ImageUtils {
                     setProfilePic(it.image!!, view, viewParent, activity)
                 } else {
                     imgCallback(null)
+                    hideViewParent(viewParent)
                 }
             }, {
                 if (it?.image != null) {
@@ -213,6 +218,7 @@ class ImageUtils {
                     setProfilePic(it.image!!, view, viewParent, activity)
                 } else {
                     imgCallback(null)
+                    hideViewParent(viewParent)
                 }
             })
         }

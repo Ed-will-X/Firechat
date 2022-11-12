@@ -156,6 +156,11 @@
         <action
             android:id="@+id/action_friendListFragment_to_profileImageFragment"
             app:destination="@id/profileImageFragment" />
+        <action
+            android:id="@+id/action_friendListFragment_to_addFriends"
+            app:destination="@id/addFriends"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right" />
     </fragment>
     <fragment
         android:id="@+id/createGroupFragment"

@@ -30,6 +30,7 @@
     <string name="logout_dialog_yes">Yes</string>
     <string name="logout_dialog_no">No</string>
     <string name="placeholder_search_users">Search Users</string>
+    <string name="search_friends">Search Friends</string>
     <string name="add_friends">Add Friends</string>
     <string name="friends">Friends</string>
     <string name="more">More</string>
@@ -172,6 +173,9 @@
 
 
     <string name="no_public_post_yet__body">%s hasn\'t uploaded any public posts yet. Their posts will appear here when they do</string>
+
+
+    <string name="a_to_z_sorting">A-Z Sorting</string>
 
 
     <string name="hello_blank_fragment">Hello blank fragment</string>

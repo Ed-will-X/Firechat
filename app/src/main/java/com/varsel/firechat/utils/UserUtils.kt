@@ -32,6 +32,30 @@ class UserUtils(var fragment: Fragment) {
 
             return sorted
         }
+
+        fun searchList(keyword: String, list: List<String>): List<String> {
+            val matches = mutableListOf<String>()
+            list.map {
+                val lowerCase = it.toLowerCase()
+                if(lowerCase.contains(keyword.toLowerCase())){
+                    matches.add(it)
+                }
+            }
+
+            return matches
+        }
+
+        fun searchListOfUsers(keyword: String, list: List<User>): ArrayList<User> {
+            val matches = arrayListOf<User>()
+            list.map {
+                val lowerCase = it.name.toLowerCase()
+                if(lowerCase.contains(keyword.toLowerCase())){
+                    matches.add(it)
+                }
+            }
+
+            return matches
+        }
     }
 
     fun getFirstName(name: String): String{

@@ -46,7 +46,7 @@ class AddFriendsFragment : Fragment() {
         })
 
         val friendsSearchAdapter = AddFriendsSearchAdapter(parent, { id, user, base64 ->
-            hideKeyboard(parent)
+            parent.hideKeyboard()
 
             parent.firebaseViewModel.selectedUser.value = user
             parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
@@ -55,7 +55,7 @@ class AddFriendsFragment : Fragment() {
             view.findNavController().navigate(action)
         }, { profileImage, user ->
             ImageUtils.displayProfilePicture(profileImage, user, parent)
-            hideKeyboard(parent)
+            parent.hideKeyboard()
         })
 
         binding.searchRecyclerView.adapter = friendsSearchAdapter
@@ -74,17 +74,6 @@ class AddFriendsFragment : Fragment() {
         searchBar()
 
         return view
-    }
-
-    fun hideKeyboard(activity: Activity) {
-        val imm = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        //Find the currently focused view, so we can grab the correct window token from it.
-        var view = activity.currentFocus
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = View(activity)
-        }
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     private fun toggleCancelIconVisibility(){

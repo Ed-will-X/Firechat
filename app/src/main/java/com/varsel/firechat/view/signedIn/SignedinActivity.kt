@@ -1,5 +1,6 @@
 package com.varsel.firechat.view.signedIn
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -203,7 +205,7 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     private fun showStatusBar(){
-        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 
     override fun onBackPressed() {
@@ -397,6 +399,8 @@ class SignedinActivity : AppCompatActivity() {
                 Log.d("IMAGE_CHECK", "other user display image gotten from database")
                 if(it.image != null){
                     dbCallback(it)
+                } else {
+                    dbCallback(null)
                 }
             } else if(it != null && it.imgChangeTimestamp == 0L){
                 Log.d("IMAGE_CHECK", "other user display NULL from database")
@@ -695,5 +699,16 @@ class SignedinActivity : AppCompatActivity() {
         } else if(user.groupRooms?.size != groupRoomSize){
             signedinViewModel.getCurrentUserSingle(this)
         }
+    }
+
+    fun hideKeyboard() {
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view = currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(this)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }

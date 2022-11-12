@@ -367,7 +367,6 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    // TODO: Not tested
     fun unfriendUser(user: User, mAuth: FirebaseAuth, mDbRef: DatabaseReference, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
 
         val currentUserId = mAuth.currentUser!!.uid
@@ -1134,6 +1133,36 @@ class FirebaseViewModel: ViewModel() {
                 if(it.isSuccessful){
                     successCallback()
                     DebugUtils.log_firebase("upload public post successful")
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    // TODO: Not tested
+    fun removePublicPost(publicPost: PublicPost, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: ()-> Unit = {}, failureCallback: ()-> Unit = {}){
+        val publicPostReference = mDbRef.child("public_posts")
+        val currentUserId = mAuth.currentUser!!.uid
+        val currentUserReference = mDbRef.child("Users")
+
+        publicPostReference
+            .child(publicPost.postId)
+            .removeValue()
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    currentUserReference
+                        .child(currentUserId)
+                        .child("public_posts")
+                        .child(publicPost.postId)
+                        .removeValue()
+                        .addOnCompleteListener {
+                            if(it.isSuccessful){
+                                successCallback()
+                                DebugUtils.log_firebase("remove public post successful")
+                            } else {
+                                failureCallback()
+                            }
+                        }
                 } else {
                     failureCallback()
                 }
