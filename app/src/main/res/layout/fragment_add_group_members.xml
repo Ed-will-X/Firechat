@@ -8,7 +8,7 @@
     tools:context=".view.signedIn.fragments.AddGroupMembersFragment">
 
 
-<com.google.android.material.appbar.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         style="@style/appbar">
 
@@ -79,7 +79,7 @@
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:inputType="text"
+                android:inputType="textCapWords"
                 android:textColor="@color/white"
                 android:background="@null"
                 android:textSize="14sp"
@@ -99,6 +99,101 @@
                 />
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
+
+
+<!--    No match-->
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/no_match"
+        android:layout_marginTop="100dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/searching"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/user_not_found"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/user_not_found_body"
+            android:textColor="@color/grey"
+            android:textSize="12sp"
+            />
+    </LinearLayout>
+
+
+<!--    No friends to search-->
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/no_friends"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:src="@drawable/women"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="100dp"
+                />
+
+            <LinearLayout
+                android:id="@+id/add_friends_clickable"
+                android:clickable="true"
+                android:layout_marginHorizontal="100dp"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="70dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_friends"
+                    android:textSize="@dimen/no_chat_header"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:layout_gravity="center"
+                    />
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_friends_body"
+                    android:textSize="@dimen/no_chat_body"
+                    android:textColor="@color/grey"
+                    />
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_friends"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/ios_blue"
+                    />
+            </LinearLayout>
+        </FrameLayout>
+
+    </LinearLayout>
+
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/users_recycler_view"

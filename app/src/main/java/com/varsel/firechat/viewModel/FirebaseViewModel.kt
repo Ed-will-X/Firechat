@@ -36,6 +36,7 @@ class FirebaseViewModel: ViewModel() {
     val selectedGroupRoom = MutableLiveData<GroupRoom?>()
     val usersQuery = MutableLiveData<List<User>>()
     val selectedGroupParticipants = MutableLiveData<List<User>>()
+    val selectedGroup_nonParticipants = MutableLiveData<List<User?>>()
     val isConnectedToDatabase = MutableLiveData<Boolean>(false)
 
     fun setFriends(friends: List<User?>){

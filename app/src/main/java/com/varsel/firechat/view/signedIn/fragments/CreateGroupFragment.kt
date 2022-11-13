@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -19,6 +20,7 @@ import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.MessageUtils
+import com.varsel.firechat.utils.SearchUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.CreateGroupAdapter
 
@@ -38,13 +40,24 @@ class CreateGroupFragment : Fragment() {
         val view = binding.root
         parent = activity as SignedinActivity
 
-        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
-            if(adapter.selected.count() > 0){
-                binding.createGroupBtn.isEnabled = true
+        observeInternetStatus()
+
+        SearchUtils.setupSearchBar(
+            binding.cancelButton,
+            binding.searchBox,
+            this,
+            binding.noFriends,
+            binding.noMatch,
+            binding.friendsRecyclerView,
+            parent.firebaseViewModel.friends,
+            {
+
+            },
+            {
+                submitListToAdapter(it)
             }
-        }, {
-            binding.createGroupBtn.isEnabled = false
-        })
+        )
+
 
         adapter = CreateGroupAdapter(parent, {
             toggleBtnEnable()
@@ -57,9 +70,9 @@ class CreateGroupFragment : Fragment() {
 //        parent.profileImageViewModel.selectedGroupImageEncoded.value = null
         parent.profileImageViewModel.selectedGroupImage.value = null
 
-        if(parent.firebaseViewModel.friends.value?.isNotEmpty() == true){
-            adapter.friends = parent.firebaseViewModel.friends.value as ArrayList<User?>
-            adapter.notifyDataSetChanged()
+        val friends = parent.firebaseViewModel.friends.value
+        if(friends != null && friends?.isNotEmpty() == true){
+            submitListToAdapter(parent.firebaseViewModel.friends.value!!)
         } else {
 
         }
@@ -77,6 +90,31 @@ class CreateGroupFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun submitListToAdapter(list: List<User?>){
+        adapter.friends = arrayListOf()
+
+        if(list != null && list.isNotEmpty()){
+            adapter.friends = list.toMutableList()
+
+//            binding.friendsRecyclerView.visibility = View.VISIBLE
+//            binding.noMatch.visibility = View.GONE
+//            binding.noFriends.visibility = View.GONE
+
+
+            adapter?.notifyDataSetChanged()
+        }
+    }
+
+    private fun observeInternetStatus(){
+        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+            if(adapter.selected.count() > 0){
+                binding.createGroupBtn.isEnabled = true
+            }
+        }, {
+            binding.createGroupBtn.isEnabled = false
+        })
     }
 
     private fun toggleBtnEnable(){

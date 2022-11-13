@@ -35,7 +35,6 @@ import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ParticipantsListAdapter
 import com.varsel.firechat.viewModel.GroupChatDetailViewModel
 
-
 class GroupChatDetailFragment : Fragment() {
     private var _binding: FragmentGroupChatDetailBinding? = null
     private val binding get() = _binding!!
@@ -86,6 +85,7 @@ class GroupChatDetailFragment : Fragment() {
 
             if (it != null) {
                 groupPageViewModel.determineGetParticipants(it, parent)
+                groupPageViewModel.getNonParticipants(parent)
             }
             if(it!= null){
                 participantAdapter = ParticipantsListAdapter(parent, requireContext(), parent.firebaseAuth, it, { id, user, base64 ->

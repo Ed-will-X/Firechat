@@ -20,6 +20,7 @@ import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.hideKeyboard
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.showKeyboard
 import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.utils.SearchUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.utils.gestures.FriendsSwipeGesture
 import com.varsel.firechat.view.signedIn.SignedinActivity
@@ -43,7 +44,37 @@ class FriendListFragment : Fragment() {
 
         parent = activity as SignedinActivity
 
-        setupSearchBar()
+        SearchUtils.setupSearchBar(
+            binding.cancelButton,
+            binding.searchBox,
+            this,
+            binding.noFriends,
+            binding.noMatch,
+            binding.allFriendsRecyclerView,
+            parent.firebaseViewModel.friends,
+            {
+                // resets the searchbar visibility
+                viewModel.isSearchBarVisible.value = false
+
+                viewModel.isSearchBarVisible.observe(viewLifecycleOwner, Observer {
+                    // Sets the visibilities of the search bar and the soft keyboard
+                    if(it){
+                        binding.searchBar.visibility = View.VISIBLE
+                        binding.searchBox.requestFocus()
+                        requireContext().showKeyboard()
+                    } else {
+                        binding.searchBar.visibility = View.GONE
+                        hideKeyboard()
+                    }
+                })
+
+                binding.searchIcon.setOnClickListener {
+                    viewModel.toggleSearchBarVisible()
+                }
+            }, {
+                submitListToAdapter(it)
+            }
+        )
 
 
         binding.addFriendsClickable.setOnClickListener {
@@ -203,7 +234,7 @@ class FriendListFragment : Fragment() {
 
     private fun setupSearchBar(){
         // resets the searchbar visibility
-        viewModel.setSearchBarVisibility(false)
+        viewModel.isSearchBarVisible.value = false
 
         binding.cancelButton.setOnClickListener {
             binding.searchBox.setText("")
@@ -251,7 +282,6 @@ class FriendListFragment : Fragment() {
     }
 
     private fun searchRecyclerView(friends: ArrayList<User>, it: Editable){
-        Log.d("LLL", "Friend count: ${friends.count()}")
         if(it.toString().isEmpty()){
             // Text box is empty
             submitListToAdapter(friends)
@@ -297,16 +327,18 @@ class FriendListFragment : Fragment() {
         adapter.notifyDataSetChanged()
     }
 
-    private fun submitListToAdapter(list: ArrayList<User>){
-        adapter?.friends = list
+    private fun submitListToAdapter(list: List<User?>){
+        if(list != null && list.isNotEmpty()){
+            adapter?.friends = list as MutableList<User>
 
-        setFriendCount(list)
-        binding.allFriendsRecyclerView.visibility = View.VISIBLE
-        binding.noMatch.visibility = View.GONE
-        binding.noFriends.visibility = View.GONE
+            setFriendCount(list)
+//            binding.allFriendsRecyclerView.visibility = View.VISIBLE
+//            binding.noMatch.visibility = View.GONE
+//            binding.noFriends.visibility = View.GONE
 
 
-        adapter?.notifyDataSetChanged()
+            adapter?.notifyDataSetChanged()
+        }
     }
 
     private fun popNavigation(){

@@ -1,5 +1,6 @@
 package com.varsel.firechat.view.signedIn.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +21,7 @@ class CreateGroupAdapter(
     val checkChanged: ()-> Unit,
     val imageClickListener: (profileImage: ProfileImage, user: User) -> Unit
 ): RecyclerView.Adapter<CreateGroupAdapter.CreateGroupViewHolder>() {
-    var friends: ArrayList<User?> = arrayListOf<User?>()
+    var friends: MutableList<User?> = arrayListOf()
     var selected: ArrayList<String?> = arrayListOf()
 
     class CreateGroupViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -39,7 +40,7 @@ class CreateGroupAdapter(
         // TODO: Fix by checking if it is in the selected Array each time onBind() is called
     override fun onBindViewHolder(holder: CreateGroupViewHolder, position: Int) {
         val item: User? = friends[position]
-        if (item != null) {
+        if(item != null){
             holder.checkbox.text = item.name
             ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { image: ProfileImage? ->
                 if(image != null){
@@ -48,22 +49,39 @@ class CreateGroupAdapter(
                     }
                 }
             }
-        }
 
-        holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
-            if(isChecked){
-                item?.userUID?.let { select(it) }
+            /*
+            *   Checks if the user has been previously selected,
+            *   if so, it checks it
+            *   else, unchecks it
+            * */
+            if(isSelected(item.userUID)){
+                holder.checkbox.isChecked = true
             } else {
-                item?.userUID?.let { unselect(it) }
+                holder.checkbox.isChecked = false
             }
 
-            checkChanged()
-        }
+            holder.checkbox.setOnClickListener {
+                if(holder.checkbox.isChecked){
+                    Log.d("LLL", "${item.name} selected")
+                    select(item.userUID)
+                } else {
+                    Log.d("LLL", "${item.name} unselected")
+                    unselect(item.userUID)
+                }
+                checkChanged()
 
-        // TODO: Set parent click listener
-        holder.parent.setOnClickListener {
-
+            }
         }
+    }
+
+    private fun isSelected(userId: String): Boolean{
+        for (i in selected){
+            if (i == userId){
+                return true
+            }
+        }
+        return false
     }
 
     private fun select(uid: String){

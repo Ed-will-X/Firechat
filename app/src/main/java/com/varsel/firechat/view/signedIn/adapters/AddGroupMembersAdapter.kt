@@ -21,7 +21,7 @@ class AddGroupMembersAdapter(
     val profileImageListener: (profileImage: ProfileImage, user: User)-> Unit
 ): RecyclerView.Adapter<AddGroupMembersAdapter.AddMemberViewHolder>() {
 
-    val users: ArrayList<User> = arrayListOf()
+    var users: ArrayList<User?> = arrayListOf()
     val selected: ArrayList<String> = arrayListOf()
 
     class AddMemberViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -37,29 +37,31 @@ class AddGroupMembersAdapter(
     }
 
     override fun onBindViewHolder(holder: AddMemberViewHolder, position: Int) {
-        val item: User = users[position]
+        val item = users[position]
 
-        holder.checkbox.text = item.name
-        ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) {
-            if(it != null){
-                holder.profileImage.setOnClickListener { it2 ->
-                    profileImageListener(it, item)
+        if(item != null){
+            holder.checkbox.text = item.name
+            ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) {
+                if(it != null){
+                    holder.profileImage.setOnClickListener { it2 ->
+                        profileImageListener(it, item)
+                    }
                 }
             }
-        }
 
-        holder.checkbox.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(isChecked){
-                select(item.userUID)
-            } else {
-                unselect(item.userUID)
+            holder.checkbox.setOnCheckedChangeListener { buttonView, isChecked ->
+                if(isChecked){
+                    select(item.userUID)
+                } else {
+                    unselect(item.userUID)
+                }
+                checkChanged()
             }
-            checkChanged()
-        }
 
-        // TODO: Set parent click listener
-        holder.parent.setOnClickListener {
+            // TODO: Set parent click listener
+            holder.parent.setOnClickListener {
 
+            }
         }
     }
 

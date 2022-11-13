@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.databinding.FragmentAddGroupMembersBinding
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.utils.SearchUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.AddGroupMembersAdapter
 
@@ -29,6 +30,20 @@ class AddGroupMembersFragment : Fragment() {
         val view = binding.root
         groupId = AddGroupMembersFragmentArgs.fromBundle(requireArguments()).groupId
         parent = activity as SignedinActivity
+
+        SearchUtils.setupSearchBar(
+            binding.addFriendsCancelButton,
+            binding.searchBox,
+            this,
+            binding.noFriends,
+            binding.noMatch,
+            binding.usersRecyclerView,
+            parent.firebaseViewModel.selectedGroup_nonParticipants,
+            {},{
+                addToRecyclerView(it)
+            }
+        )
+
         adapter = AddGroupMembersAdapter(parent, {
             toggleBtnEnable()
         }, { profileImage, user ->
@@ -36,37 +51,27 @@ class AddGroupMembersFragment : Fragment() {
         })
         binding.usersRecyclerView.adapter = adapter
 
-        parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
-            if(it != null){
-                val non_participants = getNonParticipants()
-                adapter.users.addAll(non_participants)
-                adapter.notifyDataSetChanged()
-            }
-        })
+        val non_participants = parent.firebaseViewModel.selectedGroup_nonParticipants.value
+        if (non_participants != null) {
+            addToRecyclerView(non_participants)
+        }
 
         setOnClickListeners()
 
         return view
     }
 
-    // TODO: Only add the non-participants to the list
-    private fun getNonParticipants(): List<User>{
-        val participants: List<String> = parent.firebaseViewModel.selectedGroupRoom.value!!.participants?.values!!.toList()
-        val friends: MutableList<User> = parent.firebaseViewModel.friends.value as MutableList<User>
-        val non_participants = mutableListOf<User>()
+    private fun addToRecyclerView(non_participants: List<User?>){
+        adapter.users = arrayListOf()
+        if(non_participants != null && non_participants.isNotEmpty()){
+            adapter.users.addAll(non_participants)
 
-        for((i_index, i_value) in friends.withIndex()){
-            for((j_index, j_value) in participants.withIndex()){
-                if(i_value.userUID == j_value){
-                    break
-                } else if(j_index == participants.size -1) {
-                    non_participants.add(i_value)
-                }
-            }
+//            binding.usersRecyclerView.visibility = View.VISIBLE
+//            binding.noMatch.visibility = View.GONE
+//            binding.noFriends.visibility = View.GONE
+
+            adapter.notifyDataSetChanged()
         }
-
-        return non_participants
-
     }
 
     private fun setOnClickListeners(){

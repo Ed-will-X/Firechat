@@ -21,9 +21,9 @@ class FriendListFragmentViewModel: ViewModel() {
     val sortMethod = MutableLiveData<Int>(SortTypes.ASCENDING)
     val binding = MutableLiveData<FragmentFriendListBinding>()
 
-    fun setSearchBarVisibility(value: Boolean){
-        isSearchBarVisible.value = value
-    }
+//    fun setSearchBarVisibility(value: Boolean){
+//        isSearchBarVisible.value = value
+//    }
 
     fun toggleSearchBarVisible(){
         isSearchBarVisible.value = !isSearchBarVisible.value!!
