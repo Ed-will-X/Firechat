@@ -114,7 +114,7 @@ class SignedinActivity : AppCompatActivity() {
             if(it?.friends != null){
                 getAllFriends(it?.friends?.values!!.toList())
             } else {
-                firebaseViewModel.friends.value = mutableListOf<User>()
+                firebaseViewModel.setFriends(listOf())
             }
         })
 
@@ -675,7 +675,7 @@ class SignedinActivity : AppCompatActivity() {
             firebaseViewModel.getUserSingle(i, mDbRef, {
                 users.add(it)
             }, {
-                firebaseViewModel.friends.value = users
+                firebaseViewModel.setFriends(users)
             })
         }
     }

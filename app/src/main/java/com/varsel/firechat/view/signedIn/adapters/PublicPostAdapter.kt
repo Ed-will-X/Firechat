@@ -67,7 +67,6 @@ class PublicPostAdapter(
 
         // check if item-to-load is not the full image
         if(shape != PublicPostAdapterShapes.RECTANCLE){
-            Log.d("LLL", "Position: ${position}, ID: ${item}")
             // if: Call the determine code directly
             activity.determinePublicPostFetchMethod_fullObject(item) {
                 if(it != null){
@@ -85,12 +84,10 @@ class PublicPostAdapter(
                     // else: Set on click listener that downloads it from firebase
                     parent?.setOnClickListener {
                         if(!hasBeenClicked){
-                            Log.d("LLL", "Ran")
                             hasBeenClicked = true
 
                             // TODO: Get and set image
                             activity.fetchPublicPost_fullObject(item) {
-                                Log.d("LLL", "This is not supposed to run")
                                 if(it != null){
                                     setImage(it, image, parent)
                                 }

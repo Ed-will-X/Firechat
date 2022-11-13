@@ -81,7 +81,6 @@ class GroupChatsListAdapter(
             getParticipantCount(participants, viewHolder)
 
             viewHolder.parent.setOnClickListener {
-                Log.d("LLL", "Parent clicked")
                 groupItemListener(item.roomUID, null)
             }
 

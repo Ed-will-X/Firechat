@@ -87,6 +87,7 @@ class FriendListFragment : Fragment() {
 
     private fun addFriendsToAdapter_initial(friends: List<User?>?, sortType: Int){
 
+        // TODO: Change
         adapter?.friends?.clear()
 
         if(friends != null && friends.isNotEmpty()){
@@ -124,7 +125,8 @@ class FriendListFragment : Fragment() {
         viewModel.changeSortMethod(SortTypes.ASCENDING)
 
         setSortDialogClickListeners()
-        binding.filterClickable.setOnClickListener {
+        binding.sortClickable.setOnClickListener {
+            hideKeyboard()
             viewModel.isSortDialogOverlayOpen.value = true
         }
 
@@ -168,19 +170,19 @@ class FriendListFragment : Fragment() {
     }
 
     private fun setSortFilterText(sortType: Int){
-        val friends = parent.firebaseViewModel.friends.value
+        val friends = parent.firebaseViewModel.friends.value?.toList()
         addFriendsToAdapter_initial(friends, sortType)
 
         if(sortType == SortTypes.ASCENDING){
-            binding.sortFilterText.setText(parent.getString(R.string.a_to_z_sorting))
+            binding.sortText.setText(parent.getString(R.string.a_to_z_sorting))
         } else if(sortType == SortTypes.DESCENDING){
-            binding.sortFilterText.setText(parent.getText(R.string.z_to_a_sorting))
+            binding.sortText.setText(parent.getText(R.string.z_to_a_sorting))
         } else if(sortType == SortTypes.NEWEST){
-            binding.sortFilterText.setText(parent.getString(R.string.newest_first))
+            binding.sortText.setText(parent.getString(R.string.newest_first))
         } else if(sortType == SortTypes.OLDEST){
-            binding.sortFilterText.setText(parent.getString(R.string.oldest_first))
+            binding.sortText.setText(parent.getString(R.string.oldest_first))
         } else if(sortType == SortTypes.DEFAULT){
-            binding.sortFilterText.setText(parent.getString(R.string.default_))
+            binding.sortText.setText(parent.getString(R.string.default_))
         }
     }
 
@@ -209,7 +211,7 @@ class FriendListFragment : Fragment() {
 
         // Actual search code
         binding.searchBox.doAfterTextChanged {
-            val friends = parent.firebaseViewModel.friends.value as ArrayList<User>
+            val friends = parent.firebaseViewModel.friends.value?.toList() as ArrayList<User>
 
             if(it != null){
                 searchRecyclerView(friends, it)

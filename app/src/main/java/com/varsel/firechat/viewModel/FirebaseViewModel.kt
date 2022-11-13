@@ -28,7 +28,8 @@ class FirebaseViewModel: ViewModel() {
     val currentUser = MutableLiveData<User?>()
     val currentUserSingle = MutableLiveData<User?>()
     val friendRequests = MutableLiveData<List<User?>>()
-    var friends = MutableLiveData<List<User?>>()
+    private var _friends = MutableLiveData<List<User?>>()
+    val friends get() = _friends
     var chatRooms = MutableLiveData<MutableList<ChatRoom?>>()
     var selectedChatRoom = MutableLiveData<ChatRoom?>()
     val groupRooms = MutableLiveData<MutableList<GroupRoom?>>()
@@ -36,6 +37,10 @@ class FirebaseViewModel: ViewModel() {
     val usersQuery = MutableLiveData<List<User>>()
     val selectedGroupParticipants = MutableLiveData<List<User>>()
     val isConnectedToDatabase = MutableLiveData<Boolean>(false)
+
+    fun setFriends(friends: List<User?>){
+        this._friends.value = friends
+    }
 
     fun signUp(
         email: String,
