@@ -1,12 +1,17 @@
 package com.varsel.firechat.view.signedIn.adapters
 
 import android.annotation.SuppressLint
+import android.graphics.Typeface
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +22,7 @@ import com.varsel.firechat.model.User.User
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageType
 import com.varsel.firechat.model.ProfileImage.ProfileImage
+import com.varsel.firechat.model.ReadReceipt.ReadReceipt
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.UserUtils
@@ -26,7 +32,10 @@ class ChatListAdapter(
     val activity: SignedinActivity,
     val parentClickListener: (userId: String, chatRoomId: String, user: User, base64: String?)-> Unit,
     val profileImageClickListener: (profileImage: ProfileImage, user: User)-> Unit,
+    val readReceiptChange: (unreadChatRooms: MutableMap<String, ChatRoom>)-> Unit
 ) : ListAdapter<ChatRoom, ChatListAdapter.ChatItemViewHolder>(ChatsListAdapterDiffItemCallback()) {
+    val unreadChatRooms: MutableMap<String, ChatRoom> = mutableMapOf()
+
 
     class ChatItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val name = itemView.findViewById<TextView>(R.id.name_chats_list)
@@ -35,6 +44,7 @@ class ChatListAdapter(
         val parent = itemView.findViewById<LinearLayout>(R.id.parent_clickable_chats_list)
         val profileImageParent = itemView.findViewById<MaterialCardView>(R.id.profile_image_parent)
         val profileImage = itemView.findViewById<ImageView>(R.id.profile_image)
+        val unreadIndicator = itemView.findViewById<MaterialCardView>(R.id.unread_indicator)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatItemViewHolder {
@@ -46,8 +56,23 @@ class ChatListAdapter(
     override fun onBindViewHolder(holder: ChatItemViewHolder, position: Int) {
         val item: ChatRoom = getItem(position)
 
+        val lastMessageObject = getLastMessageObject(item)
+        if(lastMessageObject != null){
+            determineReceipts(item, lastMessageObject, {
+                holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.black))
+                holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.black))
+                holder.unreadIndicator.visibility = View.VISIBLE
+                holder.name.setTypeface(null, Typeface.BOLD)
+            }, {
+                holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.grey))
+                holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.grey))
+                holder.unreadIndicator.visibility = View.GONE
+                holder.name.setTypeface(null, Typeface.NORMAL)
 
-        val id = getUserId(item.participants!!)
+            })
+        }
+
+        val id = UserUtils.getOtherUserId(item.participants!!, activity)
         if(getLastMessageObject(item)?.type == MessageType.TEXT){
             holder.lastMessage.text = UserUtils.truncate(getLastMessage(item), 38)
         } else if(getLastMessageObject(item)?.type == MessageType.IMAGE){
@@ -56,7 +81,7 @@ class ChatListAdapter(
 
         if(item.participants != null){
             // TODO: Replace with internal database code
-            getUser(getUserId(item.participants!!)){ user ->
+            getUser(UserUtils.getOtherUserId(item.participants!!, activity)){ user ->
                 holder.parent.setOnClickListener { _ ->
                     parentClickListener(id, item.roomUID, user, null)
                 }
@@ -75,21 +100,27 @@ class ChatListAdapter(
 
             }
         }
+
         if(item.messages != null){
             holder.timestamp.text = MessageUtils.formatStampChatsPage(getLastMessageTimestamp(item))
         }
 
     }
 
-    fun getUserId(participants: HashMap<String, String>): String{
-        var otherUser = ""
-        for (i in participants.values){
-            if(i != activity.firebaseAuth.currentUser?.uid.toString()){
-                otherUser = i
-            }
-        }
+    private fun determineReceipts(item: ChatRoom, lastMessage: Message, receiptCallback: ()-> Unit, noReceiptCallback: ()-> Unit){
+        val receipt = activity.readReceiptViewModel.fetchReceipt(item.roomUID, activity.firebaseAuth.currentUser!!.uid)
 
-        return otherUser
+        receipt.observe(activity, Observer {
+            if(it == null || it.timestamp < lastMessage.time){
+                unreadChatRooms.put(item.roomUID, item)
+                readReceiptChange(unreadChatRooms)
+                receiptCallback()
+            } else {
+                unreadChatRooms.remove(item.roomUID)
+                readReceiptChange(unreadChatRooms)
+                noReceiptCallback()
+            }
+        })
     }
 
     private fun getLastMessage(chatRoom: ChatRoom): String {

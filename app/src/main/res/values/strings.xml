@@ -31,6 +31,7 @@
     <string name="logout_dialog_no">No</string>
     <string name="placeholder_search_users">Search Users</string>
     <string name="search_friends">Search Friends</string>
+    <string name="search_chats">Search Chats</string>
     <string name="add_friends">Add Friends</string>
     <string name="friends">Friends</string>
     <string name="more">More</string>
@@ -182,8 +183,7 @@
     <string name="last_edited">Last Edited</string>
     <string name="default_">Default</string>
 
-
-
+    <string name="search_chats_groups_or_users">Search Chats, Groups or Users</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

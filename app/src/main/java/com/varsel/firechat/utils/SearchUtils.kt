@@ -15,6 +15,7 @@ import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.hideKeyboard
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.showKeyboard
 
+// TODO: Refactor to fit other types
 class SearchUtils {
     companion object {
         fun setupSearchBar(
@@ -89,7 +90,6 @@ class SearchUtils {
             noMatchLayout.visibility = View.GONE
 
             if(it.toString().isEmpty()){
-                Log.d("LLL", "Search box is empty")
                 // Text box is empty
                 submitListToAdapter(friends)
             } else {

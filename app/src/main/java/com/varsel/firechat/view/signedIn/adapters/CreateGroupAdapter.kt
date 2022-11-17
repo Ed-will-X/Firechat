@@ -63,10 +63,8 @@ class CreateGroupAdapter(
 
             holder.checkbox.setOnClickListener {
                 if(holder.checkbox.isChecked){
-                    Log.d("LLL", "${item.name} selected")
                     select(item.userUID)
                 } else {
-                    Log.d("LLL", "${item.name} unselected")
                     unselect(item.userUID)
                 }
                 checkChanged()

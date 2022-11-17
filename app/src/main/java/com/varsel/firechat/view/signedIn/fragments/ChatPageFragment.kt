@@ -16,6 +16,7 @@ import com.varsel.firechat.databinding.FragmentChatPageBinding
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageType
+import com.varsel.firechat.model.ReadReceipt.ReadReceipt
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.MessageUtils
@@ -41,6 +42,12 @@ class ChatPageFragment : Fragment() {
     lateinit var newChatRoom: ChatRoom
     lateinit var messagesListAdapter: MessageListAdapter
     val chatPageViewModel: ChatPageViewModel by activityViewModels()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        updateReadReceipt()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -134,11 +141,13 @@ class ChatPageFragment : Fragment() {
         binding.sendMessageBtn.setOnClickListener {
             val messageText = binding.messageEditText.text.toString().trim()
 
-            // TODO: Amend to accomodate other message types
+            // TODO: Amend to accommodate other message types
             val message = Message(MessageUtils.generateUID(30), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
 
             if(binding.messageEditText.text.toString() != ""){
-                sendMessage(message) {}
+                sendMessage(message) {
+                    updateReadReceipt()
+                }
             }
 
             clearEditText()
@@ -162,11 +171,23 @@ class ChatPageFragment : Fragment() {
             ImageUtils.uploadChatImage(it, parent) { message, image ->
                 parent.imageViewModel.storeImage(image) {
                     sendMessage(message) {
-
+                        updateReadReceipt()
                     }
                 }
             }
         },{})
+    }
+
+    private fun updateReadReceipt(){
+        if(existingChatRoomId != null){
+            val receipt = ReadReceipt(existingChatRoomId!!, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid)
+            parent.readReceiptViewModel.storeReceipt(receipt)
+        } else {
+            if(firstMessageSent == true){
+                val receipt = ReadReceipt(newChatRoomId, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid)
+                parent.readReceiptViewModel.storeReceipt(receipt)
+            }
+        }
     }
 
     private fun scrollToBottom(){
@@ -197,6 +218,7 @@ class ChatPageFragment : Fragment() {
             }
 
             setShimmerVisibility(it)
+
             messagesListAdapter.submitList(sorted)
             messagesListAdapter.notifyDataSetChanged()
         }
@@ -291,6 +313,9 @@ class ChatPageFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+
+        updateReadReceipt()
+
         _binding = null
     }
 }

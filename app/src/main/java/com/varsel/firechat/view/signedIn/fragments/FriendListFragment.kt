@@ -95,7 +95,6 @@ class FriendListFragment : Fragment() {
         val swipeGesture = object : FriendsSwipeGesture(parent){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 if(direction == ItemTouchHelper.LEFT){
-                    Log.d("LLL", "Unfriend swiped")
                     if(adapter != null){
                         parent.firebaseViewModel.unfriendUser(adapter!!.friends[viewHolder.adapterPosition], parent.firebaseAuth, parent.mDbRef)
                         removeFromAdapter(adapter!!, viewHolder)
@@ -338,6 +337,8 @@ class FriendListFragment : Fragment() {
 
 
             adapter?.notifyDataSetChanged()
+        } else {
+            setFriendCount(0)
         }
     }
 

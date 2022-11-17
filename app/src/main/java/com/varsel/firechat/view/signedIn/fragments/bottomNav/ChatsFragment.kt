@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -61,12 +62,21 @@ class ChatsFragment : Fragment() {
             view.findNavController().navigate(R.id.action_chatsFragment_to_addFriends)
         }
 
+        binding.searchChats.setOnClickListener {
+            navigateToSearch()
+        }
+
         return view
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun navigateToSearch(){
+        val action = ChatsFragmentDirections.actionChatsFragmentToSearchChatsFragment()
+        view?.findNavController()?.navigate(action)
     }
 
     fun setTabText(tabLayout: TabLayout, viewPager2: ViewPager2){

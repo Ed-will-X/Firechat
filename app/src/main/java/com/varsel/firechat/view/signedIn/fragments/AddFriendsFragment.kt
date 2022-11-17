@@ -26,7 +26,6 @@ import com.varsel.firechat.viewModel.FirebaseViewModel
 class AddFriendsFragment : Fragment() {
     private var _binding: FragmentAddFriendsBinding? = null
     private val binding get() = _binding!!
-    private val firebaseViewModel: FirebaseViewModel by activityViewModels()
     private lateinit var parent: SignedinActivity
     private val viewModel: AddFriendsViewModel by activityViewModels()
     private var timer: CountDownTimer? = null

@@ -3,6 +3,7 @@ package com.varsel.firechat.utils
 import androidx.fragment.app.Fragment
 import com.varsel.firechat.R
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.view.signedIn.SignedinActivity
 
 class UserUtils(var fragment: Fragment) {
     companion object {
@@ -55,6 +56,17 @@ class UserUtils(var fragment: Fragment) {
             }
 
             return matches
+        }
+
+        fun getOtherUserId(participants: HashMap<String, String>, activity: SignedinActivity): String{
+            var otherUser = ""
+            for (i in participants.values){
+                if(i != activity.firebaseAuth.currentUser?.uid.toString()){
+                    otherUser = i
+                }
+            }
+
+            return otherUser
         }
     }
 

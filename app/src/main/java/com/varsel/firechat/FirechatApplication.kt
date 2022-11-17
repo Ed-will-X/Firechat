@@ -6,6 +6,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.varsel.firechat.model.Image.ImageDatabase
 import com.varsel.firechat.model.ProfileImage.ProfileImageDatabase
 import com.varsel.firechat.model.PublicPost.PublicPostDatabase
+import com.varsel.firechat.model.ReadReceipt.ReadReceiptDatabase
 import com.varsel.firechat.model.Setting.SettingDatabase
 
 class FirechatApplication: Application() {
@@ -23,6 +24,10 @@ class FirechatApplication: Application() {
 
     val publicPostDatabase: PublicPostDatabase by lazy {
         PublicPostDatabase.getInstance(this)
+    }
+
+    val readReceiptsDatabase: ReadReceiptDatabase by lazy {
+        ReadReceiptDatabase.getInstance(this)
     }
 
     override fun onCreate() {

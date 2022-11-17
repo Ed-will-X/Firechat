@@ -46,6 +46,9 @@
         <action
             android:id="@+id/action_chatsFragment_to_profileImageFragment"
             app:destination="@id/profileImageFragment" />
+        <action
+            android:id="@+id/action_chatsFragment_to_searchChatsFragment"
+            app:destination="@id/searchChatsFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -292,4 +295,9 @@
             android:name="image"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/searchChatsFragment"
+        android:name="com.varsel.firechat.view.signedIn.fragments.SearchChatsFragment"
+        android:label="fragment_search_chats"
+        tools:layout="@layout/fragment_search_chats" />
 </navigation>

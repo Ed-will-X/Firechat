@@ -35,6 +35,8 @@ import com.varsel.firechat.model.ProfileImage.ProfileImageViewModelFactory
 import com.varsel.firechat.model.PublicPost.PublicPost
 import com.varsel.firechat.model.PublicPost.PublicPostViewModel
 import com.varsel.firechat.model.PublicPost.PublicPostViewModelFactory
+import com.varsel.firechat.model.ReadReceipt.ReadReceiptViewModel
+import com.varsel.firechat.model.ReadReceipt.ReadReceiptViewModelFactory
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.utils.ImageUtils
@@ -57,6 +59,7 @@ class SignedinActivity : AppCompatActivity() {
 //    lateinit var settingViewModel: SettingViewModel
     lateinit var profileImageViewModel: ProfileImageViewModel
     lateinit var publicPostViewModel: PublicPostViewModel
+    lateinit var readReceiptViewModel: ReadReceiptViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +74,7 @@ class SignedinActivity : AppCompatActivity() {
         initialiseProfileImageViewModel()
         initialiseImageViewModel()
         initialisePublicPostViewModel()
+        initialiseReadReceiptsViewModel()
 
         determineAuthType(intent)
 
@@ -288,12 +292,16 @@ class SignedinActivity : AppCompatActivity() {
         publicPostViewModel = ViewModelProvider(this, vmFactory).get(PublicPostViewModel::class.java)
     }
 
+    private fun initialiseReadReceiptsViewModel(){
+        val vmFactory = ReadReceiptViewModelFactory((this.application as FirechatApplication).readReceiptsDatabase.readReceiptDao)
+        readReceiptViewModel = ViewModelProvider(this, vmFactory).get(ReadReceiptViewModel::class.java)
+    }
+
     private fun fetchCurrentUserProfileImage(){
         Log.d("IMAGE_FETCH", "Get image called for CURRENT USER")
         firebaseViewModel.getProfileImage(firebaseAuth.currentUser!!.uid, mDbRef, {
             if(it != null){
                 profileImageViewModel.storeImage(it)
-//                profileImageViewModel.profileImageEncodedCurrentUser.value = it.image
                 profileImageViewModel.profileImage_currentUser.value = it
             }
         }, {

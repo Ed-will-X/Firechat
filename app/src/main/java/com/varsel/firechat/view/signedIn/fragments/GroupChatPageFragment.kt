@@ -21,6 +21,7 @@ import com.varsel.firechat.model.Image.Image
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.MessageStatus
 import com.varsel.firechat.model.Message.MessageType
+import com.varsel.firechat.model.ReadReceipt.ReadReceipt
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
@@ -143,6 +144,11 @@ class GroupChatPageFragment : Fragment() {
         }, {})
     }
 
+    private fun updateReadReceipt(){
+        val receipt = ReadReceipt(roomId, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid)
+        parent.readReceiptViewModel.storeReceipt(receipt)
+    }
+
     private fun observeGroupImage(){
 //        parent.profileImageViewModel.selectedGroupImageEncoded.observe(viewLifecycleOwner, Observer {
 //            if(it != null){
@@ -185,6 +191,7 @@ class GroupChatPageFragment : Fragment() {
 
                 val sorted = MessageUtils.sortMessages(it)
                 binding.groupNameText.text = it?.groupName
+
                 messageAdapter.submitList(sorted)
                 messageAdapter.notifyDataSetChanged()
             }
@@ -300,6 +307,9 @@ class GroupChatPageFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+
+        updateReadReceipt()
+
         _binding = null
     }
 }

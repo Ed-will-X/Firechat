@@ -2,6 +2,7 @@ package com.varsel.firechat.view.signedIn.fragments.viewPager
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
+import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ChatListAdapter
 import com.varsel.firechat.view.signedIn.fragments.bottomNav.ChatsFragment
@@ -43,6 +45,10 @@ class IndividualFragment : Fragment() {
             view.findNavController().navigate(action)
         }, { profileImage, user ->
             ImageUtils.displayProfilePicture(profileImage, user, parent)
+        }, {
+            Log.d("LLL", "${it.count()}")
+//            setUnreadIndicator(it)
+
         })
 
         binding.individualChatsRecyclerView.adapter = chatListAdapter
@@ -66,6 +72,16 @@ class IndividualFragment : Fragment() {
         })
 
         return view
+    }
+
+    private fun setUnreadIndicator(unreadRooms: MutableMap<String, ChatRoom>){
+        // TODO: Set unread indicator in Tab Layout
+        Log.d("LLL", "---------------------------------------------------")
+        Log.d("LLL", "Unread count for ${parent.firebaseViewModel.currentUser.value?.name}: ${unreadRooms.count()}")
+
+//        for(i in unreadRooms){
+//            Log.d("LLL", "${UserUtils.getOtherUserId(i.participants!!, parent)} in unreads")
+//        }
     }
 
     private fun toggleRecyclerViewVisibility(chats: MutableList<ChatRoom?>){

@@ -52,20 +52,39 @@
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="match_parent">
-        <TextView
-            android:id="@+id/name_chats_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="15sp"
-            android:textColor="@color/black"
-            />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/name_chats_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Balls Gulls"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/unread_indicator"
+                android:visibility="gone"
+                android:layout_marginLeft="5dp"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                app:cardCornerRadius="360dp"
+                app:cardElevation="0dp"
+                android:backgroundTint="?colorPrimary"
+                android:layout_gravity="center_vertical"
+                />
+        </LinearLayout>
         <TextView
             android:id="@+id/last_message_chats_list"
-            android:textColor="@color/grey"
+            android:textColor="@color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
+            android:text="This is my last message"
             />
     </LinearLayout>
     <TextView
