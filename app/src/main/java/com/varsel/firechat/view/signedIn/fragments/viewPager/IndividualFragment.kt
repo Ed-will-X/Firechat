@@ -96,7 +96,7 @@ class IndividualFragment : Fragment() {
 //        }
     }
 
-    private fun toggleRecyclerViewVisibility(chats: MutableList<ChatRoom?>){
+    private fun toggleRecyclerViewVisibility(chats: MutableList<ChatRoom>){
         val currentUser = parent.firebaseViewModel.currentUser.value
         if(chats.isNotEmpty() && currentUser != null){
             binding.individualChatsRecyclerView.visibility = View.VISIBLE

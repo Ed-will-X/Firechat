@@ -48,7 +48,7 @@ class SignedinViewModel(): ViewModel() {
     }
 
     private fun getAllChats(activity: SignedinActivity, chatRoomsUID: List<String>){
-        val chatRooms = mutableListOf<ChatRoom?>()
+        val chatRooms = mutableListOf<ChatRoom>()
         for(i in chatRoomsUID){
             activity.firebaseViewModel.getChatRoomRecurrent(i, activity.mDbRef, { chatRoom ->
                 if(activity.firebaseViewModel.chatRooms.value != null){
@@ -60,7 +60,9 @@ class SignedinViewModel(): ViewModel() {
                         }
                     }
                 }
-                chatRooms.add(chatRoom)
+                if(chatRoom != null){
+                    chatRooms.add(chatRoom)
+                }
             }, {
                 activity.firebaseViewModel.chatRooms.value = chatRooms
             })
@@ -68,7 +70,7 @@ class SignedinViewModel(): ViewModel() {
     }
 
     private fun getAllGroupChats(activity: SignedinActivity, groupRoomIDs: List<String>){
-        val groupRooms = mutableListOf<GroupRoom?>()
+        val groupRooms = mutableListOf<GroupRoom>()
 
         for (i in groupRoomIDs){
             // TODO: Fix bug here:
@@ -82,7 +84,9 @@ class SignedinViewModel(): ViewModel() {
                         }
                     }
                 }
-                groupRooms.add(it)
+                if(it != null){
+                    groupRooms.add(it)
+                }
 
             }, {
                 activity.firebaseViewModel.groupRooms.value = groupRooms
@@ -90,14 +94,14 @@ class SignedinViewModel(): ViewModel() {
         }
     }
 
-    fun determineChatroom(userId: String, chatRooms: MutableList<ChatRoom?>?): Boolean{
+    fun determineChatroom(userId: String, chatRooms: MutableList<ChatRoom>?): Boolean{
         // TODO: Fix potential null pointer exception
         val chatRooms = chatRooms!!
         var contains: Boolean = false
         for(i in chatRooms){
-            if(i!!.participants!!.contains(userId)){
+            if(i.participants!!.contains(userId)){
                 contains = true
-                currentChatRoomId.value = i.roomUID.toString()
+                currentChatRoomId.value = i.roomUID
                 break
             }
         }
