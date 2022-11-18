@@ -19,6 +19,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.varsel.firechat.databinding.FragmentAddFriendsBinding
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.hideKeyboard
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.showKeyboard
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
@@ -26,6 +28,8 @@ import com.varsel.firechat.view.signedIn.adapters.AddFriendsSearchAdapter
 import com.varsel.firechat.view.signedIn.adapters.RecentSearchAdapter
 import com.varsel.firechat.viewModel.AddFriendsViewModel
 import com.varsel.firechat.viewModel.FirebaseViewModel
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.navigate
+import java.lang.IllegalArgumentException
 
 
 class AddFriendsFragment : Fragment() {
@@ -51,6 +55,8 @@ class AddFriendsFragment : Fragment() {
         })
 
         setupRecentSearchAdapter()
+
+        this.showKeyboard()
 
         val friendsSearchAdapter = AddFriendsSearchAdapter(parent, { id, user, base64 ->
             parent.firebaseViewModel.addToRecentSearch(id, parent.firebaseAuth, parent.mDbRef)
@@ -84,11 +90,21 @@ class AddFriendsFragment : Fragment() {
         return view
     }
 
-    private fun navigateToOtherProfileFragment(user: User) {
-        parent.firebaseViewModel.selectedUser.value = user
+    private fun showKeyboard(){
+        binding.addFriendsSearchBox.requestFocus()
+        requireContext().showKeyboard()
+    }
 
-        val action = AddFriendsFragmentDirections.actionAddFriendsToOtherProfileFragment(user.userUID)
-        view?.findNavController()?.navigate(action)
+    private fun navigateToOtherProfileFragment(user: User) {
+        try {
+            val action = AddFriendsFragmentDirections.actionAddFriendsToOtherProfileFragment(user.userUID)
+
+            view?.findNavController()?.navigate(action)
+            parent.firebaseViewModel.selectedUser.value = user
+
+        } catch (e: IllegalArgumentException){
+
+        }
     }
 
     private fun setupRecentSearchAdapter() {
@@ -96,6 +112,7 @@ class AddFriendsFragment : Fragment() {
         recentSearchAdapter = RecentSearchAdapter(parent, this) {
             navigateToOtherProfileFragment(it)
 
+            parent.hideKeyboard()
             parent.firebaseViewModel.addToRecentSearch(it.userUID, parent.firebaseAuth, parent.mDbRef)
 
         }
@@ -121,7 +138,6 @@ class AddFriendsFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun submitToRecentSearch(searches: HashMap<String, Long>){
-        // TODO: Sort by keys
         val positioned = searches.toSortedMap()
         val sorted = positioned.toList()
             .sortedBy { (key, value) -> value }

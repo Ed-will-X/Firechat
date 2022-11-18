@@ -26,6 +26,7 @@ import com.varsel.firechat.databinding.ActionSheetProfileImageBinding
 import com.varsel.firechat.databinding.FragmentGroupChatDetailBinding
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.ProfileImage.ProfileImage
+import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.AnimationUtils
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.utils.ImageUtils
@@ -34,6 +35,7 @@ import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ParticipantsListAdapter
 import com.varsel.firechat.viewModel.GroupChatDetailViewModel
+import java.lang.IllegalArgumentException
 
 class GroupChatDetailFragment : Fragment() {
     private var _binding: FragmentGroupChatDetailBinding? = null
@@ -89,9 +91,8 @@ class GroupChatDetailFragment : Fragment() {
             }
             if(it!= null){
                 participantAdapter = ParticipantsListAdapter(parent, requireContext(), parent.firebaseAuth, it, { id, user, base64 ->
-                    navigateToOtherProfileFragment(id)
-                    parent.firebaseViewModel.selectedUser.value = user
-                    parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
+                    navigateToOtherProfileFragment(id, user, base64)
+
                 },{ id, user, base64 ->
                     showParticipantOptionsActonsheet(id)
                     parent.firebaseViewModel.selectedChatRoomUser.value = user
@@ -315,9 +316,13 @@ class GroupChatDetailFragment : Fragment() {
         dialog.show()
     }
 
-    private fun navigateToOtherProfileFragment(userId: String){
-        val action = GroupChatDetailFragmentDirections.actionGroupChatDetailFragmentToOtherProfileFragment(userId)
-        findNavController().navigate(action)
+    private fun navigateToOtherProfileFragment(userId: String, user: User, base64: String?){
+        try {
+            val action = GroupChatDetailFragmentDirections.actionGroupChatDetailFragmentToOtherProfileFragment(userId)
+            parent.firebaseViewModel.selectedUser.value = user
+            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
+            findNavController().navigate(action)
+        } catch(e: IllegalArgumentException) { }
     }
 
     private fun editGroup(groupName: String, subject: String){

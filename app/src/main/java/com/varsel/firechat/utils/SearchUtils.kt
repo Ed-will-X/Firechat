@@ -25,7 +25,7 @@ class SearchUtils {
             noFriendsLayout: LinearLayout,
             noMatchLayout: LinearLayout,
             recyclerView: RecyclerView,
-            observableList: MutableLiveData<List<User?>>,
+            observableList: MutableLiveData<List<User>>,
             afterCallback: ()-> Unit,
             resultsCallback: (users: List<User?>)-> Unit
         ){

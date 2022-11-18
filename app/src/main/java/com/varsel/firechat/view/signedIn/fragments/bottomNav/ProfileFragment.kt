@@ -31,6 +31,7 @@ import com.varsel.firechat.viewModel.FirebaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.lang.IllegalArgumentException
 
 
 class ProfileFragment : Fragment() {
@@ -266,12 +267,9 @@ class ProfileFragment : Fragment() {
         val recyclerView = dialog.findViewById<RecyclerView>(R.id.friend_requests_recycler_view)
 
         friendRequestsAdapter = FriendRequestsAdapter(parent, { id, user, base64 ->
-            val action = ProfileFragmentDirections.actionProfileFragmentToOtherProfileFragment(id)
-            parent.firebaseViewModel.selectedUser.value = user
-            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
-
             dialog.dismiss()
-            binding.root.findNavController().navigate(action)
+
+            navigateToOtherProfile(id, user, base64)
 
         }, { user ->
             firebaseViewModel.acceptFriendRequest(user, parent.mDbRef, parent.firebaseAuth)
@@ -318,6 +316,15 @@ class ProfileFragment : Fragment() {
         })
 
         dialog.show()
+    }
+
+    private fun navigateToOtherProfile(id: String, user: User, base64: String?) {
+        try {
+            val action = ProfileFragmentDirections.actionProfileFragmentToOtherProfileFragment(id)
+            parent.firebaseViewModel.selectedUser.value = user
+            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
+            binding.root.findNavController().navigate(action)
+        } catch (e: IllegalArgumentException) {}
     }
 
     private fun refreshRecyclerView(){

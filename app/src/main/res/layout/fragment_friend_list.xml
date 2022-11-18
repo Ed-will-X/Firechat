@@ -85,7 +85,6 @@
                 <EditText
                     android:id="@+id/search_box"
                     android:layout_marginLeft="10dp"
-                    android:focusable="true"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"

@@ -16,6 +16,7 @@ import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.FriendsAdapter
 import com.varsel.firechat.view.signedIn.fragments.bottomNav.ChatsFragmentDirections
+import java.lang.IllegalArgumentException
 
 class FriendsFragment : Fragment() {
     private var _binding: FragmentFriendsBinding? = null
@@ -39,9 +40,8 @@ class FriendsFragment : Fragment() {
         }
 
         val friendsAdapter = FriendsAdapter(parent, { user, base64 ->
-            navigateToProfile(user.userUID)
-            parent.firebaseViewModel.selectedUser.value = user
-            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
+            navigateToProfile(user.userUID, user, base64)
+
 
         },{ user, base64 ->
             parent.profileImageViewModel.selectedOtherUserProfilePicChat.value = base64
@@ -84,9 +84,14 @@ class FriendsFragment : Fragment() {
         }
     }
 
-    private fun navigateToProfile(id: String){
-        val action = ChatsFragmentDirections.actionChatsFragmentToOtherProfileFragment(id)
-        binding.root.findNavController().navigate(action)
+    private fun navigateToProfile(id: String, user: User, base64: String?){
+        try {
+            val action = ChatsFragmentDirections.actionChatsFragmentToOtherProfileFragment(id)
+            binding.root.findNavController().navigate(action)
+
+            parent.firebaseViewModel.selectedUser.value = user
+            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
+        } catch (e: IllegalArgumentException) {}
     }
 
     private fun navigateToChats(userId: String){

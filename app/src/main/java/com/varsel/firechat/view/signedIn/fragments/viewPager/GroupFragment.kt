@@ -10,12 +10,14 @@ import androidx.navigation.findNavController
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentGroupBinding
 import com.varsel.firechat.model.Chat.GroupRoom
+import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.GroupChatsListAdapter
 import com.varsel.firechat.view.signedIn.fragments.bottomNav.ChatsFragmentDirections
+import java.lang.IllegalArgumentException
 
 class GroupFragment : Fragment() {
     private var _binding: FragmentGroupBinding? = null
@@ -35,9 +37,7 @@ class GroupFragment : Fragment() {
         adapter = GroupChatsListAdapter(parent, requireContext(),{
             navigateToCreateGroup()
         }, { id, image ->
-            navigateToGroupChatPage(id)
-//            parent.profileImageViewModel.selectedGroupImageEncoded.value = base64
-            parent.profileImageViewModel.selectedGroupImage.value = image
+            navigateToGroupChatPage(id, image)
 
         }, { groupImage, group ->
             ImageUtils.displayGroupImage(groupImage, group, parent)
@@ -65,7 +65,9 @@ class GroupFragment : Fragment() {
     }
 
     fun navigateToCreateGroup(){
-        view?.findNavController()?.navigate(R.id.action_chatsFragment_to_createGroupFragment)
+        try {
+            view?.findNavController()?.navigate(R.id.action_chatsFragment_to_createGroupFragment)
+        } catch (e: IllegalArgumentException) {}
     }
 
     private fun toggleShimmerVisibility(currentUser: User?){
@@ -76,10 +78,12 @@ class GroupFragment : Fragment() {
         }
     }
 
-    fun navigateToGroupChatPage(groupId: String){
-        val action = ChatsFragmentDirections.actionChatsFragmentToGroupChatPageFragment(groupId)
-
-        view?.findNavController()?.navigate(action)
+    fun navigateToGroupChatPage(groupId: String, image: ProfileImage?){
+        try {
+            val action = ChatsFragmentDirections.actionChatsFragmentToGroupChatPageFragment(groupId)
+            view?.findNavController()?.navigate(action)
+            parent.profileImageViewModel.selectedGroupImage.value = image
+        } catch (e: IllegalArgumentException){ }
     }
 
     // TODO: Fix potential bug

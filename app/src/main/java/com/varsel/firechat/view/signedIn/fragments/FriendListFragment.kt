@@ -27,6 +27,7 @@ import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.FriendListAdapter
 import com.varsel.firechat.viewModel.FriendListFragmentViewModel
 import com.varsel.firechat.viewModel.SortTypes
+import java.lang.IllegalArgumentException
 
 class FriendListFragment : Fragment() {
     private var _binding: FragmentFriendListBinding? = null
@@ -82,11 +83,7 @@ class FriendListFragment : Fragment() {
         }
 
         adapter = FriendListAdapter(parent, { id, user, base64 ->
-            parent.firebaseViewModel.selectedUser.value = user
-            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
-
-            val action = FriendListFragmentDirections.actionFriendListFragmentToOtherProfileFragment(id)
-            view.findNavController().navigate(action)
+            navigateToOtherProfile(id, user, base64)
         }, { profileImage, user ->
             ImageUtils.displayProfilePicture(profileImage, user, parent)
         })
@@ -113,6 +110,16 @@ class FriendListFragment : Fragment() {
         setupSortDialogOverlay()
 
         return view
+    }
+
+    private fun navigateToOtherProfile(userId: String, user: User, base64: String?) {
+        try {
+            val action = FriendListFragmentDirections.actionFriendListFragmentToOtherProfileFragment(userId)
+            view?.findNavController()?.navigate(action)
+
+            parent.firebaseViewModel.selectedUser.value = user
+            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
+        } catch (e: IllegalArgumentException) { }
     }
 
     private fun addFriendsToAdapter_initial(friends: List<User?>?, sortType: Int){

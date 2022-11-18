@@ -678,10 +678,12 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     private fun getAllFriends(friends: List<String>){
-        val users = mutableListOf<User?>()
+        val users = mutableListOf<User>()
         for(i in friends){
             firebaseViewModel.getUserSingle(i, mDbRef, {
-                users.add(it)
+                if(it != null){
+                    users.add(it)
+                }
             }, {
                 firebaseViewModel.setFriends(users)
             })

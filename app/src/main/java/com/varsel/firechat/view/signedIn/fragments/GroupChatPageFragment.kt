@@ -36,6 +36,7 @@ import com.varsel.firechat.viewModel.GroupChatDetailViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.lang.IllegalArgumentException
 
 class GroupChatPageFragment : Fragment() {
     private var _binding: FragmentGroupChatPageBinding? = null
@@ -235,12 +236,8 @@ class GroupChatPageFragment : Fragment() {
         dialog.setContentView(R.layout.action_sheet_system_message)
         val recyclerView = dialog.findViewById<RecyclerView>(R.id.system_message_participant_recycler_view)
         val adapter = FriendListAdapter(parent, { id, user, base64 ->
-            parent.firebaseViewModel.selectedUser.value = user
-            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
-
             dialog.dismiss()
-            val action = GroupChatPageFragmentDirections.actionGroupChatPageFragmentToOtherProfileFragment(id)
-            binding.root.findNavController().navigate(action)
+            navigateToOtherProfilePage(id, user, base64)
         }, { profileImage, user ->
             ImageUtils.displayProfilePicture(profileImage, user, parent)
             dialog.dismiss()
@@ -254,6 +251,16 @@ class GroupChatPageFragment : Fragment() {
         }
 
         dialog.show()
+    }
+
+    private fun navigateToOtherProfilePage(id: String, user: User, base64: String?) {
+        try {
+            val action = GroupChatPageFragmentDirections.actionGroupChatPageFragmentToOtherProfileFragment(id)
+            binding.root.findNavController().navigate(action)
+
+            parent.firebaseViewModel.selectedUser.value = user
+            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
+        } catch (e: IllegalArgumentException){ }
     }
 
     private fun splitUsersString(users: String): List<String> {

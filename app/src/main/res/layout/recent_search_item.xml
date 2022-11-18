@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="UX/UI Designer"
-        android:textColor="@color/grey"
+        android:textColor="@color/transparent_grey"
         android:layout_marginLeft="5dp"
         android:textSize="14sp"
         />

@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.varsel.firechat.databinding.FragmentIndividualBinding
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.navigate
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
@@ -19,6 +20,7 @@ import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ChatListAdapter
 import com.varsel.firechat.view.signedIn.fragments.bottomNav.ChatsFragment
 import com.varsel.firechat.view.signedIn.fragments.bottomNav.ChatsFragmentDirections
+import java.lang.IllegalArgumentException
 
 class IndividualFragment : Fragment() {
     private var _binding: FragmentIndividualBinding? = null
@@ -39,10 +41,7 @@ class IndividualFragment : Fragment() {
 
         // adapter
         val chatListAdapter = ChatListAdapter(parent, { userId, chatRoomId, user, base64 ->
-            parent.profileImageViewModel.selectedOtherUserProfilePicChat.value = base64
-            parent.firebaseViewModel.selectedChatRoomUser.value = user
-            val action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(chatRoomId, userId)
-            view.findNavController().navigate(action)
+            navigateToChatPage(chatRoomId, user, base64)
         }, { profileImage, user ->
             ImageUtils.displayProfilePicture(profileImage, user, parent)
         }, {
@@ -72,6 +71,19 @@ class IndividualFragment : Fragment() {
         })
 
         return view
+    }
+
+    private fun navigateToChatPage(chatRoomId: String, user: User, base64: String?) {
+        try {
+            val action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(chatRoomId, user.userUID)
+
+            view?.findNavController()?.navigate(action)
+
+            parent.profileImageViewModel.selectedOtherUserProfilePicChat.value = base64
+            parent.firebaseViewModel.selectedChatRoomUser.value = user
+        } catch (e: IllegalArgumentException){
+
+        }
     }
 
     private fun setUnreadIndicator(unreadRooms: MutableMap<String, ChatRoom>){

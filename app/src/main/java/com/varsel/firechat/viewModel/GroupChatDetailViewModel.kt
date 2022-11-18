@@ -28,15 +28,17 @@ class GroupChatDetailViewModel: ViewModel() {
 
     fun getNonParticipants(parent: SignedinActivity){
         val participants: List<String> = parent.firebaseViewModel.selectedGroupRoom.value!!.participants?.values!!.toList()
-        val friends: MutableList<User> = parent.firebaseViewModel.friends.value as MutableList<User>
+        val friends: List<User>? = parent.firebaseViewModel.friends.value?.toList()
         val non_participants = mutableListOf<User>()
 
-        for((i_index, i_value) in friends.withIndex()){
-            for((j_index, j_value) in participants.withIndex()){
-                if(i_value.userUID == j_value){
-                    break
-                } else if(j_index == participants.size -1) {
-                    non_participants.add(i_value)
+        if(friends != null){
+            for((i_index, i_value) in friends.withIndex()){
+                for((j_index, j_value) in participants.withIndex()){
+                    if(i_value.userUID == j_value){
+                        break
+                    } else if(j_index == participants.size -1) {
+                        non_participants.add(i_value)
+                    }
                 }
             }
         }
