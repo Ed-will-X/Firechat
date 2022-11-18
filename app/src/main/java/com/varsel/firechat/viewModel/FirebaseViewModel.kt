@@ -4,10 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.varsel.firechat.model.Chat.ChatRoom
@@ -1208,7 +1205,42 @@ class FirebaseViewModel: ViewModel() {
                     failureCallback()
                 }
             }
+    }
 
+    // TODO: Implement delete recent search
+    fun deleteRecentSearchHistory(mAuth: FirebaseAuth, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        mDbRef
+            .child("Users")
+            .child(mAuth.currentUser!!.uid)
+            .child("recent_search")
+            .setValue(null)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                    DebugUtils.log_firebase("Delete recent search history successful")
+                }else{
+                    failureCallback()
+                    DebugUtils.log_firebase("DELETE RECENT SEARCH HISTORY UNSUCCESSFUL")
+                }
+            }
+    }
+
+    fun addToRecentSearch(userId: String, firebaseAuth: FirebaseAuth, mDbRef: DatabaseReference, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
+        mDbRef
+            .child("Users")
+            .child(firebaseAuth.currentUser!!.uid)
+            .child("recent_search")
+            .child(userId)
+            .setValue(System.currentTimeMillis())
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                    DebugUtils.log_firebase("Add to recent search successful")
+                }else{
+                    failureCallback()
+                    DebugUtils.log_firebase("ADD TO RECENT SEARCH UNSUCCESSFUL")
+                }
+            }
     }
 
     // TODO: Implement delete account

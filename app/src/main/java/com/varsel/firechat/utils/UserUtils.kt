@@ -68,6 +68,14 @@ class UserUtils(var fragment: Fragment) {
 
             return otherUser
         }
+
+        fun getUser(userId: String, activity: SignedinActivity, callback: (user: User)-> Unit){
+            activity.firebaseViewModel.getUserSingle(userId, activity.mDbRef, {
+                if(it != null){
+                    callback(it)
+                }
+            },{})
+        }
     }
 
     fun getFirstName(name: String): String{

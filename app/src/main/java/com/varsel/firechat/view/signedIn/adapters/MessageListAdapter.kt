@@ -25,6 +25,7 @@ import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
+import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.viewModel.FirebaseViewModel
 import java.lang.Exception
@@ -203,7 +204,7 @@ class MessageListAdapter(
                     viewHolder.profilePicContainer.visibility = View.GONE
                     viewHolder.emptyPadding.visibility = View.VISIBLE
                 } else {
-                    getUser(item.sender){ user ->
+                    UserUtils.getUser(item.sender, activity){ user ->
                         ImageUtils.setProfilePicOtherUser_fullObject(user, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
                             holder.profileImage.setOnClickListener {
                                 if (profileImage != null){
@@ -216,7 +217,7 @@ class MessageListAdapter(
                     viewHolder.emptyPadding.visibility = View.GONE
                 }
             } catch (e: Exception) {
-                getUser(item.sender){ user ->
+                UserUtils.getUser(item.sender, activity){ user ->
                     ImageUtils.setProfilePicOtherUser_fullObject(user, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
                         holder.profileImage.setOnClickListener {
                             if (profileImage != null){
@@ -285,21 +286,15 @@ class MessageListAdapter(
 
     }
 
-    private fun getUser(userId: String, callback: (user: User)-> Unit){
-        firebaseViewModel.getUserSingle(userId, activity.mDbRef, {
-            if(it != null){
-                callback(it)
-            }
-        },{})
-    }
+
 
     private fun formatSystemMessage(message: Message, time: Long, afterCallback: (message: String)-> Unit){
         val currentUser = activity.firebaseAuth.currentUser!!.uid
         if(message.messageUID == SystemMessageType.GROUP_REMOVE){
             val messageArr: Array<String> = message.message.split(" ").toTypedArray()
 
-            getUser(messageArr[0]){ remover ->
-                getUser(messageArr[1]) { removed ->
+            UserUtils.getUser(messageArr[0], activity){ remover ->
+                UserUtils.getUser(messageArr[1], activity) { removed ->
 //                    afterCallback("${if (remover.userUID == currentUser) "You" else "${remover.name}"} removed ${if(removed.userUID == currentUser) "You" else "${removed.name}"}")
                     afterCallback(context.getString(R.string.group_removed, if (remover.userUID == currentUser) "You" else "${remover.name}", if(removed.userUID == currentUser) "You" else "${removed.name}"))
                 }
@@ -309,7 +304,7 @@ class MessageListAdapter(
 
         if(message.messageUID == SystemMessageType.GROUP_ADD){
             val users: Array<String> = message.message.split(" ").toTypedArray()
-            getUser(users[0]) {
+            UserUtils.getUser(users[0], activity) {
                 if (users.size < 3) {
                     formatPerson(it.userUID, {
                         afterCallback(context.getString(R.string.group_add_second_person_singular))
@@ -327,7 +322,7 @@ class MessageListAdapter(
             // TODO: Add lone return statement
         }
 
-        getUser(message.message) {
+        UserUtils.getUser(message.message, activity) {
             if(message.messageUID == SystemMessageType.GROUP_CREATE){
                 formatPerson(it.userUID, {
                     afterCallback(context.getString(R.string.group_create_second_person, MessageUtils.formatStampChatsPage(time.toString())))
@@ -371,7 +366,7 @@ class MessageListAdapter(
         if(pageType == ChatPageType.INDIVIDUAL){
             viewHolder.timestamp.text = MessageUtils.formatStampMessage(item.time.toString())
         } else {
-            getUser(item.sender) {
+            UserUtils.getUser(item.sender, activity) {
                 viewHolder.timestamp.text = "${MessageUtils.formatStampMessage(item.time.toString())} · ${it.name}"
             }
 

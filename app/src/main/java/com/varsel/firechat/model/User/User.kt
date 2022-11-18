@@ -3,6 +3,9 @@ package com.varsel.firechat.model.User
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.LinkedHashMap
 
 @Entity(tableName = "user")
 open class User{
@@ -53,6 +56,8 @@ open class User{
     var favorite_friends: HashMap<String, String>? = null
 
     var public_posts: HashMap<String, String>? = null
+
+    var recent_search: HashMap<String, Long> = hashMapOf()
 
     // Firebase Constructor
     constructor(name: String,
