@@ -14,6 +14,8 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
+import com.varsel.firechat.databinding.ActionSheetSigninBinding
+import com.varsel.firechat.databinding.ActionSheetSignupBinding
 import com.varsel.firechat.databinding.FragmentAuthRootBinding
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedOut.SignedoutActivity
@@ -51,30 +53,46 @@ class AuthRootFragment : Fragment() {
 
         parent  = activity as SignedoutActivity
 
-        binding.navigateToSignIn.setOnClickListener {
-            showSigninDialog {
+        binding.signIn.setOnClickListener {
+            showSigninDialog { dialogBinding ->
+                signedOutViewModel.hasBeenClicked_signin.value = true
+                dialogBinding.signInBtnActionsheet.isEnabled = false
+
                 firebaseViewModel.signin(email_login, password_login, parent.mAuth, {
                     navigate(AuthType.SIGN_IN) {
 
                     }
+                    dialogBinding.signInBtnActionsheet.isEnabled = true
+                    signedOutViewModel.hasBeenClicked_signin.value = false
                 }, {
                     Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_LONG).show()
+                    dialogBinding.signInBtnActionsheet.isEnabled = true
+                    signedOutViewModel.hasBeenClicked_signin.value = false
                 })
             }
         }
-        binding.navigateToSignUp.setOnClickListener {
+        binding.signUp.setOnClickListener {
 
-            showSignUpDialog() {
+            showSignUpDialog() { dialogBinding ->
+                dialogBinding.signUpBtnActionsheet.isEnabled = false
+                signedOutViewModel.hasBeenClicked_signup.value = true
+
                 firebaseViewModel.signUp(emailText, passwordText, parent.mAuth, {
                     firebaseViewModel.saveUser(fullnameText, emailText, parent.mAuth.currentUser?.uid.toString() ,parent.mDbRef, {
                         navigate(AuthType.SIGN_UP) {
 
                         }
+                        dialogBinding.signUpBtnActionsheet.isEnabled = true
+                        signedOutViewModel.hasBeenClicked_signup.value = false
                     }, {
                         Toast.makeText(requireContext(), "Something went wrong with DB", Toast.LENGTH_LONG).show()
+                        dialogBinding.signUpBtnActionsheet.isEnabled = true
+                        signedOutViewModel.hasBeenClicked_signup.value = false
                     })
                 }, {
                     Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_LONG).show()
+                    dialogBinding.signUpBtnActionsheet.isEnabled = true
+                    signedOutViewModel.hasBeenClicked_signup.value = false
                 })
             }
         }
@@ -87,66 +105,59 @@ class AuthRootFragment : Fragment() {
 
     }
 
-    fun showSigninDialog(callback: () -> Unit){
+    fun showSigninDialog(callback: (dialogBinding: ActionSheetSigninBinding) -> Unit){
         val dialog = BottomSheetDialog(requireContext())
-        dialog.setContentView(R.layout.action_sheet_signin)
-        val email = dialog.findViewById<EditText>(R.id.email_edit_text)!!
-        val password = dialog.findViewById<EditText>(R.id.password_edit_text)!!
-        val btn = dialog.findViewById<Button>(R.id.sign_in_btn_actionsheet)
+        val dialogBinding = ActionSheetSigninBinding.inflate(layoutInflater, binding.root, false)
+        dialog.setContentView(dialogBinding.root)
 
-        signedOutViewModel.validateSignin(email, password, btn)
+        signedOutViewModel.validateSignin(dialogBinding.emailEditText, dialogBinding.passwordEditText, dialogBinding.signInBtnActionsheet)
 
-        email?.doAfterTextChanged {
+        dialogBinding.emailEditText.doAfterTextChanged {
             email_login = it.toString()
         }
 
-        password?.doAfterTextChanged {
+        dialogBinding.passwordEditText.doAfterTextChanged {
             password_login = it.toString()
         }
 
-        btn?.setOnClickListener {
+        dialogBinding.signInBtnActionsheet.setOnClickListener {
             val sanitisedEmail = email_login.trim()
 
             email_login = sanitisedEmail
-            callback()
+            callback(dialogBinding)
         }
 
         dialog.show()
     }
 
-    fun showSignUpDialog(callback: ()-> Unit){
+    fun showSignUpDialog(callback: (dialogBinding: ActionSheetSignupBinding)-> Unit){
         val dialog = BottomSheetDialog(requireContext())
-        dialog.setContentView(R.layout.action_sheet_signup)
-        val agreement = dialog.findViewById<CheckBox>(R.id.agreement)
-        val btn = dialog.findViewById<Button>(R.id.sign_up_btn_actionsheet)!!
-        val fullname = dialog.findViewById<EditText>(R.id.name_edit_text)
-        val email = dialog.findViewById<EditText>(R.id.email_edit_text)
-        val password = dialog.findViewById<EditText>(R.id.password_edit_text)
-        val confirmPassword = dialog.findViewById<EditText>(R.id.confirm_password_edit_text)
+        val dialogBinding = ActionSheetSignupBinding.inflate(layoutInflater, binding.root, false)
+        dialog.setContentView(dialogBinding.root)
 
 
-        fullname?.doAfterTextChanged {
+        dialogBinding.nameEditText.doAfterTextChanged {
             fullnameText = it.toString()
         }
 
-        email?.doAfterTextChanged {
+        dialogBinding.emailEditText.doAfterTextChanged {
             emailText = it.toString()
         }
 
-        password?.doAfterTextChanged {
+        dialogBinding.passwordEditText.doAfterTextChanged {
             passwordText = it.toString()
         }
 
-        signedOutViewModel.validateSignup(fullname, email, password, confirmPassword, btn, agreement)
+        signedOutViewModel.validateSignup(dialogBinding.nameEditText, dialogBinding.emailEditText, dialogBinding.passwordEditText, dialogBinding.confirmPasswordEditText, dialogBinding.signUpBtnActionsheet, dialogBinding.agreement)
 
-        btn.setOnClickListener {
+        dialogBinding.signUpBtnActionsheet.setOnClickListener {
             val sanitisedFullname = fullnameText.trim()
             val sanitisedEmail = emailText.trim()
 
             fullnameText = sanitisedFullname
             emailText = sanitisedEmail
 
-            callback()
+            callback(dialogBinding)
         }
 
         dialog.show()

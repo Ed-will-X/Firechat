@@ -4,6 +4,9 @@ import androidx.fragment.app.Fragment
 import com.varsel.firechat.R
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.view.signedIn.SignedinActivity
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class UserUtils(var fragment: Fragment) {
     companion object {
@@ -75,6 +78,19 @@ class UserUtils(var fragment: Fragment) {
                     callback(it)
                 }
             },{})
+        }
+
+        /*
+        *   Sorts a hashmap by the order of insertion,
+        *   The key refers to the ID,
+        *   And the value refers to the insertion timestamp.
+        * */
+        fun sortByTimestamp(positioned: SortedMap<String, Long>): Map<String, Long> {
+            val sorted = positioned.toList()
+                .sortedBy { (key, value) -> value }
+                .toMap()
+
+            return sorted
         }
     }
 

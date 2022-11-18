@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.databinding.FragmentAddGroupMembersBinding
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.SearchUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.AddGroupMembersAdapter
@@ -99,11 +100,14 @@ class AddGroupMembersFragment : Fragment() {
     }
 
     private fun addParticipants(){
-        parent.firebaseViewModel.addGroupMembers(adapter.selected, parent.firebaseAuth.uid!!, groupId, parent.mDbRef, {
+        val selected_copy = adapter.selected.toList()
+        binding.addMembersBtn.isEnabled = false
+        binding.darkOverlay.visibility = View.VISIBLE
 
-
+        parent.firebaseViewModel.addGroupMembers(selected_copy, parent.firebaseAuth.uid!!, groupId, parent.mDbRef, {
         }, {
-
+           binding.addMembersBtn.isEnabled = true
+            binding.darkOverlay.visibility = View.GONE
         }, {
             popNavigation()
         })

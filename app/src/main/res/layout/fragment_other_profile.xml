@@ -53,6 +53,7 @@
                         android:layout_height="match_parent">
 
                         <ImageView
+                            android:foreground="?selectableItemBackground"
                             android:id="@+id/profile_image"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"

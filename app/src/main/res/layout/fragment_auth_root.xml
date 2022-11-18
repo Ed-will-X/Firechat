@@ -51,11 +51,11 @@
 
         <Button
             style="@style/auth_root_sign_in_btn"
-            android:id="@+id/navigate_to_sign_in"
+            android:id="@+id/sign_in"
             android:text="@string/auth_root_login_button_text" />
 
         <Button
-            android:id="@+id/navigate_to_sign_up"
+            android:id="@+id/sign_up"
             style="@style/auth_root_sign_up_btn"
             android:text="@string/auth_root_signup_button_text" />
 

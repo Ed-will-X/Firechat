@@ -3,6 +3,7 @@ package com.varsel.firechat.viewModel
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
@@ -23,6 +24,8 @@ import kotlinx.coroutines.launch
 class SignedoutViewModel: ViewModel() {
     val passwordText = MutableLiveData<String>("")
     val confirmPasswordText = MutableLiveData<String>("")
+    val hasBeenClicked_signup = MutableLiveData<Boolean>(false)
+    val hasBeenClicked_signin = MutableLiveData<Boolean>(false)
 
     fun validateSignup(fullname: EditText?, email: EditText?, password: EditText?, confirmPassword: EditText?, btn: Button?, agreement: CheckBox?){
         var isValidFullname = false
@@ -75,14 +78,22 @@ class SignedoutViewModel: ViewModel() {
     }
 
     private fun enableSignupBtn(fullname: Boolean, email: Boolean, password: Boolean, confirmPassword: Boolean, agreement: Boolean): Boolean{
-        if(passwordText.value != confirmPasswordText.value){
-            return false
+        if(hasBeenClicked_signup.value == false){
+            if(passwordText.value != confirmPasswordText.value){
+                return false
+            } else {
+                return fullname && email && password && confirmPassword && agreement
+            }
         } else {
-            return fullname && email && password && confirmPassword && agreement
+            return false
         }
     }
 
     private fun enableSigninBtn(email: Boolean, password: Boolean): Boolean{
-        return email && password
+        if(hasBeenClicked_signin.value == false){
+            return email && password
+        } else {
+            return false
+        }
     }
 }

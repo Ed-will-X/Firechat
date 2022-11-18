@@ -222,12 +222,24 @@ class ProfileFragment : Fragment() {
         }
 
         binding.friendsClickable.setOnClickListener {
-            view?.findNavController()?.navigate(R.id.action_profileFragment_to_friendListFragment)
+            navigateToFriendList()
         }
 
         binding.editProfile.setOnClickListener {
-            view?.findNavController()?.navigate(R.id.action_profileFragment_to_editProfilePage)
+            navigateToEditProfile()
         }
+    }
+
+    private fun navigateToFriendList() {
+        try {
+            view?.findNavController()?.navigate(R.id.action_profileFragment_to_friendListFragment)
+        } catch (e: IllegalArgumentException){}
+    }
+
+    private fun navigateToEditProfile(){
+        try {
+            view?.findNavController()?.navigate(R.id.action_profileFragment_to_editProfilePage)
+        } catch (e: IllegalArgumentException) { }
     }
 
     private fun observeProfileImage(){

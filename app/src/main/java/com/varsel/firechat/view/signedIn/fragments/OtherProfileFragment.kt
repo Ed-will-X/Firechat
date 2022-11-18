@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
+import com.varsel.firechat.databinding.ActionSheetUnfriendBinding
 import com.varsel.firechat.databinding.ActionsheetOtherUserPublicPostsBinding
 import com.varsel.firechat.databinding.FragmentOtherProfileBinding
 import com.varsel.firechat.model.User.User
@@ -274,19 +275,30 @@ class OtherProfileFragment : Fragment() {
 
     private fun showUnfriendActionsheet(user: User){
         val dialog = BottomSheetDialog(parent)
-        dialog.setContentView(R.layout.action_sheet_unfriend)
-        val unfriendUserBody = dialog.findViewById<TextView>(R.id.unfriend_user_body)
-        unfriendUserBody?.text = getString(R.string.unfriend_user_body, user.name)
+        val dialogBinding = ActionSheetUnfriendBinding.inflate(layoutInflater, binding.root, false)
+        val view = dialogBinding.root
+        dialog.setContentView(view)
+
+        dialogBinding.unfriendUserBody.text = getString(R.string.unfriend_user_body, user.name)
 
         // TODO: Implement unfriend user
+        dialogBinding.yesBtn.setOnClickListener {
+            parent.firebaseViewModel.unfriendUser(user, parent.firebaseAuth, parent.mDbRef)
+            dialog.dismiss()
+        }
 
+        dialogBinding.noBtn.setOnClickListener {
+            dialog.dismiss()
+        }
         dialog.show()
     }
 
-    private fun determineActionsheet(user: User?){
+    private fun determineActionsheet(user: User){
         if(user?.friendRequests?.contains(parent.firebaseAuth.currentUser?.uid) == true){
             showRevokeRequest(user)
-        } else if(user?.friends?.contains(parent.firebaseAuth.currentUser?.uid) == true){
+
+            // TODO: Fix lifecycle bug Here
+        } else if(parent.firebaseViewModel.currentUser.value?.friends?.contains(user.userUID) == true){
             showUnfriendActionsheet(user)
         }
         else {

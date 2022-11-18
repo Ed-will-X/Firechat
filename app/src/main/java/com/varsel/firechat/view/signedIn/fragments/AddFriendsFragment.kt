@@ -29,6 +29,7 @@ import com.varsel.firechat.view.signedIn.adapters.RecentSearchAdapter
 import com.varsel.firechat.viewModel.AddFriendsViewModel
 import com.varsel.firechat.viewModel.FirebaseViewModel
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.navigate
+import com.varsel.firechat.utils.UserUtils
 import java.lang.IllegalArgumentException
 
 
@@ -139,9 +140,7 @@ class AddFriendsFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun submitToRecentSearch(searches: HashMap<String, Long>){
         val positioned = searches.toSortedMap()
-        val sorted = positioned.toList()
-            .sortedBy { (key, value) -> value }
-            .toMap()
+        val sorted = UserUtils.sortByTimestamp(positioned)
 
         recentSearchAdapter.recentSearches = sorted.keys.toList().reversed()
         recentSearchAdapter.notifyDataSetChanged()

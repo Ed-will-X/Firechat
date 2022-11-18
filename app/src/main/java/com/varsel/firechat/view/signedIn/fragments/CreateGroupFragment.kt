@@ -14,6 +14,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
+import com.varsel.firechat.databinding.ActionsheetCreateGroupBinding
 import com.varsel.firechat.databinding.FragmentCreateGroupBinding
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
@@ -23,12 +24,14 @@ import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.SearchUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.CreateGroupAdapter
+import com.varsel.firechat.viewModel.CreateGroupViewModel
 
 class CreateGroupFragment : Fragment() {
     private var _binding: FragmentCreateGroupBinding? = null
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
     private lateinit var adapter: CreateGroupAdapter
+    private val createGroupViewModel: CreateGroupViewModel by activityViewModels()
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -135,27 +138,43 @@ class CreateGroupFragment : Fragment() {
 
     private fun showActionsheet(){
         val dialog = BottomSheetDialog(requireContext())
-        dialog.setContentView(R.layout.actionsheet_create_group)
-        val groupName = dialog.findViewById<EditText>(R.id.group_name)
-        val btn = dialog.findViewById<Button>(R.id.btn_create_group)
+        val dialogBinding = ActionsheetCreateGroupBinding.inflate(layoutInflater, binding.root, false)
+        dialog.setContentView(dialogBinding.root)
 
-        groupName?.doAfterTextChanged {
-            btn?.isEnabled = !groupName.text.isEmpty()
+        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+            dialogBinding.btnCreateGroup.isEnabled = true
+        }, {
+            dialogBinding.btnCreateGroup.isEnabled = false
+        })
+
+        dialogBinding.groupName.doAfterTextChanged {
+            if(createGroupViewModel.hasBtnBeenClicked.value == false){
+                dialogBinding.btnCreateGroup.isEnabled = !dialogBinding.groupName.text.isEmpty()
+            } else {
+                dialogBinding.btnCreateGroup.isEnabled = false
+            }
         }
 
-        // TODO: Disable if <1 is selected
-        btn?.setOnClickListener {
+        dialogBinding.btnCreateGroup.setOnClickListener {
+            dialogBinding.btnCreateGroup.isEnabled = false
+            createGroupViewModel.hasBtnBeenClicked.value = true
+
             val newRoomId = MessageUtils.generateUID(30)
             val participants = addParticipants()
-            val groupNameText = groupName?.text.toString().trim()
+            val groupNameText = dialogBinding.groupName.text.toString().trim()
             val group = GroupRoom(newRoomId, participants, groupNameText, makeCurrentUserAdmin())
 
             appendRoomIdToUsers(participants.values.toList(), newRoomId) {
                 parent.firebaseViewModel.createGroup(group, parent.mDbRef, parent.firebaseAuth, {
                     navigateToGroupPage(newRoomId)
+                    dialogBinding.btnCreateGroup.isEnabled = true
+                    createGroupViewModel.hasBtnBeenClicked.value = false
 
                     dialog.dismiss()
-                }, {})
+                }, {
+                    dialogBinding.btnCreateGroup.isEnabled = true
+                    createGroupViewModel.hasBtnBeenClicked.value = false
+                })
             }
         }
 
