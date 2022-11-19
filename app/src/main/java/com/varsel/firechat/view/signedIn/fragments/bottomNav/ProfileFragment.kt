@@ -123,10 +123,11 @@ class ProfileFragment : Fragment() {
             val uid = ":${System.currentTimeMillis()}-${MessageUtils.generateUID(15)}:${PublicPostType.IMAGE}"
             val timestamp = System.currentTimeMillis()
             val currentUserId = parent.firebaseAuth.currentUser!!.uid
-            val publicPost = PublicPost(currentUserId, uid, PublicPostType.IMAGE, caption, encoded, timestamp)
-            parent.firebaseViewModel.uploadPublicPost(publicPost, parent.mDbRef, {
+            val publicPost = PublicPost(currentUserId, uid, PublicPostType.IMAGE, caption, timestamp)
+
+            parent.firebaseViewModel.uploadPublicPost(publicPost, encoded, parent.firebaseStorage, parent.mDbRef, {
                 parent.firebaseViewModel.appendPublicPostIdToUser(parent.firebaseAuth, parent.mDbRef, uid, {
-                    parent.publicPostViewModel.storePost(publicPost)
+                    parent.publicPostViewModel.storePost(it)
                 }, {})
             }, {})
         }

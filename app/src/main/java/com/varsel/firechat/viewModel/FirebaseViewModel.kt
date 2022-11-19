@@ -1128,8 +1128,6 @@ class FirebaseViewModel: ViewModel() {
 
     fun getChatImage(imageId: String, chatRoomID: String, mDbRef: DatabaseReference, firebaseStorage: FirebaseStorage, loopCallback: (image: Image?) -> Unit, afterCallback: () -> Unit){
         val storageRef = firebaseStorage.reference.child("/chatImages/${chatRoomID}/${imageId}")
-        Log.d("LLL", "Chat Room Id and image id: ${chatRoomID} / ${imageId}")
-        Log.d("LLL", "Get chat image ran")
         storageRef.getBytes(2000000).addOnCompleteListener {
             if(it.isSuccessful){
                 Log.d("LLL", "Get bytes successful")
@@ -1160,68 +1158,93 @@ class FirebaseViewModel: ViewModel() {
         }
     }
 
-    fun uploadPublicPost(publicPost: PublicPost, mDbRef: DatabaseReference, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+    fun uploadPublicPost(publicPost: PublicPost, base64: String, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, successCallback: (publicPost: PublicPost)-> Unit, failureCallback: ()-> Unit){
         val reference = mDbRef.child("public_posts")
+        val decoded = ImageUtils.base64ToByteArray(base64)
 
-        reference
-            .child(publicPost.postId)
-            .setValue(publicPost)
-            .addOnCompleteListener {
-                if(it.isSuccessful){
-                    successCallback()
-                    DebugUtils.log_firebase("upload public post successful")
-                } else {
-                    failureCallback()
-                }
+        firebaseStorage.getReference("/publicPosts/${publicPost.postId}").putBytes(decoded).addOnCompleteListener {
+            if(it.isSuccessful){
+                reference
+                    .child(publicPost.postId)
+                    .setValue(publicPost)
+                    .addOnCompleteListener {
+                        if(it.isSuccessful){
+                            val publicPost_withBase64 = PublicPost(publicPost, base64)
+                            successCallback(publicPost_withBase64)
+                            DebugUtils.log_firebase("upload public post successful")
+                        } else {
+                            failureCallback()
+                        }
+                    }
+            } else {
+                failureCallback()
             }
+        }
     }
 
     // TODO: Not tested
-    fun removePublicPost(publicPost: PublicPost, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: ()-> Unit = {}, failureCallback: ()-> Unit = {}){
+    fun removePublicPost(publicPost: PublicPost, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: ()-> Unit = {}, failureCallback: ()-> Unit = {}){
         val publicPostReference = mDbRef.child("public_posts")
         val currentUserId = mAuth.currentUser!!.uid
         val currentUserReference = mDbRef.child("Users")
 
-        publicPostReference
-            .child(publicPost.postId)
-            .removeValue()
-            .addOnCompleteListener {
-                if(it.isSuccessful){
-                    currentUserReference
-                        .child(currentUserId)
-                        .child("public_posts")
-                        .child(publicPost.postId)
-                        .removeValue()
-                        .addOnCompleteListener {
-                            if(it.isSuccessful){
-                                successCallback()
-                                DebugUtils.log_firebase("remove public post successful")
-                            } else {
-                                failureCallback()
-                            }
+        firebaseStorage.getReference("/publicPosts/${publicPost.postId}").delete().addOnCompleteListener {
+            if(it.isSuccessful){
+                publicPostReference
+                    .child(publicPost.postId)
+                    .removeValue()
+                    .addOnCompleteListener {
+                        if(it.isSuccessful){
+                            currentUserReference
+                                .child(currentUserId)
+                                .child("public_posts")
+                                .child(publicPost.postId)
+                                .removeValue()
+                                .addOnCompleteListener {
+                                    if(it.isSuccessful){
+                                        successCallback()
+                                        DebugUtils.log_firebase("remove public post successful")
+                                    } else {
+                                        failureCallback()
+                                    }
+                                }
+                        } else {
+                            failureCallback()
                         }
-                } else {
-                    failureCallback()
-                }
+                    }
+            } else {
+                failureCallback()
             }
+        }
     }
 
-    fun getPublicPost(postId: String, mDbRef: DatabaseReference, loopCallback: (publicPost: PublicPost?) -> Unit, afterCallback: () -> Unit){
-        mDbRef.child("public_posts").orderByChild("postId").equalTo(postId).addListenerForSingleValueEvent(object: ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for(item in snapshot.children){
+    fun getPublicPost(postId: String, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, loopCallback: (publicPost: PublicPost?) -> Unit, afterCallback: () -> Unit){
+        val storageRef = firebaseStorage.reference.child("/publicPosts/${postId}")
+        storageRef.getBytes(2000000).addOnCompleteListener {
+            if(it.isSuccessful){
+                mDbRef.child("public_posts").orderByChild("postId").equalTo(postId).addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        for(item in snapshot.children){
 
-                    val post = item.getValue(PublicPost::class.java)
-                    loopCallback(post)
-                    DebugUtils.log_firebase("get public post successful")
-                }
-                afterCallback()
-            }
+                            val post = item.getValue(PublicPost::class.java)
+                            val encoded = ImageUtils.byteArraytoBase64(it.result)
+                            if(post != null){
+                                val post_withImage = PublicPost(post, encoded)
+                                loopCallback(post_withImage)
+                                DebugUtils.log_firebase("get public post successful")
+                            }
+                        }
+                        afterCallback()
+                    }
 
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+                })
+            } else {
+
             }
-        })
+        }
     }
 
     fun appendPublicPostIdToUser(mAuth: FirebaseAuth, mDbRef: DatabaseReference, postId: String, successCallback: () -> Unit, failureCallback: () -> Unit){
@@ -1241,7 +1264,7 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    // TODO: Implement delete recent search
+    // TODO: Not Tested
     fun deleteRecentSearchHistory(mAuth: FirebaseAuth, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
         mDbRef
             .child("Users")

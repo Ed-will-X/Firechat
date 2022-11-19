@@ -556,7 +556,7 @@ class SignedinActivity : AppCompatActivity() {
     fun fetchPublicPost_fullObject(postId: String, afterCallback: (publicPost: PublicPost?)-> Unit){
         Log.d("POST_FETCH", "Get public post from firebase called for ${postId}")
 
-        firebaseViewModel.getPublicPost(postId, mDbRef, {
+        firebaseViewModel.getPublicPost(postId, firebaseStorage,mDbRef, {
             if(it != null){
                 // TODO: store image
                 publicPostViewModel.storePost(it)
