@@ -105,7 +105,7 @@ class ChatPageFragment : Fragment() {
         val fragment = this
         lifecycleScope.launch(Dispatchers.Main) {
             delay(300)
-            messagesListAdapter = MessageListAdapter(parent, fragment, requireContext(), ChatPageType.INDIVIDUAL, parent.firebaseViewModel,
+            messagesListAdapter = MessageListAdapter(existingChatRoomId ?: newChatRoomId, parent, fragment, requireContext(), ChatPageType.INDIVIDUAL, parent.firebaseViewModel,
                 { message, image ->
                     ImageUtils.displayImageMessage(image, message, parent)
                 }, { _, _, _ ->
@@ -168,7 +168,7 @@ class ChatPageFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         ImageUtils.handleOnActivityResult(requireContext(), requestCode, resultCode, data, {
-            ImageUtils.uploadChatImage(it, parent) { message, image ->
+            ImageUtils.uploadChatImage(it, existingChatRoomId ?: newChatRoomId, parent) { message, image ->
                 parent.imageViewModel.storeImage(image) {
                     sendMessage(message) {
                         updateReadReceipt()

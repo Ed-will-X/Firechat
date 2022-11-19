@@ -71,7 +71,7 @@ class GroupChatPageFragment : Fragment() {
         val fragment = this
         lifecycleScope.launch(Dispatchers.Main) {
             delay(300)
-            messageAdapter = MessageListAdapter(parent,fragment, requireContext(), ChatPageType.GROUP, parent.firebaseViewModel,
+            messageAdapter = MessageListAdapter(roomId, parent,fragment, requireContext(), ChatPageType.GROUP, parent.firebaseViewModel,
                 { message, image ->
                     ImageUtils.displayImageMessage_group(image, message, parent)
                 }, { message, messageType, messageStatus ->
@@ -135,7 +135,7 @@ class GroupChatPageFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         ImageUtils.handleOnActivityResult(requireContext(), requestCode, resultCode, data, {
-            ImageUtils.uploadChatImage(it, parent) { message, image ->
+            ImageUtils.uploadChatImage(it, roomId, parent) { message, image ->
                 parent.imageViewModel.storeImage(image) {
                     sendImgMessage(message) {
 

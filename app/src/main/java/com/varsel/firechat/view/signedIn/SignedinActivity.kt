@@ -21,6 +21,9 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.varsel.firechat.FirechatApplication
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActivitySignedinBinding
@@ -52,6 +55,7 @@ class SignedinActivity : AppCompatActivity() {
     lateinit var dataStore: DataStore<Preferences>
     lateinit var firebaseAuth: FirebaseAuth
     lateinit var mDbRef: DatabaseReference
+    lateinit var firebaseStorage: FirebaseStorage
     lateinit var firebaseViewModel: FirebaseViewModel
     lateinit var signedinViewModel: SignedinViewModel
     lateinit var imageViewModel: ImageViewModel
@@ -70,6 +74,7 @@ class SignedinActivity : AppCompatActivity() {
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance()
         mDbRef = FirebaseDatabase.getInstance().reference
+        firebaseStorage = FirebaseStorage.getInstance()
 
         initialiseProfileImageViewModel()
         initialiseImageViewModel()
@@ -110,13 +115,13 @@ class SignedinActivity : AppCompatActivity() {
             }
 
             if(it?.friendRequests != null){
-                getFriendRequests(it?.friendRequests?.values!!.toList())
+                getFriendRequests(it.friendRequests.keys.toList())
             } else {
                 firebaseViewModel.friendRequests.value = mutableListOf<User>()
             }
 
             if(it?.friends != null){
-                getAllFriends(it?.friends?.values!!.toList())
+                getAllFriends(it.friends.keys.toList())
             } else {
                 firebaseViewModel.setFriends(listOf())
             }
@@ -475,24 +480,22 @@ class SignedinActivity : AppCompatActivity() {
     }
 
 
-    fun fetchChatImage(imageId: String, afterCallback: (image: String?)-> Unit){
+    fun fetchChatImage(imageId: String, chatRoomId: String, afterCallback: (image: String?)-> Unit){
         Log.d("IMAGE_FETCH", "Get image called for ${imageId}")
 
-        firebaseViewModel.getChatImage(imageId, mDbRef, {
+        firebaseViewModel.getChatImage(imageId, chatRoomId, mDbRef, firebaseStorage, {
             if(it != null){
-                // TODO: store image
                 imageViewModel.storeImage(it)
                 afterCallback(it.image)
             } else {
                 afterCallback(null)
             }
-            // TODO: Remove image from DB if it is null
         }, {
             afterCallback(null)
         })
     }
 
-    fun determineMessageImgFetchMethod(message: Message, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
+    fun determineMessageImgFetchMethod(message: Message, chatRoomId: String, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
         val imageLiveData = imageViewModel.checkForImgInRoom(message.message)
 
         imageLiveData.observeOnce(this, Observer {
@@ -501,7 +504,7 @@ class SignedinActivity : AppCompatActivity() {
                 dbCallback(it.image)
             } else {
                 Log.d("IMAGE_CHECK", "CHAT IMAGE GOTTEN FROM FIREBASE")
-                fetchChatImage(message.message) {
+                fetchChatImage(message.message, chatRoomId) {
                     fetchCallback(it)
                 }
             }
@@ -513,10 +516,10 @@ class SignedinActivity : AppCompatActivity() {
         If it exists, it stores the image in room and provides it in a callback,
         else, it returns null in that callback
     */
-    fun fetchChatImage_fullObject(imageId: String, afterCallback: (image: Image?)-> Unit){
+    fun fetchChatImage_fullObject(imageId: String, chatRoomId: String, afterCallback: (image: Image?)-> Unit){
         Log.d("IMAGE_FETCH", "Get image from firebase called for ${imageId}")
 
-        firebaseViewModel.getChatImage(imageId, mDbRef, {
+        firebaseViewModel.getChatImage(imageId, chatRoomId, mDbRef, firebaseStorage, {
             if(it != null){
                 // TODO: store image
                 imageViewModel.storeImage(it)
@@ -529,7 +532,7 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-    fun determineMessageImgFetchMethod_fullObject(message: Message, imgCallback: (image: Image?)-> Unit){
+    fun determineMessageImgFetchMethod_fullObject(message: Message, chatRoomId: String, imgCallback: (image: Image?)-> Unit){
         val imageLiveData = imageViewModel.checkForImgInRoom(message.message)
 
         imageLiveData.observeOnce(this, Observer {
@@ -538,7 +541,7 @@ class SignedinActivity : AppCompatActivity() {
                 imgCallback(it)
             } else {
                 Log.d("IMAGE_CHECK", "CHAT IMAGE GOTTEN FROM FIREBASE")
-                fetchChatImage_fullObject(message.message) {
+                fetchChatImage_fullObject(message.message, chatRoomId) {
                     imgCallback(it)
                 }
             }

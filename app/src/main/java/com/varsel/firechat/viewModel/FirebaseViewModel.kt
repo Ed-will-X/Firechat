@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.Image.Image
@@ -17,6 +18,7 @@ import com.varsel.firechat.model.Message.MessageType
 import com.varsel.firechat.model.Message.SystemMessageType
 import com.varsel.firechat.model.PublicPost.PublicPost
 import com.varsel.firechat.utils.DebugUtils
+import com.varsel.firechat.utils.ImageUtils
 
 class FirebaseViewModel: ViewModel() {
     val usersLiveData = MutableLiveData<List<User>>()
@@ -82,7 +84,7 @@ class FirebaseViewModel: ViewModel() {
         onSuccessCallback: ()-> Unit,
         onFailureCallback: ()-> Unit
     ){
-        mDbRef.child("Users").child(UID).setValue(User(name, email, UID, null, null, false, null, null, null, null))
+        mDbRef.child("Users").child(UID).setValue(User(name, email, UID))
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     DebugUtils.log_firebase("save user to db successful")
@@ -122,7 +124,9 @@ class FirebaseViewModel: ViewModel() {
                     val user = item.getValue(User::class.java)
                     DebugUtils.log_firebase("fetch current user recurrent successful")
 
-                    currentUser.value = user
+                    if(user != null){
+                        currentUser.value = user as User
+                    }
                 }
                 afterCallback()
             }
@@ -142,7 +146,10 @@ class FirebaseViewModel: ViewModel() {
                 for (item in snapshot.children){
                     val user = item.getValue(User::class.java)
                     DebugUtils.log_firebase("fetch current user single successful")
-                    currentUserSingle.value = user
+
+                    if(user != null){
+                        currentUserSingle.value = user as User
+                    }
                 }
                 afterCallback()
             }
@@ -164,7 +171,9 @@ class FirebaseViewModel: ViewModel() {
                     val user = item.getValue(User::class.java)
                     DebugUtils.log_firebase("get user by id single successful")
 
-                    selectedUser.value = user
+                    if(user != null){
+                        selectedUser.value = user as User
+                    }
                 }
 
                 afterCallback()
@@ -218,7 +227,7 @@ class FirebaseViewModel: ViewModel() {
     }
 
     fun clearSelectedUser(){
-        selectedUser.value = null
+//        selectedUser.value = null
     }
 
     fun getAllUsers(mDbRef: DatabaseReference, mAuth: FirebaseAuth, beforeCallback: ()-> Unit, afterCallback: () -> Unit = {}){
@@ -275,7 +284,7 @@ class FirebaseViewModel: ViewModel() {
             .child(user.userUID.toString())
             .child("friendRequests")
             .child(currentUserUid)
-            .setValue(currentUserUid)
+            .setValue(System.currentTimeMillis())
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
@@ -322,13 +331,13 @@ class FirebaseViewModel: ViewModel() {
                                 otherUserRef
                                     .child("friends")
                                     .child(mAuth.currentUser?.uid.toString())
-                                    .setValue(mAuth.currentUser?.uid.toString())
+                                    .setValue(System.currentTimeMillis())
                                     .addOnCompleteListener {
                                         if(it.isSuccessful){
                                             currentUserRef
                                                 .child("friends")
-                                                .child(user.userUID!!)
-                                                .setValue(user.userUID!!)
+                                                .child(user.userUID)
+                                                .setValue(System.currentTimeMillis())
                                                 .addOnCompleteListener {
                                                     if (it.isSuccessful){
                                                         successCallback()
@@ -1092,38 +1101,63 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    fun uploadChatImage(image: Image, mDbRef: DatabaseReference, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+    fun uploadChatImage(image: Image, chatRoomID: String, base64: String, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, successCallback: (image: Image)-> Unit, failureCallback: ()-> Unit){
         val reference = mDbRef.child("chatImages")
 
-        reference
-            .push()
-            .setValue(image)
-            .addOnCompleteListener {
-                if(it.isSuccessful){
-                    successCallback()
-                    DebugUtils.log_firebase("upload chat image successful")
-                } else {
-                    failureCallback()
-                }
+        val decoded = ImageUtils.base64ToByteArray(base64)
+        firebaseStorage.getReference("/chatImages/${chatRoomID}/${image.imageId}").putBytes(decoded).addOnCompleteListener {
+            if(it.isSuccessful){
+                reference
+                    .child(chatRoomID)
+                    .push()
+                    .setValue(image)
+                    .addOnCompleteListener {
+                        if(it.isSuccessful){
+                            val image_with_base64 = Image(image, base64)
+                            successCallback(image_with_base64)
+                            DebugUtils.log_firebase("upload chat image successful")
+                        } else {
+                            failureCallback()
+                        }
+                    }
+            } else {
+                failureCallback()
             }
+        }
     }
 
-    fun getChatImage(imageId: String, mDbRef: DatabaseReference, loopCallback: (image: Image?) -> Unit, afterCallback: () -> Unit){
-        mDbRef.child("chatImages").orderByChild("imageId").equalTo(imageId).addListenerForSingleValueEvent(object: ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for(item in snapshot.children){
+    fun getChatImage(imageId: String, chatRoomID: String, mDbRef: DatabaseReference, firebaseStorage: FirebaseStorage, loopCallback: (image: Image?) -> Unit, afterCallback: () -> Unit){
+        val storageRef = firebaseStorage.reference.child("/chatImages/${chatRoomID}/${imageId}")
+        Log.d("LLL", "Chat Room Id and image id: ${chatRoomID} / ${imageId}")
+        Log.d("LLL", "Get chat image ran")
+        storageRef.getBytes(2000000).addOnCompleteListener {
+            if(it.isSuccessful){
+                Log.d("LLL", "Get bytes successful")
+                mDbRef.child("chatImages").child(chatRoomID).orderByChild("imageId").equalTo(imageId).addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        for(item in snapshot.children){
+                            Log.d("LLL", "Get profile image successful")
 
-                    val image = item.getValue(Image::class.java)
-                    loopCallback(image)
-                    DebugUtils.log_firebase("get chat image successful")
-                }
-                afterCallback()
-            }
+                            val image = item.getValue(Image::class.java)
+                            val encoded = ImageUtils.byteArraytoBase64(it.result)
+                            if(image != null){
+                                val image_withBase64 = Image(image, encoded)
+                                loopCallback(image_withBase64)
+                                DebugUtils.log_firebase("get chat image successful")
+                            }
+                        }
+                        afterCallback()
+                    }
 
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+                })
+            } else {
+                Log.e("LLL", "${it.exception}")
+                Log.d("LLL", "Get bytes failed")
             }
-        })
+        }
     }
 
     fun uploadPublicPost(publicPost: PublicPost, mDbRef: DatabaseReference, successCallback: ()-> Unit, failureCallback: ()-> Unit){

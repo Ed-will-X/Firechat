@@ -38,6 +38,7 @@ class ChatPageType {
 }
 
 class MessageListAdapter(
+    val chatRoomId: String,
     val activity: SignedinActivity,
     val fragment: Fragment,
     val context: Context,
@@ -267,7 +268,7 @@ class MessageListAdapter(
                 // else set the parent click listener
                 imageViewParent.setOnClickListener {
                     if(!has_been_clicked){
-                        ImageUtils.getAndSetChatImage_fullObject(item, imageView, imageViewParent, activity) { image ->
+                        ImageUtils.getAndSetChatImage_fullObject(item, chatRoomId, imageView, imageViewParent, activity) { image ->
                             imageView.setOnClickListener {
                                 imgClickListener(item, image)
                             }

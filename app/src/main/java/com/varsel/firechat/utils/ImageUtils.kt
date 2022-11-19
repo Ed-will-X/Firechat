@@ -150,6 +150,17 @@ class ImageUtils {
             return decoded
         }
 
+        fun base64ToByteArray(encodedImage: String): ByteArray{
+            val byteArray: ByteArray = Base64.decode(encodedImage, Base64.DEFAULT)
+
+            return byteArray
+        }
+
+        fun byteArraytoBase64(byteArray: ByteArray): String{
+            val encoded: String = Base64.encodeToString(byteArray, Base64.DEFAULT)
+            return encoded
+        }
+
         fun setProfilePic(base64: String, view: ImageView, viewParent: FrameLayout, activity: SignedinActivity){
             if(base64.isNotEmpty()){
                 val bitmap = base64ToBitmap(base64)
@@ -340,8 +351,8 @@ class ImageUtils {
             }
         }
 
-        fun getAndSetChatImage(message: Message, image: ImageView, viewParent: FrameLayout, activity: SignedinActivity){
-            activity.determineMessageImgFetchMethod(message, {
+        fun getAndSetChatImage(message: Message, chatRoomId: String, image: ImageView, viewParent: FrameLayout, activity: SignedinActivity){
+            activity.determineMessageImgFetchMethod(message, chatRoomId, {
                 if(it != null){
                     setChatImage(it, image, viewParent, activity)
                 }
@@ -352,8 +363,8 @@ class ImageUtils {
             })
         }
 
-        fun getAndSetChatImage(message: Message, image: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: String)-> Unit){
-            activity.determineMessageImgFetchMethod(message, {
+        fun getAndSetChatImage(message: Message, chatRoomId: String, image: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: String)-> Unit){
+            activity.determineMessageImgFetchMethod(message, chatRoomId,{
                 if(it != null){
                     setChatImage(it, image, viewParent, activity)
                     imgCallback(it)
@@ -371,8 +382,8 @@ class ImageUtils {
             if: It sets the image from the DB in the image view
             else: It fetches the image from firebase and sets it in the image view
         */
-        fun getAndSetChatImage_fullObject(message: Message, imageView: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: Image)-> Unit){
-            activity.determineMessageImgFetchMethod_fullObject(message) {
+        fun getAndSetChatImage_fullObject(message: Message, chatRoomId: String, imageView: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: Image)-> Unit){
+            activity.determineMessageImgFetchMethod_fullObject(message, chatRoomId) {
                 if(it != null){
                     setChatImage(it.image, imageView, viewParent, activity)
                     imgCallback(it)
@@ -386,15 +397,6 @@ class ImageUtils {
                     imageCallback(it)
                 } else {
                     imageCallback(null)
-                }
-            }
-        }
-
-        fun fetch_chat_image_from_firebase(message: Message, activity: SignedinActivity, imgCallback: (image: Image) -> Unit){
-
-            activity.fetchChatImage_fullObject(message.message) {
-                if(it != null){
-                    imgCallback(it)
                 }
             }
         }
@@ -510,16 +512,16 @@ class ImageUtils {
         }
 
 
-        fun uploadChatImage(uri: Uri, activity: SignedinActivity, success: (message: Message, image: Image)-> Unit){
+        fun uploadChatImage(uri: Uri, chatRoomId: String, activity: SignedinActivity, success: (message: Message, image: Image)-> Unit){
             val encoded = encodeUri(uri, activity)
             if(encoded != null){
                 val imageId = MessageUtils.generateUID(30)
                 // TODO: Change owner id from current user to current chat room
-                val image = Image(imageId, activity.firebaseAuth.currentUser!!.uid, encoded)
+                val image = Image(imageId, activity.firebaseAuth.currentUser!!.uid)
                 val message = Message(MessageUtils.generateUID(30), imageId, System.currentTimeMillis(), activity.firebaseAuth.currentUser!!.uid, MessageType.IMAGE)
 
-                activity.firebaseViewModel.uploadChatImage(image, activity.mDbRef, {
-                    success(message, image)
+                activity.firebaseViewModel.uploadChatImage(image, chatRoomId, encoded, activity.firebaseStorage, activity.mDbRef, {
+                    success(message, it)
                 }, {})
             }
         }
