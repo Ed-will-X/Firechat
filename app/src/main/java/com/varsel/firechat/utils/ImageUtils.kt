@@ -514,8 +514,11 @@ class ImageUtils {
 
         fun uploadChatImage(uri: Uri, chatRoomId: String, activity: SignedinActivity, success: (message: Message, image: Image)-> Unit){
             val encoded = encodeUri(uri, activity)
+            val imageId = MessageUtils.generateUID(30)
+
             if(encoded != null){
-                val imageId = MessageUtils.generateUID(30)
+
+                Log.d("LLL", "Generated id ${imageId}")
                 // TODO: Change owner id from current user to current chat room
                 val image = Image(imageId, activity.firebaseAuth.currentUser!!.uid)
                 val message = Message(MessageUtils.generateUID(30), imageId, System.currentTimeMillis(), activity.firebaseAuth.currentUser!!.uid, MessageType.IMAGE)
