@@ -1010,61 +1010,88 @@ class FirebaseViewModel: ViewModel() {
         DebugUtils.log_firebase("sign out called")
     }
 
-    fun uploadProfileImage(profileImage: ProfileImage, mDbRef: DatabaseReference, userId: String, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+    fun uploadProfileImage(profileImage: ProfileImage, base64: String, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, userId: String, successCallback: ()-> Unit, failureCallback: ()-> Unit){
         val reference = mDbRef.child("ProfileImages").child(userId)
+        val decoded = ImageUtils.base64ToByteArray(base64)
 
-        reference
-            .setValue(profileImage)
-            .addOnCompleteListener {
-                if(it.isSuccessful){
-                    successCallback()
-                    DebugUtils.log_firebase("upload profile image successful")
-                } else {
-                    failureCallback()
-                }
-            }
-    }
-
-    fun removeProfileImage(mDbRef: DatabaseReference, userId: String, successCallback: ()-> Unit, failureCallback: ()-> Unit){
-        val reference = mDbRef.child("ProfileImages").child(userId)
-
-        reference
-            .setValue(null)
-            .addOnCompleteListener {
-                if(it.isSuccessful){
-                    successCallback()
-                    DebugUtils.log_firebase("remove profile image successful")
-                } else {
-                    failureCallback()
-                }
-            }
-    }
-
-    fun getProfileImage(userId: String, mDbRef: DatabaseReference, loopCallback: (profileImage: ProfileImage?) -> Unit, afterCallback: () -> Unit, snapshotExistenceCallback: (bool: Boolean)-> Unit){
-        mDbRef.child("ProfileImages").orderByChild("ownerId").equalTo(userId).addListenerForSingleValueEvent(object: ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if(snapshot.exists()){
-                    Log.d("SNAPSHOT_IMG", "profile image exists for ${userId}")
-
-                    for(item in snapshot.children){
-                        val profileImage = item.getValue(ProfileImage::class.java)
-                        loopCallback(profileImage)
-
-                        DebugUtils.log_firebase("get profile image successful")
+        firebaseStorage.getReference("/profileImages/${profileImage.ownerId}").putBytes(decoded).addOnCompleteListener {
+            if(it.isSuccessful){
+                reference
+                    .setValue(profileImage)
+                    .addOnCompleteListener {
+                        if(it.isSuccessful){
+                            successCallback()
+                            DebugUtils.log_firebase("upload profile image successful")
+                        } else {
+                            failureCallback()
+                        }
                     }
-                    afterCallback()
-
-                    snapshotExistenceCallback(true)
-                } else {
-                    Log.d("SNAPSHOT_IMG", "profile image does not exist for ${userId}")
-                    snapshotExistenceCallback(false)
-                }
+            } else {
+                failureCallback()
             }
+        }
+    }
 
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+    fun removeProfileImage(mDbRef: DatabaseReference, userId: String, firebaseStorage: FirebaseStorage, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+        val reference = mDbRef.child("ProfileImages").child(userId)
+
+        firebaseStorage.getReference("/profileImages/${userId}").delete().addOnCompleteListener {
+            if(it.isSuccessful){
+                reference
+                    .setValue(null)
+                    .addOnCompleteListener {
+                        if(it.isSuccessful){
+                            successCallback()
+                            DebugUtils.log_firebase("remove profile image successful")
+                        } else {
+                            failureCallback()
+                        }
+                    }
+            } else {
+                failureCallback()
             }
-        })
+        }
+    }
+
+    fun getProfileImage(userId: String, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, loopCallback: (profileImage: ProfileImage?) -> Unit, afterCallback: () -> Unit, snapshotExistenceCallback: (bool: Boolean)-> Unit){
+        val storageRef = firebaseStorage.reference.child("/profileImages/${userId}")
+        storageRef.getBytes(2_000_000).addOnCompleteListener {
+
+            if(it.isSuccessful){
+                mDbRef.child("ProfileImages").orderByChild("ownerId").equalTo(userId).addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if(snapshot.exists()){
+                            Log.d("SNAPSHOT_IMG", "profile image exists for ${userId}")
+
+                            for(item in snapshot.children){
+                                val profileImage = item.getValue(ProfileImage::class.java)
+                                if(profileImage != null){
+                                    val encoded = ImageUtils.byteArraytoBase64(it.result)
+                                    val profileImage_withBase64 = ProfileImage(profileImage, encoded)
+                                    loopCallback(profileImage_withBase64)
+
+                                    DebugUtils.log_firebase("get profile image successful")
+                                }
+                            }
+                            afterCallback()
+
+                            snapshotExistenceCallback(true)
+                        } else {
+                            Log.d("SNAPSHOT_IMG", "profile image does not exist for ${userId}")
+                            snapshotExistenceCallback(false)
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+                })
+
+            } else {
+
+            }
+        }
+
     }
 
     fun appendProfileImageTimestamp(mAuth: FirebaseAuth, mDbRef: DatabaseReference, timestamp: Long, successCallback: () -> Unit, failureCallback: () -> Unit){
@@ -1152,8 +1179,7 @@ class FirebaseViewModel: ViewModel() {
                     }
                 })
             } else {
-                Log.e("LLL", "${it.exception}")
-                Log.d("LLL", "Get bytes failed")
+
             }
         }
     }

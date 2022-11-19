@@ -17,7 +17,7 @@ class PublicPost {
 
     var caption: String? = null
 
-    var image: String = ""
+    var image: String? = null
 
     var postTimestamp: Long = 0L
 
@@ -31,6 +31,7 @@ class PublicPost {
         this.type = type
         this.caption = caption
         this.postTimestamp = postTimestamp
+        this.image = null
     }
 
     constructor(publicPost: PublicPost, base64: String){

@@ -14,10 +14,22 @@ class ProfileImage {
 
     var image: String? = null
 
-    constructor(ownerId: String, image: String?, imgChangeTimestamp: Long){
+    constructor(ownerId: String, imgChangeTimestamp: Long){
         this.ownerId = ownerId
-        this.image = image
         this.imgChangeTimestamp = imgChangeTimestamp
+    }
+
+    constructor(profileImage: ProfileImage, base64: String){
+        this.ownerId = profileImage.ownerId
+        this.imgChangeTimestamp = profileImage.imgChangeTimestamp
+        this.image = base64
+    }
+
+    // this constructor is solely to nullify image in room
+    constructor(ownerId: String, imgChangeTimestamp: Long, base64: String?){
+        this.ownerId = ownerId
+        this.imgChangeTimestamp = imgChangeTimestamp
+        this.image = base64
     }
 
     constructor()

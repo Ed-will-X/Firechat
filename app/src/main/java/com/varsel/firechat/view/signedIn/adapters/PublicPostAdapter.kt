@@ -103,18 +103,20 @@ class PublicPostAdapter(
     }
 
     fun setImage(post: PublicPost, image: ImageView, parent: MaterialCardView?){
-        val decoded = ImageUtils.base64ToBitmap(post.image)
+        if(post.image != null){
+            val decoded = ImageUtils.base64ToBitmap(post.image!!)
 
-        image.visibility = View.VISIBLE
+            image.visibility = View.VISIBLE
 
-        if(parent != null){
-            parent.visibility = View.VISIBLE
-        }
+            if(parent != null){
+                parent.visibility = View.VISIBLE
+            }
 
-        image.setImageBitmap(decoded)
+            image.setImageBitmap(decoded)
 
-        image.setOnClickListener { it2 ->
-            postClickListener(post)
+            image.setOnClickListener { it2 ->
+                postClickListener(post)
+            }
         }
     }
 

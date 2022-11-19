@@ -66,8 +66,8 @@ class PostUtils {
         }
 
         fun setPostImage(post: PublicPost, image: ImageView, viewParent: MaterialCardView, activity: SignedinActivity){
-            if(post.image.isNotEmpty()){
-                val bitmap = ImageUtils.base64ToBitmap(post.image)
+            if(post.image != null && post.image?.isNotEmpty() == true){
+                val bitmap = ImageUtils.base64ToBitmap(post.image!!)
                 Glide.with(activity).load(bitmap).dontAnimate().into(image)
                 viewParent.visibility = View.VISIBLE
 

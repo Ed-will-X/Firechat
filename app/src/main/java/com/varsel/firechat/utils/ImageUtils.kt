@@ -414,12 +414,15 @@ class ImageUtils {
                     imageOwnerFormat = activity.getString(R.string.from_user, otherUser.name)
                 }
 
-                activity.imageViewModel.setOverlayProps(
-                    imageOwnerFormat,
-                    activity.getString(R.string.chat_image),
-                    message.time,
-                    image.image
-                )
+                if (image.image != null){
+                    activity.imageViewModel.setOverlayProps(
+                        imageOwnerFormat,
+                        activity.getString(R.string.chat_image),
+                        message.time,
+                        image.image!!
+                    )
+                }
+
 
                 activity.imageViewModel.setShowProfileImage(true)
             }
@@ -445,12 +448,14 @@ class ImageUtils {
                         imageOwnerFormat = activity.getString(R.string.from_user, selectedUser.name)
                     }
 
-                    activity.imageViewModel.setOverlayProps(
-                        imageOwnerFormat,
-                        activity.getString(R.string.chat_image),
-                        message.time,
-                        image.image
-                    )
+                    if(image.image != null){
+                        activity.imageViewModel.setOverlayProps(
+                            imageOwnerFormat,
+                            activity.getString(R.string.chat_image),
+                            message.time,
+                            image.image!!
+                        )
+                    }
 
                     activity.imageViewModel.setShowProfileImage(true)
                 }
@@ -504,7 +509,7 @@ class ImageUtils {
                     imageOwnerFormat,
                     activity.getString(R.string.public_post_image),
                     post.postTimestamp,
-                    post.image
+                    post.image!!
                 )
 
                 activity.imageViewModel.setShowProfileImage(true)

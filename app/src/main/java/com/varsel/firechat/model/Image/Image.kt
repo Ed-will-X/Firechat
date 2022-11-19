@@ -12,7 +12,7 @@ class Image {
     @ColumnInfo(name = "owner_id")
     lateinit var ownerId: String
 
-    lateinit var image: String
+    var image: String? = null
 
 //    constructor(imageId: String, ownerId: String, image: String){
 //        this.imageId = imageId
@@ -24,7 +24,7 @@ class Image {
     constructor(imageId: String, ownerId: String){
         this.imageId = imageId
         this.ownerId = ownerId
-        this.image = ""
+        this.image = null
     }
 
     // Used when retrieving from the realtime database

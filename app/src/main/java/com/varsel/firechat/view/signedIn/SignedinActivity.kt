@@ -304,7 +304,7 @@ class SignedinActivity : AppCompatActivity() {
 
     private fun fetchCurrentUserProfileImage(){
         Log.d("IMAGE_FETCH", "Get image called for CURRENT USER")
-        firebaseViewModel.getProfileImage(firebaseAuth.currentUser!!.uid, mDbRef, {
+        firebaseViewModel.getProfileImage(firebaseAuth.currentUser!!.uid, firebaseStorage, mDbRef, {
             if(it != null){
                 profileImageViewModel.storeImage(it)
                 profileImageViewModel.profileImage_currentUser.value = it
@@ -342,7 +342,7 @@ class SignedinActivity : AppCompatActivity() {
     private fun fetchProfileImage(userId: String, afterCallback: (image: String?)-> Unit){
         Log.d("IMAGE_FETCH", "Get image called for ${userId}")
 
-        firebaseViewModel.getProfileImage(userId, mDbRef, {
+        firebaseViewModel.getProfileImage(userId, firebaseStorage, mDbRef, {
             if(it != null){
                 profileImageViewModel.storeImage(it)
                 afterCallback(it.image)
@@ -362,7 +362,7 @@ class SignedinActivity : AppCompatActivity() {
     private fun fetchProfileImage_fullObject(userId: String, afterCallback: (image: ProfileImage?)-> Unit){
         Log.d("IMAGE_FETCH", "Get image called for ${userId}")
 
-        firebaseViewModel.getProfileImage(userId, mDbRef, {
+        firebaseViewModel.getProfileImage(userId, firebaseStorage, mDbRef, {
             if(it != null){
                 profileImageViewModel.storeImage(it)
                 afterCallback(it)

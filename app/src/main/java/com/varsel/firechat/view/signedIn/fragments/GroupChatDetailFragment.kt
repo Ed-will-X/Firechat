@@ -181,14 +181,15 @@ class GroupChatDetailFragment : Fragment() {
         val base64: String? = ImageUtils.encodeUri(uri, parent)
         if(base64 != null){
             val timestamp = System.currentTimeMillis()
-            val profileImage =
-                ProfileImage(groupId, base64!!, timestamp)
+            val profileImage = ProfileImage(groupId, timestamp)
 
-            parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, groupId, {
+            parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, groupId, {
                 parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
-                    parent.profileImageViewModel.storeImage(profileImage)
+                    val profileImage_withBase64 = ProfileImage(profileImage, base64)
+
+                    parent.profileImageViewModel.storeImage(profileImage_withBase64)
 //                    parent.profileImageViewModel.selectedGroupImageEncoded.value = profileImage.image
-                    parent.profileImageViewModel.selectedGroupImage.value = profileImage
+                    parent.profileImageViewModel.selectedGroupImage.value = profileImage_withBase64
                     successCallback()
                 }, {})
             }, {
@@ -201,13 +202,15 @@ class GroupChatDetailFragment : Fragment() {
     private fun uploadImage(base64: String, successCallback: () -> Unit){
         val timestamp = System.currentTimeMillis()
         val profileImage =
-            ProfileImage( groupId, base64, timestamp)
+            ProfileImage( groupId, timestamp)
 
-        parent.firebaseViewModel.uploadProfileImage(profileImage, parent.mDbRef, groupId, {
+        parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, groupId, {
             parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
-                parent.profileImageViewModel.storeImage(profileImage)
+                val profileImage_withBase64 = ProfileImage(profileImage, base64)
+
+                parent.profileImageViewModel.storeImage(profileImage_withBase64)
 //                parent.profileImageViewModel.selectedGroupImageEncoded.value = profileImage.image
-                parent.profileImageViewModel.selectedGroupImage.value = profileImage
+                parent.profileImageViewModel.selectedGroupImage.value = profileImage_withBase64
                 successCallback()
             }, {})
         }, {
@@ -217,7 +220,7 @@ class GroupChatDetailFragment : Fragment() {
 
     private fun removeImage(successCallback: () -> Unit){
         val timestamp = System.currentTimeMillis()
-        parent.firebaseViewModel.removeProfileImage(parent.mDbRef, groupId, {
+        parent.firebaseViewModel.removeProfileImage(parent.mDbRef, groupId, parent.firebaseStorage, {
             parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
                 val image = parent.profileImageViewModel.getImageById(groupId)
 
