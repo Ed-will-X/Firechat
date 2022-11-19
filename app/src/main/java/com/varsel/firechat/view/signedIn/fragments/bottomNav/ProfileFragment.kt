@@ -295,20 +295,28 @@ class ProfileFragment : Fragment() {
 
         val friendRequestSwipeGesture = object : FriendRequestSwipeGesture(parent){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                if(direction == ItemTouchHelper.LEFT){
-                    firebaseViewModel.rejectFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
-                    removeFromAdapter(friendRequestsAdapter, viewHolder)
+                LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this@ProfileFragment, {
+                    if(direction == ItemTouchHelper.LEFT){
+                        firebaseViewModel.rejectFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
+                        removeFromAdapter(friendRequestsAdapter, viewHolder)
 
-                } else if (direction == ItemTouchHelper.RIGHT){
-                    firebaseViewModel.acceptFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
-                    removeFromAdapter(friendRequestsAdapter, viewHolder)
+                    } else if (direction == ItemTouchHelper.RIGHT){
+                        firebaseViewModel.acceptFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
+                        removeFromAdapter(friendRequestsAdapter, viewHolder)
 
-                }
+                    }
+                }, {})
             }
         }
 
         val touchHelper = ItemTouchHelper(friendRequestSwipeGesture)
-        touchHelper.attachToRecyclerView(recyclerView)
+
+        // Disables swipe if no internet
+        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+            touchHelper.attachToRecyclerView(recyclerView)
+        }, {
+            touchHelper.attachToRecyclerView(null)
+        })
 
         recyclerView?.addItemDecoration(
             DividerItemDecoration(

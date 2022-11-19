@@ -20,6 +20,7 @@ import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.hideKeyboard
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.showKeyboard
 import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.SearchUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.utils.gestures.FriendsSwipeGesture
@@ -91,17 +92,25 @@ class FriendListFragment : Fragment() {
 
         val swipeGesture = object : FriendsSwipeGesture(parent){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                if(direction == ItemTouchHelper.LEFT){
-                    if(adapter != null){
-                        parent.firebaseViewModel.unfriendUser(adapter!!.friends[viewHolder.adapterPosition], parent.firebaseAuth, parent.mDbRef)
-                        removeFromAdapter(adapter!!, viewHolder)
+                LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this@FriendListFragment, {
+                    if(direction == ItemTouchHelper.LEFT){
+                        if(adapter != null){
+                            parent.firebaseViewModel.unfriendUser(adapter!!.friends[viewHolder.adapterPosition], parent.firebaseAuth, parent.mDbRef)
+                            removeFromAdapter(adapter!!, viewHolder)
+                        }
                     }
-                }
+                }, {})
             }
         }
 
         val touchHelper = ItemTouchHelper(swipeGesture)
-        touchHelper.attachToRecyclerView(binding.allFriendsRecyclerView)
+
+        // Disables swipe if no internet
+        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+            touchHelper.attachToRecyclerView(binding.allFriendsRecyclerView)
+        }, {
+            touchHelper.attachToRecyclerView(null)
+        })
 
         binding.backButton.setOnClickListener {
             popNavigation()
