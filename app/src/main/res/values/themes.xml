@@ -14,5 +14,7 @@
         <!-- Customize your theme here. -->
         <item name="bottomSheetDialogTheme">@style/Actionsheet</item>
 
+        <item name="android:windowDisablePreview">true</item>
+
     </style>
 </resources>

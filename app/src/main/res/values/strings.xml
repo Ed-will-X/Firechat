@@ -156,6 +156,9 @@
     <string name="chat_image">Chat Image</string>
     <string name="from_user">From %s</string>
     <string name="from_you">From You</string>
+    <string name="from">From</string>
+    <string name="Varsel">Varsel</string>
+    <string name="V_A_R_S_E_L">V.A.R.S.E.L</string>
     <string name="profile_image">Profile Image</string>
     <string name="group_image">Group Image</string>
     <string name="load">Load</string>
