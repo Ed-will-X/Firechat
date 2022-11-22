@@ -158,6 +158,16 @@ class FriendListFragment : Fragment() {
                     adapter!!.friends.addAll(friends as ArrayList<User>)
                     adapter!!.notifyDataSetChanged()
                 }
+            } else if(sortType == SortTypes.OLDEST){
+                if(adapter != null){
+                    adapter!!.friends.addAll(friends as ArrayList<User>)
+                    adapter!!.notifyDataSetChanged()
+                }
+            } else if(sortType == SortTypes.NEWEST){
+                if(adapter != null){
+                    adapter!!.friends.addAll(friends.reversed() as ArrayList<User>)
+                    adapter!!.notifyDataSetChanged()
+                }
             }
         } else {
             setFriendCount(0)

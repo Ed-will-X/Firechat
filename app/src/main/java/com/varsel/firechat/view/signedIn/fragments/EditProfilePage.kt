@@ -3,6 +3,7 @@ package com.varsel.firechat.view.signedIn.fragments
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -255,7 +256,7 @@ class EditProfilePage : Fragment() {
         parent.firebaseViewModel.editUser("name",dialogBinding.nameEditText.text.toString(), parent.firebaseAuth, parent.mDbRef)
         parent.firebaseViewModel.editUser("about",dialogBinding.aboutEditText.text.toString(), parent.firebaseAuth, parent.mDbRef)
 
-        if(binding.phoneText.text.length in 8..14){
+        if(dialogBinding.phoneEditText.text.length in 9..19){
             parent.firebaseViewModel.editUser("phone",dialogBinding.phoneEditText.text.toString(), parent.firebaseAuth, parent.mDbRef)
         }
         parent.firebaseViewModel.editUser("occupation",dialogBinding.occupationEditText.text.toString(), parent.firebaseAuth, parent.mDbRef)

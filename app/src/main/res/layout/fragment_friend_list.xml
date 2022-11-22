@@ -286,8 +286,8 @@
                 android:layout_marginHorizontal="30dp"
                 android:orientation="vertical">
 
+<!--                Newest first-->
                 <LinearLayout
-                    android:visibility="gone"
                     android:id="@+id/newest_first_parent"
                     android:paddingVertical="10dp"
                     android:gravity="center_vertical"
@@ -328,8 +328,8 @@
                         />
                 </LinearLayout>
 
+<!--                Oldest first-->
                 <LinearLayout
-                    android:visibility="gone"
                     android:id="@+id/oldest_first_parent"
                     android:paddingVertical="10dp"
                     android:gravity="center_vertical"
@@ -370,6 +370,7 @@
                         />
                 </LinearLayout>
 
+<!--                A - Z-->
                 <LinearLayout
                     android:id="@+id/a_to_z_parent"
                     android:paddingVertical="10dp"
@@ -411,6 +412,7 @@
                         />
                 </LinearLayout>
 
+<!--                Z - A-->
                 <LinearLayout
                     android:id="@+id/z_to_a_parent"
                     android:paddingVertical="10dp"
@@ -452,7 +454,9 @@
                         />
                 </LinearLayout>
 
+<!--                Default-->
                 <LinearLayout
+                    android:visibility="gone"
                     android:id="@+id/default_parent"
                     android:paddingVertical="10dp"
                     android:gravity="center_vertical"

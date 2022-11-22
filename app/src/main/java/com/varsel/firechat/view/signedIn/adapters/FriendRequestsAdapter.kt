@@ -23,7 +23,7 @@ class FriendRequestsAdapter(
     val imageClickListener: (image: ProfileImage, user: User) -> Unit
 ): RecyclerView.Adapter<FriendRequestsAdapter.FriendRequestViewHolder>(){
 
-    var users = arrayListOf<User>()
+    var users = mutableListOf<User>()
 
     class FriendRequestViewHolder(item: View): RecyclerView.ViewHolder(item){
         val name: TextView = item.findViewById<TextView>(R.id.name_friend_request)

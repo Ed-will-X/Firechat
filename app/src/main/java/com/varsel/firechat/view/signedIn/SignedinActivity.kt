@@ -47,6 +47,7 @@ import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.PostUtils
+import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedOut.SignedoutActivity
 import com.varsel.firechat.view.signedOut.fragments.AuthType
 import com.varsel.firechat.viewModel.FirebaseViewModel
@@ -119,13 +120,13 @@ class SignedinActivity : AppCompatActivity() {
             }
 
             if(it?.friendRequests != null){
-                getFriendRequests(it.friendRequests.keys.toList())
+                getFriendRequests(it.friendRequests)
             } else {
                 firebaseViewModel.friendRequests.value = mutableListOf<User>()
             }
 
             if(it?.friends != null){
-                getAllFriends(it.friends.keys.toList())
+                getAllFriends(it.friends)
             } else {
                 firebaseViewModel.setFriends(listOf())
             }
@@ -657,22 +658,26 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-    private fun getFriendRequests(requests: List<String>){
+    private fun getFriendRequests(requests: HashMap<String, Long>){
         val users = mutableListOf<User>()
-        for(i in requests){
+        val sortedMap = UserUtils.sortByTimestamp(requests.toSortedMap())
+
+        for(i in sortedMap.keys){
             firebaseViewModel.getUserSingle(i, mDbRef, {
                 if(it != null){
                     users.add(it)
                 }
             }, {
-                firebaseViewModel.friendRequests.value = users
+                firebaseViewModel.friendRequests.value = users.reversed()
             })
         }
     }
 
-    private fun getAllFriends(friends: List<String>){
+    private fun getAllFriends(friends: HashMap<String, Long>){
+        val sortedMap = UserUtils.sortByTimestamp(friends.toSortedMap())
+
         val users = mutableListOf<User>()
-        for(i in friends){
+        for(i in sortedMap.keys){
             firebaseViewModel.getUserSingle(i, mDbRef, {
                 if(it != null){
                     users.add(it)

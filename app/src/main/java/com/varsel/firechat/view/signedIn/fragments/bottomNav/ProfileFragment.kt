@@ -268,7 +268,7 @@ class ProfileFragment : Fragment() {
     private fun removeFromAdapter(adapter: FriendRequestsAdapter, viewHolder: RecyclerView.ViewHolder){
         val currentList = adapter.users.toMutableList()
         currentList.removeAt(viewHolder.absoluteAdapterPosition)
-        adapter.users = currentList as ArrayList<User>
+        adapter.users = currentList
 
         adapter.notifyDataSetChanged()
     }
@@ -330,7 +330,7 @@ class ProfileFragment : Fragment() {
             if(it != null){
                 // TODO: Fix potential bug
                 friendRequestsAdapter.run {
-                    friendRequestsAdapter.users = it as ArrayList<User>
+                    friendRequestsAdapter.users = it.toMutableList()
                     friendRequestsAdapter.notifyDataSetChanged()
                 }
             }
