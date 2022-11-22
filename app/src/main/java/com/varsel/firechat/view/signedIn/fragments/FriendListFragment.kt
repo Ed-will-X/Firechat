@@ -47,7 +47,7 @@ class FriendListFragment : Fragment() {
         parent = activity as SignedinActivity
 
         SearchUtils.setupSearchBar(
-            binding.cancelButton,
+            binding.clearText,
             binding.searchBox,
             this,
             binding.noFriends,
@@ -251,7 +251,7 @@ class FriendListFragment : Fragment() {
         // resets the searchbar visibility
         viewModel.isSearchBarVisible.value = false
 
-        binding.cancelButton.setOnClickListener {
+        binding.clearText.setOnClickListener {
             binding.searchBox.setText("")
         }
 
@@ -289,9 +289,9 @@ class FriendListFragment : Fragment() {
     private fun toggleCancelIconVisibility(){
         binding.searchBox.doAfterTextChanged {
             if (it.toString().isNotEmpty()){
-                binding.cancelButton.visibility = View.VISIBLE
+                binding.clearText.visibility = View.VISIBLE
             } else {
-                binding.cancelButton.visibility = View.GONE
+                binding.clearText.visibility = View.GONE
             }
         }
     }

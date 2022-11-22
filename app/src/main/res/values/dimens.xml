@@ -36,4 +36,7 @@
     <dimen name="action_sheet_profile_image_icon_size">20dp</dimen>
     <dimen name="action_sheet_profile_image_text_size">14dp</dimen>
 
+    <dimen name="unread_group_stroke_width">1dp</dimen>
+    <dimen name="zero">0dp</dimen>
+
 </resources>

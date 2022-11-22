@@ -16,8 +16,8 @@ class ReadReceiptViewModel(val dao: ReadReceiptDao): ViewModel() {
         }
     }
 
-    fun fetchReceipt(id: String, ownerId: String): LiveData<ReadReceipt> {
-        val receipt = dao.get(id, ownerId)
+    fun fetchReceipt(id: String): LiveData<ReadReceipt> {
+        val receipt = dao.get(id)
         return receipt
     }
 

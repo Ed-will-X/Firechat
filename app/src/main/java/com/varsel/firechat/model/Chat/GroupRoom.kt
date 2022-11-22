@@ -7,7 +7,7 @@ import androidx.room.Entity
 class GroupRoom: ChatRoom {
 
     @ColumnInfo(name = "group_name")
-    var groupName: String? = null
+    lateinit var groupName: String
 
     var admins: HashMap<String, String>? = null
 

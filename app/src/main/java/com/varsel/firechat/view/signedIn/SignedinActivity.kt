@@ -11,7 +11,9 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.core.DataStore
+import androidx.datastore.createDataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.createDataStore
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -64,6 +66,7 @@ class SignedinActivity : AppCompatActivity() {
     lateinit var profileImageViewModel: ProfileImageViewModel
     lateinit var publicPostViewModel: PublicPostViewModel
     lateinit var readReceiptViewModel: ReadReceiptViewModel
+    lateinit var settingsDataStore: DataStore<Preferences>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +83,7 @@ class SignedinActivity : AppCompatActivity() {
         initialiseImageViewModel()
         initialisePublicPostViewModel()
         initialiseReadReceiptsViewModel()
+        initialiseSettingsDatastore()
 
         determineAuthType(intent)
 
@@ -250,27 +254,7 @@ class SignedinActivity : AppCompatActivity() {
     fun setBottomNavVisibility(navController: NavController){
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.bottomNavView.visibility = View.VISIBLE
-            if(destination.id == R.id.addFriends){
-                binding.bottomNavView.visibility = View.GONE
-            } else if(destination.id == R.id.otherProfileFragment){
-                binding.bottomNavView.visibility = View.GONE
-            } else if(destination.id == R.id.chatPageFragment){
-                binding.bottomNavView.visibility = View.GONE
-            }else if(destination.id == R.id.editProfilePage){
-                binding.bottomNavView.visibility = View.GONE
-            } else if(destination.id == R.id.friendListFragment){
-                binding.bottomNavView.visibility = View.GONE
-            } else if(destination.id == R.id.createGroupFragment){
-                binding.bottomNavView.visibility = View.GONE
-            }else if(destination.id == R.id.groupChatPageFragment){
-                binding.bottomNavView.visibility = View.GONE
-            }else if(destination.id == R.id.aboutUserFragment){
-                binding.bottomNavView.visibility = View.GONE
-            } else if (destination.id == R.id.groupChatDetailFragment){
-                binding.bottomNavView.visibility = View.GONE
-            } else if (destination.id == R.id.addGroupMembersFragment){
-                binding.bottomNavView.visibility = View.GONE
-            } else if(destination.id == R.id.profileImageFragment){
+            if(destination.id != R.id.chatsFragment && destination.id != R.id.settingsFragment && destination.id != R.id.profileFragment){
                 binding.bottomNavView.visibility = View.GONE
             }
         }
@@ -300,6 +284,10 @@ class SignedinActivity : AppCompatActivity() {
     private fun initialiseReadReceiptsViewModel(){
         val vmFactory = ReadReceiptViewModelFactory((this.application as FirechatApplication).readReceiptsDatabase.readReceiptDao)
         readReceiptViewModel = ViewModelProvider(this, vmFactory).get(ReadReceiptViewModel::class.java)
+    }
+
+    private fun initialiseSettingsDatastore(){
+        dataStore = createDataStore("settings")
     }
 
     private fun fetchCurrentUserProfileImage(){

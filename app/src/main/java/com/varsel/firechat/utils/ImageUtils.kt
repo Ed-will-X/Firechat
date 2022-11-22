@@ -261,6 +261,7 @@ class ImageUtils {
                     }
                 } else {
                     imgCallback(null)
+                    hideViewParent(viewParent)
                 }
             }, {
                 if (it != null) {
@@ -270,6 +271,7 @@ class ImageUtils {
                     }
                 } else {
                     imgCallback(null)
+                    hideViewParent(viewParent)
                 }
             })
         }
@@ -466,6 +468,8 @@ class ImageUtils {
         fun displayProfilePicture(image: ProfileImage, user: User, activity: SignedinActivity){
             val currentUserId = activity.firebaseViewModel.currentUser.value
 
+            activity.hideKeyboard()
+
             if(image.image != null){
                 var imageOwnerFormat = ""
 
@@ -487,6 +491,8 @@ class ImageUtils {
         }
 
         fun displayGroupImage(image: ProfileImage, group: GroupRoom, activity: SignedinActivity){
+            activity.hideKeyboard()
+
             if(image.image != null){
                 var imageOwnerFormat = group.groupName.toString()
 
@@ -523,7 +529,6 @@ class ImageUtils {
 
             if(encoded != null){
 
-                Log.d("LLL", "Generated id ${imageId}")
                 // TODO: Change owner id from current user to current chat room
                 val image = Image(imageId, activity.firebaseAuth.currentUser!!.uid)
                 val message = Message(MessageUtils.generateUID(30), imageId, System.currentTimeMillis(), activity.firebaseAuth.currentUser!!.uid, MessageType.IMAGE)

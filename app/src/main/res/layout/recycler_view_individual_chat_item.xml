@@ -63,7 +63,6 @@
                 android:text="Balls Gulls"
                 android:textSize="15sp"
                 android:textColor="@color/black"
-                android:textStyle="bold"
                 />
 
             <com.google.android.material.card.MaterialCardView
@@ -80,7 +79,7 @@
         </LinearLayout>
         <TextView
             android:id="@+id/last_message_chats_list"
-            android:textColor="@color/black"
+            android:textColor="@color/grey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"

@@ -68,92 +68,11 @@
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-<!--            dark mode-->
+
+<!--            Theme-->
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="0dp"
-                >
-
-                <FrameLayout
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/bg_setting_dark_mode"
-                    >
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_setting_dark_mode"
-                        android:layout_gravity="center"
-                        />
-                </FrameLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:text="@string/setting_dark_mode"/>
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="20dp"
-                    android:layout_weight="1"
-                    />
-
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/switch_dark_mode"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="0dp"
-                >
-
-                <FrameLayout
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/bg_setting_profile_lock"
-                    >
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_baseline_person_24"
-                        android:layout_gravity="center"
-                        />
-                </FrameLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:text="@string/setting_profile_lock"/>
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="20dp"
-                    android:layout_weight="1"
-                    />
-
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/switch_profile_lock"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
+                android:id="@+id/theme"
+                android:foreground="?selectableItemBackground"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
@@ -163,24 +82,28 @@
                 android:clickable="true"
                 >
 
-                <FrameLayout
+                <com.google.android.material.card.MaterialCardView
+                    android:backgroundTint="@color/ios_blue"
+                    app:cardCornerRadius="360dp"
                     android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/bg_setting_chat_customise"
-                    >
+                    android:layout_height="40dp">
+
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_setting_user"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/ic_palette"
                         android:layout_gravity="center"
-                        />
-                </FrameLayout>
+                        app:tint="@color/white" />
+
+                </com.google.android.material.card.MaterialCardView>
+
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:text="@string/setting_chat_customise"/>
+                    android:text="@string/theme"
+                    />
 
                 <View
                     android:layout_width="0dp"
@@ -197,6 +120,56 @@
 
             </LinearLayout>
 
+<!--            Storage and History-->
+            <LinearLayout
+                android:id="@+id/storage_and_history"
+                android:foreground="?selectableItemBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                android:clickable="true"
+                >
+
+                <com.google.android.material.card.MaterialCardView
+                    android:backgroundTint="@color/black"
+                    app:cardCornerRadius="360dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/ic_memory"
+                        android:layout_gravity="center"
+                        app:tint="@color/white" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/storage_and_history"
+                    />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="20dp"
+                    android:layout_weight="1"
+                    />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_arrow_foreward"
+                    android:layout_marginRight="10dp"
+                    />
+
+            </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

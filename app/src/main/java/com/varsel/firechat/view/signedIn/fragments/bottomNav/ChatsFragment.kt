@@ -32,8 +32,6 @@ class ChatsFragment : Fragment() {
 
     private lateinit var adapter: ChatsViewPagerAdapter
     private lateinit var chatsViewModel: ChatsViewModel
-    private val firebaseViewModel: FirebaseViewModel by activityViewModels()
-    private lateinit var mDbRef: DatabaseReference
     private lateinit var parent: SignedinActivity
 
     override fun onCreateView(
@@ -75,8 +73,8 @@ class ChatsFragment : Fragment() {
     }
 
     private fun navigateToSearch(){
-        val action = ChatsFragmentDirections.actionChatsFragmentToSearchChatsFragment()
-        view?.findNavController()?.navigate(action)
+        val action = ChatsFragmentDirections.actionChatsFragmentToChatsSearchFragment()
+        findNavController().navigate(action)
     }
 
     fun setTabText(tabLayout: TabLayout, viewPager2: ViewPager2){

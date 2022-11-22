@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -16,10 +17,13 @@ import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.varsel.firechat.R
+import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Chat.GroupRoom
+import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.utils.AnimationUtils
 import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.viewModel.FirebaseViewModel
@@ -33,6 +37,8 @@ class GroupChatsListAdapter(
 ) : ListAdapter<GroupRoom, RecyclerView.ViewHolder>(GroupChatDiffUtilItemCallback()) {
     private val ADD_NEW = 0
     private val GROUP_CHAT = 1
+
+    val unreadGroups = mutableMapOf<String, GroupRoom>()
 
     class GroupChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val parent = itemView.findViewById<MaterialCardView>(R.id.group_parent)
@@ -78,6 +84,17 @@ class GroupChatsListAdapter(
             val viewHolder = holder as GroupChatViewHolder
             val participants = filterOutCurrentUser(item.participants!!.values.toList())
 
+            val lastMessage = MessageUtils.getLastMessageObject(item)
+            if(lastMessage != null){
+                determineReceipts(item, lastMessage, {
+                    holder.parent.strokeWidth = activity.getResources().getDimensionPixelSize(R.dimen.unread_group_stroke_width)
+                    holder.parent.strokeColor = activity.resources.getColor(R.color.gold)
+                }, {
+                    holder.parent.strokeWidth = activity.getResources().getDimensionPixelSize(R.dimen.zero)
+                    holder.parent.strokeColor = activity.resources.getColor(R.color.gold)
+                })
+            }
+
             getParticipantCount(participants, viewHolder)
 
             viewHolder.parent.setOnClickListener {
@@ -100,6 +117,8 @@ class GroupChatsListAdapter(
                 viewHolder.parent.setOnClickListener {
                     if(profileImage != null){
                         groupItemListener(item.roomUID, profileImage)
+                    } else {
+                        groupItemListener(item.roomUID, null)
                     }
                 }
 
@@ -112,6 +131,32 @@ class GroupChatsListAdapter(
             }
         }
     }
+
+    private fun determineReceipts(item: GroupRoom, lastMessage: Message, receiptCallback: ()-> Unit, noReceiptCallback: ()-> Unit){
+        val receipt = activity.readReceiptViewModel.fetchReceipt("${item.roomUID}:${activity.firebaseAuth.currentUser!!.uid}")
+
+
+        receipt.observe(activity, Observer {
+            Log.d("LLL", "--------------------------------------------------------")
+            Log.d("LLL", item.groupName)
+            Log.d("LLL", item.roomUID)
+            Log.d("LLL", "Last message timestamp: ${MessageUtils.getLastMessageTimestamp(item)}")
+
+            if(it != null){
+                Log.d("LLL", "Receipt timestamp: ${it.timestamp}")
+            } else {
+                Log.d("LLL", "Receipt timestamp: Null in DB")
+            }
+            if(it == null || it.timestamp < lastMessage.time){
+                unreadGroups.put(item.roomUID, item)
+                receiptCallback()
+            } else {
+                unreadGroups.remove(item.roomUID)
+                noReceiptCallback()
+            }
+        })
+    }
+
 
     private fun setFavorite(groupId: String, icon: ImageView){
         if(!isFavorite(groupId)){

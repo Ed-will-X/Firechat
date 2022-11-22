@@ -180,11 +180,11 @@ class ChatPageFragment : Fragment() {
 
     private fun updateReadReceipt(){
         if(existingChatRoomId != null){
-            val receipt = ReadReceipt(existingChatRoomId!!, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid)
+            val receipt = ReadReceipt("${existingChatRoomId}:${parent.firebaseAuth.currentUser!!.uid}", System.currentTimeMillis())
             parent.readReceiptViewModel.storeReceipt(receipt)
         } else {
             if(firstMessageSent == true){
-                val receipt = ReadReceipt(newChatRoomId, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid)
+                val receipt = ReadReceipt("${newChatRoomId}:${parent.firebaseAuth.currentUser!!.uid}", System.currentTimeMillis())
                 parent.readReceiptViewModel.storeReceipt(receipt)
             }
         }

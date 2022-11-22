@@ -8,15 +8,12 @@ class ReadReceipt {
     @PrimaryKey(autoGenerate = false)
     lateinit var roomId: String
 
-    lateinit var ownerId: String
-
     var timestamp = 0L
 
     constructor()
 
-    constructor(roomId: String, timestamp: Long, owner: String){
+    constructor(roomId: String, timestamp: Long){
         this.roomId = roomId
         this.timestamp = timestamp
-        this.ownerId = owner
     }
 }

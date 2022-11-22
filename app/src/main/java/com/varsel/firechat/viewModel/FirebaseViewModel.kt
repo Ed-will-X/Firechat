@@ -1111,7 +1111,6 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    // TODO: implement append group image timestamp
     fun appendGroupImageTimestamp(groupId: String, mDbRef: DatabaseReference, timestamp: Long, successCallback: () -> Unit, failureCallback: () -> Unit){
         val databaseReference = mDbRef.child("groupRooms").child(groupId)
 
@@ -1157,11 +1156,9 @@ class FirebaseViewModel: ViewModel() {
         val storageRef = firebaseStorage.reference.child("/chatImages/${chatRoomID}/${imageId}")
         storageRef.getBytes(2000000).addOnCompleteListener {
             if(it.isSuccessful){
-                Log.d("LLL", "Get bytes successful")
                 mDbRef.child("chatImages").child(chatRoomID).orderByChild("imageId").equalTo(imageId).addListenerForSingleValueEvent(object: ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
                         for(item in snapshot.children){
-                            Log.d("LLL", "Get profile image successful")
 
                             val image = item.getValue(Image::class.java)
                             val encoded = ImageUtils.byteArraytoBase64(it.result)

@@ -45,7 +45,6 @@ class IndividualFragment : Fragment() {
         }, { profileImage, user ->
             ImageUtils.displayProfilePicture(profileImage, user, parent)
         }, {
-            Log.d("LLL", "${it.count()}")
 //            setUnreadIndicator(it)
 
         })

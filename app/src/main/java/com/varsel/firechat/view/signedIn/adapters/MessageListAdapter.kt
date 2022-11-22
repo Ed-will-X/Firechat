@@ -148,7 +148,7 @@ class MessageListAdapter(
             // system message
             val viewHolder = holder as SystemViewHolder
 
-            formatSystemMessage(item, item.time) {
+            MessageUtils.formatSystemMessage(item, activity) {
                 viewHolder.systemText.text = it
             }
 
@@ -285,82 +285,6 @@ class MessageListAdapter(
             }
         }
 
-    }
-
-
-
-    private fun formatSystemMessage(message: Message, time: Long, afterCallback: (message: String)-> Unit){
-        val currentUser = activity.firebaseAuth.currentUser!!.uid
-        if(message.messageUID == SystemMessageType.GROUP_REMOVE){
-            val messageArr: Array<String> = message.message.split(" ").toTypedArray()
-
-            UserUtils.getUser(messageArr[0], activity){ remover ->
-                UserUtils.getUser(messageArr[1], activity) { removed ->
-//                    afterCallback("${if (remover.userUID == currentUser) "You" else "${remover.name}"} removed ${if(removed.userUID == currentUser) "You" else "${removed.name}"}")
-                    afterCallback(context.getString(R.string.group_removed, if (remover.userUID == currentUser) "You" else "${remover.name}", if(removed.userUID == currentUser) "You" else "${removed.name}"))
-                }
-            }
-            // TODO: Add lone return
-        }
-
-        if(message.messageUID == SystemMessageType.GROUP_ADD){
-            val users: Array<String> = message.message.split(" ").toTypedArray()
-            UserUtils.getUser(users[0], activity) {
-                if (users.size < 3) {
-                    formatPerson(it.userUID, {
-                        afterCallback(context.getString(R.string.group_add_second_person_singular))
-                    }, {
-                        afterCallback(context.getString(R.string.group_add_third_person_singular, it.name))
-                    })
-                } else {
-                    formatPerson(it.userUID, {
-                        afterCallback(context.getString(R.string.group_add_second_person, users.size -1))
-                    }, {
-                        afterCallback(context.getString(R.string.group_add_third_person, it.name, users.size -1))
-                    })
-                }
-            }
-            // TODO: Add lone return statement
-        }
-
-        UserUtils.getUser(message.message, activity) {
-            if(message.messageUID == SystemMessageType.GROUP_CREATE){
-                formatPerson(it.userUID, {
-                    afterCallback(context.getString(R.string.group_create_second_person, MessageUtils.formatStampChatsPage(time.toString())))
-                }, {
-                    afterCallback(context.getString(R.string.group_create_third_person, it.name, MessageUtils.formatStampChatsPage(time.toString())))
-                })
-            }
-            else if(message.messageUID == SystemMessageType.NOW_ADMIN){
-                formatPerson(it.userUID, {
-                    afterCallback(context.getString(R.string.now_admin_second_person))
-                },{
-                    afterCallback(context.getString(R.string.now_admin_third_person, it.name))
-                })
-            }
-            else if(message.messageUID == SystemMessageType.NOT_ADMIN){
-                formatPerson(it.userUID, {
-                    afterCallback(context.getString(R.string.not_admin_second_person))
-                },{
-                    afterCallback(context.getString(R.string.not_admin_third_person, it.name))
-                })
-            }
-            else if(message.messageUID == SystemMessageType.GROUP_EXIT){
-                formatPerson(it.userUID, {
-                    afterCallback(context.getString(R.string.group_exit_second_person))
-                }, {
-                    afterCallback(context.getString(R.string.group_exit_third_person, it.name))
-                })
-            }
-        }
-    }
-
-    private fun formatPerson(userId: String, secondPersonCallback: ()-> Unit, thirdPersonCallback: ()-> Unit){
-        if(userId == activity.firebaseAuth.currentUser!!.uid){
-            secondPersonCallback()
-        } else {
-            thirdPersonCallback()
-        }
     }
 
     private fun setOtherUserTimestamp(viewHolder: ReceivedViewHolder, item: Message){

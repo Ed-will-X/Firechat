@@ -1,8 +1,11 @@
 package com.varsel.firechat.utils
 
+import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Message.Message
+import com.varsel.firechat.model.Message.SystemMessageType
 import com.varsel.firechat.model.PublicPost.PublicPost
+import com.varsel.firechat.view.signedIn.SignedinActivity
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 
@@ -86,6 +89,98 @@ class MessageUtils {
                 return true
             } else {
                 return false
+            }
+        }
+
+        fun getLastMessage(chatRoom: ChatRoom): String {
+            val sortedMessages: List<Message>? = MessageUtils.sortMessages(chatRoom)
+
+            return (sortedMessages?.last()?.message ?: "")
+        }
+
+        fun getLastMessageObject(chatRoom: ChatRoom): Message? {
+            val sortedMessages: List<Message>? = MessageUtils.sortMessages(chatRoom)
+
+            return (sortedMessages?.last())
+        }
+
+        fun getLastMessageTimestamp(chatRoom: ChatRoom): String {
+            val sortedMessages: List<Message>? = MessageUtils.sortMessages(chatRoom)
+
+            return (sortedMessages?.last()?.time.toString() ?: "")
+        }
+
+        fun formatSystemMessage(message: Message, activity: SignedinActivity, afterCallback: (message: String)-> Unit){
+            val currentUser = activity.firebaseAuth.currentUser!!.uid
+            if(message.messageUID == SystemMessageType.GROUP_REMOVE){
+                val messageArr: Array<String> = message.message.split(" ").toTypedArray()
+
+                UserUtils.getUser(messageArr[0], activity){ remover ->
+                    UserUtils.getUser(messageArr[1], activity) { removed ->
+//                    afterCallback("${if (remover.userUID == currentUser) "You" else "${remover.name}"} removed ${if(removed.userUID == currentUser) "You" else "${removed.name}"}")
+                        afterCallback(activity.getString(R.string.group_removed, if (remover.userUID == currentUser) "You" else "${remover.name}", if(removed.userUID == currentUser) "You" else "${removed.name}"))
+                    }
+                }
+                // TODO: Add lone return
+            }
+
+            if(message.messageUID == SystemMessageType.GROUP_ADD){
+                val users: Array<String> = message.message.split(" ").toTypedArray()
+                UserUtils.getUser(users[0], activity) {
+                    if (users.size < 3) {
+                        formatPerson(it.userUID, activity, {
+                            afterCallback(activity.getString(R.string.group_add_second_person_singular))
+                        }, {
+                            afterCallback(activity.getString(R.string.group_add_third_person_singular, it.name))
+                        })
+                    } else {
+                        formatPerson(it.userUID, activity, {
+                            afterCallback(activity.getString(R.string.group_add_second_person, users.size -1))
+                        }, {
+                            afterCallback(activity.getString(R.string.group_add_third_person, it.name, users.size -1))
+                        })
+                    }
+                }
+                // TODO: Add lone return statement
+            }
+
+            UserUtils.getUser(message.message, activity) {
+                if(message.messageUID == SystemMessageType.GROUP_CREATE){
+                    formatPerson(it.userUID, activity, {
+                        afterCallback(activity.getString(R.string.group_create_second_person, MessageUtils.formatStampChatsPage(message.time.toString())))
+                    }, {
+                        afterCallback(activity.getString(R.string.group_create_third_person, it.name, MessageUtils.formatStampChatsPage(message.time.toString())))
+                    })
+                }
+                else if(message.messageUID == SystemMessageType.NOW_ADMIN){
+                    formatPerson(it.userUID, activity, {
+                        afterCallback(activity.getString(R.string.now_admin_second_person))
+                    },{
+                        afterCallback(activity.getString(R.string.now_admin_third_person, it.name))
+                    })
+                }
+                else if(message.messageUID == SystemMessageType.NOT_ADMIN){
+                    formatPerson(it.userUID, activity, {
+                        afterCallback(activity.getString(R.string.not_admin_second_person))
+                    },{
+                        afterCallback(activity.getString(R.string.not_admin_third_person, it.name))
+                    })
+                }
+                else if(message.messageUID == SystemMessageType.GROUP_EXIT){
+                    formatPerson(it.userUID, activity, {
+                        afterCallback(activity.getString(R.string.group_exit_second_person))
+                    }, {
+                        afterCallback(activity.getString(R.string.group_exit_third_person, it.name))
+                    })
+                }
+            }
+        }
+
+        private fun formatPerson(userId: String, activity: SignedinActivity, secondPersonCallback: ()-> Unit, thirdPersonCallback: ()-> Unit){
+            if(userId == activity.firebaseAuth.currentUser!!.uid){
+                secondPersonCallback()
+            } else {
+                thirdPersonCallback()
             }
         }
     }

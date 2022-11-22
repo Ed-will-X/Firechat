@@ -2,6 +2,7 @@ package com.varsel.firechat.utils
 
 import androidx.fragment.app.Fragment
 import com.varsel.firechat.R
+import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import java.util.*
@@ -61,6 +62,29 @@ class UserUtils(var fragment: Fragment) {
             return matches
         }
 
+        fun searchListOfUsers_andGroups(keyword: String, list: List<Any>): ArrayList<Any> {
+            val matches = arrayListOf<Any>()
+            if(list.count() < 1){
+                return arrayListOf()
+            }
+            list.map {
+                if(it is User){
+                    val lowerCase = it.name.toLowerCase()
+                    if(lowerCase.contains(keyword.toLowerCase())){
+                        matches.add(it)
+                    }
+                } else if(it is GroupRoom){
+                    val lowerCase = it.groupName?.toLowerCase()
+                    if(lowerCase?.contains(keyword.toLowerCase()) == true){
+                        matches.add(it)
+                    }
+                }
+
+            }
+
+            return matches
+        }
+
         fun getOtherUserId(participants: HashMap<String, String>, activity: SignedinActivity): String{
             var otherUser = ""
             for (i in participants.values){
@@ -78,6 +102,16 @@ class UserUtils(var fragment: Fragment) {
                     callback(it)
                 }
             },{})
+        }
+
+        fun getUser(userId: String, activity: SignedinActivity, userCallback: (user: User)-> Unit, afterCallback: ()-> Unit){
+            activity.firebaseViewModel.getUserSingle(userId, activity.mDbRef, {
+                if(it != null){
+                    userCallback(it)
+                }
+            },{
+                afterCallback()
+            })
         }
 
         /*

@@ -56,26 +56,30 @@ class ChatListAdapter(
     override fun onBindViewHolder(holder: ChatItemViewHolder, position: Int) {
         val item: ChatRoom = getItem(position)
 
-        val lastMessageObject = getLastMessageObject(item)
+        val lastMessageObject = MessageUtils.getLastMessageObject(item)
         if(lastMessageObject != null){
             determineReceipts(item, lastMessageObject, {
                 holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.black))
                 holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.black))
                 holder.unreadIndicator.visibility = View.VISIBLE
                 holder.name.setTypeface(null, Typeface.BOLD)
+
+                readReceiptChange(unreadChatRooms)
+
             }, {
                 holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.grey))
                 holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.grey))
                 holder.unreadIndicator.visibility = View.GONE
                 holder.name.setTypeface(null, Typeface.NORMAL)
 
+                readReceiptChange(unreadChatRooms)
             })
         }
 
         val id = UserUtils.getOtherUserId(item.participants!!, activity)
-        if(getLastMessageObject(item)?.type == MessageType.TEXT){
-            holder.lastMessage.text = UserUtils.truncate(getLastMessage(item), 38)
-        } else if(getLastMessageObject(item)?.type == MessageType.IMAGE){
+        if(MessageUtils.getLastMessageObject(item)?.type == MessageType.TEXT){
+            holder.lastMessage.text = UserUtils.truncate(MessageUtils.getLastMessage(item), 38)
+        } else if(MessageUtils.getLastMessageObject(item)?.type == MessageType.IMAGE){
             holder.lastMessage.text = activity.getString(R.string.image_with_emoji)
         }
 
@@ -102,43 +106,24 @@ class ChatListAdapter(
         }
 
         if(item.messages != null){
-            holder.timestamp.text = MessageUtils.formatStampChatsPage(getLastMessageTimestamp(item))
+            holder.timestamp.text = MessageUtils.formatStampChatsPage(MessageUtils.getLastMessageTimestamp(item))
         }
 
     }
 
+    // TODO: Modularise
     private fun determineReceipts(item: ChatRoom, lastMessage: Message, receiptCallback: ()-> Unit, noReceiptCallback: ()-> Unit){
-        val receipt = activity.readReceiptViewModel.fetchReceipt(item.roomUID, activity.firebaseAuth.currentUser!!.uid)
+        val receipt = activity.readReceiptViewModel.fetchReceipt("${item.roomUID}:${activity.firebaseAuth.currentUser!!.uid}")
 
         receipt.observe(activity, Observer {
             if(it == null || it.timestamp < lastMessage.time){
                 unreadChatRooms.put(item.roomUID, item)
-                readReceiptChange(unreadChatRooms)
                 receiptCallback()
             } else {
                 unreadChatRooms.remove(item.roomUID)
-                readReceiptChange(unreadChatRooms)
                 noReceiptCallback()
             }
         })
-    }
-
-    private fun getLastMessage(chatRoom: ChatRoom): String {
-        val sortedMessages: List<Message>? = MessageUtils.sortMessages(chatRoom)
-
-        return (sortedMessages?.last()?.message ?: "")
-    }
-
-    private fun getLastMessageObject(chatRoom: ChatRoom): Message? {
-        val sortedMessages: List<Message>? = MessageUtils.sortMessages(chatRoom)
-
-        return (sortedMessages?.last())
-    }
-
-    private fun getLastMessageTimestamp(chatRoom: ChatRoom): String {
-        val sortedMessages: List<Message>? = MessageUtils.sortMessages(chatRoom)
-
-        return (sortedMessages?.last()?.time.toString() ?: "")
     }
 
     // TODO: Show shimmer if the adapter can't account for every username

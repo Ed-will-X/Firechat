@@ -96,7 +96,7 @@
                     android:hint="@string/search_friends" />
 
                 <ImageView
-                    android:id="@+id/cancel_button"
+                    android:id="@+id/clear_text"
                     android:clickable="true"
                     android:visibility="gone"
                     android:layout_width="20dp"

@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentFriendsBinding
@@ -24,7 +25,6 @@ class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
     private val settingsViewModel: SettingsViewModel by activityViewModels()
-    private val firebaseViewModel: FirebaseViewModel by activityViewModels()
     private lateinit var parent: SignedinActivity
 
     override fun onCreateView(
@@ -42,10 +42,18 @@ class SettingsFragment : Fragment() {
             binding.settingsLogoutClickable.isEnabled = false
         })
 
+        binding.theme.setOnClickListener {
+            navigateToTheme()
+        }
+
+        binding.storageAndHistory.setOnClickListener {
+            navigateToStorage()
+        }
+
         binding.settingsLogoutClickable.setOnClickListener {
             showLogoutConfirmationDialog {
                 lifecycleScope.launch {
-                    firebaseViewModel.signOut((parent as SignedinActivity).firebaseAuth)
+                    parent.firebaseViewModel.signOut((parent as SignedinActivity).firebaseAuth)
                 }
             }
         }
@@ -53,7 +61,19 @@ class SettingsFragment : Fragment() {
         return view
     }
 
-    fun showLogoutConfirmationDialog(callback: ()-> Unit){
+    private fun navigateToTheme(){
+        val action = SettingsFragmentDirections.actionSettingsFragmentToThemeFragment()
+
+        findNavController().navigate(action)
+    }
+
+    private fun navigateToStorage(){
+        val action = SettingsFragmentDirections.actionSettingsFragmentToStorageAndHistory()
+
+        findNavController().navigate(action)
+    }
+
+    private fun showLogoutConfirmationDialog(callback: ()-> Unit){
         context?.let {
             MaterialAlertDialogBuilder(it)
                 .setTitle(getString(R.string.logout_dialog_title))

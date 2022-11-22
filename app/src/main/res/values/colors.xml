@@ -44,5 +44,7 @@
     <color name="dark_overlay_4">#B2000000</color>
     <color name="dark_overlay_5">#E4000000</color>
 
+    <color name="gold">#FFD700</color>
+    <color name="metallic_gold">#D4AF37</color>
 
 </resources>

@@ -46,7 +46,7 @@ class CreateGroupFragment : Fragment() {
         observeInternetStatus()
 
         SearchUtils.setupSearchBar(
-            binding.cancelButton,
+            binding.clearText,
             binding.searchBox,
             this,
             binding.noFriends,

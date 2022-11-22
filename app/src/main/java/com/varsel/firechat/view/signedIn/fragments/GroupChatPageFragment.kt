@@ -47,6 +47,12 @@ class GroupChatPageFragment : Fragment() {
     private val groupPageViewModel: GroupChatDetailViewModel by activityViewModels()
     private val chatPageViewModel: ChatPageViewModel by activityViewModels()
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        updateReadReceipt()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -100,7 +106,9 @@ class GroupChatPageFragment : Fragment() {
 
 
         binding.sendMessageBtn.setOnClickListener {
-            sendMessage()
+            sendMessage {
+                updateReadReceipt()
+            }
             clearEditText()
         }
 
@@ -138,7 +146,7 @@ class GroupChatPageFragment : Fragment() {
             ImageUtils.uploadChatImage(it, roomId, parent) { message, image ->
                 parent.imageViewModel.storeImage(image) {
                     sendImgMessage(message) {
-
+                        updateReadReceipt()
                     }
                 }
             }
@@ -146,7 +154,7 @@ class GroupChatPageFragment : Fragment() {
     }
 
     private fun updateReadReceipt(){
-        val receipt = ReadReceipt(roomId, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid)
+        val receipt = ReadReceipt("${roomId}:${parent.firebaseAuth.currentUser!!.uid}", System.currentTimeMillis())
         parent.readReceiptViewModel.storeReceipt(receipt)
     }
 
@@ -205,11 +213,11 @@ class GroupChatPageFragment : Fragment() {
         }, {})
     }
 
-    private fun sendMessage(){
+    private fun sendMessage(success: () -> Unit){
         val messageText = binding.messageEditText.text.toString().trim()
         val message = Message(MessageUtils.generateUID(30), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
         parent.firebaseViewModel.sendGroupMessage(message, roomId, parent.mDbRef, {
-            clearEditText()
+            success()
         }, {})
     }
 

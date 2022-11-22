@@ -47,8 +47,10 @@
             android:id="@+id/action_chatsFragment_to_profileImageFragment"
             app:destination="@id/profileImageFragment" />
         <action
-            android:id="@+id/action_chatsFragment_to_searchChatsFragment"
-            app:destination="@id/searchChatsFragment" />
+            android:id="@+id/action_chatsFragment_to_chatsSearchFragment"
+            app:destination="@id/chatsSearchFragment"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -84,7 +86,22 @@
         android:id="@+id/settingsFragment"
         android:name="com.varsel.firechat.view.signedIn.fragments.bottomNav.SettingsFragment"
         android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_themeFragment"
+            app:destination="@id/themeFragment"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right" />
+        <action
+            android:id="@+id/action_settingsFragment_to_storageAndHistory"
+            app:destination="@id/storageAndHistory"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right" />
+    </fragment>
     <fragment
         android:id="@+id/addFriends"
         android:name="com.varsel.firechat.view.signedIn.fragments.AddFriendsFragment"
@@ -296,8 +313,33 @@
             app:argType="string" />
     </fragment>
     <fragment
-        android:id="@+id/searchChatsFragment"
-        android:name="com.varsel.firechat.view.signedIn.fragments.SearchChatsFragment"
-        android:label="fragment_search_chats"
-        tools:layout="@layout/fragment_search_chats" />
+        android:id="@+id/themeFragment"
+        android:name="com.varsel.firechat.view.signedIn.fragments.settings.ThemeFragment"
+        android:label="fragment_theme"
+        tools:layout="@layout/fragment_theme" />
+    <fragment
+        android:id="@+id/storageAndHistory"
+        android:name="com.varsel.firechat.view.signedIn.fragments.settings.StorageAndHistory"
+        android:label="fragment_storage_and_history"
+        tools:layout="@layout/fragment_storage_and_history" />
+    <fragment
+        android:id="@+id/chatsSearchFragment"
+        android:name="com.varsel.firechat.view.signedIn.fragments.ChatsSearchFragment"
+        android:label="fragment_chats_search"
+        tools:layout="@layout/fragment_chats_search" >
+        <action
+            android:id="@+id/action_chatsSearchFragment_to_chatPageFragment"
+            app:destination="@id/chatPageFragment"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right" />
+        <action
+            android:id="@+id/action_chatsSearchFragment_to_groupChatPageFragment"
+            app:destination="@id/groupChatPageFragment"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right"
+            app:popExitAnim="@anim/exit_left_to_right" />
+    </fragment>
 </navigation>
