@@ -117,7 +117,7 @@ class SignedinActivity : AppCompatActivity() {
             if (it != null) {
                 compareUsers(it)
                 determineShowRequesBottomInfobar(it)
-                determineShowFriendsTooltip(it)
+                determineShowFriendsBottomInfobar(it)
 
                 if(it.public_posts != null && it.public_posts!!.isNotEmpty()){
 //                    getPublicPosts_first_5(it.public_posts?.values?.toList()!!)
@@ -159,18 +159,18 @@ class SignedinActivity : AppCompatActivity() {
     var prevFriendRequests = -1
     fun determineShowRequesBottomInfobar(user: User){
         if (prevFriendRequests < user.friendRequests.count() && prevFriendRequests != -1){
-            showBottomTooltip("You have a new friend request", R.color.deep_yellow_2)
+            showBottomInfobar("You have a new friend request", R.color.deep_yellow_2)
         }
         prevFriendRequests = user.friendRequests.count()
     }
 
     var prevFriends = -1
-    fun determineShowFriendsTooltip(user: User){
+    fun determineShowFriendsBottomInfobar(user: User){
         val sorted = UserUtils.sortByTimestamp(user.friends.toSortedMap())
 
         if(prevFriends < user.friends.count() && prevFriends != -1){
             UserUtils.getUser(sorted.keys.last(), this) {
-                showBottomTooltip("${it.name} is now your friend", R.color.purple_700)
+                showBottomInfobar("${it.name} is now your friend", R.color.purple_700)
             }
         }
         prevFriends = user.friends.count()
@@ -178,20 +178,20 @@ class SignedinActivity : AppCompatActivity() {
 
     // TODO: Add optional display intervals
     // TODO: Replace strings with resources
-    fun showBottomTooltip(customString: String?, customColor: Int?){
+    fun showBottomInfobar(customString: String?, customColor: Int?){
         lifecycleScope.launch(Dispatchers.Main) {
-            setTooltipProps(customString, customColor)
-            binding.bottomTooltip.visibility = View.VISIBLE
+            setInfobarProps(customString, customColor)
+            binding.bottomInfobar.visibility = View.VISIBLE
 
             delay(3000)
 
-            binding.bottomTooltip.visibility = View.GONE
+            binding.bottomInfobar.visibility = View.GONE
         }
     }
 
-    private fun setTooltipProps(customString: String? = null, customColor: Int? = null){
-        binding.bottomTooltipText.text = customString
-        binding.bottomTooltip.setBackgroundColor(this.resources.getColor(customColor ?: R.color.black))
+    private fun setInfobarProps(customString: String? = null, customColor: Int? = null){
+        binding.bottomInfobarText.text = customString
+        binding.bottomInfobar.setBackgroundColor(this.resources.getColor(customColor ?: R.color.black))
     }
 
     fun setOverlayBindings(){
@@ -655,15 +655,15 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-    lateinit var offlineTooltipTimer: Timer
+    lateinit var offlineInfobarTimer: Timer
     private fun checkConnectivity(){
         firebaseViewModel.checkFirebaseConnection {
             if(it){
                 firebaseViewModel.isConnectedToDatabase.value = true
-                showBottomTooltip("Back online", R.color.light_green_2)
+                showBottomInfobar("Back online", R.color.light_green_2)
 
-                if(offlineTooltipTimer != null){
-                    offlineTooltipTimer.cancel()
+                if(offlineInfobarTimer != null){
+                    offlineInfobarTimer.cancel()
                 }
 
 //                if(timer != null){
@@ -672,8 +672,8 @@ class SignedinActivity : AppCompatActivity() {
                 binding.networkErrorOverlay.visibility = View.GONE
             } else {
                 firebaseViewModel.isConnectedToDatabase.value = false
-                offlineTooltipTimer = fixedRateTimer("no_connection_timer", false, 0L, 5 * 1000 + 3000) {
-                    showBottomTooltip("No connection", R.color.orange_red)
+                offlineInfobarTimer = fixedRateTimer("no_connection_timer", false, 0L, 5 * 1000 + 3000) {
+                    showBottomInfobar("No connection", R.color.orange_red)
                 }
 
 //                timer = signedinViewModel.setNetworkOverlayTimer {

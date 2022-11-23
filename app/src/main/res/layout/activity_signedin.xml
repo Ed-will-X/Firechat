@@ -36,12 +36,12 @@
             android:background="@color/light_green_2"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
-            android:id="@+id/bottom_tooltip"
+            android:id="@+id/bottom_infobar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/bottom_tooltip_text"
+                android:id="@+id/bottom_infobar_text"
                 android:layout_marginVertical="3dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
