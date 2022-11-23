@@ -36,7 +36,7 @@ class SettingsFragment : Fragment() {
         parent = activity as SignedinActivity
         val view = binding.root
 
-        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+        LifecycleUtils.observeInternetStatus(parent, this, {
             binding.settingsLogoutClickable.isEnabled = true
         }, {
             binding.settingsLogoutClickable.isEnabled = false

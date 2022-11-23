@@ -46,7 +46,7 @@ class OtherProfileFragment : Fragment() {
 
         parent = activity as SignedinActivity
 
-        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+        LifecycleUtils.observeInternetStatus(parent, this, {
             binding.addFriendBtn.isEnabled = true
         }, {
             binding.addFriendBtn.isEnabled = false

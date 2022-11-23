@@ -137,16 +137,7 @@ class GroupChatsListAdapter(
 
 
         receipt.observe(activity, Observer {
-            Log.d("LLL", "--------------------------------------------------------")
-            Log.d("LLL", item.groupName)
-            Log.d("LLL", item.roomUID)
-            Log.d("LLL", "Last message timestamp: ${MessageUtils.getLastMessageTimestamp(item)}")
 
-            if(it != null){
-                Log.d("LLL", "Receipt timestamp: ${it.timestamp}")
-            } else {
-                Log.d("LLL", "Receipt timestamp: Null in DB")
-            }
             if(it == null || it.timestamp < lastMessage.time){
                 unreadGroups.put(item.roomUID, item)
                 receiptCallback()

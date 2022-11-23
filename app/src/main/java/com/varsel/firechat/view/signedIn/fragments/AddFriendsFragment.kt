@@ -49,7 +49,7 @@ class AddFriendsFragment : Fragment() {
         val view = binding.root
         parent = activity as SignedinActivity
 
-        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+        LifecycleUtils.observeInternetStatus(parent, this, {
             binding.addFriendsSearchBox.isEnabled = true
         }, {
             binding.addFriendsSearchBox.isEnabled = false

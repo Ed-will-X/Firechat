@@ -3,6 +3,7 @@ package com.varsel.firechat.view
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         mAuth = FirebaseAuth.getInstance()
         binding = ActivityMainBinding.inflate(layoutInflater)
+        hideStatusBar()
 
         determineAuth()
 
@@ -59,6 +61,10 @@ class MainActivity : AppCompatActivity() {
                 navigateToSignup()
             }
         }
+    }
+
+    private fun hideStatusBar(){
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 
     private fun navigateToSignin(){

@@ -3,6 +3,7 @@ package com.varsel.firechat.view.signedIn.fragments.bottomNav
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,7 +55,7 @@ class ProfileFragment : Fragment() {
 
         userUtils = UserUtils(this)
 
-        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+        LifecycleUtils.observeInternetStatus(parent, this, {
             binding.friendRequestsClickable.isEnabled = true
         }, {
             binding.friendRequestsClickable.isEnabled = false
@@ -296,7 +297,7 @@ class ProfileFragment : Fragment() {
 
         val friendRequestSwipeGesture = object : FriendRequestSwipeGesture(parent){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this@ProfileFragment, {
+                LifecycleUtils.observeInternetStatus(parent, this@ProfileFragment, {
                     if(direction == ItemTouchHelper.LEFT){
                         firebaseViewModel.rejectFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
                         removeFromAdapter(friendRequestsAdapter, viewHolder)
@@ -313,7 +314,7 @@ class ProfileFragment : Fragment() {
         val touchHelper = ItemTouchHelper(friendRequestSwipeGesture)
 
         // Disables swipe if no internet
-        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+        LifecycleUtils.observeInternetStatus(parent, this, {
             touchHelper.attachToRecyclerView(recyclerView)
         }, {
             touchHelper.attachToRecyclerView(null)
@@ -331,6 +332,11 @@ class ProfileFragment : Fragment() {
                 // TODO: Fix potential bug
                 friendRequestsAdapter.run {
                     friendRequestsAdapter.users = it.toMutableList()
+                    friendRequestsAdapter.notifyDataSetChanged()
+                }
+            } else {
+                friendRequestsAdapter.run {
+                    friendRequestsAdapter.users = mutableListOf()
                     friendRequestsAdapter.notifyDataSetChanged()
                 }
             }

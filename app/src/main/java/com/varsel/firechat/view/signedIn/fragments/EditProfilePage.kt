@@ -52,9 +52,14 @@ class EditProfilePage : Fragment() {
             }
         })
 
-        binding.actionSheetClickable.setOnClickListener {
-            openEditProfileActionsheet()
-        }
+        LifecycleUtils.observeInternetStatus(parent, this, {
+            binding.actionSheetClickable.setOnClickListener {
+                openEditProfileActionsheet()
+            }
+        }, {
+            binding.actionSheetClickable.setOnClickListener(null)
+        })
+
 
         return view
     }
@@ -154,6 +159,12 @@ class EditProfilePage : Fragment() {
         setActionsheetBindings(dialogBinding)
         dialog.setContentView(view)
 
+        LifecycleUtils.observeInternetStatus(parent, this, {
+            dialogBinding.editProfileBtn.isEnabled = true
+        }, {
+            dialogBinding.editProfileBtn.isEnabled = false
+        })
+
         dialogBinding.editProfileBtn.setOnClickListener {
             nameEditText.setText(nameEditText.text.trim())
             locationEditText.setText(locationEditText.text.trim())
@@ -198,7 +209,7 @@ class EditProfilePage : Fragment() {
 
         dialog.setContentView(view)
 
-        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+        LifecycleUtils.observeInternetStatus(parent, this, {
             dialogBinding.pickImage.isEnabled = true
             dialogBinding.openCamera.isEnabled = true
             dialogBinding.removeImage.isEnabled = true

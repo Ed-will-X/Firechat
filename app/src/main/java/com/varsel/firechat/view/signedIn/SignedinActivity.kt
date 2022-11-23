@@ -4,28 +4,25 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.core.DataStore
-import androidx.datastore.createDataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.createDataStore
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import com.varsel.firechat.FirechatApplication
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActivitySignedinBinding
@@ -52,6 +49,12 @@ import com.varsel.firechat.view.signedOut.SignedoutActivity
 import com.varsel.firechat.view.signedOut.fragments.AuthType
 import com.varsel.firechat.viewModel.FirebaseViewModel
 import com.varsel.firechat.viewModel.SignedinViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.concurrent.fixedRateTimer
 
 class SignedinActivity : AppCompatActivity() {
     lateinit var binding: ActivitySignedinBinding
@@ -62,7 +65,7 @@ class SignedinActivity : AppCompatActivity() {
     lateinit var firebaseViewModel: FirebaseViewModel
     lateinit var signedinViewModel: SignedinViewModel
     lateinit var imageViewModel: ImageViewModel
-    var timer: CountDownTimer? = null
+//    var timer: CountDownTimer? = null
 //    lateinit var settingViewModel: SettingViewModel
     lateinit var profileImageViewModel: ProfileImageViewModel
     lateinit var publicPostViewModel: PublicPostViewModel
@@ -102,7 +105,7 @@ class SignedinActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         checkConnectivity()
-        setOverlayClickListeners()
+//        setOverlayClickListeners()
 
         binding.logoutTextBtn.setOnClickListener {
             logout(this, this) {
@@ -113,19 +116,21 @@ class SignedinActivity : AppCompatActivity() {
         firebaseViewModel.currentUser.observe(this, Observer {
             if (it != null) {
                 compareUsers(it)
+                determineShowRequesBottomInfobar(it)
+                determineShowFriendsTooltip(it)
 
                 if(it.public_posts != null && it.public_posts!!.isNotEmpty()){
 //                    getPublicPosts_first_5(it.public_posts?.values?.toList()!!)
                 }
             }
 
-            if(it?.friendRequests != null){
+            if(it?.friendRequests != null && it.friendRequests.isNotEmpty()){
                 getFriendRequests(it.friendRequests)
             } else {
                 firebaseViewModel.friendRequests.value = mutableListOf<User>()
             }
 
-            if(it?.friends != null){
+            if(it?.friends != null && it.friends.isNotEmpty()){
                 getAllFriends(it.friends)
             } else {
                 firebaseViewModel.setFriends(listOf())
@@ -149,6 +154,44 @@ class SignedinActivity : AppCompatActivity() {
         setOverlayBindings()
 
 //        profileImageViewModel.setClearBlacklistCountdown()
+    }
+
+    var prevFriendRequests = -1
+    fun determineShowRequesBottomInfobar(user: User){
+        if (prevFriendRequests < user.friendRequests.count() && prevFriendRequests != -1){
+            showBottomTooltip("You have a new friend request", R.color.deep_yellow_2)
+        }
+        prevFriendRequests = user.friendRequests.count()
+    }
+
+    var prevFriends = -1
+    fun determineShowFriendsTooltip(user: User){
+        val sorted = UserUtils.sortByTimestamp(user.friends.toSortedMap())
+
+        if(prevFriends < user.friends.count() && prevFriends != -1){
+            UserUtils.getUser(sorted.keys.last(), this) {
+                showBottomTooltip("${it.name} is now your friend", R.color.purple_700)
+            }
+        }
+        prevFriends = user.friends.count()
+    }
+
+    // TODO: Add optional display intervals
+    // TODO: Replace strings with resources
+    fun showBottomTooltip(customString: String?, customColor: Int?){
+        lifecycleScope.launch(Dispatchers.Main) {
+            setTooltipProps(customString, customColor)
+            binding.bottomTooltip.visibility = View.VISIBLE
+
+            delay(3000)
+
+            binding.bottomTooltip.visibility = View.GONE
+        }
+    }
+
+    private fun setTooltipProps(customString: String? = null, customColor: Int? = null){
+        binding.bottomTooltipText.text = customString
+        binding.bottomTooltip.setBackgroundColor(this.resources.getColor(customColor ?: R.color.black))
     }
 
     fun setOverlayBindings(){
@@ -612,41 +655,50 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
+    lateinit var offlineTooltipTimer: Timer
     private fun checkConnectivity(){
         firebaseViewModel.checkFirebaseConnection {
             if(it){
                 firebaseViewModel.isConnectedToDatabase.value = true
+                showBottomTooltip("Back online", R.color.light_green_2)
 
-                if(timer != null){
-                    timer?.cancel()
+                if(offlineTooltipTimer != null){
+                    offlineTooltipTimer.cancel()
                 }
+
+//                if(timer != null){
+//                    timer?.cancel()
+//                }
                 binding.networkErrorOverlay.visibility = View.GONE
             } else {
                 firebaseViewModel.isConnectedToDatabase.value = false
-
-                timer = signedinViewModel.setNetworkOverlayTimer {
-                    binding.networkErrorOverlay.visibility = View.VISIBLE
+                offlineTooltipTimer = fixedRateTimer("no_connection_timer", false, 0L, 5 * 1000 + 3000) {
+                    showBottomTooltip("No connection", R.color.orange_red)
                 }
+
+//                timer = signedinViewModel.setNetworkOverlayTimer {
+//                    binding.networkErrorOverlay.visibility = View.VISIBLE
+//                }
             }
         }
     }
 
-    private fun setOverlayClickListeners(){
-        binding.networkErrorOverlay.setOnClickListener {
-            dismissNetworkErrorOverlay()
-            timer = signedinViewModel.setNetworkOverlayTimer {
-                binding.networkErrorOverlay.visibility = View.VISIBLE
-            }
-        }
-
-        binding.cancelNetworkErrorOverlay.setOnClickListener {
-            dismissNetworkErrorOverlay()
-
-            timer = signedinViewModel.setNetworkOverlayTimer {
-                binding.networkErrorOverlay.visibility = View.VISIBLE
-            }
-        }
-    }
+//    private fun setOverlayClickListeners(){
+//        binding.networkErrorOverlay.setOnClickListener {
+//            dismissNetworkErrorOverlay()
+//            timer = signedinViewModel.setNetworkOverlayTimer {
+//                binding.networkErrorOverlay.visibility = View.VISIBLE
+//            }
+//        }
+//
+//        binding.cancelNetworkErrorOverlay.setOnClickListener {
+//            dismissNetworkErrorOverlay()
+//
+//            timer = signedinViewModel.setNetworkOverlayTimer {
+//                binding.networkErrorOverlay.visibility = View.VISIBLE
+//            }
+//        }
+//    }
 
     private fun dismissNetworkErrorOverlay(){
         binding.networkErrorOverlay.visibility = View.GONE

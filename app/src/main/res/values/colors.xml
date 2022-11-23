@@ -28,6 +28,7 @@
     <color name="ios_blue">#1278f9</color>
     <color name="blue">#3397FB</color>
     <color name="light_green">#0bd899</color>
+    <color name="light_green_2">#30B930</color>
     <color name="white_blue">#edf8fe</color>
     <color name="cream">#F6F6F6</color>
     <color name="cream_2">#F7F7F7</color>
@@ -36,6 +37,7 @@
 
     <color name="yellow">#F7C84A</color>
     <color name="deep_yellow">#FFC31F</color>
+    <color name="deep_yellow_2">#FFBB00</color>
 
 
     <color name="dark_overlay">#23000000</color>
@@ -46,5 +48,7 @@
 
     <color name="gold">#FFD700</color>
     <color name="metallic_gold">#D4AF37</color>
+
+    <color name="dark_purple">#692375</color>
 
 </resources>

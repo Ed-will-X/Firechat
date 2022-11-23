@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentChatPageBinding
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Message.Message
@@ -58,7 +59,7 @@ class ChatPageFragment : Fragment() {
         val view = binding.root
         parent = activity as SignedinActivity
 
-        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+        LifecycleUtils.observeInternetStatus(parent, this, {
             binding.sendMessageBtn.isEnabled = true
         }, {
             binding.sendMessageBtn.isEnabled = false

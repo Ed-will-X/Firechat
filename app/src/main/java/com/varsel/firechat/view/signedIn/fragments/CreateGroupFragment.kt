@@ -111,7 +111,7 @@ class CreateGroupFragment : Fragment() {
     }
 
     private fun observeInternetStatus(){
-        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+        LifecycleUtils.observeInternetStatus(parent, this, {
             if(adapter.selected.count() > 0){
                 binding.createGroupBtn.isEnabled = true
             }
@@ -141,7 +141,7 @@ class CreateGroupFragment : Fragment() {
         val dialogBinding = ActionsheetCreateGroupBinding.inflate(layoutInflater, binding.root, false)
         dialog.setContentView(dialogBinding.root)
 
-        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+        LifecycleUtils.observeInternetStatus(parent, this, {
             dialogBinding.btnCreateGroup.isEnabled = true
         }, {
             dialogBinding.btnCreateGroup.isEnabled = false

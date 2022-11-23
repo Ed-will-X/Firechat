@@ -87,8 +87,6 @@ class IndividualFragment : Fragment() {
 
     private fun setUnreadIndicator(unreadRooms: MutableMap<String, ChatRoom>){
         // TODO: Set unread indicator in Tab Layout
-        Log.d("LLL", "---------------------------------------------------")
-        Log.d("LLL", "Unread count for ${parent.firebaseViewModel.currentUser.value?.name}: ${unreadRooms.count()}")
 
 //        for(i in unreadRooms){
 //            Log.d("LLL", "${UserUtils.getOtherUserId(i.participants!!, parent)} in unreads")

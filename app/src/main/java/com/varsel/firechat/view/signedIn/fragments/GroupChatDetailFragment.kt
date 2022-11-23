@@ -62,7 +62,7 @@ class GroupChatDetailFragment : Fragment() {
 
         observeGroupImage()
 
-        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+        LifecycleUtils.observeInternetStatus(parent, this, {
             binding.addMemberClickable.isEnabled = true
         }, {
             binding.addMemberClickable.isEnabled = false
@@ -244,7 +244,7 @@ class GroupChatDetailFragment : Fragment() {
 
         dialog.setContentView(view)
 
-        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+        LifecycleUtils.observeInternetStatus(parent, this, {
             dialogBinding.pickImage.isEnabled = true
             dialogBinding.openCamera.isEnabled = true
             dialogBinding.removeImage.isEnabled = true

@@ -92,7 +92,7 @@ class FriendListFragment : Fragment() {
 
         val swipeGesture = object : FriendsSwipeGesture(parent){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this@FriendListFragment, {
+                LifecycleUtils.observeInternetStatus(parent, this@FriendListFragment, {
                     if(direction == ItemTouchHelper.LEFT){
                         if(adapter != null){
                             parent.firebaseViewModel.unfriendUser(adapter!!.friends[viewHolder.adapterPosition], parent.firebaseAuth, parent.mDbRef)
@@ -106,7 +106,7 @@ class FriendListFragment : Fragment() {
         val touchHelper = ItemTouchHelper(swipeGesture)
 
         // Disables swipe if no internet
-        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+        LifecycleUtils.observeInternetStatus(parent, this, {
             touchHelper.attachToRecyclerView(binding.allFriendsRecyclerView)
         }, {
             touchHelper.attachToRecyclerView(null)
@@ -133,7 +133,7 @@ class FriendListFragment : Fragment() {
 
     private fun addFriendsToAdapter_initial(friends: List<User?>?, sortType: Int){
 
-        // TODO: Change
+        // TODO: Fix "java.lang.UnsupportedOperationException" here
         adapter?.friends?.clear()
 
         if(friends != null && friends.isNotEmpty()){

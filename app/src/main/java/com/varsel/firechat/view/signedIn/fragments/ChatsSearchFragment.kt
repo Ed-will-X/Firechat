@@ -99,7 +99,6 @@ class ChatsSearchFragment : Fragment() {
                 }, {
                     chatSearchViewModel.searchables.value?.addAll(users ?: mutableListOf())
                     afterCallback()
-                    Log.d("LLL", chatSearchViewModel.searchables.value?.count().toString())
                 })
             }
         }

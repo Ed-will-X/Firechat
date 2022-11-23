@@ -62,7 +62,7 @@ class GroupChatPageFragment : Fragment() {
         parent = activity as SignedinActivity
         roomId = GroupChatPageFragmentArgs.fromBundle(requireArguments()).groupRoomId
 
-        LifecycleUtils.observeInternetStatus(parent.firebaseViewModel, this, {
+        LifecycleUtils.observeInternetStatus(parent, this, {
             binding.sendMessageBtn.isEnabled = true
         }, {
             binding.sendMessageBtn.isEnabled = false
