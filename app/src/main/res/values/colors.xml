@@ -50,5 +50,8 @@
     <color name="metallic_gold">#D4AF37</color>
 
     <color name="dark_purple">#692375</color>
+    <color name="coral">#FF7F50</color>
+    <color name="lemon">#FAFA33</color>
+    <color name="dark_lemon">#BBBB00</color>
 
 </resources>

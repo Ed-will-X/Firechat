@@ -13,7 +13,7 @@ open class ChatRoom {
     @ColumnInfo(name = "room_uid")
     lateinit var roomUID: String
 
-    var participants: HashMap<String, String>? = null
+    var participants: HashMap<String, String> = hashMapOf()
 
     var messages: HashMap<String, Message>? = null
 

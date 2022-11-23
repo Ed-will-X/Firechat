@@ -32,7 +32,7 @@ open class User{
     var chatRooms: HashMap<String, Long>? = null
 
     @ColumnInfo(name = "group_rooms")
-    var groupRooms: HashMap<String, Long>? = null
+    var groupRooms: HashMap<String, Long> = hashMapOf()
 
     var occupation: String? = null
 

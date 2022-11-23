@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
+import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentIndividualBinding
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.navigate
 import com.varsel.firechat.model.Chat.ChatRoom
@@ -51,7 +52,6 @@ class IndividualFragment : Fragment() {
 
         binding.individualChatsRecyclerView.adapter = chatListAdapter
 
-        // TODO: Add a second observer for the chat rooms
         parent.firebaseViewModel.chatRooms.observe(viewLifecycleOwner, Observer {
             val sorted = MessageUtils.sortChats(it as MutableList<ChatRoom>)
 

@@ -26,6 +26,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.varsel.firechat.FirechatApplication
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActivitySignedinBinding
+import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.Image.Image
 import com.varsel.firechat.model.Image.ImageViewModel
@@ -113,11 +114,19 @@ class SignedinActivity : AppCompatActivity() {
             }
         }
 
+        firebaseViewModel.chatRooms.observe(this, Observer {
+            val sorted = MessageUtils.sortChats(it as MutableList<ChatRoom>)
+
+            // TODO: Collect receipts that came after getUserSingle was re-run
+            getNewMessage(it)
+        })
+
         firebaseViewModel.currentUser.observe(this, Observer {
             if (it != null) {
                 compareUsers(it)
                 determineShowRequesBottomInfobar(it)
                 determineShowFriendsBottomInfobar(it)
+                determineShowGroupAddBottomInfobar(it)
 
                 if(it.public_posts != null && it.public_posts!!.isNotEmpty()){
 //                    getPublicPosts_first_5(it.public_posts?.values?.toList()!!)
@@ -156,6 +165,32 @@ class SignedinActivity : AppCompatActivity() {
 //        profileImageViewModel.setClearBlacklistCountdown()
     }
 
+    // TODO: Run in a coroutine
+    private fun getNewMessage(chatRooms: MutableList<ChatRoom>){
+        val lastRunTimestamp = getUserSingleTimestamp
+        val currentUserId = firebaseAuth.currentUser!!.uid
+
+        for(i in chatRooms){
+            val lastMessage = MessageUtils.getLastMessageObject(i)
+            // TODO: Check if the mounted fragment chat-room belongs to the last message user
+                // TODO: If: Don't show
+                // TODO: Else: Show
+
+            if((lastMessage?.time ?: 0L) > lastRunTimestamp && lastMessage?.sender != currentUserId){
+                getOtherUser(i) {
+                    showBottomInfobar("You have a new message from ${UserUtils.truncate(it.name, 15)}", R.color.purple_700)
+                }
+            }
+        }
+    }
+
+    private fun getOtherUser(chatRoom: ChatRoom, userCallback: (user: User)-> Unit){
+        val otherUserId = UserUtils.getOtherUserId(chatRoom.participants, this)
+        UserUtils.getUser(otherUserId, this) {
+            userCallback(it)
+        }
+    }
+
     var prevFriendRequests = -1
     fun determineShowRequesBottomInfobar(user: User){
         if (prevFriendRequests < user.friendRequests.count() && prevFriendRequests != -1){
@@ -176,9 +211,18 @@ class SignedinActivity : AppCompatActivity() {
         prevFriends = user.friends.count()
     }
 
-    val prevGroups = -1
-    fun determineShowGroupAddBottomInfobar(){
+    var prevGroups = -1
+    fun determineShowGroupAddBottomInfobar(user: User){
+        val sorted = UserUtils.sortByTimestamp(user.groupRooms.toSortedMap())
 
+        if(prevGroups < user.groupRooms.count() && prevGroups != -1){
+            firebaseViewModel.getGroupChatRoomSingle(sorted.keys.last(), mDbRef, {
+                if(it?.admins?.contains(firebaseAuth.currentUser!!.uid) == false){
+                    showBottomInfobar("You have been added to ${UserUtils.truncate(it.groupName, 10)}", R.color.dark_lemon)
+                }
+            }, {})
+        }
+        prevGroups = user.groupRooms.count()
     }
 
     // TODO: Add optional display intervals
@@ -305,6 +349,15 @@ class SignedinActivity : AppCompatActivity() {
             binding.bottomNavView.visibility = View.VISIBLE
             if(destination.id != R.id.chatsFragment && destination.id != R.id.settingsFragment && destination.id != R.id.profileFragment){
                 binding.bottomNavView.visibility = View.GONE
+            }
+        }
+    }
+
+    fun checkLastMessageIdInChats(id: String, navController: NavController){
+        navController.addOnDestinationChangedListener { _, destination, arguments ->
+            if(destination.id == R.id.chatPageFragment){
+                Log.d("LLL", "Key: ${destination.arguments.keys.last()}")
+                Log.d("LLL", "Value: ${destination.arguments.values.last()}")
             }
         }
     }
@@ -755,9 +808,13 @@ class SignedinActivity : AppCompatActivity() {
         // run firebase logout
     }
 
+    var getUserSingleTimestamp: Long = -1L
     private fun compareUsers(user: User){
         val chatRoomSize: Int = firebaseViewModel.currentUserSingle.value?.chatRooms?.size ?: 0
         val groupRoomSize: Int = firebaseViewModel.currentUserSingle.value?.groupRooms?.size ?: 0
+
+        // collect timestamp whenever this function runs
+        getUserSingleTimestamp = System.currentTimeMillis()
         // if a new chat room or group room is added to the array re-run get user single
         if(user.chatRooms?.size != chatRoomSize){
             signedinViewModel.getCurrentUserSingle(this)

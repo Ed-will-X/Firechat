@@ -1,5 +1,6 @@
 package com.varsel.firechat.utils
 
+import android.util.Log
 import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Message.Message
@@ -18,17 +19,22 @@ class MessageUtils {
 
             if(ago == "moments ago"){
                 return "1s"
-            } else {
+            } else if(ago == "moments from now"){
+                return "1s"
+            }else {
                 val arr = ago.split(" ").toTypedArray()
                 return "${arr[0]}${arr[1][0]}"
             }
         }
 
+        // TODO: Use string resources
         fun formatStampChatsPage(timeString: String): String{
             val prettyTime = PrettyTime(Locale.getDefault())
             val ago: String = prettyTime.format(Date(timeString.toLong()))
 
             if(ago == "moments ago"){
+                return "1s ago"
+            } else if(ago == "moments from now"){
                 return "1s ago"
             } else {
                 val arr = ago.split(" ").toTypedArray()

@@ -524,11 +524,6 @@ class GroupChatDetailFragment : Fragment() {
         }
     }
 
-    // TODO: Re-implement for other pages
-    private fun getUserSingle(){
-        parent.signedinViewModel.getCurrentUserSingle(parent)
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

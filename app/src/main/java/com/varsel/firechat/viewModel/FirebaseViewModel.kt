@@ -449,12 +449,13 @@ class FirebaseViewModel: ViewModel() {
     }
 
     fun appendChatRoom(uid: String, otherUser: String, mAuth: FirebaseAuth, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+        val currentTime = System.currentTimeMillis()
         mDbRef
             .child("Users")
             .child(otherUser)
             .child("chatRooms")
             .child(uid)
-            .setValue(System.currentTimeMillis())
+            .setValue(currentTime)
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     mDbRef
@@ -462,7 +463,7 @@ class FirebaseViewModel: ViewModel() {
                         .child(mAuth.currentUser?.uid.toString())
                         .child("chatRooms")
                         .child(uid)
-                        .setValue(uid)
+                        .setValue(currentTime)
                         .addOnCompleteListener {
                             if(it.isSuccessful){
                                 successCallback()
