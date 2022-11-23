@@ -29,16 +29,16 @@ open class User{
     var profileLock: Boolean = false
 
     @ColumnInfo(name = "chat_rooms")
-    var chatRooms: HashMap<String, String>? = null
+    var chatRooms: HashMap<String, Long>? = null
 
     @ColumnInfo(name = "group_rooms")
-    var groupRooms: HashMap<String, String>? = null
+    var groupRooms: HashMap<String, Long>? = null
 
     var occupation: String? = null
 
     var favoriteChats: List<String>? = null
 
-    var favoriteGroups: HashMap<String, String>? = null
+    var favoriteGroups: HashMap<String, Long>? = null
 
     var friends: HashMap<String, Long> = hashMapOf()
 
@@ -55,7 +55,7 @@ open class User{
 
     var favorite_friends: HashMap<String, String>? = null
 
-    var public_posts: HashMap<String, String>? = null
+    var public_posts: HashMap<String, Long>? = null
 
     var recent_search: HashMap<String, Long> = hashMapOf()
 

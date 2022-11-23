@@ -165,7 +165,7 @@ class GroupChatsListAdapter(
     }
 
     private fun isFavorite(groupID: String): Boolean{
-        val favorites = activity.firebaseViewModel.currentUser.value!!.favoriteGroups?.values
+        val favorites = activity.firebaseViewModel.currentUser.value!!.favoriteGroups?.keys
 
         if (favorites != null) {
             for(i in favorites){

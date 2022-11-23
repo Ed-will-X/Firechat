@@ -97,7 +97,7 @@ class OtherProfileFragment : Fragment() {
             }
             binding.miniPublicPostsRecyclerView.adapter = postAdapter
 
-            val otherUserPosts = parent.firebaseViewModel.selectedUser.value?.public_posts?.values?.toList()
+            val otherUserPosts = parent.firebaseViewModel.selectedUser.value?.public_posts?.keys?.toList()
 
             if(otherUserPosts != null && otherUserPosts.isNotEmpty()){
                 val reversed = PostUtils.sortPublicPosts_reversed(otherUserPosts).take(4)
@@ -186,7 +186,7 @@ class OtherProfileFragment : Fragment() {
             }
             dialogBinding.otherUserPublicPostsRecyclerViewFull.adapter = adapter
 
-            val otherUserPosts = parent.firebaseViewModel.selectedUser.value?.public_posts?.values?.toList()
+            val otherUserPosts = parent.firebaseViewModel.selectedUser.value?.public_posts?.keys?.toList()
             if(otherUserPosts != null && otherUserPosts.isNotEmpty()){
                 val reversed = PostUtils.sortPublicPosts_reversed(otherUserPosts)
                 adapter.publicPostStrings = reversed

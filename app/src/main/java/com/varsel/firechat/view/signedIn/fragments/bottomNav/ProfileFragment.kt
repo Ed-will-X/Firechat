@@ -74,7 +74,7 @@ class ProfileFragment : Fragment() {
             *   Adds the first 4 public post string IDs to the recycler view
             *
             * */
-            val IDs = parent.firebaseViewModel.currentUser.value?.public_posts?.values?.toList()
+            val IDs = parent.firebaseViewModel.currentUser.value?.public_posts?.keys?.toList()
             if(IDs != null && IDs.isNotEmpty()){
                 val reversed = PostUtils.sortPublicPosts_reversed(IDs).take(4)
 
@@ -149,7 +149,7 @@ class ProfileFragment : Fragment() {
 
             dialogBinding.allPostsRecyclerView.adapter = publicPostAdapter
 
-            val currentUserPosts = parent.firebaseViewModel.currentUser.value?.public_posts?.values?.toList()
+            val currentUserPosts = parent.firebaseViewModel.currentUser.value?.public_posts?.keys?.toList()
             if(currentUserPosts != null && currentUserPosts.isNotEmpty()){
                 // TODO: Extract timestamps then reverse
                 val reversed = PostUtils.sortPublicPosts_reversed(currentUserPosts)

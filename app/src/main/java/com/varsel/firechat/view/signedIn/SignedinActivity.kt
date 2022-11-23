@@ -176,6 +176,11 @@ class SignedinActivity : AppCompatActivity() {
         prevFriends = user.friends.count()
     }
 
+    val prevGroups = -1
+    fun determineShowGroupAddBottomInfobar(){
+
+    }
+
     // TODO: Add optional display intervals
     // TODO: Replace strings with resources
     fun showBottomInfobar(customString: String?, customColor: Int?){
@@ -655,7 +660,7 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-    lateinit var offlineInfobarTimer: Timer
+    var offlineInfobarTimer: Timer? = null
     private fun checkConnectivity(){
         firebaseViewModel.checkFirebaseConnection {
             if(it){
@@ -663,7 +668,7 @@ class SignedinActivity : AppCompatActivity() {
                 showBottomInfobar("Back online", R.color.light_green_2)
 
                 if(offlineInfobarTimer != null){
-                    offlineInfobarTimer.cancel()
+                    offlineInfobarTimer?.cancel()
                 }
 
 //                if(timer != null){

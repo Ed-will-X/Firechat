@@ -454,7 +454,7 @@ class FirebaseViewModel: ViewModel() {
             .child(otherUser)
             .child("chatRooms")
             .child(uid)
-            .setValue(uid)
+            .setValue(System.currentTimeMillis())
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     mDbRef
@@ -529,17 +529,18 @@ class FirebaseViewModel: ViewModel() {
 
         val currentUserRef = mDbRef.child("Users").child(mAuth.currentUser?.uid.toString())
         val otherUserRef = mDbRef.child("Users").child(otherUserID)
+        val currentTime = System.currentTimeMillis()
 
         currentUserRef
             .child("groupRooms")
             .child(roomUid)
-            .setValue(roomUid)
+            .setValue(currentTime)
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     otherUserRef
                         .child("groupRooms")
                         .child(roomUid)
-                        .setValue(roomUid)
+                        .setValue(currentTime)
                         .addOnCompleteListener {
                             if(it.isSuccessful){
                                 successCallback()
@@ -969,7 +970,7 @@ class FirebaseViewModel: ViewModel() {
         userReference
             .child("favoriteGroups")
             .child(groupId)
-            .setValue(groupId)
+            .setValue(System.currentTimeMillis())
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()
@@ -1276,7 +1277,7 @@ class FirebaseViewModel: ViewModel() {
         databaseReference
             .child("public_posts")
             .child(postId)
-            .setValue(postId)
+            .setValue(System.currentTimeMillis())
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     successCallback()

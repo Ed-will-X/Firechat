@@ -37,16 +37,16 @@ class SignedinViewModel(): ViewModel() {
     fun getCurrentUserSingle(activity: SignedinActivity){
         activity.firebaseViewModel.getCurrentUserSingle(activity.firebaseAuth, activity.mDbRef, { }, {
             // sets the chat rooms in the viewModel
-            if(activity.firebaseViewModel.currentUser.value?.chatRooms != null){
-                getAllChats(activity, activity.firebaseViewModel.currentUser.value!!.chatRooms!!.values.toList())
+            if(activity.firebaseViewModel.currentUser.value?.chatRooms != null && activity.firebaseViewModel.currentUser.value?.chatRooms?.isNotEmpty() == true){
+                getAllChats(activity, activity.firebaseViewModel.currentUser.value!!.chatRooms!!.keys.toList())
             } else {
                 // current user data is not stored in the viewModel
                 activity.firebaseViewModel.chatRooms.value = mutableListOf()
             }
 
             // Sets the groups in the viewModel
-            if(activity.firebaseViewModel.currentUser.value?.groupRooms != null){
-                getAllGroupChats(activity, activity.firebaseViewModel.currentUser.value!!.groupRooms!!.values.toList())
+            if(activity.firebaseViewModel.currentUser.value?.groupRooms != null && activity.firebaseViewModel.currentUser.value?.groupRooms?.isNotEmpty() == true){
+                getAllGroupChats(activity, activity.firebaseViewModel.currentUser.value!!.groupRooms!!.keys.toList())
             } else {
                 activity.firebaseViewModel.groupRooms.value = mutableListOf()
             }
