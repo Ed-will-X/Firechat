@@ -118,7 +118,11 @@ class SignedinActivity : AppCompatActivity() {
             val sorted = MessageUtils.sortChats(it as MutableList<ChatRoom>)
 
             // TODO: Collect receipts that came after getUserSingle was re-run
-            getNewMessage(it)
+            getNewMessage(it, navController)
+        })
+
+        firebaseViewModel.groupRooms.observe(this, Observer {
+            getNewGroupMessage(it, navController)
         })
 
         firebaseViewModel.currentUser.observe(this, Observer {
@@ -164,21 +168,44 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     // TODO: Run in a coroutine
-    private fun getNewMessage(chatRooms: MutableList<ChatRoom>){
+    private fun getNewMessage(chatRooms: MutableList<ChatRoom>, navController: NavController){
         val lastRunTimestamp = getUserSingleTimestamp
         val currentUserId = firebaseAuth.currentUser!!.uid
 
         for(i in chatRooms){
             val lastMessage = MessageUtils.getLastMessageObject(i)
-
             val selectedChatRoomUser = firebaseViewModel.selectedChatRoomUser.value
 
-
+            /*
+            *   Checks if the last message timestamp is higher than the last time get user single was fetched and,
+            *   the last message sender is the current user.
+            *   If both are true, it show the BottomInfobar.
+            * */
             if((lastMessage?.time ?: 0L) > lastRunTimestamp && lastMessage?.sender != currentUserId){
                 getOtherUser(i) {
-                    if(it.userUID != selectedChatRoomUser?.userUID && lastMessage?.sender != currentUserId){
-                        showBottomInfobar("You have a new message from ${UserUtils.truncate(it.name, 15)}", R.color.purple_700)
+                    /*
+                    *   Shows the info bar if the selected chatRoom user is not the one who just sent the message
+                    * */
+                    if(it.userUID != selectedChatRoomUser?.userUID || navController.currentDestination?.id != R.id.chatPageFragment){
+                        showBottomInfobar(this.getString(R.string.new_message_from, UserUtils.truncate(it.name, 15)), R.color.purple_700)
                     }
+                }
+            }
+        }
+    }
+
+    // TODO: Run in a coroutine
+    private fun getNewGroupMessage(groupRooms: MutableList<GroupRoom>, navController: NavController){
+        val lastRunTimestamp = getUserSingleTimestamp
+        val currentUserId = firebaseAuth.currentUser!!.uid
+        val selectedGroupRoom = firebaseViewModel.selectedGroupRoom
+
+        for (i in groupRooms){
+            val lastMessage = MessageUtils.getLastMessageObject(i)
+
+            if((lastMessage?.time ?: 0L) > lastRunTimestamp && lastMessage?.sender != currentUserId){
+                if(i.roomUID != selectedGroupRoom.value?.roomUID || navController.currentDestination?.id != R.id.groupChatPageFragment){
+                    showBottomInfobar(this.getString(R.string.new_message_in, UserUtils.truncate(i.groupName, 15)), R.color.purple_700)
                 }
             }
         }
@@ -193,8 +220,13 @@ class SignedinActivity : AppCompatActivity() {
 
     var prevFriendRequests = -1
     fun determineShowRequesBottomInfobar(user: User){
+        val sorted = UserUtils.sortByTimestamp(user.friendRequests.toSortedMap())
+
         if (prevFriendRequests < user.friendRequests.count() && prevFriendRequests != -1){
-            showBottomInfobar("You have a new friend request", R.color.deep_yellow_2)
+            UserUtils.getUser(sorted.keys.last(), this) {
+                showBottomInfobar(this.getString(R.string.friend_request_From, UserUtils.truncate(it.name, 15)), R.color.deep_yellow_2)
+
+            }
         }
         prevFriendRequests = user.friendRequests.count()
     }
@@ -205,7 +237,7 @@ class SignedinActivity : AppCompatActivity() {
 
         if(prevFriends < user.friends.count() && prevFriends != -1){
             UserUtils.getUser(sorted.keys.last(), this) {
-                showBottomInfobar("${it.name} is now your friend", R.color.purple_700)
+                showBottomInfobar(this.getString(R.string.is_now_your_friend, UserUtils.truncate(it.name, 15)), R.color.purple_700)
             }
         }
         prevFriends = user.friends.count()
@@ -218,14 +250,13 @@ class SignedinActivity : AppCompatActivity() {
         if(prevGroups < user.groupRooms.count() && prevGroups != -1){
             firebaseViewModel.getGroupChatRoomSingle(sorted.keys.last(), mDbRef, {
                 if(it?.admins?.contains(firebaseAuth.currentUser!!.uid) == false){
-                    showBottomInfobar("You have been added to ${UserUtils.truncate(it.groupName, 10)}", R.color.dark_lemon)
+                    showBottomInfobar(this.getString(R.string.you_have_been_added_to, UserUtils.truncate(it.groupName, 10)), R.color.dark_lemon)
                 }
             }, {})
         }
         prevGroups = user.groupRooms.count()
     }
 
-    // TODO: Add optional display intervals
     // TODO: Replace strings with resources
     fun showBottomInfobar(customString: String?, customColor: Int?){
         lifecycleScope.launch(Dispatchers.Main) {
@@ -353,11 +384,10 @@ class SignedinActivity : AppCompatActivity() {
         }
     }
 
-    fun checkLastMessageIdInChats(id: String, navController: NavController){
+    fun checkIfChatPageFragment(navController: NavController, isChatFragment: (bool: Boolean)-> Unit){
         navController.addOnDestinationChangedListener { _, destination, arguments ->
             if(destination.id == R.id.chatPageFragment){
-                Log.d("LLL", "Key: ${destination.arguments.keys.last()}")
-                Log.d("LLL", "Value: ${destination.arguments.values.last()}")
+
             }
         }
     }
@@ -718,7 +748,7 @@ class SignedinActivity : AppCompatActivity() {
         firebaseViewModel.checkFirebaseConnection {
             if(it){
                 firebaseViewModel.isConnectedToDatabase.value = true
-                showBottomInfobar("Back online", R.color.light_green_2)
+                showBottomInfobar(this.getString(R.string.back_online), R.color.light_green_2)
 
                 if(offlineInfobarTimer != null){
                     offlineInfobarTimer?.cancel()
@@ -731,7 +761,7 @@ class SignedinActivity : AppCompatActivity() {
             } else {
                 firebaseViewModel.isConnectedToDatabase.value = false
                 offlineInfobarTimer = fixedRateTimer("no_connection_timer", false, 0L, 5 * 1000 + 3000) {
-                    showBottomInfobar("No connection", R.color.orange_red)
+                    showBottomInfobar(this@SignedinActivity.getString(R.string.no_connection), R.color.orange_red)
                 }
 
 //                timer = signedinViewModel.setNetworkOverlayTimer {
