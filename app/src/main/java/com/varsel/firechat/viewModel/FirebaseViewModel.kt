@@ -500,6 +500,28 @@ class FirebaseViewModel: ViewModel() {
             })
     }
 
+    fun getChatRoomSingle(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (chatRoom: ChatRoom?) -> Unit, afterCallback: () -> Unit){
+        mDbRef
+            .child("chatRooms")
+            .orderByChild("roomUID")
+            .equalTo(chatRoomUID)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (i in snapshot.children){
+                        val item = i.getValue(ChatRoom::class.java)
+                        loopCallback(item)
+                        DebugUtils.log_firebase("get chat room recurrent successful")
+                    }
+
+                    afterCallback()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+            })
+    }
+
     fun createGroup(groupObj: GroupRoom, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit, failureCallback: () -> Unit){
         val groupRef = mDbRef.child("groupRooms")
 

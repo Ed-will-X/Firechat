@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.database.DatabaseReference
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentChatPageBinding
 import com.varsel.firechat.model.Chat.ChatRoom
@@ -21,6 +22,7 @@ import com.varsel.firechat.model.ReadReceipt.ReadReceipt
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.MessageUtils
+import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.view.signedIn.adapters.ChatPageType
 import com.varsel.firechat.view.signedIn.adapters.MessageListAdapter
@@ -72,7 +74,8 @@ class ChatPageFragment : Fragment() {
         existingChatRoomId = ChatPageFragmentArgs.fromBundle(requireArguments()).chatRoom
         userUID = ChatPageFragmentArgs.fromBundle(requireArguments()).userUid
 
-        getChatRoom()
+//        getChatRoom()
+        getChatRoomFromMemory()
         observeUserProps()
 
         KeyboardVisibilityEvent.setEventListener(
@@ -87,7 +90,7 @@ class ChatPageFragment : Fragment() {
         parent.firebaseViewModel.chatRooms.observe(viewLifecycleOwner, Observer {
             // Listen for first message from the other user
             if(existingChatRoomId == null){
-                listenForSimultaneousFirstInitialisation(it)
+//                listenForSimultaneousFirstInitialisation(it)
             }
         })
 
@@ -117,6 +120,12 @@ class ChatPageFragment : Fragment() {
             binding.messagesRecyclerView.adapter = messagesListAdapter
 
             parent.firebaseViewModel.selectedChatRoom.observe(viewLifecycleOwner, Observer {
+//                Log.d("LLL", "Selected chat room ID: ${it.roomUID}")
+
+//                val otherUser = UserUtils.getOtherUserId(it.participants, parent)
+//                UserUtils.getUser(otherUser, parent) {
+//                    Log.d("LLL", "Current chat room user: ${it.name}")
+//                }
                 getMessages(it)
             })
         }
@@ -245,9 +254,22 @@ class ChatPageFragment : Fragment() {
     private fun getChatRoom(){
         if(existingChatRoomId != null){
             parent.firebaseViewModel.getChatRoomRecurrent(existingChatRoomId!!, parent.mDbRef, {
+                Log.d("LLL", "Existing chat room id: ${existingChatRoomId}")
                 parent.firebaseViewModel.selectedChatRoom.value = it
             },{})
         }
+    }
+
+    fun getChatRoomFromMemory(){
+        parent.firebaseViewModel.chatRooms.observe(viewLifecycleOwner, Observer {
+            MessageUtils.findChatRoom(it, existingChatRoomId ?: newChatRoomId) {
+                parent.firebaseViewModel.selectedChatRoom.value = it
+            }
+
+            if(existingChatRoomId == null){
+                listenForSimultaneousFirstInitialisation(it)
+            }
+        })
     }
 
     private fun navigateToDetail(){
@@ -299,12 +321,13 @@ class ChatPageFragment : Fragment() {
     // This function listens for messages from the other end if the chat page is open without messages
     // only fires up when there is a change to the current user
     private fun listenForSimultaneousFirstInitialisation(chatRooms: List<ChatRoom?>){
+        Log.d("LLL", "Listen for simultaneous init ran")
         // check chatrooms which have both the current user
         val chatRoom = parent.signedinViewModel.findChatRoom(userUID, chatRooms as MutableList<ChatRoom?>)
         if(chatRoom != null){
             // if found, set the existingChatRoomId to that chatroom
             existingChatRoomId = chatRoom.roomUID
-            getChatRoom()
+//            getChatRoom()
         }
     }
 

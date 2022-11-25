@@ -1,11 +1,10 @@
 package com.varsel.firechat.utils
 
-import android.util.Log
 import com.varsel.firechat.R
 import com.varsel.firechat.model.Chat.ChatRoom
+import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.Message.Message
 import com.varsel.firechat.model.Message.SystemMessageType
-import com.varsel.firechat.model.PublicPost.PublicPost
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
@@ -63,6 +62,24 @@ class MessageUtils {
             }?.reversed()?.toMutableList()
 
             return sorted
+        }
+
+        fun findChatRoom(list: List<ChatRoom>, roomID: String, chatRoom: (chatRoom: ChatRoom)-> Unit){
+            list.map {
+                if(it.roomUID == roomID){
+                    chatRoom(it)
+                    return@map
+                }
+            }
+        }
+
+        fun findGroupRoom(list: List<GroupRoom>, roomID: String, groupRoom: (groupRoom: GroupRoom)-> Unit){
+            list.map {
+                if(it.roomUID == roomID){
+                    groupRoom(it)
+                    return@map
+                }
+            }
         }
 
         // TODO: Fix bug

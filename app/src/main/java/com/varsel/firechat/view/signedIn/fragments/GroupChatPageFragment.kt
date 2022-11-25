@@ -70,7 +70,8 @@ class GroupChatPageFragment : Fragment() {
 
         observeGroupImage()
 
-        getGroupChatRoom()
+//        getGroupChatRoom()
+        getGroupRoomFromMemory()
         observeParticipants()
 
 
@@ -237,6 +238,16 @@ class GroupChatPageFragment : Fragment() {
                 groupPageViewModel.determineGetParticipants(it, parent)
             }
         }, {})
+    }
+
+    private fun getGroupRoomFromMemory(){
+        parent.firebaseViewModel.groupRooms.observe(viewLifecycleOwner, Observer {
+            MessageUtils.findGroupRoom(it, roomId) {
+                parent.firebaseViewModel.selectedGroupRoom.value = it
+
+                groupPageViewModel.determineGetParticipants(it, parent)
+            }
+        })
     }
 
     private fun showSystemMessageActionsheet(userIds: List<String>){

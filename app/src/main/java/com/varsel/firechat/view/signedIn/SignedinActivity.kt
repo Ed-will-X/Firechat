@@ -149,8 +149,6 @@ class SignedinActivity : AppCompatActivity() {
         firebaseViewModel.currentUser.observeOnce(this, Observer {
             if(it != null){
                 determineCurrentUserImgFetchMethod(it)
-
-
             }
         })
 
@@ -172,13 +170,15 @@ class SignedinActivity : AppCompatActivity() {
 
         for(i in chatRooms){
             val lastMessage = MessageUtils.getLastMessageObject(i)
-            // TODO: Check if the mounted fragment chat-room belongs to the last message user
-                // TODO: If: Don't show
-                // TODO: Else: Show
+
+            val selectedChatRoomUser = firebaseViewModel.selectedChatRoomUser.value
+
 
             if((lastMessage?.time ?: 0L) > lastRunTimestamp && lastMessage?.sender != currentUserId){
                 getOtherUser(i) {
-                    showBottomInfobar("You have a new message from ${UserUtils.truncate(it.name, 15)}", R.color.purple_700)
+                    if(it.userUID != selectedChatRoomUser?.userUID && lastMessage?.sender != currentUserId){
+                        showBottomInfobar("You have a new message from ${UserUtils.truncate(it.name, 15)}", R.color.purple_700)
+                    }
                 }
             }
         }
