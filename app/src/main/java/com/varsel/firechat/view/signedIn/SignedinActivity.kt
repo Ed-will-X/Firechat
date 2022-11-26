@@ -41,11 +41,8 @@ import com.varsel.firechat.model.PublicPost.PublicPostViewModelFactory
 import com.varsel.firechat.model.ReadReceipt.ReadReceiptViewModel
 import com.varsel.firechat.model.ReadReceipt.ReadReceiptViewModelFactory
 import com.varsel.firechat.model.User.User
+import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
-import com.varsel.firechat.utils.ImageUtils
-import com.varsel.firechat.utils.MessageUtils
-import com.varsel.firechat.utils.PostUtils
-import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedOut.SignedoutActivity
 import com.varsel.firechat.view.signedOut.fragments.AuthType
 import com.varsel.firechat.viewModel.FirebaseViewModel
@@ -129,7 +126,7 @@ class SignedinActivity : AppCompatActivity() {
             if (it != null) {
                 compareUsers(it)
                 determineShowRequesBottomInfobar(it)
-                determineShowFriendsBottomInfobar(it)
+                determineNewFriendBottomInfobar(it)
                 determineShowGroupAddBottomInfobar(it)
 
                 if(it.public_posts != null && it.public_posts!!.isNotEmpty()){
@@ -187,7 +184,7 @@ class SignedinActivity : AppCompatActivity() {
                     *   Shows the info bar if the selected chatRoom user is not the one who just sent the message
                     * */
                     if(it.userUID != selectedChatRoomUser?.userUID || navController.currentDestination?.id != R.id.chatPageFragment){
-                        showBottomInfobar(this.getString(R.string.new_message_from, UserUtils.truncate(it.name, 15)), R.color.purple_700)
+                        showBottomInfobar(this.getString(R.string.new_message_from, UserUtils.truncate(it.name, 15)), InfobarColors.NEW_MESSAGE)
                     }
                 }
             }
@@ -205,7 +202,7 @@ class SignedinActivity : AppCompatActivity() {
 
             if((lastMessage?.time ?: 0L) > lastRunTimestamp && lastMessage?.sender != currentUserId){
                 if(i.roomUID != selectedGroupRoom.value?.roomUID || navController.currentDestination?.id != R.id.groupChatPageFragment){
-                    showBottomInfobar(this.getString(R.string.new_message_in, UserUtils.truncate(i.groupName, 15)), R.color.purple_700)
+                    showBottomInfobar(this.getString(R.string.new_message_in, UserUtils.truncate(i.groupName, 15)), InfobarColors.NEW_MESSAGE)
                 }
             }
         }
@@ -224,7 +221,7 @@ class SignedinActivity : AppCompatActivity() {
 
         if (prevFriendRequests < user.friendRequests.count() && prevFriendRequests != -1){
             UserUtils.getUser(sorted.keys.last(), this) {
-                showBottomInfobar(this.getString(R.string.friend_request_From, UserUtils.truncate(it.name, 15)), R.color.deep_yellow_2)
+                showBottomInfobar(this.getString(R.string.friend_request_From, UserUtils.truncate(it.name, 15)), InfobarColors.NEW_FRIEND_REQUEST)
 
             }
         }
@@ -232,12 +229,12 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     var prevFriends = -1
-    fun determineShowFriendsBottomInfobar(user: User){
+    fun determineNewFriendBottomInfobar(user: User){
         val sorted = UserUtils.sortByTimestamp(user.friends.toSortedMap())
 
         if(prevFriends < user.friends.count() && prevFriends != -1){
             UserUtils.getUser(sorted.keys.last(), this) {
-                showBottomInfobar(this.getString(R.string.is_now_your_friend, UserUtils.truncate(it.name, 15)), R.color.purple_700)
+                showBottomInfobar(this.getString(R.string.is_now_your_friend, UserUtils.truncate(it.name, 15)), InfobarColors.NEW_FRIEND)
             }
         }
         prevFriends = user.friends.count()
@@ -250,7 +247,7 @@ class SignedinActivity : AppCompatActivity() {
         if(prevGroups < user.groupRooms.count() && prevGroups != -1){
             firebaseViewModel.getGroupChatRoomSingle(sorted.keys.last(), mDbRef, {
                 if(it?.admins?.contains(firebaseAuth.currentUser!!.uid) == false){
-                    showBottomInfobar(this.getString(R.string.you_have_been_added_to, UserUtils.truncate(it.groupName, 10)), R.color.dark_lemon)
+                    showBottomInfobar(this.getString(R.string.you_have_been_added_to, UserUtils.truncate(it.groupName, 10)), InfobarColors.GROUP_ADD)
                 }
             }, {})
         }
@@ -748,7 +745,7 @@ class SignedinActivity : AppCompatActivity() {
         firebaseViewModel.checkFirebaseConnection {
             if(it){
                 firebaseViewModel.isConnectedToDatabase.value = true
-                showBottomInfobar(this.getString(R.string.back_online), R.color.light_green_2)
+                showBottomInfobar(this.getString(R.string.back_online), InfobarColors.ONLINE)
 
                 if(offlineInfobarTimer != null){
                     offlineInfobarTimer?.cancel()
@@ -761,7 +758,7 @@ class SignedinActivity : AppCompatActivity() {
             } else {
                 firebaseViewModel.isConnectedToDatabase.value = false
                 offlineInfobarTimer = fixedRateTimer("no_connection_timer", false, 0L, 5 * 1000 + 3000) {
-                    showBottomInfobar(this@SignedinActivity.getString(R.string.no_connection), R.color.orange_red)
+                    showBottomInfobar(this@SignedinActivity.getString(R.string.no_connection), InfobarColors.OFFLINE)
                 }
 
 //                timer = signedinViewModel.setNetworkOverlayTimer {

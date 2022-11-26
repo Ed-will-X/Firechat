@@ -162,7 +162,33 @@
     <string name="profile_image">Profile Image</string>
     <string name="group_image">Group Image</string>
     <string name="load">Load</string>
-    <string name="image_upload_error">"Something went wrong with image upload"</string>
+    <string name="uploading_profile_image">Uploading profile image</string>
+    <string name="uploading_group_image">Uploading group image</string>
+    <string name="uploading_chat_image">Uploading chat image</string>
+    <string name="uploading_public_post">Uploading public post</string>
+
+    <string name="profile_image_upload_successful">Profile image upload successful</string>
+    <string name="group_image_upload_successful">Group image upload successful</string>
+    <string name="chat_image_upload_successful">Chat image upload successful</string>
+    <string name="public_post_upload_successful">Public post upload successful</string>
+
+    <string name="profile_image_upload_error">Something went wrong with profile image upload</string>
+    <string name="group_image_upload_error">Something went wrong with group image upload</string>
+    <string name="public_post_upload_error">Something went wrong with public post upload</string>
+    <string name="chat_image_upload_error">Something went wrong with chat image upload</string>
+
+    <string name="removing_profile_image">Removing profile image</string>
+    <string name="removing_group_image">Removing group image</string>
+    <string name="removing_public_post">Removing public post</string>
+
+    <string name="remove_profile_image_successful">Remove profile image successful</string>
+    <string name="remove_group_image_successful">Remove group image successful</string>
+    <string name="remove_public_post_successful">Remove public post successful</string>
+
+    <string name="remove_profile_image_error">Could not remove profile image</string>
+    <string name="remove_group_image_error">Could not remove group image</string>
+    <string name="remove_public_post_error">Could not remove public post</string>
+
     <string name="all_posts">All Posts</string>
 
     <string name="open_gallery">Open Gallery</string>

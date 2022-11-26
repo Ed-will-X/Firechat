@@ -533,9 +533,16 @@ class ImageUtils {
                 val image = Image(imageId, activity.firebaseAuth.currentUser!!.uid)
                 val message = Message(MessageUtils.generateUID(30), imageId, System.currentTimeMillis(), activity.firebaseAuth.currentUser!!.uid, MessageType.IMAGE)
 
+                // Shows bottom infobar
+                activity.showBottomInfobar(activity.getString(R.string.uploading_chat_image), InfobarColors.UPLOADING)
+
                 activity.firebaseViewModel.uploadChatImage(image, chatRoomId, encoded, activity.firebaseStorage, activity.mDbRef, {
+                    activity.showBottomInfobar(activity.getString(R.string.chat_image_upload_successful), InfobarColors.SUCCESS)
+
                     success(message, it)
-                }, {})
+                }, {
+                    activity.showBottomInfobar(activity.getString(R.string.chat_image_upload_error), InfobarColors.FAILURE)
+                })
             }
         }
 

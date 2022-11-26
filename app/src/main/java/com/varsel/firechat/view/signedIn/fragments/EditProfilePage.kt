@@ -20,6 +20,7 @@ import com.varsel.firechat.model.ProfileImage.ProfileImage
 import com.varsel.firechat.utils.AnimationUtils
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.utils.InfobarColors
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.viewModel.FirebaseViewModel
@@ -92,16 +93,22 @@ class EditProfilePage : Fragment() {
             val timestamp = System.currentTimeMillis()
             val profileImage = ProfileImage(currentUser, timestamp)
 
+            parent.showBottomInfobar(parent.getString(R.string.uploading_profile_image), InfobarColors.UPLOADING)
+
             parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, currentUser, {
                 parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
                     val profileImage_withBase64 = ProfileImage(profileImage, base64)
                     parent.profileImageViewModel.storeImage(profileImage_withBase64)
                     parent.profileImageViewModel.profileImage_currentUser.value = profileImage_withBase64
-//                    parent.profileImageViewModel.profileImageEncodedCurrentUser.value = profileImage.image
+
+                    parent.showBottomInfobar(parent.getString(R.string.profile_image_upload_successful), InfobarColors.SUCCESS)
+
                     successCallback(profileImage)
-                }, {})
+                }, {
+                    parent.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
+                })
             }, {
-                Toast.makeText(requireContext(), getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
+                parent.showBottomInfobar(parent.getString(R.string.profile_image_upload_error), InfobarColors.FAILURE)
             })
         }
     }
@@ -112,25 +119,36 @@ class EditProfilePage : Fragment() {
         val timestamp = System.currentTimeMillis()
         val profileImage = ProfileImage( currentUser, timestamp)
 
+        parent.showBottomInfobar(parent.getString(R.string.uploading_profile_image), InfobarColors.UPLOADING)
+
         parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, currentUser, {
             parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
                 val profileImage_withBase64 = ProfileImage(profileImage, base64)
 
                 parent.profileImageViewModel.storeImage(profileImage_withBase64)
                 parent.profileImageViewModel.profileImage_currentUser.value = profileImage_withBase64
-//                parent.profileImageViewModel.profileImageEncodedCurrentUser.value = profileImage.image
+
+                parent.showBottomInfobar(parent.getString(R.string.profile_image_upload_successful), InfobarColors.SUCCESS)
                 successCallback()
-            }, {})
+            }, {
+                parent.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
+            })
         }, {
-            Toast.makeText(requireContext(), getString(R.string.image_upload_error), Toast.LENGTH_SHORT).show()
+            parent.showBottomInfobar(parent.getString(R.string.profile_image_upload_error), InfobarColors.FAILURE)
         })
     }
 
     private fun removeImage(successCallback: () -> Unit){
         val currentUserId = parent.firebaseAuth.currentUser!!.uid
         val timestamp = System.currentTimeMillis()
+
+        parent.showBottomInfobar(parent.getString(R.string.removing_profile_image), InfobarColors.UPLOADING)
+
         parent.firebaseViewModel.removeProfileImage(parent.mDbRef, parent.firebaseAuth.currentUser!!.uid, parent.firebaseStorage, {
             parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
+
+                parent.showBottomInfobar(parent.getString(R.string.remove_profile_image_successful), InfobarColors.SUCCESS)
+
                 val image = parent.profileImageViewModel.getImageById(currentUserId)
 
                 image.observeOnce(viewLifecycleOwner, Observer {
@@ -141,8 +159,12 @@ class EditProfilePage : Fragment() {
                     }
                 })
                 successCallback()
-            }, {})
-        }, {})
+            }, {
+                parent.showBottomInfobar(parent.getString(R.string.remove_profile_image_error), InfobarColors.FAILURE)
+            })
+        }, {
+            parent.showBottomInfobar(parent.getString(R.string.remove_profile_image_error), InfobarColors.FAILURE)
+        })
     }
 
     private fun openEditProfileActionsheet(){
@@ -230,13 +252,16 @@ class EditProfilePage : Fragment() {
 
         dialogBinding.pickImage.setOnClickListener {
             ImageUtils.openImagePicker(this)
+            dialog.dismiss()
         }
 
         dialogBinding.openCamera.setOnClickListener {
             ImageUtils.openCamera(requireContext(), this, parent)
+            dialog.dismiss()
         }
 
         dialogBinding.removeImage.setOnClickListener {
+            dialog.dismiss()
             removeImage {
                 binding.profileImage.setImageURI(null)
                 binding.profileImageParent.visibility = View.GONE
