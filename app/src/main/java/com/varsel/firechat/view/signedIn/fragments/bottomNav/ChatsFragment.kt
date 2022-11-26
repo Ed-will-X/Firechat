@@ -43,6 +43,7 @@ class ChatsFragment : Fragment() {
         val view = binding.root
 
         parent = activity as SignedinActivity
+        parent.changeStatusBarColor(R.color.light_blue, false)
 
         chatsViewModel = ViewModelProvider(this).get(ChatsViewModel::class.java)
 

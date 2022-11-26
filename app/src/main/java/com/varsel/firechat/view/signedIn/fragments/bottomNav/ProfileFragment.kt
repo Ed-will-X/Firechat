@@ -52,6 +52,7 @@ class ProfileFragment : Fragment() {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val view = binding.root
         parent = activity as SignedinActivity
+        parent.changeStatusBarColor(R.color.light_blue, false)
 
         userUtils = UserUtils(this)
 

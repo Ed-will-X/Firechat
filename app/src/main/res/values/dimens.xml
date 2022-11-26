@@ -39,4 +39,14 @@
     <dimen name="unread_group_stroke_width">1dp</dimen>
     <dimen name="zero">0dp</dimen>
 
+
+<!--    Settings-->
+    <dimen name="setting_item_text_size">14sp</dimen>
+    <dimen name="setting_item_icon_size">20dp</dimen>
+    <dimen name="setting_item_padding_horizontal">20dp</dimen>
+
+    <dimen name="setting_head_icon_size">30dp</dimen>
+    <dimen name="setting_head_text_size">18sp</dimen>
+
+
 </resources>

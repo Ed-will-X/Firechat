@@ -2,12 +2,15 @@ package com.varsel.firechat.view.signedIn.fragments.bottomNav
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -35,22 +38,17 @@ class SettingsFragment : Fragment() {
 
         parent = activity as SignedinActivity
         val view = binding.root
+        parent.changeStatusBarColor(R.color.white, true)
 
         LifecycleUtils.observeInternetStatus(parent, this, {
-            binding.settingsLogoutClickable.isEnabled = true
+//            binding.settingsLogoutClickable.isEnabled = true
         }, {
-            binding.settingsLogoutClickable.isEnabled = false
+//            binding.settingsLogoutClickable.isEnabled = false
         })
 
-        binding.theme.setOnClickListener {
-            navigateToTheme()
-        }
 
-        binding.storageAndHistory.setOnClickListener {
-            navigateToStorage()
-        }
 
-        binding.settingsLogoutClickable.setOnClickListener {
+        binding.logout.setOnClickListener {
             showLogoutConfirmationDialog {
                 lifecycleScope.launch {
                     parent.firebaseViewModel.signOut((parent as SignedinActivity).firebaseAuth)
@@ -59,6 +57,14 @@ class SettingsFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun changeStatusBarColor(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val window = parent.window
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.setStatusBarColor(Color.BLUE)
+        }
     }
 
     private fun navigateToTheme(){

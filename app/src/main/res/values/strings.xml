@@ -109,6 +109,8 @@
     <string name="remove_from_group">Remove from Group</string>
     <string name="leave_group">Leave Group</string>
     <string name="block">Block</string>
+    <string name="account">Account</string>
+    <string name="change_password">Change Password</string>
 
     <string name="now_admin_second_person">You are now admin</string>
     <string name="now_admin_third_person">%s is now admin</string>
@@ -141,7 +143,7 @@
     <string name="network_error">Network Error</string>
     <string name="could_not_connect">Could not connect to the server, retrying connection</string>
     <string name="retrying_connection">Retrying Connection</string>
-    <string name="logout">logout</string>
+    <string name="logout">Logout</string>
 
     <string name="open_camera">Camera</string>
     <string name="select_image">Pick</string>
@@ -235,6 +237,15 @@
     <string name="is_now_your_friend">% is now your friend</string>
     <string name="you_have_been_added_to">You have been added to %s</string>
     <string name="friend_request_From">You have a friend request from %s</string>
+
+
+    <string name="show_chat_notifications">Show chat notifications</string>
+    <string name="show_group_notifications">Show group notifications</string>
+    <string name="override_system_theme">Override system theme</string>
+    <string name="show_friend_request_notifications">Show friend request notifications</string>
+    <string name="show_new_friend_notifications">Show new friend notifications</string>
+    <string name="show_group_add_notifications">Show group add notifications</string>
+
 
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
