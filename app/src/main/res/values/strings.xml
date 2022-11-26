@@ -225,11 +225,26 @@
     <string name="clear_cache">Clear Cache</string>
     <string name="clear_user_search_history">Clear User Search History</string>
     <string name="clear_chat_search_history">Clear Chat Search History</string>
+    <string name="public_post_download_count">Public Post auto-download count</string>
+
+    <string name="feedback">Feedback</string>
+    <string name="report_bug">Report bug</string>
+    <string name="send_feedback">Send feedback</string>
+    <string name="revert_settings">Revert settings to default</string>
+    <string name="language">Language</string>
+
 
 
     <string name="search_chats_groups_or_users">Search Chats, Groups or Users</string>
     <string name="back_online">Back online</string>
     <string name="no_connection">No connection</string>
+    <string name="data_consumption">Data Consumption</string>
+    <string name="data_saver">Data Saver</string>
+    <string name="auto_download_image_message">Auto download image message</string>
+    <string name="auto_download_video_message">Auto download video message</string>
+    <string name="auto_download_gif_message">Auto download gif message</string>
+    <string name="auto_download_audio_message">Auto download audio message</string>
+
 
 
     <string name="new_message_from">You have a new message from %s</string>
