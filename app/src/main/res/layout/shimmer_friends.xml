@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    android:background="@color/white"
+    android:background="?background_chats_fragment"
     tools:viewBindingIgnore="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:paddingVertical="10dp"

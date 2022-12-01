@@ -1,24 +1,19 @@
 package com.varsel.firechat.view.signedIn.fragments.bottomNav
 
-import android.app.Activity
-import android.content.Context
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.varsel.firechat.R
-import com.varsel.firechat.databinding.FragmentFriendsBinding
 import com.varsel.firechat.databinding.FragmentSettingsBinding
+import com.varsel.firechat.model.Setting.Setting
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.viewModel.*
@@ -37,16 +32,23 @@ class SettingsFragment : Fragment() {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
         parent = activity as SignedinActivity
+        changeStatusBarColor()
+
         val view = binding.root
-        parent.changeStatusBarColor(R.color.white, true)
+
 
         LifecycleUtils.observeInternetStatus(parent, this, {
-//            binding.settingsLogoutClickable.isEnabled = true
+            binding.logout.isEnabled = true
         }, {
-//            binding.settingsLogoutClickable.isEnabled = false
+            binding.logout.isEnabled = false
         })
 
-
+        parent.settingViewModel.settingConfig.observe(viewLifecycleOwner, Observer {
+            setNotificationBindings(it)
+            setDataConsumptionBindings(it)
+            setThemeBindings(it)
+            setAccountBindings(it)
+        })
 
         binding.logout.setOnClickListener {
             showLogoutConfirmationDialog {
@@ -60,22 +62,46 @@ class SettingsFragment : Fragment() {
     }
 
     private fun changeStatusBarColor(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val window = parent.window
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            window.setStatusBarColor(Color.BLUE)
+        if(parent.isNightMode()){
+            parent.changeStatusBarColor(R.color.black, false)
+        } else {
+            parent.changeStatusBarColor(R.color.white, true)
         }
     }
 
-    private fun navigateToTheme(){
-        val action = SettingsFragmentDirections.actionSettingsFragmentToThemeFragment()
-
-        findNavController().navigate(action)
+    private fun setAccountBindings(setting: Setting){
+        binding.editProfile.setOnClickListener {
+            navigateToEditProfile()
+        }
     }
 
-    private fun navigateToStorage(){
-        val action = SettingsFragmentDirections.actionSettingsFragmentToStorageAndHistory()
+    private fun setNotificationBindings(setting: Setting){
+        binding.showChatNotifications.isChecked = setting.show_chat_notifications
+        binding.showGroupNotifications.isChecked = setting.show_group_notifications
+        binding.showFriendRequestNotifications.isChecked = setting.show_friend_request_notifications
+        binding.showNewFriendNotifications.isChecked = setting.show_new_friend_notifications
+        binding.showGroupAddNotifications.isChecked = setting.show_group_add_notifications
+    }
 
+    private fun setDataConsumptionBindings(setting: Setting){
+        binding.autoDownloadImageMessage.isChecked = setting.auto_download_image_message
+        binding.autoDownloadVideoMessage.isChecked = setting.auto_download_video_message
+        binding.autoDownloadGifMessage.isChecked = setting.auto_download_gif_message
+        binding.autoDownloadAudioMessage.isChecked = setting.auto_download_audio_message
+        binding.publicPostDownloadCount.setText(setting.public_post_auto_download_limit.toString())
+    }
+
+    private fun setThemeBindings(setting: Setting){
+        binding.darkMode.isChecked = setting.getDarkMode()
+        binding.overrideSystemTheme.isChecked = setting.getOverrideSystemTheme()
+
+        if(setting.getOverrideSystemTheme()){
+            binding.darkMode.isEnabled = false
+        }
+    }
+
+    private fun navigateToEditProfile(){
+        val action = SettingsFragmentDirections.actionSettingsFragmentToEditProfilePage()
         findNavController().navigate(action)
     }
 

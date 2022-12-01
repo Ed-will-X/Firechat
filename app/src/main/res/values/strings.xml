@@ -221,11 +221,11 @@
     <string name="theme">Theme</string>
     <string name="use_os_theme">Use OS theme</string>
     <string name="storage_and_history">Storage and History</string>
-    <string name="clear_app_storage">Clear App storage</string>
+    <string name="clear_app_storage">Clear app storage</string>
     <string name="clear_cache">Clear Cache</string>
-    <string name="clear_user_search_history">Clear User Search History</string>
-    <string name="clear_chat_search_history">Clear Chat Search History</string>
-    <string name="public_post_download_count">Public Post auto-download count</string>
+    <string name="clear_user_search_history">Clear user search history</string>
+    <string name="clear_chat_search_history">Clear chat search history</string>
+    <string name="public_post_download_count">Public post auto-download limit</string>
 
     <string name="feedback">Feedback</string>
     <string name="report_bug">Report bug</string>

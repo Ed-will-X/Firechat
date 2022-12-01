@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="user_card_background_profile_fragment" format="reference"/>
+    <attr name="user_card_background_profile_fragment_bottom" format="reference"/>
+    <attr name="background_profile_fragment" format="reference" />
+
+    <attr name="horizontal_rule_color" format="reference" />
+
+    <attr name="shimmer_color_main" format="reference" />
+    <attr name="shimmer_end_color" format="reference" />
+
+    <attr name="background_chats_fragment" format="reference" />
+
+    <attr name="chat_title_text_color" format="reference" />
+    <attr name="chat_subtitle_text_color" format="reference" />
+    <attr name="subtitle_text_color" format="reference" />
+    <attr name="grey_white_text" format="reference" />
+
+    <attr name="icon_color" format="reference" />
+
+    <attr name="text_box_color" format="reference" />
+    <attr name="received_background_color" format="reference" />
+    <attr name="message_action_bar" format="reference" />
+</resources>

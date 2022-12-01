@@ -59,16 +59,30 @@ class ChatListAdapter(
         val lastMessageObject = MessageUtils.getLastMessageObject(item)
         if(lastMessageObject != null){
             determineReceipts(item, lastMessageObject, {
-                holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.black))
-                holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.black))
+                // Receipt Callback
+                if(activity.isNightMode()){
+                    // TODO: Change all color references to dynamic theme attributes
+                    holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.white))
+                    holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.white))
+                } else {
+                    holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.black))
+                    holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.black))
+                }
                 holder.unreadIndicator.visibility = View.VISIBLE
                 holder.name.setTypeface(null, Typeface.BOLD)
 
                 readReceiptChange(unreadChatRooms)
 
             }, {
-                holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.grey))
-                holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.grey))
+                // No Receipt Callback
+                if(activity.isNightMode()){
+                    holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.transparent_grey))
+                    holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.transparent_grey))
+                } else {
+                    holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.grey))
+                    holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.grey))
+                }
+
                 holder.unreadIndicator.visibility = View.GONE
                 holder.name.setTypeface(null, Typeface.NORMAL)
 

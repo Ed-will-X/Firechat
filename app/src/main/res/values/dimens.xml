@@ -10,7 +10,7 @@
     <dimen name="no_chat_header">20sp</dimen>
     <dimen name="no_chat_body">11sp</dimen>
 
-    <dimen name="gc_stroke_width">2dp</dimen>
+    <dimen name="gc_stroke_width">1dp</dimen>
     <dimen name="gc_image_size">50dp</dimen>
     <dimen name="gc_users_image_size">31dp</dimen>
     <dimen name="gc_image_margin">10dp</dimen>

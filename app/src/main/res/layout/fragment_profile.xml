@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--TODO: Remove placeholders-->
 <FrameLayout
-    android:background="@color/cream"
+    android:background="?background_profile_fragment"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -54,6 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <com.google.android.material.card.MaterialCardView
+            android:background="?user_card_background_profile_fragment"
             app:cardCornerRadius="10dp"
             app:cardElevation="2dp"
             android:layout_marginTop="70dp"
@@ -113,7 +114,7 @@
                             android:id="@+id/name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/black"
+                            android:textColor="?colorOnSecondary"
                             android:textStyle="bold"
                             android:text=""
                             />
@@ -132,7 +133,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text=""
-                        android:textColor="@color/black"
+                        android:textColor="?colorOnSecondary"
                         android:textSize="22sp"
                         />
                 </LinearLayout>
@@ -140,11 +141,11 @@
                     android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="0.3dp"
-                    android:background="@color/transparent_grey"
+                    android:background="?horizontal_rule_color"
                     />
                 <TextView
                     android:id="@+id/about_text_body"
-                    android:textColor="@color/grey"
+                    android:textColor="?colorOnSecondary"
                     android:layout_marginTop="10dp"
                     android:paddingHorizontal="20dp"
                     android:layout_width="wrap_content"
@@ -154,7 +155,7 @@
                 <LinearLayout
                     android:paddingVertical="10dp"
                     android:layout_marginTop="10dp"
-                    android:background="@color/white_grey"
+                    android:background="?user_card_background_profile_fragment_bottom"
                     android:gravity="center_horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -168,7 +169,7 @@
                             android:textSize="20dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/black"
+                            android:textColor="?colorOnSecondary"
                             android:text="@string/zero"
                             />
                         <TextView
@@ -189,7 +190,7 @@
                             android:id="@+id/friend_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/black"
+                            android:textColor="?colorOnSecondary"
                             android:textSize="20dp"
                             android:text="@string/zero"
                             android:layout_gravity="center_horizontal"
@@ -208,6 +209,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
+            app:cardBackgroundColor="?user_card_background_profile_fragment_bottom"
             android:clickable="true"
             android:id="@+id/friend_requests_clickable"
             app:cardCornerRadius="10dp"
@@ -228,7 +230,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/friend_requests"
                     android:textSize="17sp"
-                    android:textColor="@color/black"
+                    android:textColor="?colorOnSecondary"
                     />
 
                 <TextView
@@ -257,6 +259,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
+            app:cardBackgroundColor="?user_card_background_profile_fragment_bottom"
             android:clickable="true"
             android:id="@+id/edit_profile"
             app:cardCornerRadius="10dp"
@@ -277,7 +280,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/edit_profile"
                     android:textSize="17sp"
-                    android:textColor="@color/black"
+                    android:textColor="?colorOnSecondary"
                     />
 
                 <View
@@ -296,6 +299,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
+            app:cardBackgroundColor="?user_card_background_profile_fragment_bottom"
             android:clickable="true"
             android:id="@+id/friends_clickable"
             app:cardCornerRadius="10dp"
@@ -316,7 +320,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/friends"
                     android:textSize="17sp"
-                    android:textColor="@color/black"
+                    android:textColor="?colorOnSecondary"
                     />
 
                 <View
@@ -335,6 +339,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
+            app:cardBackgroundColor="?user_card_background_profile_fragment_bottom"
             app:cardCornerRadius="10dp"
             android:elevation="1dp"
             android:id="@+id/public_posts_clickable"
@@ -361,7 +366,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/public_posts"
-                        android:textColor="@color/black"
+                        android:textColor="?colorOnSecondary"
                         />
 
                     <View
@@ -430,7 +435,7 @@
                                 android:text="@string/no_public_post"
                                 android:textSize="@dimen/no_chat_header"
                                 android:textStyle="bold"
-                                android:textColor="@color/black"
+                                android:textColor="?colorOnSecondary"
                                 android:layout_gravity="center"
                                 />
 

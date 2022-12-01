@@ -3,6 +3,7 @@ package com.varsel.firechat.view.signedIn
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -15,9 +16,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.createDataStore
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -42,6 +42,9 @@ import com.varsel.firechat.model.PublicPost.PublicPostViewModel
 import com.varsel.firechat.model.PublicPost.PublicPostViewModelFactory
 import com.varsel.firechat.model.ReadReceipt.ReadReceiptViewModel
 import com.varsel.firechat.model.ReadReceipt.ReadReceiptViewModelFactory
+import com.varsel.firechat.model.Setting.Setting
+import com.varsel.firechat.model.Setting.SettingViewModel
+import com.varsel.firechat.model.Setting.SettingViewModelFactory
 import com.varsel.firechat.model.User.User
 import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
@@ -66,11 +69,10 @@ class SignedinActivity : AppCompatActivity() {
     lateinit var signedinViewModel: SignedinViewModel
     lateinit var imageViewModel: ImageViewModel
 //    var timer: CountDownTimer? = null
-//    lateinit var settingViewModel: SettingViewModel
+    lateinit var settingViewModel: SettingViewModel
     lateinit var profileImageViewModel: ProfileImageViewModel
     lateinit var publicPostViewModel: PublicPostViewModel
     lateinit var readReceiptViewModel: ReadReceiptViewModel
-    lateinit var settingsDataStore: DataStore<Preferences>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,7 +89,8 @@ class SignedinActivity : AppCompatActivity() {
         initialiseImageViewModel()
         initialisePublicPostViewModel()
         initialiseReadReceiptsViewModel()
-        initialiseSettingsDatastore()
+        initialiseSettingsDatabase()
+        initialiseSettingConfiguration()
 
         determineAuthType(intent)
 
@@ -366,6 +369,23 @@ class SignedinActivity : AppCompatActivity() {
         }
     }
 
+    fun isNightMode(): Boolean{
+        when (this.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                return true
+            }
+            Configuration.UI_MODE_NIGHT_NO -> {
+                return false
+            }
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> {
+                return false
+            }
+            else -> {
+                return false
+            }
+        }
+    }
+
     override fun onBackPressed() {
         if(imageViewModel.showProfileImage.value != true){
             super.onBackPressed()
@@ -439,8 +459,23 @@ class SignedinActivity : AppCompatActivity() {
         readReceiptViewModel = ViewModelProvider(this, vmFactory).get(ReadReceiptViewModel::class.java)
     }
 
-    private fun initialiseSettingsDatastore(){
-        dataStore = createDataStore("settings")
+    private fun initialiseSettingsDatabase(){
+        val vmFactory = SettingViewModelFactory((this.application as FirechatApplication).settingsDatabase.settingDao)
+        settingViewModel = ViewModelProvider(this, vmFactory).get(SettingViewModel::class.java)
+    }
+
+    private fun initialiseSettingConfiguration(){
+        val currentUserID = firebaseAuth.currentUser!!.uid
+        val settingLiveData = settingViewModel.getSetting(currentUserID)
+
+        settingLiveData.observe(this, Observer {
+            if(it != null){
+                settingViewModel.settingConfig.value = it
+            } else {
+                val setting = Setting(currentUserID)
+                settingViewModel.storeSetting(setting)
+            }
+        })
     }
 
     private fun fetchCurrentUserProfileImage(){

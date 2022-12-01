@@ -14,5 +14,34 @@
         <!-- Customize your theme here. -->
         <item name="bottomSheetDialogTheme">@style/Actionsheet</item>
 
+
+        <!-- Background-->
+        <item name="backgroundColor">@color/white</item>
+        <item name="user_card_background_profile_fragment">@color/white</item>
+        <item name="user_card_background_profile_fragment_bottom">@color/white_grey</item>
+        <item name="background_profile_fragment">@color/cream</item>
+
+        <item name="background_chats_fragment">@color/cream</item>
+
+
+        <!-- Horizontal rule color-->
+        <item name="horizontal_rule_color">@color/transparent_grey</item>
+
+        <!-- Shimmer color-->
+        <item name="shimmer_color_main">@color/transparent_grey_2</item>
+        <item name="shimmer_end_color">@color/light_grey</item>
+
+        <!-- Text color-->
+        <item name="chat_title_text_color">@color/black</item>
+        <item name="chat_subtitle_text_color">@color/grey</item>
+        <item name="icon_color">@color/light_grey_2</item>
+        <item name="subtitle_text_color">@color/transparent_grey</item>
+        <item name="grey_white_text">@color/grey</item>
+
+        <!-- Text Box-->
+        <item name="text_box_color">@color/light_grey_3</item>
+
+        <item name="received_background_color">@color/white_blue</item>
+        <item name="message_action_bar">@color/light_grey_4</item>
     </style>
 </resources>

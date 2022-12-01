@@ -28,6 +28,8 @@ import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.view.signedIn.SignedinActivity
 import com.varsel.firechat.viewModel.FirebaseViewModel
 
+val FAVORITE_ICON_DARK_MODE = R.color.grey
+
 class GroupChatsListAdapter(
     val activity: SignedinActivity,
     val context: Context,
@@ -106,7 +108,11 @@ class GroupChatsListAdapter(
             if(isFavorite(item.roomUID)){
                 AnimationUtils.changeColor(holder.favoriteIcon, R.color.yellow, context)
             } else {
-                AnimationUtils.changeColor(holder.favoriteIcon, R.color.light_grey_2, context)
+                if(activity.isNightMode()){
+                    AnimationUtils.changeColor(holder.favoriteIcon, FAVORITE_ICON_DARK_MODE, context)
+                } else {
+                    AnimationUtils.changeColor(holder.favoriteIcon, R.color.light_grey_2, context)
+                }
             }
 
             holder.favoriteIcon.setOnClickListener {
@@ -157,7 +163,11 @@ class GroupChatsListAdapter(
             })
         } else {
             activity.firebaseViewModel.removeGroupFromFavorites(groupId, activity.firebaseAuth, activity.mDbRef, {
-                AnimationUtils.changeColor(icon, R.color.light_grey_2, context)
+                if(activity.isNightMode()){
+                    AnimationUtils.changeColor(icon, FAVORITE_ICON_DARK_MODE, context)
+                } else {
+                    AnimationUtils.changeColor(icon, R.color.light_grey_2, context)
+                }
             },{
 
             })

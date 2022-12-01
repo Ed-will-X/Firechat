@@ -113,12 +113,12 @@
             android:paddingLeft="15dp"
             android:paddingRight="10dp"
             android:orientation="horizontal"
-            android:background="@color/light_grey"
+            android:background="?shimmer_end_color"
             android:layout_width="match_parent"
             android:layout_height="35dp">
 
             <TextView
-                android:textColor="@color/grey"
+                android:textColor="?grey_white_text"
                 android:layout_gravity="center_vertical"
                 android:id="@+id/friend_count"
                 android:layout_width="wrap_content"
@@ -261,8 +261,8 @@
 
 <!--    sort Dialog overlay-->
     <LinearLayout
-        android:visibility="gone"
         android:clickable="true"
+        android:visibility="gone"
         android:id="@+id/sort_dialog_overlay"
         android:background="@color/dark_overlay_2"
         android:layout_width="match_parent"
@@ -271,6 +271,7 @@
         <com.google.android.material.card.MaterialCardView
             android:clickable="true"
             app:rippleColor="@android:color/transparent"
+            app:cardBackgroundColor="?user_card_background_profile_fragment"
             app:cardElevation="2dp"
             app:cardCornerRadius="20dp"
             android:layout_marginBottom="40dp"
@@ -323,7 +324,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/newest_first"
-                        android:textColor="@color/black"
+                        android:textColor="?chat_title_text_color"
                         android:layout_marginLeft="15dp"
                         />
                 </LinearLayout>
@@ -365,7 +366,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/oldest_first"
-                        android:textColor="@color/black"
+                        android:textColor="?chat_title_text_color"
                         android:layout_marginLeft="15dp"
                         />
                 </LinearLayout>
@@ -407,7 +408,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/a_to_z_sorting"
-                        android:textColor="@color/black"
+                        android:textColor="?chat_title_text_color"
                         android:layout_marginLeft="15dp"
                         />
                 </LinearLayout>
@@ -449,7 +450,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/z_to_a_sorting"
-                        android:textColor="@color/black"
+                        android:textColor="?chat_title_text_color"
                         android:layout_marginLeft="15dp"
                         />
                 </LinearLayout>
@@ -492,7 +493,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/default_"
-                        android:textColor="@color/black"
+                        android:textColor="?chat_title_text_color"
                         android:layout_marginLeft="15dp"
                         />
                 </LinearLayout>

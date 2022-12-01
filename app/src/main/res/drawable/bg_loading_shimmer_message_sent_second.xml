@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient
-        android:startColor="@color/transparent_grey_2"
-        android:endColor="@color/light_grey"
+        android:startColor="?shimmer_color_main"
+        android:endColor="?shimmer_end_color"
         />
 
     <corners

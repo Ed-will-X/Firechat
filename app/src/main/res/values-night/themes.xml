@@ -8,10 +8,38 @@
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="bottomSheetDialogTheme">@style/Actionsheet</item>
+
+        <!-- Background-->
+        <item name="backgroundColor">@color/black</item>
+        <item name="user_card_background_profile_fragment">@color/matte_black</item>
+        <item name="user_card_background_profile_fragment_bottom">@color/light_matte_black</item>
+        <item name="background_profile_fragment">@color/dark_matte_black</item>
+
+        <item name="background_chats_fragment">@color/darker_grey</item>
+
+        <!-- Horizontal rule color-->
+        <item name="horizontal_rule_color">@color/transparent_grey</item>
+
+        <!-- Shimmer color-->
+        <item name="shimmer_color_main">@color/matte_black</item>
+        <item name="shimmer_end_color">@color/dark_grey</item>
+
+        <!-- Text color-->
+        <item name="chat_title_text_color">@color/white</item>
+        <item name="chat_subtitle_text_color">@color/transparent_grey</item>
+        <item name="icon_color">@color/grey</item>
+        <item name="subtitle_text_color">@color/grey</item>
+        <item name="grey_white_text">@color/white</item>
+
+        <!-- Text Box-->
+        <item name="text_box_color">@color/matte_black</item>
+
+        <item name="received_background_color">@color/matte_black</item>
+        <item name="message_action_bar">@color/matte_black</item>
     </style>
 </resources>

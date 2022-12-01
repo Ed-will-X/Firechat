@@ -27,7 +27,7 @@
                 android:layout_width="@dimen/gc_icon_size"
                 android:layout_height="@dimen/gc_icon_size"
                 android:src="@drawable/ic_star"
-                app:tint="@color/light_grey_2"
+                app:tint="?icon_color"
                 />
 
             <View
@@ -45,7 +45,6 @@
 
         <FrameLayout
             android:id="@+id/profile_image_silhouette"
-            android:clickable="true"
             android:layout_gravity="center"
             android:background="@drawable/bg_profile_background"
             android:layout_width="@dimen/gc_image_size"
@@ -87,7 +86,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/group_name"
             android:text="Friends &amp; Family"
-            android:textColor="@color/black"
+            android:textColor="?chat_title_text_color"
             android:layout_gravity="center_horizontal"
             android:textSize="@dimen/gc_card_text_size"
             />
@@ -102,7 +101,7 @@
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/gc_image_card_1"
                 app:cardElevation="0dp"
-                app:strokeColor="@color/white"
+                app:strokeColor="?backgroundColor"
                 app:strokeWidth="@dimen/gc_stroke_width"
                 app:cardCornerRadius="360dp"
                 android:layout_width="@dimen/gc_users_image_size"
@@ -119,6 +118,7 @@
                 android:id="@+id/gc_image_card_2"
                 app:cardElevation="0dp"
                 android:layout_marginLeft="15dp"
+                app:strokeColor="?backgroundColor"
                 app:cardCornerRadius="360dp"
                 app:strokeWidth="@dimen/gc_stroke_width"
                 android:layout_width="@dimen/gc_users_image_size"
@@ -137,6 +137,7 @@
                 android:layout_marginLeft="30dp"
                 app:cardCornerRadius="360dp"
                 app:strokeWidth="@dimen/gc_stroke_width"
+                app:strokeColor="?backgroundColor"
                 android:layout_width="@dimen/gc_users_image_size"
                 android:layout_height="@dimen/gc_users_image_size">
                 <ImageView
@@ -153,6 +154,7 @@
                 android:layout_marginLeft="45dp"
                 app:cardCornerRadius="360dp"
                 app:strokeWidth="@dimen/gc_stroke_width"
+                app:strokeColor="?backgroundColor"
                 android:layout_width="@dimen/gc_users_image_size"
                 android:layout_height="@dimen/gc_users_image_size">
                 <ImageView
@@ -169,6 +171,7 @@
                 android:layout_marginLeft="60dp"
                 app:cardCornerRadius="360dp"
                 app:strokeWidth="@dimen/gc_stroke_width"
+                app:strokeColor="?backgroundColor"
                 android:layout_width="@dimen/gc_users_image_size"
                 android:layout_height="@dimen/gc_users_image_size">
                 <ImageView

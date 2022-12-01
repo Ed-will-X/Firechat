@@ -14,6 +14,6 @@ interface SettingDao {
     @Delete
     suspend fun delete(setting: Setting)
 
-    @Query("SELECT * FROM setting_table WHERE settingName = :settingName")
-    fun get(settingName: String): LiveData<Setting>
+    @Query("SELECT * FROM setting_table WHERE userId = :userId")
+    fun get(userId: String): LiveData<Setting>
 }

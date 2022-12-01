@@ -108,15 +108,14 @@
                         android:layout_width="match_parent"
                         android:orientation="horizontal"
                         android:layout_height="50dp"
-                        android:background="@color/white">
+                        android:background="?backgroundColor">
 
                         <TextView
                             android:id="@+id/name_without_occupation"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:visibility="gone"
-                            android:text="Nancy Wheeler"
-                            android:textColor="@color/black"
+                            android:textColor="?chat_title_text_color"
                             android:textStyle="bold"
                             android:textSize="23sp"
                             android:layout_gravity="center_vertical"
@@ -130,12 +129,14 @@
 
                             <TextView
                                 android:id="@+id/first_name"
+                                android:textColor="?chat_title_text_color"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 style="@style/other_profile_header_text"
                                 />
                             <TextView
                                 android:id="@+id/occupation"
+                                android:textColor="?chat_title_text_color"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 style="@style/other_profile_body_text"
@@ -166,6 +167,7 @@
                             android:layout_height="35dp"
                             android:textSize="14sp"
                             android:text="@string/add"
+                            android:textColor="@color/white"
                             android:background="@drawable/bg_other_profile_button"
                             />
                     </LinearLayout>
@@ -174,6 +176,7 @@
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.core.widget.NestedScrollView
+            android:background="?backgroundColor"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -203,6 +206,7 @@
                             android:layout_height="wrap_content">
                             <TextView
                                 android:id="@+id/about_text_header"
+                                android:textColor="?chat_title_text_color"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 style="@style/other_profile_header_text"
@@ -224,6 +228,7 @@
 <!--                        No About-->
                         <LinearLayout
                             android:visibility="gone"
+                            android:background="?backgroundColor"
                             android:layout_marginTop="20dp"
                             android:id="@+id/no_about"
                             android:layout_width="match_parent"
@@ -252,6 +257,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="@string/no_about_"
+                                        android:textColor="?subtitle_text_color"
                                         android:textSize="15sp"
                                         android:textStyle="bold"
                                         android:layout_gravity="center"
@@ -264,6 +270,7 @@
 
                         <TextView
                             style="@style/other_profile_body_text"
+                            android:textColor="?subtitle_text_color"
                             android:id="@+id/about_text_body"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -295,6 +302,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:textColor="?chat_title_text_color"
                                 style="@style/other_profile_header_text"
                                 android:text="@string/public_posts"
                                 />
@@ -366,6 +374,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="@string/no_public_posts_yet"
+                                        android:textColor="?subtitle_text_color"
                                         android:textSize="15sp"
                                         android:textStyle="bold"
                                         android:layout_gravity="center"

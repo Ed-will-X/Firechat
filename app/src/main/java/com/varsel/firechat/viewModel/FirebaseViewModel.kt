@@ -8,6 +8,7 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.varsel.firechat.model.BugReport.BugReport
 import com.varsel.firechat.model.Chat.ChatRoom
 import com.varsel.firechat.model.Chat.GroupRoom
 import com.varsel.firechat.model.Image.Image
@@ -1312,7 +1313,7 @@ class FirebaseViewModel: ViewModel() {
     }
 
     // TODO: Not Tested
-    fun deleteRecentSearchHistory(mAuth: FirebaseAuth, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+    fun deleteRecentSearchHistory(mAuth: FirebaseAuth, mDbRef: DatabaseReference, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
         mDbRef
             .child("Users")
             .child(mAuth.currentUser!!.uid)
@@ -1343,6 +1344,21 @@ class FirebaseViewModel: ViewModel() {
                 }else{
                     failureCallback()
                     DebugUtils.log_firebase("ADD TO RECENT SEARCH UNSUCCESSFUL")
+                }
+            }
+    }
+
+    // TODO: Not tested
+    fun uploadBugReport(bugReport: BugReport, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
+        val databaseReference = mDbRef.child("bug_reports").child(mAuth.currentUser!!.uid)
+        databaseReference.child(bugReport.reportId).setValue(bugReport)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    DebugUtils.log_firebase("upload bug report successful")
+
+                    successCallback()
+                } else {
+                    failureCallback()
                 }
             }
     }

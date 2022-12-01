@@ -149,7 +149,7 @@
             android:layout_height="wrap_content"
             android:text="@string/recent_search"
             android:layout_marginLeft="20dp"
-            android:textColor="@color/grey"
+            android:textColor="?subtitle_text_color"
             android:textSize="14sp"
             />
 

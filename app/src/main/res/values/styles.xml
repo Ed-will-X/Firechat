@@ -119,7 +119,7 @@
     <style name="horizontal_rule" parent="Widget.AppCompat.ListView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
-        <item name="android:background">@color/light_grey_3</item>
+        <item name="android:background">?horizontal_rule_color</item>
     </style>
 
     <style name="equal_space_horizontal" parent="Widget.AppCompat.ListView">

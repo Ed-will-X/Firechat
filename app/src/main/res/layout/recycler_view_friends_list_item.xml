@@ -52,9 +52,8 @@
         android:layout_marginLeft="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ligma Balls"
         android:textSize="15sp"
-        android:textColor="@color/black"
+        android:textColor="?chat_title_text_color"
         android:layout_gravity="center_vertical"
         />
 
