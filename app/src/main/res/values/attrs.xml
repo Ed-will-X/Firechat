@@ -21,4 +21,6 @@
     <attr name="text_box_color" format="reference" />
     <attr name="received_background_color" format="reference" />
     <attr name="message_action_bar" format="reference" />
+
+    <attr name="ios_text_button_color" format="reference" />
 </resources>

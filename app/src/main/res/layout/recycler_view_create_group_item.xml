@@ -56,7 +56,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/checkbox"
         android:textSize="14sp"
-        android:textColor="@color/black"
+        android:textColor="?colorOnSecondary"
         android:layoutDirection="rtl"
         android:layout_marginRight="10dp"
         />

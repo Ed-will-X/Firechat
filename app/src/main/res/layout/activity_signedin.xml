@@ -235,7 +235,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/logout"
                     android:layout_gravity="center"
-                    android:textColor="@color/ios_blue"
+                    android:textColor="?ios_text_button_color"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:layout_marginBottom="30dp"

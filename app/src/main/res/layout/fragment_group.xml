@@ -59,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/create_group"
                     android:layout_gravity="center_horizontal"
-                    android:textColor="@color/ios_blue"
+                    android:textColor="?ios_text_button_color"
                     />
             </LinearLayout>
         </FrameLayout>

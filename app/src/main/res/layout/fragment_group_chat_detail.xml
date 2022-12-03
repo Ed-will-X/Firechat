@@ -69,6 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
+<!--                Profile Pic-->
                 <FrameLayout
                     android:id="@+id/profile_image_silhouette"
                     android:clickable="true"
@@ -124,7 +125,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Group Name"
-                            android:textColor="@color/black"
+                            android:textColor="?colorOnSecondary"
                             android:textSize="18sp"
                             />
 
@@ -143,15 +144,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=""
-                        android:textColor="@color/grey"
+                        android:textColor="?subtitle_text_color"
                         android:textSize="13sp"
                         />
                 </LinearLayout>
             </LinearLayout>
 
             <View
+                android:layout_width="match_parent"
+                android:layout_height="0.1dp"
+                android:background="?horizontal_rule_color"
                 android:layout_marginTop="20dp"
-                style="@style/horizontal_rule"
                 />
 
             <LinearLayout
@@ -168,7 +171,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/media_files"
-                    android:textColor="@color/black"
+                    android:textColor="?colorOnSecondary"
                     android:textSize="15sp"
                     />
 
@@ -188,7 +191,9 @@
             </LinearLayout>
 
             <View
-                style="@style/horizontal_rule"
+                android:layout_width="match_parent"
+                android:layout_height="0.1dp"
+                android:background="?horizontal_rule_color"
                 />
 
             <LinearLayout
@@ -209,7 +214,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/group_members"
-                        android:textColor="@color/black"
+                        android:textColor="?colorOnSecondary"
                         android:textSize="15sp"
                         />
 
@@ -260,7 +265,7 @@
                         android:layout_width="35dp"
                         android:layout_height="35dp"
                         android:src="@drawable/ic_add"
-                        app:tint="@color/ios_blue" />
+                        app:tint="?ios_text_button_color" />
 
                     <TextView
                         android:layout_marginLeft="10dp"
@@ -269,7 +274,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/add_a_member"
-                        android:textColor="@color/ios_blue"
+                        android:textColor="?ios_text_button_color"
                         />
 
                 </LinearLayout>
@@ -284,7 +289,9 @@
             </LinearLayout>
 
             <View
-                style="@style/horizontal_rule"
+                android:layout_width="match_parent"
+                android:layout_height="0.1dp"
+                android:background="?horizontal_rule_color"
                 />
         </LinearLayout>
 

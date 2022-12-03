@@ -366,10 +366,10 @@ class GroupChatDetailFragment : Fragment() {
     private fun toggleRecyclerViewVisible(){
         if(recyclerViewVisible){
             binding.participantsRecyclerViewParent.visibility = View.VISIBLE
-            rotateIcon()
+            AnimationUtils.rotate90(binding.groupMembersIconAnimatable)
         } else {
             binding.participantsRecyclerViewParent.visibility = View.GONE
-            rotateBack()
+            AnimationUtils.rotate90_back(binding.groupMembersIconAnimatable)
         }
     }
 
@@ -421,17 +421,7 @@ class GroupChatDetailFragment : Fragment() {
         binding.participantsRecyclerViewParent.startAnimation(animate)
     }
 
-    private fun rotateIcon(){
-        val animator = ObjectAnimator.ofFloat(binding.groupMembersIconAnimatable, View.ROTATION, 90f)
-        animator.duration = 300
-        animator.start()
-    }
 
-    private fun rotateBack(){
-        val animator = ObjectAnimator.ofFloat(binding.groupMembersIconAnimatable, View.ROTATION, 0f)
-        animator.duration = 300
-        animator.start()
-    }
 
     private fun popNavigation(){
         findNavController().navigateUp()

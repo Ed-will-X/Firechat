@@ -43,5 +43,8 @@
 
         <item name="received_background_color">@color/white_blue</item>
         <item name="message_action_bar">@color/light_grey_4</item>
+
+
+        <item name="ios_text_button_color">@color/ios_blue</item>
     </style>
 </resources>

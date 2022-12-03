@@ -220,7 +220,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/more"
-                                android:textColor="@color/ios_blue"
+                                android:textColor="?ios_text_button_color"
                                 />
                         </LinearLayout>
 
@@ -316,7 +316,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/see_all"
-                                android:textColor="@color/ios_blue"
+                                android:textColor="?ios_text_button_color"
                                 />
                         </LinearLayout>
 

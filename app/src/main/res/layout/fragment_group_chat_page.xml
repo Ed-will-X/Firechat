@@ -125,11 +125,12 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/action_bar_switch"
             app:cardElevation="0dp"
             android:layout_gravity="center_vertical"
-            app:cardBackgroundColor="@color/light_grey_3"
+            app:cardBackgroundColor="?text_box_color"
             app:cardCornerRadius="360dp"
             android:layout_width="40dp"
             android:layout_height="40dp">
@@ -144,7 +145,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_gravity="center_vertical"
             app:cardCornerRadius="60dp"
-            app:cardBackgroundColor="@color/light_grey_3"
+            app:cardBackgroundColor="?text_box_color"
             app:cardElevation="0dp"
             android:layout_marginLeft="10dp"
             android:layout_width="match_parent"
@@ -159,6 +160,8 @@
 
                 <!--                TODO: Expand edit text based on the number of lines of the message-->
                 <EditText
+                    android:textColor="?chat_title_text_color"
+                    android:textColorHint="?subtitle_text_color"
                     android:maxLength="50000"
                     android:id="@+id/message_edit_text"
                     android:background="@color/transparent"
@@ -181,11 +184,17 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
+
+
+
+
+    <!--    Message Action Bar-->
+    <!--    TODO: Put in scroll view-->
     <LinearLayout
         android:visibility="gone"
         android:id="@+id/message_action_bar"
         android:orientation="horizontal"
-        android:background="@color/light_grey_4"
+        android:background="?message_action_bar"
         android:layout_width="match_parent"
         android:layout_height="120dp">
         <View
@@ -221,7 +230,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/gif"
-                android:textColor="@color/black"
+                android:textColor="?chat_title_text_color"
                 android:textSize="@dimen/action_sheet_profile_image_text_size"
                 />
         </LinearLayout>
@@ -260,7 +269,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/file"
-                android:textColor="@color/black"
+                android:textColor="?chat_title_text_color"
                 android:textSize="@dimen/action_sheet_profile_image_text_size"
                 />
         </LinearLayout>
@@ -298,7 +307,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/gallery"
-                android:textColor="@color/black"
+                android:textColor="?chat_title_text_color"
                 android:textSize="@dimen/action_sheet_profile_image_text_size"
                 />
         </LinearLayout>
@@ -336,7 +345,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/location"
-                android:textColor="@color/black"
+                android:textColor="?chat_title_text_color"
                 android:textSize="@dimen/action_sheet_profile_image_text_size"
                 />
         </LinearLayout>
@@ -374,7 +383,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/audio"
-                android:textColor="@color/black"
+                android:textColor="?chat_title_text_color"
                 android:textSize="@dimen/action_sheet_profile_image_text_size"
                 />
         </LinearLayout>

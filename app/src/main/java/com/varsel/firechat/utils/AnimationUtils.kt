@@ -1,6 +1,8 @@
 package com.varsel.firechat.utils
 
+import android.animation.ObjectAnimator
 import android.content.Context
+import android.view.View
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -14,36 +16,16 @@ class AnimationUtils {
             vector.setColorFilter(context.resources.getColor(color), android.graphics.PorterDuff.Mode.MULTIPLY)
         }
 
-        fun sharedZAxisExit(fragment: Fragment, length: Long){
-            fragment.exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
-                duration = length
-            }
-
-            fragment.reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
-                duration = length
-            }
+        fun rotate90(icon: ImageView){
+            val animator = ObjectAnimator.ofFloat(icon, View.ROTATION, 90f)
+            animator.duration = 300
+            animator.start()
         }
 
-        fun sharedZAxisEntry(fragment: Fragment, length: Long){
-            fragment.enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
-                duration = length
-            }
-
-            fragment.returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
-                duration = length
-            }
-        }
-
-        fun materialFadeThroughEntry(fragment: Fragment, length: Long){
-            fragment.enterTransition = MaterialFadeThrough().apply {
-                duration = length
-            }
-        }
-
-        fun materialFadeThroughExit(fragment: Fragment, length: Long){
-            fragment.exitTransition = MaterialFadeThrough().apply {
-                duration = length
-            }
+        fun rotate90_back(icon: ImageView){
+            val animator = ObjectAnimator.ofFloat(icon, View.ROTATION, 0f)
+            animator.duration = 300
+            animator.start()
         }
 
         fun changeDialogDimAmount(dialog: BottomSheetDialog, amount: Float){

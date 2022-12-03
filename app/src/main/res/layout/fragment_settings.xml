@@ -106,7 +106,7 @@
                         android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/edit_profile"
                         android:textStyle="bold"
-                        android:textColor="@color/grey"
+                        android:textColor="?subtitle_text_color"
                         />
 
                     <View
@@ -140,7 +140,7 @@
                         android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/change_password"
                         android:textStyle="bold"
-                        android:textColor="@color/grey"
+                        android:textColor="?subtitle_text_color"
                         />
 
                     <View
@@ -174,7 +174,7 @@
                         android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/setting_delete_account"
                         android:textStyle="bold"
-                        android:textColor="@color/grey"
+                        android:textColor="?subtitle_text_color"
                         />
 
                     <View
@@ -249,7 +249,7 @@
                     android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/show_chat_notifications"
                     android:textStyle="bold"
-                    android:textColor="@color/grey"
+                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <!--        Show group notifications-->
@@ -265,7 +265,7 @@
                     android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/show_group_notifications"
                     android:textStyle="bold"
-                    android:textColor="@color/grey"
+                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <!--        Show friend request notifications-->
@@ -281,7 +281,7 @@
                     android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/show_friend_request_notifications"
                     android:textStyle="bold"
-                    android:textColor="@color/grey"
+                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
 
@@ -298,7 +298,7 @@
                     android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/show_new_friend_notifications"
                     android:textStyle="bold"
-                    android:textColor="@color/grey"
+                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
 
@@ -315,7 +315,7 @@
                     android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/show_group_add_notifications"
                     android:textStyle="bold"
-                    android:textColor="@color/grey"
+                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
             </LinearLayout>
@@ -378,7 +378,7 @@
                         android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/clear_app_storage"
                         android:textStyle="bold"
-                        android:textColor="@color/grey"
+                        android:textColor="?subtitle_text_color"
                         />
 
                     <View
@@ -412,7 +412,7 @@
                         android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/clear_cache"
                         android:textStyle="bold"
-                        android:textColor="@color/grey"
+                        android:textColor="?subtitle_text_color"
                         />
 
                     <View
@@ -446,7 +446,7 @@
                         android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/clear_user_search_history"
                         android:textStyle="bold"
-                        android:textColor="@color/grey"
+                        android:textColor="?subtitle_text_color"
                         />
 
                     <View
@@ -521,7 +521,7 @@
                     android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/setting_dark_mode"
                     android:textStyle="bold"
-                    android:textColor="@color/grey"
+                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <!--        Override system theme-->
@@ -537,7 +537,7 @@
                     android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/override_system_theme"
                     android:textStyle="bold"
-                    android:textColor="@color/grey"
+                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
             </LinearLayout>
 
@@ -596,7 +596,7 @@
                     android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/auto_download_image_message"
                     android:textStyle="bold"
-                    android:textColor="@color/grey"
+                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <!--    Auto download video message-->
@@ -612,7 +612,7 @@
                     android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/auto_download_video_message"
                     android:textStyle="bold"
-                    android:textColor="@color/grey"
+                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <!--    Auto download GIF message-->
@@ -628,7 +628,7 @@
                     android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/auto_download_gif_message"
                     android:textStyle="bold"
-                    android:textColor="@color/grey"
+                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <!--    Auto download audio message-->
@@ -644,7 +644,7 @@
                     android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/auto_download_audio_message"
                     android:textStyle="bold"
-                    android:textColor="@color/grey"
+                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
                 <!--    Public Post Download Count-->
                 <LinearLayout
@@ -664,7 +664,7 @@
                         android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/public_post_download_count"
                         android:textStyle="bold"
-                        android:textColor="@color/grey"
+                        android:textColor="?subtitle_text_color"
                         />
 
                     <View
@@ -749,7 +749,7 @@
                         android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/report_bug"
                         android:textStyle="bold"
-                        android:textColor="@color/grey"
+                        android:textColor="?subtitle_text_color"
                         />
 
                     <View
@@ -783,7 +783,7 @@
                         android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/send_feedback"
                         android:textStyle="bold"
-                        android:textColor="@color/grey"
+                        android:textColor="?subtitle_text_color"
                         />
 
                     <View
@@ -861,7 +861,7 @@
                         android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/language"
                         android:textStyle="bold"
-                        android:textColor="@color/grey"
+                        android:textColor="?subtitle_text_color"
                         />
 
                     <View
@@ -895,7 +895,7 @@
                         android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/revert_settings"
                         android:textStyle="bold"
-                        android:textColor="@color/grey"
+                        android:textColor="?subtitle_text_color"
                         />
 
                     <View
@@ -921,6 +921,7 @@
     <com.google.android.material.card.MaterialCardView
         android:clickable="true"
         android:foreground="?selectableItemBackground"
+        app:cardBackgroundColor="?user_card_background_profile_fragment_bottom"
         app:cardElevation="3dp"
         app:cardCornerRadius="30dp"
         android:id="@+id/logout"
@@ -938,7 +939,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_exit"
-                />
+                app:tint="?colorOnSecondary" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -947,7 +948,7 @@
                 android:textStyle="bold"
                 android:textSize="@dimen/setting_item_text_size"
                 android:layout_marginLeft="10dp"
-                android:textColor="@color/black"
+                android:textColor="?colorOnSecondary"
                 />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

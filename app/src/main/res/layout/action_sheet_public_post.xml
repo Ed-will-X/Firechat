@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/open_gallery"
-            android:textColor="@color/ios_blue"
+            android:textColor="?ios_text_button_color"
             android:clickable="true"
             />
 

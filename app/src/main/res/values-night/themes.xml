@@ -33,7 +33,7 @@
         <item name="chat_title_text_color">@color/white</item>
         <item name="chat_subtitle_text_color">@color/transparent_grey</item>
         <item name="icon_color">@color/grey</item>
-        <item name="subtitle_text_color">@color/grey</item>
+        <item name="subtitle_text_color">@color/transparent_light_grey</item>
         <item name="grey_white_text">@color/white</item>
 
         <!-- Text Box-->
@@ -41,5 +41,8 @@
 
         <item name="received_background_color">@color/matte_black</item>
         <item name="message_action_bar">@color/matte_black</item>
+
+
+        <item name="ios_text_button_color">@color/blue</item>
     </style>
 </resources>
