@@ -2,9 +2,9 @@ package com.varsel.firechat.utils
 
 import androidx.fragment.app.Fragment
 import com.varsel.firechat.R
-import com.varsel.firechat.model.Chat.GroupRoom
-import com.varsel.firechat.model.User.User
-import com.varsel.firechat.view.signedIn.SignedinActivity
+import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap

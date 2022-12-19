@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".view.signedIn.fragments.ChatPageFragment">
+    tools:context=".presentation.signedIn.fragments.screens.chat_page.ChatPageFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:foreground="?selectableItemBackground"

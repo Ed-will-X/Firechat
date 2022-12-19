@@ -1,7 +1,7 @@
 package com.varsel.firechat.utils
 
 import android.util.Log
-import com.varsel.firechat.model.User.User
+import com.varsel.firechat.data.local.User.User
 import kotlin.system.measureTimeMillis
 
 class DebugUtils {

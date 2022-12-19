@@ -19,13 +19,13 @@
         android:theme="@style/Theme.Firechat"
         tools:targetApi="31">
         <activity
-            android:name=".view.signedIn.SignedinActivity"
+            android:name="com.varsel.firechat.presentation.signedIn.SignedinActivity"
             android:exported="false" />
         <activity
-            android:name=".view.signedOut.SignedoutActivity"
+            android:name="com.varsel.firechat.presentation.signedOut.SignedoutActivity"
             android:exported="false" />
         <activity
-            android:name=".view.MainActivity"
+            android:name=".presentation.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

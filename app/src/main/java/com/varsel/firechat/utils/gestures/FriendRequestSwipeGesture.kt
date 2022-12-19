@@ -3,11 +3,10 @@ package com.varsel.firechat.utils.gestures
 import android.graphics.Canvas
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.R
-import com.varsel.firechat.view.signedIn.SignedinActivity
+import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 
 

@@ -19,14 +19,14 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.varsel.firechat.R
-import com.varsel.firechat.model.Chat.GroupRoom
-import com.varsel.firechat.model.Image.Image
-import com.varsel.firechat.model.Message.Message
-import com.varsel.firechat.model.Message.MessageType
-import com.varsel.firechat.model.ProfileImage.ProfileImage
-import com.varsel.firechat.model.PublicPost.PublicPost
-import com.varsel.firechat.model.User.User
-import com.varsel.firechat.view.signedIn.SignedinActivity
+import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.data.local.Image.Image
+import com.varsel.firechat.data.local.Message.Message
+import com.varsel.firechat.data.local.Message.MessageType
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.data.local.PublicPost.PublicPost
+import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 

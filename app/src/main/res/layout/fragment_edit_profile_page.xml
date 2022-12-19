@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context=".view.signedIn.fragments.EditProfilePage">
+    tools:context=".presentation.signedIn.fragments.screens.edit_profile.EditProfilePage">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"

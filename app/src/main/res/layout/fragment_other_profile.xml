@@ -18,7 +18,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/parent_view"
         android:orientation="vertical"
-        tools:context=".view.signedIn.fragments.OtherProfileFragment"
+        tools:context=".presentation.signedIn.fragments.screens.other_profile.OtherProfileFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

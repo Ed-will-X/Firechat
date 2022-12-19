@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".view.signedIn.fragments.FriendListFragment">
+    tools:context=".presentation.signedIn.fragments.screens.friend_list.FriendListFragment">
 
 <!--    Main Content-->
     <LinearLayout

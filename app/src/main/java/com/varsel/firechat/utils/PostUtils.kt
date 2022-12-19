@@ -1,15 +1,11 @@
 package com.varsel.firechat.utils
 
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
-import com.varsel.firechat.model.Image.Image
-import com.varsel.firechat.model.Message.Message
-import com.varsel.firechat.model.PublicPost.PublicPost
-import com.varsel.firechat.view.signedIn.SignedinActivity
+import com.varsel.firechat.data.local.PublicPost.PublicPost
+import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
 class PostUtils {
     companion object {

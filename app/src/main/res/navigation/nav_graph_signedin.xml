@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/chatsFragment"
-        android:name="com.varsel.firechat.view.signedIn.fragments.bottomNav.ChatsFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.ChatsFragment"
         android:label="fragment_chats"
         tools:layout="@layout/fragment_chats" >
         <action
@@ -54,7 +54,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.varsel.firechat.view.signedIn.fragments.bottomNav.ProfileFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" >
         <action
@@ -84,7 +84,7 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.varsel.firechat.view.signedIn.fragments.bottomNav.SettingsFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" >
         <action
@@ -97,7 +97,7 @@
     </fragment>
     <fragment
         android:id="@+id/addFriends"
-        android:name="com.varsel.firechat.view.signedIn.fragments.AddFriendsFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screens.add_friends.AddFriendsFragment"
         android:label="fragment_add_friends"
         tools:layout="@layout/fragment_add_friends" >
         <action
@@ -113,7 +113,7 @@
     </fragment>
     <fragment
         android:id="@+id/otherProfileFragment"
-        android:name="com.varsel.firechat.view.signedIn.fragments.OtherProfileFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screens.other_profile.OtherProfileFragment"
         android:label="fragment_other_profile"
         tools:layout="@layout/fragment_other_profile" >
         <argument
@@ -125,7 +125,7 @@
     </fragment>
     <fragment
         android:id="@+id/chatPageFragment"
-        android:name="com.varsel.firechat.view.signedIn.fragments.ChatPageFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screens.chat_page.ChatPageFragment"
         android:label="ChatPageFragment" >
         <argument
             android:name="chatRoom"
@@ -147,7 +147,7 @@
     </fragment>
     <fragment
         android:id="@+id/editProfilePage"
-        android:name="com.varsel.firechat.view.signedIn.fragments.EditProfilePage"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screens.edit_profile.EditProfilePage"
         android:label="fragment_edit_profile_page"
         tools:layout="@layout/fragment_edit_profile_page" >
         <action
@@ -156,7 +156,7 @@
     </fragment>
     <fragment
         android:id="@+id/friendListFragment"
-        android:name="com.varsel.firechat.view.signedIn.fragments.FriendListFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screens.friend_list.FriendListFragment"
         android:label="fragment_friend_list"
         tools:layout="@layout/fragment_friend_list" >
         <action
@@ -177,7 +177,7 @@
     </fragment>
     <fragment
         android:id="@+id/createGroupFragment"
-        android:name="com.varsel.firechat.view.signedIn.fragments.CreateGroupFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screens.create_group.CreateGroupFragment"
         android:label="fragment_create_group"
         tools:layout="@layout/fragment_create_group" >
         <action
@@ -194,7 +194,7 @@
     </fragment>
     <fragment
         android:id="@+id/groupChatPageFragment"
-        android:name="com.varsel.firechat.view.signedIn.fragments.GroupChatPageFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_page.GroupChatPageFragment"
         android:label="fragment_group_chat_page"
         tools:layout="@layout/fragment_group_chat_page" >
         <argument
@@ -220,7 +220,7 @@
     </fragment>
     <fragment
         android:id="@+id/groupChatDetailFragment"
-        android:name="com.varsel.firechat.view.signedIn.fragments.GroupChatDetailFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_detail.GroupChatDetailFragment"
         android:label="fragment_group_chat_detail"
         tools:layout="@layout/fragment_group_chat_detail" >
         <action
@@ -254,7 +254,7 @@
     </fragment>
     <fragment
         android:id="@+id/addGroupMembersFragment"
-        android:name="com.varsel.firechat.view.signedIn.fragments.AddGroupMembersFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screens.add_group_members.AddGroupMembersFragment"
         android:label="fragment_add_group_members"
         tools:layout="@layout/fragment_add_group_members" >
         <argument
@@ -266,7 +266,7 @@
     </fragment>
     <fragment
         android:id="@+id/aboutUserFragment"
-        android:name="com.varsel.firechat.view.signedIn.fragments.AboutUserFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screens.about_user.AboutUserFragment"
         android:label="fragment_about_user"
         tools:layout="@layout/fragment_about_user" >
         <action
@@ -289,7 +289,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileImageFragment"
-        android:name="com.varsel.firechat.view.signedIn.fragments.ProfileImageFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.ProfileImageFragment"
         android:label="fragment_profile_image"
         tools:layout="@layout/fragment_profile_image" >
         <argument
@@ -307,7 +307,7 @@
     </fragment>
     <fragment
         android:id="@+id/chatsSearchFragment"
-        android:name="com.varsel.firechat.view.signedIn.fragments.ChatsSearchFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screens.chat_search.ChatsSearchFragment"
         android:label="fragment_chats_search"
         tools:layout="@layout/fragment_chats_search" >
         <action

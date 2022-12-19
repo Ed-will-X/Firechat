@@ -1,7 +1,6 @@
 package com.varsel.firechat.utils
 
 import android.text.Editable
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -11,9 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
-import com.varsel.firechat.model.User.User
-import com.varsel.firechat.utils.ExtensionFunctions.Companion.hideKeyboard
-import com.varsel.firechat.utils.ExtensionFunctions.Companion.showKeyboard
+import com.varsel.firechat.data.local.User.User
 
 // TODO: Refactor to fit other types
 class SearchUtils {

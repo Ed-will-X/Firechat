@@ -1,13 +1,12 @@
 package com.varsel.firechat
 
 import android.app.Application
-import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
-import com.varsel.firechat.model.Image.ImageDatabase
-import com.varsel.firechat.model.ProfileImage.ProfileImageDatabase
-import com.varsel.firechat.model.PublicPost.PublicPostDatabase
-import com.varsel.firechat.model.ReadReceipt.ReadReceiptDatabase
-import com.varsel.firechat.model.Setting.SettingDatabase
+import com.varsel.firechat.data.local.Image.ImageDatabase
+import com.varsel.firechat.data.local.ProfileImage.ProfileImageDatabase
+import com.varsel.firechat.data.local.PublicPost.PublicPostDatabase
+import com.varsel.firechat.data.local.ReadReceipt.ReadReceiptDatabase
+import com.varsel.firechat.data.local.Setting.SettingDatabase
 
 class FirechatApplication: Application() {
     val settingsDatabase: SettingDatabase by lazy {

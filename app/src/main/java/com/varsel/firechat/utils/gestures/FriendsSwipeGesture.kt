@@ -4,7 +4,7 @@ import android.graphics.Canvas
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.R
-import com.varsel.firechat.view.signedIn.SignedinActivity
+import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 
 abstract class FriendsSwipeGesture(val activity: SignedinActivity): ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.signedOut.fragments.GenderSelectFragment">
+    tools:context=".presentation.signedOut.fragments.GenderSelectFragment">
 
     <Button
         android:id="@+id/navigate_to_home"

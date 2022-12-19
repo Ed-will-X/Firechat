@@ -1,11 +1,11 @@
 package com.varsel.firechat.utils
 
 import com.varsel.firechat.R
-import com.varsel.firechat.model.Chat.ChatRoom
-import com.varsel.firechat.model.Chat.GroupRoom
-import com.varsel.firechat.model.Message.Message
-import com.varsel.firechat.model.Message.SystemMessageType
-import com.varsel.firechat.view.signedIn.SignedinActivity
+import com.varsel.firechat.data.local.Chat.ChatRoom
+import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.data.local.Message.Message
+import com.varsel.firechat.data.local.Message.SystemMessageType
+import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 

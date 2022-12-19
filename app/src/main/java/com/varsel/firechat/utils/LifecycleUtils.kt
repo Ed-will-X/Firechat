@@ -5,9 +5,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.varsel.firechat.R
-import com.varsel.firechat.view.signedIn.SignedinActivity
-import com.varsel.firechat.viewModel.FirebaseViewModel
+import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
 class LifecycleUtils {
     companion object {
