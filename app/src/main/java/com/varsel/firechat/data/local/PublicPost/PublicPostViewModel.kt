@@ -4,9 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PublicPostViewModel(val dao: PublicPostDao): ViewModel() {
+@HiltViewModel
+class PublicPostViewModel @Inject constructor(
+    val dao: PublicPostDao
+): ViewModel() {
     val currentUserPublicPosts = MutableLiveData<MutableList<PublicPost>?>(mutableListOf())
 
     fun getPostById(id: String): LiveData<PublicPost> {

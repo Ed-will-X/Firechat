@@ -11,7 +11,9 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActivitySignedoutBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SignedoutActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignedoutBinding
     lateinit var datastore: DataStore<Preferences>

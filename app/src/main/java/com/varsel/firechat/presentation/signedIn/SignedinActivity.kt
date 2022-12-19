@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.datastore.core.DataStore
@@ -31,19 +32,14 @@ import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.Image.Image
 import com.varsel.firechat.data.local.Image.ImageViewModel
-import com.varsel.firechat.data.local.Image.ImageViewModelFactory
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.ProfileImage.ProfileImageViewModel
-import com.varsel.firechat.data.local.ProfileImage.ProfileImageViewModelFactory
 import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.data.local.PublicPost.PublicPostViewModel
-import com.varsel.firechat.data.local.PublicPost.PublicPostViewModelFactory
 import com.varsel.firechat.data.local.ReadReceipt.ReadReceiptViewModel
-import com.varsel.firechat.data.local.ReadReceipt.ReadReceiptViewModelFactory
 import com.varsel.firechat.data.local.Setting.Setting
 import com.varsel.firechat.data.local.Setting.SettingViewModel
-import com.varsel.firechat.data.local.Setting.SettingViewModelFactory
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
@@ -51,6 +47,7 @@ import com.varsel.firechat.presentation.signedOut.SignedoutActivity
 import com.varsel.firechat.presentation.signedOut.fragments.AuthType
 import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
 import com.varsel.firechat.presentation.viewModel.SignedinViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -58,6 +55,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.concurrent.fixedRateTimer
 
+@AndroidEntryPoint
 class SignedinActivity : AppCompatActivity() {
     lateinit var binding: ActivitySignedinBinding
     lateinit var dataStore: DataStore<Preferences>
@@ -66,12 +64,12 @@ class SignedinActivity : AppCompatActivity() {
     lateinit var firebaseStorage: FirebaseStorage
     lateinit var firebaseViewModel: FirebaseViewModel
     lateinit var signedinViewModel: SignedinViewModel
-    lateinit var imageViewModel: ImageViewModel
+    val imageViewModel: ImageViewModel by viewModels()
 //    var timer: CountDownTimer? = null
-    lateinit var settingViewModel: SettingViewModel
-    lateinit var profileImageViewModel: ProfileImageViewModel
-    lateinit var publicPostViewModel: PublicPostViewModel
-    lateinit var readReceiptViewModel: ReadReceiptViewModel
+    val settingViewModel: SettingViewModel by viewModels()
+    val profileImageViewModel: ProfileImageViewModel by viewModels()
+    val publicPostViewModel: PublicPostViewModel by viewModels()
+    val readReceiptViewModel: ReadReceiptViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,11 +82,6 @@ class SignedinActivity : AppCompatActivity() {
         mDbRef = FirebaseDatabase.getInstance().reference
         firebaseStorage = FirebaseStorage.getInstance()
 
-        initialiseProfileImageViewModel()
-        initialiseImageViewModel()
-        initialisePublicPostViewModel()
-        initialiseReadReceiptsViewModel()
-        initialiseSettingsDatabase()
         initialiseSettingConfiguration()
 
         determineAuthType(intent)
@@ -437,31 +430,6 @@ class SignedinActivity : AppCompatActivity() {
 //        val vmFactory = SettingViewModelFactory((this.application as FirechatApplication).database.settingDao)
 //        settingViewModel = ViewModelProvider(this, vmFactory).get(SettingViewModel::class.java)
 //    }
-
-    private fun initialiseProfileImageViewModel(){
-        val vmFactory = ProfileImageViewModelFactory((this.application as FirechatApplication).profileImageDatabase.profileImageDao)
-        profileImageViewModel = ViewModelProvider(this, vmFactory).get(ProfileImageViewModel::class.java)
-    }
-
-    private fun initialiseImageViewModel(){
-        val vmFactory = ImageViewModelFactory((this.application as FirechatApplication).imageDatabase.imageDao)
-        imageViewModel = ViewModelProvider(this, vmFactory).get(ImageViewModel::class.java)
-    }
-
-    private fun initialisePublicPostViewModel(){
-        val vmFactory = PublicPostViewModelFactory((this.application as FirechatApplication).publicPostDatabase.publicPostDao)
-        publicPostViewModel = ViewModelProvider(this, vmFactory).get(PublicPostViewModel::class.java)
-    }
-
-    private fun initialiseReadReceiptsViewModel(){
-        val vmFactory = ReadReceiptViewModelFactory((this.application as FirechatApplication).readReceiptsDatabase.readReceiptDao)
-        readReceiptViewModel = ViewModelProvider(this, vmFactory).get(ReadReceiptViewModel::class.java)
-    }
-
-    private fun initialiseSettingsDatabase(){
-        val vmFactory = SettingViewModelFactory((this.application as FirechatApplication).settingsDatabase.settingDao)
-        settingViewModel = ViewModelProvider(this, vmFactory).get(SettingViewModel::class.java)
-    }
 
     private fun initialiseSettingConfiguration(){
         val currentUserID = firebaseAuth.currentUser!!.uid

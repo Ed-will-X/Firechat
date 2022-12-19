@@ -4,9 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ImageViewModel(val dao: ImageDao): ViewModel() {
+@HiltViewModel
+class ImageViewModel @Inject constructor(
+    val dao: ImageDao
+): ViewModel() {
+    
     val imageToExpand = MutableLiveData<String?>()
     val showProfileImage = MutableLiveData<Boolean>(false)
     val username = MutableLiveData<String?>()

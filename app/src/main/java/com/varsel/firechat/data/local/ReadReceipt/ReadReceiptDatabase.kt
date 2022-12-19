@@ -13,15 +13,15 @@ abstract class ReadReceiptDatabase: RoomDatabase() {
         @Volatile
         private var INSTANCE: ReadReceiptDatabase? = null
 
-        fun getInstance(context: Context): ReadReceiptDatabase {
-            synchronized(this){
-                var instance = INSTANCE
-                if(instance == null){
-                    instance = Room.databaseBuilder(context.applicationContext, ReadReceiptDatabase:: class.java, "read_receipts_database").build()
-                    INSTANCE = instance
-                }
-                return instance
-            }
-        }
+//        fun getInstance(context: Context): ReadReceiptDatabase {
+//            synchronized(this){
+//                var instance = INSTANCE
+//                if(instance == null){
+//                    instance = Room.databaseBuilder(context.applicationContext, ReadReceiptDatabase:: class.java, "read_receipts_database").build()
+//                    INSTANCE = instance
+//                }
+//                return instance
+//            }
+//        }
     }
 }

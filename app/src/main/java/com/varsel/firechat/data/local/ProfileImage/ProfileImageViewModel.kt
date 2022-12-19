@@ -7,10 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.User.User
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.concurrent.fixedRateTimer
 
-class ProfileImageViewModel(val dao: ProfileImageDao): ViewModel() {
+@HiltViewModel
+class ProfileImageViewModel @Inject constructor(
+    val dao: ProfileImageDao
+): ViewModel() {
     val profileImage = MutableLiveData<ProfileImage>()
 
     // TODO: Switch from encoded strings to the actual ProfileImageObjects

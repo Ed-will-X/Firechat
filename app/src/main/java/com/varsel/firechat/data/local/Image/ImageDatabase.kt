@@ -14,15 +14,15 @@ abstract class ImageDatabase: RoomDatabase() {
         @Volatile
         private var INSTANCE: ImageDatabase? = null
 
-        fun getInstance(context: Context): ImageDatabase {
-            synchronized(this){
-                var instance = INSTANCE
-                if(instance == null){
-                    instance = Room.databaseBuilder(context.applicationContext, ImageDatabase:: class.java, "image_database").build()
-                    INSTANCE = instance
-                }
-                return instance
-            }
-        }
+//        fun getInstance(context: Context): ImageDatabase {
+//            synchronized(this){
+//                var instance = INSTANCE
+//                if(instance == null){
+//                    instance = Room.databaseBuilder(context.applicationContext, ImageDatabase:: class.java, "image_database").build()
+//                    INSTANCE = instance
+//                }
+//                return instance
+//            }
+//        }
     }
 }

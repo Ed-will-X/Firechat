@@ -3,9 +3,14 @@ package com.varsel.firechat.data.local.ReadReceipt
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ReadReceiptViewModel(val dao: ReadReceiptDao): ViewModel() {
+@HiltViewModel
+class ReadReceiptViewModel @Inject constructor(
+    val dao: ReadReceiptDao
+): ViewModel() {
 
     fun storeReceipt(receipt: ReadReceipt){
         viewModelScope.launch {

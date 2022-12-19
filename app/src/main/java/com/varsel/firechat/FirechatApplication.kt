@@ -7,27 +7,10 @@ import com.varsel.firechat.data.local.ProfileImage.ProfileImageDatabase
 import com.varsel.firechat.data.local.PublicPost.PublicPostDatabase
 import com.varsel.firechat.data.local.ReadReceipt.ReadReceiptDatabase
 import com.varsel.firechat.data.local.Setting.SettingDatabase
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class FirechatApplication: Application() {
-    val settingsDatabase: SettingDatabase by lazy {
-        SettingDatabase.getInstance(this)
-    }
-
-    val profileImageDatabase: ProfileImageDatabase by lazy {
-        ProfileImageDatabase.getInstance(this)
-    }
-
-    val imageDatabase: ImageDatabase by lazy {
-        ImageDatabase.getInstance(this)
-    }
-
-    val publicPostDatabase: PublicPostDatabase by lazy {
-        PublicPostDatabase.getInstance(this)
-    }
-
-    val readReceiptsDatabase: ReadReceiptDatabase by lazy {
-        ReadReceiptDatabase.getInstance(this)
-    }
 
     override fun onCreate() {
         super.onCreate()

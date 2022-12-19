@@ -3,9 +3,14 @@ package com.varsel.firechat.data.local.Setting
 import androidx.lifecycle.*
 import com.varsel.firechat.data.local.BugReport.BugReport
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SettingViewModel(private val dao: SettingDao) : ViewModel() {
+@HiltViewModel
+class SettingViewModel @Inject constructor(
+    private val dao: SettingDao
+) : ViewModel() {
     val settingConfig = MutableLiveData<Setting>()
 
     fun storeSetting(setting: Setting){
