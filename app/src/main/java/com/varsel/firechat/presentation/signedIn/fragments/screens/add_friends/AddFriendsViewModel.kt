@@ -1,4 +1,4 @@
-package com.varsel.firechat.presentation.viewModel
+package com.varsel.firechat.presentation.signedIn.fragments.screens.add_friends
 
 import android.os.CountDownTimer
 import androidx.lifecycle.MutableLiveData

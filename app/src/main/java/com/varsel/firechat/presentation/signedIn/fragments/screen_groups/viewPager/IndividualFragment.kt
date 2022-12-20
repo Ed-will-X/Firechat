@@ -15,8 +15,8 @@ import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatListAdapter
-import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.ChatsFragment
-import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.ChatsFragmentDirections
+import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.chats_tab_page.ChatsFragment
+import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.chats_tab_page.ChatsFragmentDirections
 import java.lang.IllegalArgumentException
 
 class IndividualFragment : Fragment() {

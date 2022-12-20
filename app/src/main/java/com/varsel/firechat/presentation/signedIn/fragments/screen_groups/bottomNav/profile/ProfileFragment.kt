@@ -1,4 +1,4 @@
-package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav
+package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.profile
 
 import android.content.Intent
 import android.net.Uri

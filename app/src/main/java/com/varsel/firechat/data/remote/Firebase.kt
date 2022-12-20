@@ -19,6 +19,7 @@ import com.varsel.firechat.data.local.Message.SystemMessageType
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.remote.dto.UserDto
 import com.varsel.firechat.utils.DebugUtils
 import com.varsel.firechat.utils.ImageUtils
 
@@ -122,14 +123,14 @@ class Firebase(
         })
     }
 
-    fun getCurrentUserSingle(successCallback: (user: User) -> Unit, beforeCallback: () -> Unit = {}, afterCallback: () -> Unit = {}){
+    fun getCurrentUserSingle(successCallback: (user: UserDto) -> Unit, beforeCallback: () -> Unit = {}, afterCallback: () -> Unit = {}){
         mDbRef.child("Users").orderByChild("userUID").equalTo(mAuth?.currentUser?.uid.toString()).addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 beforeCallback()
 
                 for (item in snapshot.children){
-                    val user = item.getValue(User::class.java)
+                    val user = item.getValue(UserDto::class.java)
                     DebugUtils.log_firebase("fetch current user single successful")
 
                     if(user != null){
@@ -941,17 +942,27 @@ class Firebase(
 
     }
 
-    fun editUser(key: String, value: String){
+    fun editUser(key: String, value: String, successCallback: () -> Unit, failureCallback: () -> Unit){
         val databaseRef = mDbRef.child("Users").child(mAuth.currentUser?.uid.toString())
 
         if(value.isEmpty()){
             databaseRef.child(key).setValue(null).addOnCompleteListener {
-                DebugUtils.log_firebase("edit user ${key} successful")
+                if(it.isSuccessful) {
+                    DebugUtils.log_firebase("edit user ${key} successful")
+                    successCallback()
+                } else {
+                    DebugUtils.log_firebase("edit user ${key} fail")
+                    failureCallback()
+                }
             }
         } else {
             databaseRef.child(key).setValue(value).addOnCompleteListener {
                 if(it.isSuccessful){
                     DebugUtils.log_firebase("edit user ${key} successful")
+                    successCallback()
+                } else {
+                    DebugUtils.log_firebase("edit user ${key} fail")
+                    failureCallback()
                 }
             }
         }

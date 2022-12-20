@@ -21,7 +21,6 @@ import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.SearchUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.CreateGroupAdapter
-import com.varsel.firechat.presentation.viewModel.CreateGroupViewModel
 
 class CreateGroupFragment : Fragment() {
     private var _binding: FragmentCreateGroupBinding? = null

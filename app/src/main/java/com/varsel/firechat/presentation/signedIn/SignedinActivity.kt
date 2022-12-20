@@ -25,7 +25,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
-import com.varsel.firechat.FirechatApplication
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActivitySignedinBinding
 import com.varsel.firechat.data.local.Chat.ChatRoom
@@ -46,7 +45,6 @@ import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.presentation.signedOut.SignedoutActivity
 import com.varsel.firechat.presentation.signedOut.fragments.AuthType
 import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
-import com.varsel.firechat.presentation.viewModel.SignedinViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

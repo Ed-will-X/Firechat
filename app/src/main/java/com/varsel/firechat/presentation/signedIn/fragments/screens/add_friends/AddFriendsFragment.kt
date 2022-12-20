@@ -22,7 +22,6 @@ import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.AddFriendsSearchAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.RecentSearchAdapter
-import com.varsel.firechat.presentation.viewModel.AddFriendsViewModel
 import com.varsel.firechat.utils.UserUtils
 import java.lang.IllegalArgumentException
 

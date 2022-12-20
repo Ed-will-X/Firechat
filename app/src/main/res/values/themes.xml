@@ -25,7 +25,7 @@
 
 
         <!-- Horizontal rule color-->
-        <item name="horizontal_rule_color">@color/transparent_grey</item>
+        <item name="horizontal_rule_color">@color/light_grey_3</item>
 
         <!-- Shimmer color-->
         <item name="shimmer_color_main">@color/transparent_grey_2</item>

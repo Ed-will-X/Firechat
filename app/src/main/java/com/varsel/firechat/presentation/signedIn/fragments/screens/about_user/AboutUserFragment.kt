@@ -14,7 +14,6 @@ import com.varsel.firechat.databinding.FragmentAboutUserBinding
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
-import com.varsel.firechat.presentation.viewModel.AboutUserViewModel
 
 class AboutUserFragment : Fragment() {
     private var _binding: FragmentAboutUserBinding? = null

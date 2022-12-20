@@ -1,4 +1,4 @@
-package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav
+package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.settings
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/chatsFragment"
-        android:name="com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.ChatsFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.chats_tab_page.ChatsFragment"
         android:label="fragment_chats"
         tools:layout="@layout/fragment_chats" >
         <action
@@ -54,7 +54,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.ProfileFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" >
         <action
@@ -84,7 +84,7 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.SettingsFragment"
+        android:name="com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.settings.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" >
         <action

@@ -1,4 +1,4 @@
-package com.varsel.firechat.presentation.viewModel
+package com.varsel.firechat.presentation.signedOut
 
 import android.widget.Button
 import android.widget.CheckBox

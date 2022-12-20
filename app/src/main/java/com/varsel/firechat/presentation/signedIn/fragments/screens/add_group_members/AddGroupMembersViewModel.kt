@@ -1,4 +1,4 @@
-package com.varsel.firechat.presentation.viewModel
+package com.varsel.firechat.presentation.signedIn.fragments.screens.add_group_members
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

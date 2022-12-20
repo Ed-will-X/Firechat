@@ -16,7 +16,7 @@ import com.varsel.firechat.databinding.FragmentAuthRootBinding
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedOut.SignedoutActivity
 import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
-import com.varsel.firechat.presentation.viewModel.SignedoutViewModel
+import com.varsel.firechat.presentation.signedOut.SignedoutViewModel
 
 class AuthType {
     companion object {

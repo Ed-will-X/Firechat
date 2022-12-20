@@ -1,11 +1,10 @@
-package com.varsel.firechat.presentation.viewModel
+package com.varsel.firechat.presentation.signedIn
 
 import android.os.CountDownTimer
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
-import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
 class SignedinViewModel(): ViewModel() {
     val currentChatRoomId = MutableLiveData<String>()

@@ -1,4 +1,4 @@
-package com.varsel.firechat.presentation.viewModel
+package com.varsel.firechat.presentation.signedIn.fragments.screens.about_user
 
 import android.animation.ObjectAnimator
 import android.content.Context

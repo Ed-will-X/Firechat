@@ -1,5 +1,6 @@
 package com.varsel.firechat.domain.repository
 
+import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.remote.dto.UserDto
@@ -7,17 +8,17 @@ import com.varsel.firechat.data.remote.dto.UserDto
 // TODO: Add after callback for get requests
 interface CurrentUserRepository {
 
-    fun getCurrentUserSingle(after: (user: UserDto)-> Unit)
-    fun getCurrentUserRecurrent(after: (user: UserDto)-> Unit)
-    fun signUp(email: String, password: String, success: ()-> Unit, fail: ()-> Unit)
-    fun signIn(email: String, password: String, success: ()-> Unit, fail: ()-> Unit)
-    fun saveUser(user: User, success: () -> Unit, fail: () -> Unit)
-    fun editUser(key: String, value: String)
-    fun addToRecentSearch(userId: String, success: () -> Unit, fail: () -> Unit)
-    fun deleteRecentSearchHistory(success: () -> Unit, fail: () -> Unit)
+    suspend fun getCurrentUserSingle(): UserDto
+    suspend fun getCurrentUserRecurrent(): UserDto
+    suspend fun signUp(email: String, password: String) : Response
+    suspend fun signIn(email: String, password: String) : Response
+    suspend fun saveUser(user: User) : Response
+    suspend fun editUser(key: String, value: String) : Response
+    suspend fun addToRecentSearch(userId: String) : Response
+    suspend fun deleteRecentSearchHistory() : Response
 
-    fun signOut()
+    fun signOut(after: ()-> Unit)
 
-    fun addGroupToFavorites(groupId: String, success: () -> Unit, fail: () -> Unit)
-    fun removeGroupFromFavorites(groupId: String, success: () -> Unit, fail: () -> Unit)
+    suspend fun addGroupToFavorites(groupId: String) : Response
+    suspend fun removeGroupFromFavorites(groupId: String) : Response
 }

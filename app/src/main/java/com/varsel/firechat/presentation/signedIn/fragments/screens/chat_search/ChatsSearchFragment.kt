@@ -15,7 +15,6 @@ import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatSearchAdapter
-import com.varsel.firechat.presentation.viewModel.ChatSearchViewModel
 import java.lang.IllegalArgumentException
 
 class ChatsSearchFragment : Fragment() {

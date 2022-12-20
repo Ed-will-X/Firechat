@@ -1,4 +1,4 @@
-package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav
+package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.chats_tab_page
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -15,7 +15,6 @@ import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentChatsBinding
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatsViewPagerAdapter
-import com.varsel.firechat.presentation.viewModel.ChatsViewModel
 
 class ChatsFragment : Fragment() {
     private var _binding: FragmentChatsBinding? = null

@@ -30,7 +30,6 @@ import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ParticipantsListAdapter
-import com.varsel.firechat.presentation.viewModel.GroupChatDetailViewModel
 import java.lang.IllegalArgumentException
 
 class GroupChatDetailFragment : Fragment() {

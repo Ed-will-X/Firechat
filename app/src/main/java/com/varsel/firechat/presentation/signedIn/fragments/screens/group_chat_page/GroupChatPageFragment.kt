@@ -29,8 +29,8 @@ import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
 import com.varsel.firechat.presentation.signedIn.adapters.FriendListAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.MessageListAdapter
-import com.varsel.firechat.presentation.viewModel.ChatPageViewModel
-import com.varsel.firechat.presentation.viewModel.GroupChatDetailViewModel
+import com.varsel.firechat.presentation.signedIn.fragments.screens.chat_page.ChatPageViewModel
+import com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_detail.GroupChatDetailViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

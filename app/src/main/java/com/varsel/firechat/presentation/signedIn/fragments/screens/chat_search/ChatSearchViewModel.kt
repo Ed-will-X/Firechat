@@ -1,4 +1,4 @@
-package com.varsel.firechat.presentation.viewModel
+package com.varsel.firechat.presentation.signedIn.fragments.screens.chat_search
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
