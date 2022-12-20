@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentSettingsBinding
-import com.varsel.firechat.data.local.Setting.Setting
+import com.varsel.firechat.data.local.Setting.SettingEntity
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.viewModel.*
@@ -68,13 +68,13 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    private fun setAccountBindings(setting: Setting){
+    private fun setAccountBindings(setting: SettingEntity){
         binding.editProfile.setOnClickListener {
             navigateToEditProfile()
         }
     }
 
-    private fun setNotificationBindings(setting: Setting){
+    private fun setNotificationBindings(setting: SettingEntity){
         binding.showChatNotifications.isChecked = setting.show_chat_notifications
         binding.showGroupNotifications.isChecked = setting.show_group_notifications
         binding.showFriendRequestNotifications.isChecked = setting.show_friend_request_notifications
@@ -82,7 +82,7 @@ class SettingsFragment : Fragment() {
         binding.showGroupAddNotifications.isChecked = setting.show_group_add_notifications
     }
 
-    private fun setDataConsumptionBindings(setting: Setting){
+    private fun setDataConsumptionBindings(setting: SettingEntity){
         binding.autoDownloadImageMessage.isChecked = setting.auto_download_image_message
         binding.autoDownloadVideoMessage.isChecked = setting.auto_download_video_message
         binding.autoDownloadGifMessage.isChecked = setting.auto_download_gif_message
@@ -90,7 +90,7 @@ class SettingsFragment : Fragment() {
         binding.publicPostDownloadCount.setText(setting.public_post_auto_download_limit.toString())
     }
 
-    private fun setThemeBindings(setting: Setting){
+    private fun setThemeBindings(setting: SettingEntity){
         binding.darkMode.isChecked = setting.getDarkMode()
         binding.overrideSystemTheme.isChecked = setting.getOverrideSystemTheme()
 

@@ -1,35 +1,37 @@
-package com.varsel.firechat.data.repository.remote
+package com.varsel.firechat.data.repository
 
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.User.UserEntity
+import com.varsel.firechat.data.mapper.toUser
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.data.remote.dto.UserDto
-import com.varsel.firechat.domain.repository.remote.OtherUserRepository
+import com.varsel.firechat.domain.model.User
+import com.varsel.firechat.domain.repository.OtherUserRepository
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class OtherUserRepositoryImpl(
     val firebase: Firebase
 ): OtherUserRepository {
-    override suspend fun getUserById(id: String): UserDto = suspendCoroutine { continuation ->
+    override suspend fun getUserById(id: String): User = suspendCoroutine { continuation ->
         firebase.getUserById(id, {}, {
-            continuation.resume(it)
+            continuation.resume(it.toUser())
         }, {})
     }
 
-    override suspend fun getUserSingle(id: String): UserDto = suspendCoroutine { continuation ->
+    override suspend fun getUserSingle(id: String): User = suspendCoroutine { continuation ->
         firebase.getUserSingle(id, {
-            continuation.resume(it)
+            continuation.resume(it.toUser())
         }, {})
     }
 
-    override suspend fun queryUsers(queryString: String): List<UserDto> = suspendCoroutine { continuation ->
+    override suspend fun queryUsers(queryString: String): List<User> = suspendCoroutine { continuation ->
         firebase.queryUsers(queryString, {
-            continuation.resume(it)
+            continuation.resume(it.map { it.toUser() })
         })
     }
 
-    override suspend fun sendFriendRequest(user: User): Response = suspendCoroutine { continuation ->
+    override suspend fun sendFriendRequest(user: UserEntity): Response = suspendCoroutine { continuation ->
         firebase.sendFriendRequest(user, {
             continuation.resume(Response.Success())
         }, {
@@ -37,7 +39,7 @@ class OtherUserRepositoryImpl(
         })
     }
 
-    override suspend fun revokeFriendRequest(user: User): Response = suspendCoroutine { continuation ->
+    override suspend fun revokeFriendRequest(user: UserEntity): Response = suspendCoroutine { continuation ->
         firebase.revokeFriendRequest(user, {
             continuation.resume(Response.Success())
         }, {
@@ -45,7 +47,7 @@ class OtherUserRepositoryImpl(
         })
     }
 
-    override suspend fun acceptFriendRequest(user: User): Response = suspendCoroutine { continuation ->
+    override suspend fun acceptFriendRequest(user: UserEntity): Response = suspendCoroutine { continuation ->
         firebase.acceptFriendRequest(user, {
             continuation.resume(Response.Success())
         }, {
@@ -53,7 +55,7 @@ class OtherUserRepositoryImpl(
         })
     }
 
-    override suspend fun rejectFriendRequest(user: User): Response = suspendCoroutine { continuation ->
+    override suspend fun rejectFriendRequest(user: UserEntity): Response = suspendCoroutine { continuation ->
         firebase.rejectFriendRequest(user, {
             continuation.resume(Response.Success())
         }, {
@@ -61,7 +63,7 @@ class OtherUserRepositoryImpl(
         })
     }
 
-    override suspend fun unfriendUser(user: User): Response = suspendCoroutine { continuation ->
+    override suspend fun unfriendUser(user: UserEntity): Response = suspendCoroutine { continuation ->
         firebase.unfriendUser(user, {
             continuation.resume(Response.Success())
         }, {

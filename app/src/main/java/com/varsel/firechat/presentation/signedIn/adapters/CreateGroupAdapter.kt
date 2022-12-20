@@ -9,17 +9,17 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
-import com.varsel.firechat.data.local.ProfileImage.ProfileImage
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
+import com.varsel.firechat.data.local.User.UserEntity
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
 class CreateGroupAdapter(
     val activity: SignedinActivity,
     val checkChanged: ()-> Unit,
-    val imageClickListener: (profileImage: ProfileImage, user: User) -> Unit
+    val imageClickListener: (profileImage: ProfileImageEntity, user: UserEntity) -> Unit
 ): RecyclerView.Adapter<CreateGroupAdapter.CreateGroupViewHolder>() {
-    var friends: MutableList<User?> = arrayListOf()
+    var friends: MutableList<UserEntity?> = arrayListOf()
     var selected: ArrayList<String?> = arrayListOf()
 
     class CreateGroupViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -37,10 +37,10 @@ class CreateGroupAdapter(
     // TODO: Fix potential bug where the item is scrolled off in the view
         // TODO: Fix by checking if it is in the selected Array each time onBind() is called
     override fun onBindViewHolder(holder: CreateGroupViewHolder, position: Int) {
-        val item: User? = friends[position]
+        val item: UserEntity? = friends[position]
         if(item != null){
             holder.checkbox.text = item.name
-            ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { image: ProfileImage? ->
+            ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { image: ProfileImageEntity? ->
                 if(image != null){
                     holder.profileImage.setOnClickListener {
                         imageClickListener(image, item)

@@ -9,20 +9,20 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
-import com.varsel.firechat.data.local.ProfileImage.ProfileImage
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
+import com.varsel.firechat.data.local.User.UserEntity
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
 // TODO: Change to ListAdapter
 class FriendRequestsAdapter(
     val activity: SignedinActivity,
-    val parentListener: (id: String, user: User, base64: String?)-> Unit,
-    val btnListener: (user: User)-> Unit,
-    val imageClickListener: (image: ProfileImage, user: User) -> Unit
+    val parentListener: (id: String, user: UserEntity, base64: String?)-> Unit,
+    val btnListener: (user: UserEntity)-> Unit,
+    val imageClickListener: (image: ProfileImageEntity, user: UserEntity) -> Unit
 ): RecyclerView.Adapter<FriendRequestsAdapter.FriendRequestViewHolder>(){
 
-    var users = mutableListOf<User>()
+    var users = mutableListOf<UserEntity>()
 
     class FriendRequestViewHolder(item: View): RecyclerView.ViewHolder(item){
         val name: TextView = item.findViewById<TextView>(R.id.name_friend_request)
@@ -39,7 +39,7 @@ class FriendRequestsAdapter(
     }
 
     override fun onBindViewHolder(holder: FriendRequestViewHolder, position: Int) {
-        val item: User = users[position]
+        val item: UserEntity = users[position]
 
         holder.name.text = item.name
         holder.parentClickable.setOnClickListener {

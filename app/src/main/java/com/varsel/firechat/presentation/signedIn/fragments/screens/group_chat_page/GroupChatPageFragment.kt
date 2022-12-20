@@ -15,12 +15,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentGroupChatPageBinding
-import com.varsel.firechat.data.local.Chat.ChatRoom
-import com.varsel.firechat.data.local.Message.Message
+import com.varsel.firechat.data.local.Chat.ChatRoomEntity
+import com.varsel.firechat.data.local.Message.MessageEntity
 import com.varsel.firechat.data.local.Message.MessageStatus
 import com.varsel.firechat.data.local.Message.MessageType
-import com.varsel.firechat.data.local.ReadReceipt.ReadReceipt
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.ReadReceipt.ReadReceiptEntity
+import com.varsel.firechat.data.local.User.UserEntity
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.MessageUtils
@@ -153,7 +153,7 @@ class GroupChatPageFragment : Fragment() {
     }
 
     private fun updateReadReceipt(){
-        val receipt = ReadReceipt("${roomId}:${parent.firebaseAuth.currentUser!!.uid}", System.currentTimeMillis())
+        val receipt = ReadReceiptEntity("${roomId}:${parent.firebaseAuth.currentUser!!.uid}", System.currentTimeMillis())
         parent.readReceiptViewModel.storeReceipt(receipt)
     }
 
@@ -173,7 +173,7 @@ class GroupChatPageFragment : Fragment() {
         })
     }
 
-    private fun setShimmerVisibility(chatRoom: ChatRoom?){
+    private fun setShimmerVisibility(chatRoom: ChatRoomEntity?){
         if(chatRoom == null){
             binding.shimmerMessages.visibility = View.VISIBLE
         } else {
@@ -206,7 +206,7 @@ class GroupChatPageFragment : Fragment() {
         })
     }
 
-    private fun sendImgMessage(message: Message, success: ()-> Unit){
+    private fun sendImgMessage(message: MessageEntity, success: ()-> Unit){
         parent.firebaseViewModel.sendGroupMessage(message, roomId, parent.mDbRef, {
             success()
         }, {})
@@ -214,7 +214,7 @@ class GroupChatPageFragment : Fragment() {
 
     private fun sendMessage(success: () -> Unit){
         val messageText = binding.messageEditText.text.toString().trim()
-        val message = Message(MessageUtils.generateUID(30), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
+        val message = MessageEntity(MessageUtils.generateUID(30), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
         parent.firebaseViewModel.sendGroupMessage(message, roomId, parent.mDbRef, {
             success()
         }, {})
@@ -263,14 +263,14 @@ class GroupChatPageFragment : Fragment() {
         recyclerView?.adapter = adapter
 
         getUsers(userIds) {
-            adapter.friends = it as MutableList<User>
+            adapter.friends = it as MutableList<UserEntity>
             adapter.notifyDataSetChanged()
         }
 
         dialog.show()
     }
 
-    private fun navigateToOtherProfilePage(id: String, user: User, base64: String?) {
+    private fun navigateToOtherProfilePage(id: String, user: UserEntity, base64: String?) {
         try {
             val action = GroupChatPageFragmentDirections.actionGroupChatPageFragmentToOtherProfileFragment(id)
             binding.root.findNavController().navigate(action)
@@ -294,8 +294,8 @@ class GroupChatPageFragment : Fragment() {
         return returnedUsers
     }
 
-    private fun getUsers(userIds: List<String>, afterCallback: (List<User>)-> Unit){
-        val users = mutableListOf<User>()
+    private fun getUsers(userIds: List<String>, afterCallback: (List<UserEntity>)-> Unit){
+        val users = mutableListOf<UserEntity>()
 
         for(i in userIds){
             parent.firebaseViewModel.getUserSingle(i, parent.mDbRef, {
@@ -309,7 +309,7 @@ class GroupChatPageFragment : Fragment() {
     }
 
     // Top bar participant list
-    private fun interpolateUserParticipants(users: List<User>){
+    private fun interpolateUserParticipants(users: List<UserEntity>){
         val firstnames = mutableListOf<String>()
         val currentUser = parent.firebaseAuth.currentUser!!.uid
 

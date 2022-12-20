@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.User.UserEntity
 
 // TODO: Refactor to fit other types
 class SearchUtils {
@@ -22,9 +22,9 @@ class SearchUtils {
             noFriendsLayout: LinearLayout,
             noMatchLayout: LinearLayout,
             recyclerView: RecyclerView,
-            observableList: MutableLiveData<List<User>>,
+            observableList: MutableLiveData<List<UserEntity>>,
             afterCallback: ()-> Unit,
-            resultsCallback: (users: List<User?>)-> Unit
+            resultsCallback: (users: List<UserEntity?>)-> Unit
         ){
             cancelButton.setOnClickListener {
                 searchBox.setText("")
@@ -56,7 +56,7 @@ class SearchUtils {
             toggleCancelIconVisibility(searchBox, cancelButton)
         }
 
-        private fun checkIfEmptyFriends(friends: List<User?>?, noFriendsLayout: LinearLayout, recyclerView: RecyclerView){
+        private fun checkIfEmptyFriends(friends: List<UserEntity?>?, noFriendsLayout: LinearLayout, recyclerView: RecyclerView){
             if(friends?.isNotEmpty() == true){
                 noFriendsLayout.visibility = View.GONE
                 recyclerView.visibility = View.VISIBLE
@@ -77,12 +77,12 @@ class SearchUtils {
         }
 
         private fun searchRecyclerView(
-            friends: List<User?>,
+            friends: List<UserEntity?>,
             it: Editable,
             searchBox: EditText,
             noMatchLayout: LinearLayout,
             recyclerView: RecyclerView,
-            submitListToAdapter: (users: List<User?>) -> Unit
+            submitListToAdapter: (users: List<UserEntity?>) -> Unit
         ){
             noMatchLayout.visibility = View.GONE
 
@@ -91,7 +91,7 @@ class SearchUtils {
                 submitListToAdapter(friends)
             } else {
                 val term = searchBox.text.toString()
-                val results = UserUtils.searchListOfUsers(term, friends as List<User>)
+                val results = UserUtils.searchListOfUsers(term, friends as List<UserEntity>)
 
                 if(results.isNotEmpty()){
                     // There are matches

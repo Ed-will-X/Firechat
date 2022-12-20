@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "read_receipts_table")
-class ReadReceipt {
+class ReadReceiptEntity {
     @PrimaryKey(autoGenerate = false)
     lateinit var roomId: String
 

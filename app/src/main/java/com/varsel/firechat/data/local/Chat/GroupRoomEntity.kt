@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 
 @Entity(tableName = "group")
-class GroupRoom: ChatRoom {
+class GroupRoomEntity: ChatRoomEntity {
 
     @ColumnInfo(name = "group_name")
     lateinit var groupName: String

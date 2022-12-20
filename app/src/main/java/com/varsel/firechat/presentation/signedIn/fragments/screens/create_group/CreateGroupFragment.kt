@@ -13,8 +13,8 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.databinding.ActionsheetCreateGroupBinding
 import com.varsel.firechat.databinding.FragmentCreateGroupBinding
-import com.varsel.firechat.data.local.Chat.GroupRoom
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.Chat.GroupRoomEntity
+import com.varsel.firechat.data.local.User.UserEntity
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.MessageUtils
@@ -91,7 +91,7 @@ class CreateGroupFragment : Fragment() {
         return view
     }
 
-    private fun submitListToAdapter(list: List<User?>){
+    private fun submitListToAdapter(list: List<UserEntity?>){
         adapter.friends = arrayListOf()
 
         if(list != null && list.isNotEmpty()){
@@ -158,7 +158,7 @@ class CreateGroupFragment : Fragment() {
             val newRoomId = MessageUtils.generateUID(30)
             val participants = addParticipants()
             val groupNameText = dialogBinding.groupName.text.toString().trim()
-            val group = GroupRoom(newRoomId, participants, groupNameText, makeCurrentUserAdmin())
+            val group = GroupRoomEntity(newRoomId, participants, groupNameText, makeCurrentUserAdmin())
 
             appendRoomIdToUsers(participants.values.toList(), newRoomId) {
                 parent.firebaseViewModel.createGroup(group, parent.mDbRef, parent.firebaseAuth, {

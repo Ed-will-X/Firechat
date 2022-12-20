@@ -2,8 +2,8 @@ package com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_d
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.varsel.firechat.data.local.Chat.GroupRoom
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.Chat.GroupRoomEntity
+import com.varsel.firechat.data.local.User.UserEntity
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
 class GroupChatDetailViewModel: ViewModel() {
@@ -13,7 +13,7 @@ class GroupChatDetailViewModel: ViewModel() {
     var prevGroupId = MutableLiveData<String>()
 
     fun getParticipants(parent: SignedinActivity){
-        var users = mutableListOf<User>()
+        var users = mutableListOf<UserEntity>()
         for (i in parent.firebaseViewModel.selectedGroupRoom.value!!.participants!!.values.toList()){
             parent.firebaseViewModel.getUserSingle(i, parent.mDbRef, {
                 if (it != null) {
@@ -27,8 +27,8 @@ class GroupChatDetailViewModel: ViewModel() {
 
     fun getNonParticipants(parent: SignedinActivity){
         val participants: List<String> = parent.firebaseViewModel.selectedGroupRoom.value!!.participants?.values!!.toList()
-        val friends: List<User>? = parent.firebaseViewModel.friends.value?.toList()
-        val non_participants = mutableListOf<User>()
+        val friends: List<UserEntity>? = parent.firebaseViewModel.friends.value?.toList()
+        val non_participants = mutableListOf<UserEntity>()
 
         if(friends != null){
             for((i_index, i_value) in friends.withIndex()){
@@ -45,7 +45,7 @@ class GroupChatDetailViewModel: ViewModel() {
         parent.firebaseViewModel.selectedGroup_nonParticipants.value = non_participants
     }
 
-    fun determineGetParticipants(groupRoom: GroupRoom, parent: SignedinActivity){
+    fun determineGetParticipants(groupRoom: GroupRoomEntity, parent: SignedinActivity){
         if(prevGroupId.value == groupRoom.roomUID){
             if(groupRoom.admins?.size != prevAdminSize.value){
                 getParticipants(parent)

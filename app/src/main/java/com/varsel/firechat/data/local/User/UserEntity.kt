@@ -8,7 +8,7 @@ import kotlin.collections.HashMap
 // TODO: Change all var to val
 
 @Entity(tableName = "user")
-open class User{
+open class UserEntity{
 //    var userId: Long? = 0L
 
     // change userUID to non-nullable

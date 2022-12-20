@@ -14,9 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.varsel.firechat.R
-import com.varsel.firechat.data.local.Chat.GroupRoom
-import com.varsel.firechat.data.local.ProfileImage.ProfileImage
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.Chat.GroupRoomEntity
+import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
+import com.varsel.firechat.data.local.User.UserEntity
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
@@ -24,12 +24,12 @@ class ParticipantsListAdapter(
     val activity: SignedinActivity,
     val context: Context,
     val firebaseAuth: FirebaseAuth,
-    val groupRoom: GroupRoom,
-    val pressListener: (userId: String, user: User, base64: String?)-> Unit,
-    val longPressListener: (userId: String, user: User, base64: String?) -> Unit,
-    val imageClickListener: (image: ProfileImage, user: User) -> Unit
+    val groupRoom: GroupRoomEntity,
+    val pressListener: (userId: String, user: UserEntity, base64: String?)-> Unit,
+    val longPressListener: (userId: String, user: UserEntity, base64: String?) -> Unit,
+    val imageClickListener: (image: ProfileImageEntity, user: UserEntity) -> Unit
     )
-    : ListAdapter<User, ParticipantsListAdapter.ParticipantViewHolder>(ParticipantAdapterDiffUtilCallback()) {
+    : ListAdapter<UserEntity, ParticipantsListAdapter.ParticipantViewHolder>(ParticipantAdapterDiffUtilCallback()) {
     class ParticipantViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val name = itemView.findViewById<TextView>(R.id.name)
 //        val more = itemView.findViewById<ImageView>(R.id.more)
@@ -120,10 +120,10 @@ class ParticipantsListAdapter(
     }
 }
 
-class ParticipantAdapterDiffUtilCallback(): DiffUtil.ItemCallback<User>(){
-    override fun areItemsTheSame(oldItem: User, newItem: User): Boolean = oldItem.userUID == newItem.userUID
+class ParticipantAdapterDiffUtilCallback(): DiffUtil.ItemCallback<UserEntity>(){
+    override fun areItemsTheSame(oldItem: UserEntity, newItem: UserEntity): Boolean = oldItem.userUID == newItem.userUID
 
     @SuppressLint("DiffUtilEquals")
-    override fun areContentsTheSame(oldItem: User, newItem: User): Boolean = oldItem == newItem
+    override fun areContentsTheSame(oldItem: UserEntity, newItem: UserEntity): Boolean = oldItem == newItem
 
 }

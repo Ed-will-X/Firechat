@@ -3,10 +3,10 @@ package com.varsel.firechat.data.local.Chat
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.varsel.firechat.data.local.Message.Message
+import com.varsel.firechat.data.local.Message.MessageEntity
 
 @Entity(tableName = "chat")
-open class ChatRoom {
+open class ChatRoomEntity {
     @PrimaryKey(autoGenerate = true)
 //    var roomId: Long = 0L
 
@@ -15,7 +15,7 @@ open class ChatRoom {
 
     var participants: HashMap<String, String> = hashMapOf()
 
-    var messages: HashMap<String, Message>? = null
+    var messages: HashMap<String, MessageEntity>? = null
 
     // For deletion, id will be added to this list to prevent redownload
     // then it will be removed from room

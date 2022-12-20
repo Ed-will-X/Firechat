@@ -1,9 +1,9 @@
 package com.varsel.firechat.utils
 
 import com.varsel.firechat.R
-import com.varsel.firechat.data.local.Chat.ChatRoom
-import com.varsel.firechat.data.local.Chat.GroupRoom
-import com.varsel.firechat.data.local.Message.Message
+import com.varsel.firechat.data.local.Chat.ChatRoomEntity
+import com.varsel.firechat.data.local.Chat.GroupRoomEntity
+import com.varsel.firechat.data.local.Message.MessageEntity
 import com.varsel.firechat.data.local.Message.SystemMessageType
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import org.ocpsoft.prettytime.PrettyTime
@@ -46,7 +46,7 @@ class MessageUtils {
             return UUID.randomUUID().toString()
         }
 
-        fun sortMessages(chatRoom: ChatRoom?): List<Message>?{
+        fun sortMessages(chatRoom: ChatRoomEntity?): List<MessageEntity>?{
             val sorted = chatRoom?.messages?.values?.sortedBy {
                 it.time
             }
@@ -54,7 +54,7 @@ class MessageUtils {
             return sorted
         }
 
-        fun sortChats(chatRooms: List<ChatRoom>?): MutableList<ChatRoom>?{
+        fun sortChats(chatRooms: List<ChatRoomEntity>?): MutableList<ChatRoomEntity>?{
             val sorted = chatRooms?.sortedBy {
                 val sortedMessages = sortMessages(it)
 
@@ -64,7 +64,7 @@ class MessageUtils {
             return sorted
         }
 
-        fun findChatRoom(list: List<ChatRoom>, roomID: String, chatRoom: (chatRoom: ChatRoom)-> Unit){
+        fun findChatRoom(list: List<ChatRoomEntity>, roomID: String, chatRoom: (chatRoom: ChatRoomEntity)-> Unit){
             list.map {
                 if(it.roomUID == roomID){
                     chatRoom(it)
@@ -73,7 +73,7 @@ class MessageUtils {
             }
         }
 
-        fun findGroupRoom(list: List<GroupRoom>, roomID: String, groupRoom: (groupRoom: GroupRoom)-> Unit){
+        fun findGroupRoom(list: List<GroupRoomEntity>, roomID: String, groupRoom: (groupRoom: GroupRoomEntity)-> Unit){
             list.map {
                 if(it.roomUID == roomID){
                     groupRoom(it)
@@ -115,25 +115,25 @@ class MessageUtils {
             }
         }
 
-        fun getLastMessage(chatRoom: ChatRoom): String {
-            val sortedMessages: List<Message>? = MessageUtils.sortMessages(chatRoom)
+        fun getLastMessage(chatRoom: ChatRoomEntity): String {
+            val sortedMessages: List<MessageEntity>? = MessageUtils.sortMessages(chatRoom)
 
             return (sortedMessages?.last()?.message ?: "")
         }
 
-        fun getLastMessageObject(chatRoom: ChatRoom): Message? {
-            val sortedMessages: List<Message>? = MessageUtils.sortMessages(chatRoom)
+        fun getLastMessageObject(chatRoom: ChatRoomEntity): MessageEntity? {
+            val sortedMessages: List<MessageEntity>? = MessageUtils.sortMessages(chatRoom)
 
             return (sortedMessages?.last())
         }
 
-        fun getLastMessageTimestamp(chatRoom: ChatRoom): String {
-            val sortedMessages: List<Message>? = MessageUtils.sortMessages(chatRoom)
+        fun getLastMessageTimestamp(chatRoom: ChatRoomEntity): String {
+            val sortedMessages: List<MessageEntity>? = MessageUtils.sortMessages(chatRoom)
 
             return (sortedMessages?.last()?.time.toString() ?: "")
         }
 
-        fun formatSystemMessage(message: Message, activity: SignedinActivity, afterCallback: (message: String)-> Unit){
+        fun formatSystemMessage(message: MessageEntity, activity: SignedinActivity, afterCallback: (message: String)-> Unit){
             val currentUser = activity.firebaseAuth.currentUser!!.uid
             if(message.messageUID == SystemMessageType.GROUP_REMOVE){
                 val messageArr: Array<String> = message.message.split(" ").toTypedArray()

@@ -6,14 +6,14 @@ import androidx.room.*
 @Dao
 interface ImageDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(image: Image)
+    suspend fun insert(image: ImageEntity)
 
     @Update
-    suspend fun update(image: Image)
+    suspend fun update(image: ImageEntity)
 
     @Delete
-    suspend fun delete(image: Image)
+    suspend fun delete(image: ImageEntity)
 
     @Query("SELECT * FROM image_table WHERE imageId = :imageId")
-    fun get(imageId: String): LiveData<Image>
+    fun get(imageId: String): LiveData<ImageEntity>
 }

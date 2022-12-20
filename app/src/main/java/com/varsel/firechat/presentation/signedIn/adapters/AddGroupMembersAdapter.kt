@@ -9,18 +9,18 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
-import com.varsel.firechat.data.local.ProfileImage.ProfileImage
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
+import com.varsel.firechat.data.local.User.UserEntity
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
 class AddGroupMembersAdapter(
     val activity: SignedinActivity,
     val checkChanged: ()-> Unit,
-    val profileImageListener: (profileImage: ProfileImage, user: User)-> Unit
+    val profileImageListener: (profileImage: ProfileImageEntity, user: UserEntity)-> Unit
 ): RecyclerView.Adapter<AddGroupMembersAdapter.AddMemberViewHolder>() {
 
-    var users: ArrayList<User?> = arrayListOf()
+    var users: ArrayList<UserEntity?> = arrayListOf()
     val selected: ArrayList<String> = arrayListOf()
 
     class AddMemberViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

@@ -1,11 +1,9 @@
 package com.varsel.firechat.data.local.Setting
 
-import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Setting::class], version = 1, exportSchema = false)
+@Database(entities = [SettingEntity::class], version = 1, exportSchema = false)
 abstract class SettingDatabase: RoomDatabase() {
     abstract val settingDao: SettingDao
 

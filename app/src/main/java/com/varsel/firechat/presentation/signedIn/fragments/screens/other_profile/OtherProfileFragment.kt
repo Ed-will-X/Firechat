@@ -15,7 +15,7 @@ import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActionSheetUnfriendBinding
 import com.varsel.firechat.databinding.ActionsheetOtherUserPublicPostsBinding
 import com.varsel.firechat.databinding.FragmentOtherProfileBinding
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.User.UserEntity
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.PostUtils
@@ -120,7 +120,7 @@ class OtherProfileFragment : Fragment() {
         _binding = null
     }
 
-    fun setBindings(user: User?){
+    fun setBindings(user: UserEntity?){
         if(user?.name != null){
             binding.aboutTextHeader.text = userUtils.getFirstName(user.name)
         }
@@ -178,7 +178,7 @@ class OtherProfileFragment : Fragment() {
             delay(300)
 
             val adapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANCLE) {
-                val otherUser: User? = parent.firebaseViewModel.selectedUser.value
+                val otherUser: UserEntity? = parent.firebaseViewModel.selectedUser.value
                 if(otherUser != null){
                     dialog.dismiss()
                     ImageUtils.displayPublicPostImage(it, otherUser, parent)
@@ -230,7 +230,7 @@ class OtherProfileFragment : Fragment() {
         dialog.show()
     }
 
-    private fun showSendRequestActionSheet(user: User?){
+    private fun showSendRequestActionSheet(user: UserEntity?){
         val dialog = BottomSheetDialog(parent)
         dialog.setContentView(R.layout.action_sheet_send_friend_request)
 
@@ -251,7 +251,7 @@ class OtherProfileFragment : Fragment() {
         dialog.show()
     }
 
-    private fun showRevokeRequest(user: User?){
+    private fun showRevokeRequest(user: UserEntity?){
         val dialog = BottomSheetDialog(parent)
         dialog.setContentView(R.layout.action_sheet_revoke_request)
 
@@ -273,7 +273,7 @@ class OtherProfileFragment : Fragment() {
         dialog.show()
     }
 
-    private fun showUnfriendActionsheet(user: User){
+    private fun showUnfriendActionsheet(user: UserEntity){
         val dialog = BottomSheetDialog(parent)
         val dialogBinding = ActionSheetUnfriendBinding.inflate(layoutInflater, binding.root, false)
         val view = dialogBinding.root
@@ -293,7 +293,7 @@ class OtherProfileFragment : Fragment() {
         dialog.show()
     }
 
-    private fun determineActionsheet(user: User){
+    private fun determineActionsheet(user: UserEntity){
         if(user?.friendRequests?.contains(parent.firebaseAuth.currentUser?.uid) == true){
             showRevokeRequest(user)
 
@@ -306,7 +306,7 @@ class OtherProfileFragment : Fragment() {
         }
     }
 
-    private fun determineBtn(user: User?){
+    private fun determineBtn(user: UserEntity?){
         if(user?.friendRequests?.contains(parent.firebaseAuth.currentUser?.uid) == true){
             // TODO: Show revoke request button
         } else if(user?.friends?.contains(parent.firebaseAuth.currentUser?.uid) == true){
@@ -326,7 +326,7 @@ class OtherProfileFragment : Fragment() {
 
     }
 
-    private fun revokeFriendRequest(user: User?){
+    private fun revokeFriendRequest(user: UserEntity?){
         if (user != null) {
             firebaseViewModel.revokeFriendRequest(parent.firebaseAuth.currentUser?.uid.toString(), user, parent.mDbRef, {
                 firebaseViewModel.getUserById(user.userUID!!, parent.mDbRef, {
@@ -339,7 +339,7 @@ class OtherProfileFragment : Fragment() {
         }
     }
 
-    private fun sendFriendRequest(user: User?){
+    private fun sendFriendRequest(user: UserEntity?){
         if (user != null) {
             firebaseViewModel.sendFriendRequest(parent.firebaseAuth.currentUser?.uid.toString(), user, parent.mDbRef, {
                 firebaseViewModel.getUserById(user.userUID!!, parent.mDbRef, {

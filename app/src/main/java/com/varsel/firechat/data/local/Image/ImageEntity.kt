@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "image_table")
-class Image {
+class ImageEntity {
     @PrimaryKey(autoGenerate = false)
     lateinit var imageId: String
 
@@ -28,7 +28,7 @@ class Image {
     }
 
     // Used when retrieving from the realtime database
-    constructor(image: Image, base64: String){
+    constructor(image: ImageEntity, base64: String){
         this.imageId = image.imageId
         this.ownerId = image.ownerId
         this.image = base64

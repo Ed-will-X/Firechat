@@ -1,10 +1,12 @@
-package com.varsel.firechat.data.repository.remote
+package com.varsel.firechat.data.repository
 
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.User.UserEntity
+import com.varsel.firechat.data.mapper.toUser
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.data.remote.dto.UserDto
-import com.varsel.firechat.domain.repository.remote.CurrentUserRepository
+import com.varsel.firechat.domain.model.User
+import com.varsel.firechat.domain.repository.CurrentUserRepository
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -12,19 +14,23 @@ class CurrentUserRepositoryImpl(
     val firebase: Firebase
 ) : CurrentUserRepository {
 
-    override suspend fun getCurrentUserSingle(): UserDto = suspendCoroutine { continuation ->
+    override suspend fun getCurrentUserSingle(): User = suspendCoroutine { continuation ->
         firebase.getCurrentUserSingle({
-            continuation.resume(it)
+            continuation.resume(it.toUser())
         })
     }
 
-    override suspend fun getCurrentUserRecurrent(): UserDto {
+    override suspend fun getCurrentUserRecurrent(): User {
         TODO("Not yet implemented")
     }
 
-    override suspend fun signUp(email: String, password: String): Response = suspendCoroutine { continuation ->
+    override suspend fun signUp(name: String, email: String, password: String): Response = suspendCoroutine { continuation ->
         firebase.signUp(email, password, {
-            continuation.resume(Response.Success())
+            firebase.saveUser(name, email, firebase.mAuth.currentUser!!.uid, {
+                continuation.resume(Response.Success())
+            }, {
+                continuation.resume(Response.Fail())
+            })
         }, {
             continuation.resume(Response.Fail())
         })
@@ -32,13 +38,6 @@ class CurrentUserRepositoryImpl(
 
     override suspend fun signIn(email: String, password: String) : Response = suspendCoroutine { continuation ->
         firebase.signin(email, password, {
-            continuation.resume(Response.Success())
-        }, {
-            continuation.resume(Response.Fail())
-        })
-    }
-    override suspend fun saveUser(user: User) : Response = suspendCoroutine { continuation ->
-        firebase.saveUser(user.name, user.email, user.userUID, {
             continuation.resume(Response.Success())
         }, {
             continuation.resume(Response.Fail())

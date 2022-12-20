@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 
 @Entity(tableName = "public_post_table")
-class PublicPost {
+class PublicPostEntity {
     @ColumnInfo(name = "owner_id")
     lateinit var ownerId: String
 
@@ -34,7 +34,7 @@ class PublicPost {
         this.image = null
     }
 
-    constructor(publicPost: PublicPost, base64: String){
+    constructor(publicPost: PublicPostEntity, base64: String){
         this.ownerId = publicPost.ownerId
         this.postId = publicPost.postId
         this.type = publicPost.type

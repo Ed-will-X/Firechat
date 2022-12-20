@@ -11,17 +11,17 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
-import com.varsel.firechat.data.local.ProfileImage.ProfileImage
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
+import com.varsel.firechat.data.local.User.UserEntity
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
 class FriendsAdapter(
     val activity: SignedinActivity,
-    val parentClickListener: (user: User, base64: String?)-> Unit,
-    val chatIconClickListener: (user: User, base64: String?)-> Unit,
-    val imageClickListener: (profileImage: ProfileImage, user: User) -> Unit
-): ListAdapter<User, FriendsAdapter.FriendItem>(FriendItemDiffCallback()){
+    val parentClickListener: (user: UserEntity, base64: String?)-> Unit,
+    val chatIconClickListener: (user: UserEntity, base64: String?)-> Unit,
+    val imageClickListener: (profileImage: ProfileImageEntity, user: UserEntity) -> Unit
+): ListAdapter<UserEntity, FriendsAdapter.FriendItem>(FriendItemDiffCallback()){
     private lateinit var context: Context
     class FriendItem(itemView: View) : RecyclerView.ViewHolder(itemView){
         val name = itemView.findViewById<TextView>(R.id.name_friend)
@@ -41,7 +41,7 @@ class FriendsAdapter(
     }
 
     override fun onBindViewHolder(holder: FriendItem, position: Int) {
-        val item: User = getItem(position)
+        val item: UserEntity = getItem(position)
 
         holder.parentClickable.setOnClickListener {
             parentClickListener(item, null)
@@ -76,13 +76,13 @@ class FriendsAdapter(
     }
 }
 
-class FriendItemDiffCallback(): DiffUtil.ItemCallback<User>(){
-    override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
+class FriendItemDiffCallback(): DiffUtil.ItemCallback<UserEntity>(){
+    override fun areItemsTheSame(oldItem: UserEntity, newItem: UserEntity): Boolean {
         return oldItem.userUID == newItem.userUID
     }
 
     @SuppressLint("DiffUtilEquals")
-    override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
+    override fun areContentsTheSame(oldItem: UserEntity, newItem: UserEntity): Boolean {
         return (oldItem == newItem)
     }
 

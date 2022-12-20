@@ -2,8 +2,8 @@ package com.varsel.firechat.utils
 
 import androidx.fragment.app.Fragment
 import com.varsel.firechat.R
-import com.varsel.firechat.data.local.Chat.GroupRoom
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.Chat.GroupRoomEntity
+import com.varsel.firechat.data.local.User.UserEntity
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import java.util.*
 import kotlin.collections.ArrayList
@@ -19,7 +19,7 @@ class UserUtils(var fragment: Fragment) {
             }
         }
 
-        fun sortUsersByName(users: List<User?>): MutableList<User?>{
+        fun sortUsersByName(users: List<UserEntity?>): MutableList<UserEntity?>{
             val sorted = users?.sortedBy {
                 it?.name
             }.toMutableList()
@@ -27,7 +27,7 @@ class UserUtils(var fragment: Fragment) {
             return sorted
         }
 
-        fun sortUsersByNameInGroup(users: List<User?>, admins: List<String>, currentUser: String): MutableList<User?>{
+        fun sortUsersByNameInGroup(users: List<UserEntity?>, admins: List<String>, currentUser: String): MutableList<UserEntity?>{
             // TODO: Remove current user from array before sort
             val sorted = users?.sortedBy {
                 it?.name
@@ -50,8 +50,8 @@ class UserUtils(var fragment: Fragment) {
             return matches
         }
 
-        fun searchListOfUsers(keyword: String, list: List<User>): ArrayList<User> {
-            val matches = arrayListOf<User>()
+        fun searchListOfUsers(keyword: String, list: List<UserEntity>): ArrayList<UserEntity> {
+            val matches = arrayListOf<UserEntity>()
             list.map {
                 val lowerCase = it.name.toLowerCase()
                 if(lowerCase.contains(keyword.toLowerCase())){
@@ -68,12 +68,12 @@ class UserUtils(var fragment: Fragment) {
                 return arrayListOf()
             }
             list.map {
-                if(it is User){
+                if(it is UserEntity){
                     val lowerCase = it.name.toLowerCase()
                     if(lowerCase.contains(keyword.toLowerCase())){
                         matches.add(it)
                     }
-                } else if(it is GroupRoom){
+                } else if(it is GroupRoomEntity){
                     val lowerCase = it.groupName?.toLowerCase()
                     if(lowerCase?.contains(keyword.toLowerCase()) == true){
                         matches.add(it)
@@ -96,7 +96,7 @@ class UserUtils(var fragment: Fragment) {
             return otherUser
         }
 
-        fun getUser(userId: String, activity: SignedinActivity, callback: (user: User)-> Unit){
+        fun getUser(userId: String, activity: SignedinActivity, callback: (user: UserEntity)-> Unit){
             activity.firebaseViewModel.getUserSingle(userId, activity.mDbRef, {
                 if(it != null){
                     callback(it)
@@ -104,7 +104,7 @@ class UserUtils(var fragment: Fragment) {
             },{})
         }
 
-        fun getUser(userId: String, activity: SignedinActivity, userCallback: (user: User)-> Unit, afterCallback: ()-> Unit){
+        fun getUser(userId: String, activity: SignedinActivity, userCallback: (user: UserEntity)-> Unit, afterCallback: ()-> Unit){
             activity.firebaseViewModel.getUserSingle(userId, activity.mDbRef, {
                 if(it != null){
                     userCallback(it)

@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentFriendListBinding
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.User.UserEntity
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.hideKeyboard
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.showKeyboard
 import com.varsel.firechat.utils.ImageUtils
@@ -120,7 +120,7 @@ class FriendListFragment : Fragment() {
         return view
     }
 
-    private fun navigateToOtherProfile(userId: String, user: User, base64: String?) {
+    private fun navigateToOtherProfile(userId: String, user: UserEntity, base64: String?) {
         try {
             val action = FriendListFragmentDirections.actionFriendListFragmentToOtherProfileFragment(userId)
             view?.findNavController()?.navigate(action)
@@ -130,7 +130,7 @@ class FriendListFragment : Fragment() {
         } catch (e: IllegalArgumentException) { }
     }
 
-    private fun addFriendsToAdapter_initial(friends: List<User?>?, sortType: Int){
+    private fun addFriendsToAdapter_initial(friends: List<UserEntity?>?, sortType: Int){
 
         // TODO: Fix "java.lang.UnsupportedOperationException" here
         adapter?.friends?.clear()
@@ -142,29 +142,29 @@ class FriendListFragment : Fragment() {
                 val sorted = UserUtils.sortUsersByName(friends)
 
                 if(adapter != null){
-                    adapter!!.friends.addAll(sorted as ArrayList<User>)
+                    adapter!!.friends.addAll(sorted as ArrayList<UserEntity>)
                     adapter!!.notifyDataSetChanged()
                 }
             } else if(sortType == SortTypes.DESCENDING){
                 val sorted = UserUtils.sortUsersByName(friends).reversed()
 
                 if(adapter != null){
-                    adapter!!.friends.addAll(sorted as ArrayList<User>)
+                    adapter!!.friends.addAll(sorted as ArrayList<UserEntity>)
                     adapter!!.notifyDataSetChanged()
                 }
             } else if(sortType == SortTypes.DEFAULT){
                 if(adapter != null){
-                    adapter!!.friends.addAll(friends as ArrayList<User>)
+                    adapter!!.friends.addAll(friends as ArrayList<UserEntity>)
                     adapter!!.notifyDataSetChanged()
                 }
             } else if(sortType == SortTypes.OLDEST){
                 if(adapter != null){
-                    adapter!!.friends.addAll(friends as ArrayList<User>)
+                    adapter!!.friends.addAll(friends as ArrayList<UserEntity>)
                     adapter!!.notifyDataSetChanged()
                 }
             } else if(sortType == SortTypes.NEWEST){
                 if(adapter != null){
-                    adapter!!.friends.addAll(friends.reversed() as ArrayList<User>)
+                    adapter!!.friends.addAll(friends.reversed() as ArrayList<UserEntity>)
                     adapter!!.notifyDataSetChanged()
                 }
             }
@@ -246,7 +246,7 @@ class FriendListFragment : Fragment() {
         findNavController().navigate(action)
     }
 
-    private fun checkIfEmptyFriends(friends: List<User?>?){
+    private fun checkIfEmptyFriends(friends: List<UserEntity?>?){
         if(friends?.isNotEmpty() == true){
             binding.noFriends.visibility = View.GONE
             binding.allFriendsRecyclerView.visibility = View.VISIBLE
@@ -266,7 +266,7 @@ class FriendListFragment : Fragment() {
 
         // Actual search code
         binding.searchBox.doAfterTextChanged {
-            val friends = parent.firebaseViewModel.friends.value?.toList() as ArrayList<User>
+            val friends = parent.firebaseViewModel.friends.value?.toList() as ArrayList<UserEntity>
 
             if(it != null){
                 searchRecyclerView(friends, it)
@@ -305,7 +305,7 @@ class FriendListFragment : Fragment() {
         }
     }
 
-    private fun searchRecyclerView(friends: ArrayList<User>, it: Editable){
+    private fun searchRecyclerView(friends: ArrayList<UserEntity>, it: Editable){
         if(it.toString().isEmpty()){
             // Text box is empty
             submitListToAdapter(friends)
@@ -325,7 +325,7 @@ class FriendListFragment : Fragment() {
         }
     }
 
-    private fun setFriendCount(friends: List<User?>){
+    private fun setFriendCount(friends: List<UserEntity?>){
         if(friends.size == 1){
             binding.friendCount.text = getString(R.string.people_count_one)
         } else {
@@ -344,16 +344,16 @@ class FriendListFragment : Fragment() {
     private fun removeFromAdapter(adapter: FriendListAdapter, viewHolder: RecyclerView.ViewHolder){
         val currentList = adapter.friends.toMutableList()
         currentList.removeAt(viewHolder.absoluteAdapterPosition)
-        adapter.friends = currentList as ArrayList<User>
+        adapter.friends = currentList as ArrayList<UserEntity>
 
         setFriendCount(currentList)
 
         adapter.notifyDataSetChanged()
     }
 
-    private fun submitListToAdapter(list: List<User?>){
+    private fun submitListToAdapter(list: List<UserEntity?>){
         if(list != null && list.isNotEmpty()){
-            adapter?.friends = list as MutableList<User>
+            adapter?.friends = list as MutableList<UserEntity>
 
             setFriendCount(list)
 //            binding.allFriendsRecyclerView.visibility = View.VISIBLE

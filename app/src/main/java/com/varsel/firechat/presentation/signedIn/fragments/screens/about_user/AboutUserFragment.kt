@@ -11,7 +11,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentAboutUserBinding
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.User.UserEntity
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
@@ -21,7 +21,7 @@ class AboutUserFragment : Fragment() {
     private lateinit var parent: SignedinActivity
     private val viewModel: AboutUserViewModel by activityViewModels()
     private lateinit var userId: String
-    private lateinit var user: User
+    private lateinit var user: UserEntity
     private var userImg: String? = null
 
     override fun onCreateView(
@@ -88,7 +88,7 @@ class AboutUserFragment : Fragment() {
         })
     }
 
-    private fun bindUserDetailProps(user: User){
+    private fun bindUserDetailProps(user: UserEntity){
         val noneColor = resources.getColor(R.color.transparent_grey)
         if(user.name.isNotEmpty()){
             binding.nameChecked.visibility = View.VISIBLE

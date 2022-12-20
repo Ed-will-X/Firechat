@@ -9,9 +9,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentGroupBinding
-import com.varsel.firechat.data.local.Chat.GroupRoom
-import com.varsel.firechat.data.local.ProfileImage.ProfileImage
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.Chat.GroupRoomEntity
+import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
+import com.varsel.firechat.data.local.User.UserEntity
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -58,7 +58,7 @@ class GroupFragment : Fragment() {
             toggleVisibility(it)
 
 
-            submitListToAdapter(it as List<GroupRoom>?)
+            submitListToAdapter(it as List<GroupRoomEntity>?)
         })
 
         return view
@@ -70,7 +70,7 @@ class GroupFragment : Fragment() {
         } catch (e: IllegalArgumentException) {}
     }
 
-    private fun toggleShimmerVisibility(currentUser: User?){
+    private fun toggleShimmerVisibility(currentUser: UserEntity?){
         if(currentUser != null){
             binding.shimmerGroup.visibility = View.GONE
         } else {
@@ -78,7 +78,7 @@ class GroupFragment : Fragment() {
         }
     }
 
-    fun navigateToGroupChatPage(groupId: String, image: ProfileImage?){
+    fun navigateToGroupChatPage(groupId: String, image: ProfileImageEntity?){
         try {
             val action = ChatsFragmentDirections.actionChatsFragmentToGroupChatPageFragment(groupId)
             view?.findNavController()?.navigate(action)
@@ -87,19 +87,19 @@ class GroupFragment : Fragment() {
     }
 
     // TODO: Fix potential bug
-    fun submitListToAdapter(groups: List<GroupRoom>?){
-        val list = mutableListOf<GroupRoom>()
+    fun submitListToAdapter(groups: List<GroupRoomEntity>?){
+        val list = mutableListOf<GroupRoomEntity>()
         if (groups != null) {
             list.addAll(groups)
         }
 
         val sorted = MessageUtils.sortChats(list)
-        sorted?.add(0, GroupRoom("ADD_NEW_GROUP_CHAT", hashMapOf(), "", hashMapOf()))
-        adapter.submitList(sorted as MutableList<GroupRoom>?)
+        sorted?.add(0, GroupRoomEntity("ADD_NEW_GROUP_CHAT", hashMapOf(), "", hashMapOf()))
+        adapter.submitList(sorted as MutableList<GroupRoomEntity>?)
         adapter.notifyDataSetChanged()
     }
 
-    private fun toggleVisibility(groupRooms: List<GroupRoom?>){
+    private fun toggleVisibility(groupRooms: List<GroupRoomEntity?>){
         val currentUser = parent.firebaseViewModel.currentUser.value
         if(groupRooms.isNotEmpty() && currentUser != null){
             binding.noGroups.visibility = View.GONE

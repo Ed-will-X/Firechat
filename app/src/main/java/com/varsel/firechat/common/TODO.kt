@@ -12,3 +12,4 @@ package com.varsel.firechat.common
 // TODO: Inject dependencies to repository implementation classes
 // TODO: Handle null cases in the repository
 // TODO: Delete all viewModels in the data layer
+// TODO: Combine functions in nested callbacks e.g append to user

@@ -9,18 +9,18 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
-import com.varsel.firechat.data.local.ProfileImage.ProfileImage
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
+import com.varsel.firechat.data.local.User.UserEntity
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
 class AddFriendsSearchAdapter(
     val activity: SignedinActivity,
-    val clickListener: (UID: String, user: User, base64: String?)-> Unit,
-    val imageClickListener: (profileImage: ProfileImage, user: User) -> Unit
+    val clickListener: (UID: String, user: UserEntity, base64: String?)-> Unit,
+    val imageClickListener: (profileImage: ProfileImageEntity, user: UserEntity) -> Unit
 ): RecyclerView.Adapter<AddFriendsSearchAdapter.UserItemViewHolder>() {
 
-    var users: ArrayList<User> = arrayListOf()
+    var users: ArrayList<UserEntity> = arrayListOf()
 
     class UserItemViewHolder(item: View): RecyclerView.ViewHolder(item){
         val root = item.findViewById<LinearLayout>(R.id.root)
@@ -36,7 +36,7 @@ class AddFriendsSearchAdapter(
     }
 
     override fun onBindViewHolder(holder: UserItemViewHolder, position: Int) {
-        val item: User = users[position]
+        val item: UserEntity = users[position]
 
         holder.root.setOnClickListener {
             clickListener(item.userUID, item, null)

@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.databinding.FragmentAddGroupMembersBinding
-import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.User.UserEntity
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.SearchUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -59,7 +59,7 @@ class AddGroupMembersFragment : Fragment() {
         return view
     }
 
-    private fun addToRecyclerView(non_participants: List<User?>){
+    private fun addToRecyclerView(non_participants: List<UserEntity?>){
         adapter.users = arrayListOf()
         if(non_participants != null && non_participants.isNotEmpty()){
             adapter.users.addAll(non_participants)
