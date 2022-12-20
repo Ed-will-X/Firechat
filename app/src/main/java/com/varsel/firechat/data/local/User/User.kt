@@ -5,6 +5,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlin.collections.HashMap
 
+// TODO: Change all var to val
+
 @Entity(tableName = "user")
 open class User{
 //    var userId: Long? = 0L
@@ -71,6 +73,8 @@ open class User{
 
     }
 }
+
+// TODO: Change to sealed class
 
 class GenderValues(){
     companion object {
