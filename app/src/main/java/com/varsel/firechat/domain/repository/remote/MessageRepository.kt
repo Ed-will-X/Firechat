@@ -1,4 +1,4 @@
-package com.varsel.firechat.domain.repository
+package com.varsel.firechat.domain.repository.remote
 
 import android.os.Message
 import com.varsel.firechat.data.local.Chat.ChatRoom

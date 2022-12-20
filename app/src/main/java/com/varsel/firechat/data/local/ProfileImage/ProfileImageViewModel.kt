@@ -55,21 +55,6 @@ class ProfileImageViewModel @Inject constructor(
         return image
     }
 
-    fun setImgFetchCooldown(onEnd: ()-> Unit): CountDownTimer {
-        val timer = object : CountDownTimer(4000, 1000) {
-
-            override fun onTick(millisUntilFinished: Long) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onFinish() {
-                onEnd()
-            }
-        }.start()
-
-        return timer
-    }
-
     fun isNotUserInBlacklist(user: User, ifCallback: ()-> Unit, elseCallback: ()-> Unit){
         if(profileImageFetchBlacklist.value?.contains(user.userUID) == false){
             ifCallback()

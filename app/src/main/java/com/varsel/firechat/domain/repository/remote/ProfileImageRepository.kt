@@ -1,4 +1,4 @@
-package com.varsel.firechat.domain.repository
+package com.varsel.firechat.domain.repository.remote
 
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage

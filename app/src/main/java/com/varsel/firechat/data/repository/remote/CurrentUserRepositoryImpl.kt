@@ -1,10 +1,10 @@
-package com.varsel.firechat.data.repository
+package com.varsel.firechat.data.repository.remote
 
 import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.data.remote.dto.UserDto
-import com.varsel.firechat.domain.repository.CurrentUserRepository
+import com.varsel.firechat.domain.repository.remote.CurrentUserRepository
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 

@@ -1,4 +1,4 @@
-package com.varsel.firechat.domain.repository
+package com.varsel.firechat.domain.repository.remote
 
 import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.data.remote.dto.PublicPostDto

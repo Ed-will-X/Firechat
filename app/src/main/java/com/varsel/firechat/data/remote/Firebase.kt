@@ -148,14 +148,14 @@ class Firebase(
     }
 
     // used to fetch a user that is being displayed on a separate page
-    fun getUserById(uid: String, beforeCallback: () -> Unit, successCallback: (user: User) -> Unit, afterCallback: ()-> Unit = {}) {
+    fun getUserById(uid: String, beforeCallback: () -> Unit, successCallback: (user: UserDto) -> Unit, afterCallback: ()-> Unit = {}) {
         mDbRef.child("Users").orderByChild("userUID").equalTo(uid).addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 beforeCallback()
 
                 for(item in snapshot.children){
-                    val user = item.getValue(User::class.java)
+                    val user = item.getValue(UserDto::class.java)
                     DebugUtils.log_firebase("get user by id single successful")
 
                     if(user != null){
@@ -175,15 +175,17 @@ class Firebase(
 
 
     // used to fetch a user for a recycler view
-    fun getUserSingle(UID: String, loopCallback: (user: User?) -> Unit, afterCallback: () -> Unit){
+    fun getUserSingle(UID: String, loopCallback: (user: UserDto) -> Unit, afterCallback: () -> Unit){
         mDbRef.child("Users").orderByChild("userUID").equalTo(UID).addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (i in snapshot.children){
-                    var user = i.getValue(User::class.java)
+                    var user = i.getValue(UserDto::class.java)
                     DebugUtils.log_firebase("get user single successful")
 
-                    loopCallback(user)
+                    if(user != null) {
+                        loopCallback(user)
+                    }
                 }
                 afterCallback()
             }
@@ -240,14 +242,14 @@ class Firebase(
         })
     }
 
-    fun queryUsers(queryString: String, successCallback: (users: List<User>) -> Unit, beforeCallback: ()-> Unit = {}, afterCallback: () -> Unit = {}){
+    fun queryUsers(queryString: String, successCallback: (users: List<UserDto>) -> Unit, beforeCallback: ()-> Unit = {}, afterCallback: () -> Unit = {}){
         mDbRef.child("Users").orderByChild("name").startAt(queryString).endAt(queryString+"\uf8ff").addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 beforeCallback()
-                val users = arrayListOf<User>()
+                val users = arrayListOf<UserDto>()
                 for(item in snapshot.children){
-                    val user = item.getValue(User::class.java)
+                    val user = item.getValue(UserDto::class.java)
                     if(mAuth.currentUser?.uid != user?.userUID && queryString.isNotEmpty()){
                         users.add(user!!)
                     }
@@ -264,7 +266,9 @@ class Firebase(
         })
     }
 
-    fun sendFriendRequest(currentUserUid: String, user: User, successCallback: () -> Unit, failureCallback: ()-> Unit){
+    fun sendFriendRequest(user: User, successCallback: () -> Unit, failureCallback: ()-> Unit){
+        val currentUserUid = mAuth.currentUser!!.uid
+
         if(currentUserUid == user.userUID.toString()){
             return
         }
