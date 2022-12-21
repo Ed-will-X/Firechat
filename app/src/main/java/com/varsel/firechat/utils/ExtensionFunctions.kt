@@ -4,12 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.*
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class ExtensionFunctions {
     companion object {
@@ -47,5 +49,20 @@ class ExtensionFunctions {
             afterCallback()
         }
 
+        fun <T> ComponentActivity.collectLatestLifecycleFlow (flow: Flow<T>, collect: suspend (T) -> Unit) {
+            lifecycleScope.launch {
+                repeatOnLifecycle (Lifecycle.State.STARTED) {
+                    flow.collectLatest(collect)
+                }
+            }
+        }
+
+        fun <T> Fragment.collectLatestLifecycleFlow (flow: Flow<T>, collect: suspend (T) -> Unit) {
+            lifecycleScope.launch {
+                repeatOnLifecycle (Lifecycle.State.STARTED) {
+                    flow.collectLatest(collect)
+                }
+            }
+        }
     }
 }

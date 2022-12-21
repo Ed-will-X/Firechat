@@ -19,7 +19,7 @@ class FriendListAdapter(
     val parentListener: (id: String, user: User, base64: String?)-> Unit,
     val profileImageClickListener: (profileImage: ProfileImage, user: User) -> Unit
 ): RecyclerView.Adapter<FriendListAdapter.FriendItemViewHolder>() {
-    var friends: MutableList<User> = mutableListOf()
+    var friends: List<User> = listOf()
 
     class FriendItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val name = itemView.findViewById<TextView>(R.id.name)

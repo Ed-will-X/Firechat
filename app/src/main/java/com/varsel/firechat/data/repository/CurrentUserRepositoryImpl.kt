@@ -4,10 +4,11 @@ import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.domain.repository.CurrentUserRepository
+import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class CurrentUserRepositoryImpl(
+class CurrentUserRepositoryImpl @Inject constructor(
     val firebase: Firebase
 ) : CurrentUserRepository {
 

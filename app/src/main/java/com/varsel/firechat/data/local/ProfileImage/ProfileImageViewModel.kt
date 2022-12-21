@@ -21,7 +21,7 @@ class ProfileImageViewModel @Inject constructor(
     val profileImage_currentUser = MutableLiveData<ProfileImage>()
 
     val selectedOtherUserProfilePicChat = MutableLiveData<String>()
-    val selectedOtherUserProfilePic = MutableLiveData<String>()
+    val selectedOtherUserProfilePic = MutableLiveData<String>() // TODO: Delete this line
 
     val selectedGroupImage = MutableLiveData<ProfileImage>()
 

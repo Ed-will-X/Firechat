@@ -19,7 +19,7 @@ class UserUtils(var fragment: Fragment) {
             }
         }
 
-        fun sortUsersByName(users: List<User?>): MutableList<User?>{
+        fun sortUsersByName(users: List<User>): MutableList<User>{
             val sorted = users?.sortedBy {
                 it?.name
             }.toMutableList()

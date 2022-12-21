@@ -6,7 +6,6 @@ import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -22,6 +21,7 @@ import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.AddFriendsSearchAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.RecentSearchAdapter
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import com.varsel.firechat.utils.UserUtils
 import java.lang.IllegalArgumentException
 
@@ -33,6 +33,7 @@ class AddFriendsFragment : Fragment() {
     private val viewModel: AddFriendsViewModel by activityViewModels()
     private var timer: CountDownTimer? = null
     private lateinit var recentSearchAdapter: RecentSearchAdapter
+    private lateinit var addFriendsSearchAdapter: AddFriendsSearchAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,36 +53,38 @@ class AddFriendsFragment : Fragment() {
 
         this.showKeyboard()
 
-        val friendsSearchAdapter = AddFriendsSearchAdapter(parent, { id, user, base64 ->
-            parent.firebaseViewModel.addToRecentSearch(id, parent.firebaseAuth, parent.mDbRef)
-
-            parent.hideKeyboard()
-
-            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
-
-            navigateToOtherProfileFragment(user)
-        }, { profileImage, user ->
-            ImageUtils.displayProfilePicture(profileImage, user, parent)
-            parent.hideKeyboard()
-        })
-
-        binding.searchRecyclerView.adapter = friendsSearchAdapter
-
-        parent.firebaseViewModel.usersQuery.observe(viewLifecycleOwner, Observer {
-            toggleNotFoundIconVisibility(it)
-            toggleRecentSearchVisibility(binding.addFriendsSearchBox)
-            friendsSearchAdapter.run {
-                users = it as ArrayList<User>
-                notifyDataSetChanged()
-            }
-        })
-
-        toggleCancelIconVisibility()
-        backButton()
-        cancelButton()
-        searchBar()
+        collectFlowsFromViewModel()
+        setupAddFriendsSearchAdapter()
+        setClickListeners()
+//        searchBar()
 
         return view
+    }
+
+    private fun collectFlowsFromViewModel() {
+        collectLatestLifecycleFlow(viewModel.state) {
+            toggleNotFoundIconVisibility(it.users.isEmpty() && it.textCount > 1 && !it.isLoading)
+            toggleRecentSearchVisibility(it.textCount < 2)
+            showLoadingSpinner(it.isLoading)
+            toggleCancelIconVisibility(it.textCount > 1)
+            if(it.users.isNotEmpty()) {
+                submitToResultsAdapter(it.users)
+            }
+        }
+    }
+
+    private fun setClickListeners() {
+        binding.addFriendsSearchBox.doAfterTextChanged {
+            viewModel.onSearch(binding.addFriendsSearchBox.text.toString())
+        }
+
+        binding.addFriendsBackButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        binding.addFriendsCancelButton.setOnClickListener {
+            clearInput()
+        }
     }
 
     private fun showKeyboard(){
@@ -89,11 +92,16 @@ class AddFriendsFragment : Fragment() {
         requireContext().showKeyboard()
     }
 
-    private fun navigateToOtherProfileFragment(user: User) {
+    private fun navigateToOtherProfileFragment(user: User, base64: String?) {
         try {
             val action = AddFriendsFragmentDirections.actionAddFriendsToOtherProfileFragment(user.userUID)
 
+            parent.firebaseViewModel.addToRecentSearch(user.userUID, parent.firebaseAuth, parent.mDbRef)
+            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
+
+            parent.hideKeyboard()
             view?.findNavController()?.navigate(action)
+
             parent.firebaseViewModel.selectedUser.value = user
 
         } catch (e: IllegalArgumentException){
@@ -104,10 +112,7 @@ class AddFriendsFragment : Fragment() {
     private fun setupRecentSearchAdapter() {
         val recentSearches = parent.firebaseViewModel.currentUser.value?.recent_search
         recentSearchAdapter = RecentSearchAdapter(parent, this) {
-            navigateToOtherProfileFragment(it)
-
-            parent.hideKeyboard()
-            parent.firebaseViewModel.addToRecentSearch(it.userUID, parent.firebaseAuth, parent.mDbRef)
+            navigateToOtherProfileFragment(it, null)
 
         }
 
@@ -119,6 +124,19 @@ class AddFriendsFragment : Fragment() {
         }
 
         binding.recentSearchRecyclerView.adapter = recentSearchAdapter
+    }
+
+    private fun setupAddFriendsSearchAdapter() {
+        addFriendsSearchAdapter = AddFriendsSearchAdapter(parent, { user, base64 ->
+
+            navigateToOtherProfileFragment(user, base64)
+
+        }, { profileImage, user ->
+            ImageUtils.displayProfilePicture(profileImage, user, parent)
+            parent.hideKeyboard()
+        })
+
+        binding.searchRecyclerView.adapter = addFriendsSearchAdapter
     }
 
     private fun addRecyclerViewSeparator() {
@@ -139,18 +157,23 @@ class AddFriendsFragment : Fragment() {
         recentSearchAdapter.notifyDataSetChanged()
     }
 
-    private fun toggleCancelIconVisibility(){
-        binding.addFriendsSearchBox.doAfterTextChanged {
-            if (it.toString().isNotEmpty()){
-                binding.addFriendsCancelButton.visibility = View.VISIBLE
-            } else {
-                binding.addFriendsCancelButton.visibility = View.GONE
-            }
+    private fun submitToResultsAdapter(results: List<User>) {
+        addFriendsSearchAdapter.run {
+            users = results as ArrayList<User>
+            notifyDataSetChanged()
         }
     }
 
-    private fun toggleNotFoundIconVisibility(users: List<User>){
-        if(users.isEmpty() && binding.addFriendsSearchBox.text.isNotEmpty()){
+    private fun toggleCancelIconVisibility(shouldShow: Boolean){
+        if (shouldShow){
+            binding.addFriendsCancelButton.visibility = View.VISIBLE
+        } else {
+            binding.addFriendsCancelButton.visibility = View.GONE
+        }
+    }
+
+    private fun toggleNotFoundIconVisibility(notFound: Boolean){
+        if(notFound){
             binding.searchRecyclerView.visibility = View.GONE
             binding.notFound.visibility = View.VISIBLE
         } else {
@@ -159,44 +182,18 @@ class AddFriendsFragment : Fragment() {
         }
     }
 
-    private fun backButton(){
-        binding.addFriendsBackButton.setOnClickListener {
-            findNavController().navigateUp()
-        }
-    }
-
-    private fun cancelButton(){
-        binding.addFriendsCancelButton.setOnClickListener {
-            clearInput()
-        }
-    }
-
-    private fun searchBar(){
-        viewModel.shouldRun.observe(viewLifecycleOwner, Observer { shouldRun ->
-            binding.addFriendsSearchBox.doAfterTextChanged {
-                val text = binding.addFriendsSearchBox.text.toString()
-
-                if(timer != null){
-                    timer?.cancel()
-                }
-
-                timer = viewModel.debounce {
-                    parent.firebaseViewModel.queryUsers(text, parent.mDbRef, parent.firebaseAuth, {
-
-                    }, {})
-                }
-            }
-        })
-    }
-
-    private fun toggleRecentSearchVisibility(editText: EditText) {
-        if(editText.text.toString().length > 1){
+    private fun toggleRecentSearchVisibility(shouldShow: Boolean){
+        if(!shouldShow){
             binding.recentSearch.visibility = View.GONE
             binding.searchRecyclerView.visibility = View.VISIBLE
         } else {
             binding.recentSearch.visibility = View.VISIBLE
             binding.searchRecyclerView.visibility = View.GONE
         }
+    }
+
+    private fun showLoadingSpinner(shouldShow: Boolean) {
+        // TODO: Implement show loading spinner
     }
 
     private fun clearInput(){

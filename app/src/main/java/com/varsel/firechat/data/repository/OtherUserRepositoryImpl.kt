@@ -4,15 +4,20 @@ import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.domain.repository.OtherUserRepository
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class OtherUserRepositoryImpl(
+class OtherUserRepositoryImpl @Inject constructor(
     val firebase: Firebase
 ): OtherUserRepository {
-    override suspend fun getUserById(id: String): User = suspendCoroutine { continuation ->
+    override fun getUserById(id: String): Flow<User> = callbackFlow {
         firebase.getUserById(id, {}, {
-            continuation.resume(it)
+            trySend(it)
         }, {})
     }
 
@@ -22,10 +27,12 @@ class OtherUserRepositoryImpl(
         }, {})
     }
 
-    override suspend fun queryUsers(queryString: String): List<User> = suspendCoroutine { continuation ->
+    override fun queryUsers(queryString: String): Flow<List<User>> = callbackFlow {
         firebase.queryUsers(queryString, {
-            continuation.resume(it)
+            trySend(it)
         })
+
+        awaitClose {  }
     }
 
     override suspend fun sendFriendRequest(user: User): Response = suspendCoroutine { continuation ->

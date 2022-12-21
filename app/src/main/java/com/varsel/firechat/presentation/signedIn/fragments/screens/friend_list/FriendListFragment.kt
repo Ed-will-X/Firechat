@@ -130,10 +130,10 @@ class FriendListFragment : Fragment() {
         } catch (e: IllegalArgumentException) { }
     }
 
-    private fun addFriendsToAdapter_initial(friends: List<User?>?, sortType: Int){
+    private fun addFriendsToAdapter_initial(friends: List<User>?, sortType: Int){
 
         // TODO: Fix "java.lang.UnsupportedOperationException" here
-        adapter?.friends?.clear()
+        adapter?.friends = listOf()
 
         if(friends != null && friends.isNotEmpty()){
             setFriendCount(friends)
@@ -142,29 +142,29 @@ class FriendListFragment : Fragment() {
                 val sorted = UserUtils.sortUsersByName(friends)
 
                 if(adapter != null){
-                    adapter!!.friends.addAll(sorted as ArrayList<User>)
+                    adapter!!.friends = sorted.toList()
                     adapter!!.notifyDataSetChanged()
                 }
             } else if(sortType == SortTypes.DESCENDING){
                 val sorted = UserUtils.sortUsersByName(friends).reversed()
 
                 if(adapter != null){
-                    adapter!!.friends.addAll(sorted as ArrayList<User>)
+                    adapter!!.friends = sorted
                     adapter!!.notifyDataSetChanged()
                 }
             } else if(sortType == SortTypes.DEFAULT){
                 if(adapter != null){
-                    adapter!!.friends.addAll(friends as ArrayList<User>)
+                    adapter!!.friends = friends
                     adapter!!.notifyDataSetChanged()
                 }
             } else if(sortType == SortTypes.OLDEST){
                 if(adapter != null){
-                    adapter!!.friends.addAll(friends as ArrayList<User>)
+                    adapter!!.friends = friends
                     adapter!!.notifyDataSetChanged()
                 }
             } else if(sortType == SortTypes.NEWEST){
                 if(adapter != null){
-                    adapter!!.friends.addAll(friends.reversed() as ArrayList<User>)
+                    adapter!!.friends = friends.reversed()
                     adapter!!.notifyDataSetChanged()
                 }
             }

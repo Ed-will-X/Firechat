@@ -5,10 +5,11 @@ import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.domain.repository.ProfileImageRepository
+import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class ProfileImageRepositoryImpl(
+class ProfileImageRepositoryImpl @Inject constructor(
     val firebase: Firebase
 ) : ProfileImageRepository {
     override suspend fun uploadProfileImage(profileImage: ProfileImage, base64: String): Response = suspendCoroutine { continuation ->

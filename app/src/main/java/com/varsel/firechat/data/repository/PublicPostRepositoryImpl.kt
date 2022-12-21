@@ -4,10 +4,11 @@ import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.domain.repository.PublicPostRepository
+import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class PublicPostRepositoryImpl(
+class PublicPostRepositoryImpl @Inject constructor(
     val firebase: Firebase
 ) : PublicPostRepository {
     override suspend fun uploadPublicPost(publicPost: PublicPost, base64: String): Response = suspendCoroutine { continuation ->
