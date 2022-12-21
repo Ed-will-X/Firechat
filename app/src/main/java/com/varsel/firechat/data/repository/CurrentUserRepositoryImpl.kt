@@ -1,11 +1,8 @@
 package com.varsel.firechat.data.repository
 
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.data.local.User.UserEntity
-import com.varsel.firechat.data.mapper.toUser
+import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.remote.Firebase
-import com.varsel.firechat.data.remote.dto.UserDto
-import com.varsel.firechat.domain.model.User
 import com.varsel.firechat.domain.repository.CurrentUserRepository
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -16,7 +13,7 @@ class CurrentUserRepositoryImpl(
 
     override suspend fun getCurrentUserSingle(): User = suspendCoroutine { continuation ->
         firebase.getCurrentUserSingle({
-            continuation.resume(it.toUser())
+            continuation.resume(it)
         })
     }
 

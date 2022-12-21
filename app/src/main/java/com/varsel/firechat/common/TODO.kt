@@ -1,5 +1,6 @@
 package com.varsel.firechat.common
 
+// TODO: Implement one single model for the entire app
 // TODO: Implement chat image repository
     // TODO: Implement Caching
 // TODO: Implement message repository

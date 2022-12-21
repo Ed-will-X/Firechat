@@ -12,26 +12,26 @@ import javax.inject.Inject
 class PublicPostViewModel @Inject constructor(
     val dao: PublicPostDao
 ): ViewModel() {
-    val currentUserPublicPosts = MutableLiveData<MutableList<PublicPostEntity>?>(mutableListOf())
+    val currentUserPublicPosts = MutableLiveData<MutableList<PublicPost>?>(mutableListOf())
 
-    fun getPostById(id: String): LiveData<PublicPostEntity> {
+    fun getPostById(id: String): LiveData<PublicPost> {
         val post = dao.get(id)
         return post
     }
 
-    fun storePost(publicPost: PublicPostEntity){
+    fun storePost(publicPost: PublicPost){
         viewModelScope.launch {
             dao.insert(publicPost)
         }
     }
 
-    fun deletePost(publicPost: PublicPostEntity){
+    fun deletePost(publicPost: PublicPost){
         viewModelScope.launch {
             dao.delete(publicPost)
         }
     }
 
-    fun checkIfPostInRoom(ownerId: String): LiveData<PublicPostEntity>{
+    fun checkIfPostInRoom(ownerId: String): LiveData<PublicPost>{
         val post = dao.get(ownerId)
         return post
     }

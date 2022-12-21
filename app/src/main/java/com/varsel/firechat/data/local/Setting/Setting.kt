@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "setting_table")
-class SettingEntity {
+class Setting {
     @PrimaryKey
     lateinit var userId: String
 
@@ -35,7 +35,7 @@ class SettingEntity {
     }
 
     // For reverting to defaults
-    constructor(setting: SettingEntity){
+    constructor(setting: Setting){
         this.userId = setting.userId
     }
 

@@ -23,9 +23,9 @@ import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActionSheetParticipantActionsBinding
 import com.varsel.firechat.databinding.ActionSheetProfileImageBinding
 import com.varsel.firechat.databinding.FragmentGroupChatDetailBinding
-import com.varsel.firechat.data.local.Chat.GroupRoomEntity
-import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
-import com.varsel.firechat.data.local.User.UserEntity
+import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -176,13 +176,13 @@ class GroupChatDetailFragment : Fragment() {
         val base64: String? = ImageUtils.encodeUri(uri, parent)
         if(base64 != null){
             val timestamp = System.currentTimeMillis()
-            val profileImage = ProfileImageEntity(groupId, timestamp)
+            val profileImage = ProfileImage(groupId, timestamp)
 
             parent.showBottomInfobar(parent.getString(R.string.uploading_group_image), InfobarColors.UPLOADING)
 
             parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, groupId, {
                 parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
-                    val profileImage_withBase64 = ProfileImageEntity(profileImage, base64)
+                    val profileImage_withBase64 = ProfileImage(profileImage, base64)
 
                     parent.profileImageViewModel.storeImage(profileImage_withBase64)
 //                    parent.profileImageViewModel.selectedGroupImageEncoded.value = profileImage.image
@@ -204,13 +204,13 @@ class GroupChatDetailFragment : Fragment() {
     private fun uploadImage(base64: String, successCallback: () -> Unit){
         val timestamp = System.currentTimeMillis()
         val profileImage =
-            ProfileImageEntity( groupId, timestamp)
+            ProfileImage( groupId, timestamp)
 
         parent.showBottomInfobar(parent.getString(R.string.uploading_group_image), InfobarColors.UPLOADING)
 
         parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, groupId, {
             parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
-                val profileImage_withBase64 = ProfileImageEntity(profileImage, base64)
+                val profileImage_withBase64 = ProfileImage(profileImage, base64)
 
                 parent.profileImageViewModel.storeImage(profileImage_withBase64)
                 parent.profileImageViewModel.selectedGroupImage.value = profileImage_withBase64
@@ -311,7 +311,7 @@ class GroupChatDetailFragment : Fragment() {
         }
     }
 
-    private fun showEditGroupActionsheet(group: GroupRoomEntity){
+    private fun showEditGroupActionsheet(group: GroupRoom){
         val dialog = BottomSheetDialog(requireContext())
         dialog.setContentView(R.layout.action_sheet_edit_group)
         val groupNameEditText = dialog.findViewById<EditText>(R.id.group_name_edit_text)
@@ -340,7 +340,7 @@ class GroupChatDetailFragment : Fragment() {
         dialog.show()
     }
 
-    private fun navigateToOtherProfileFragment(userId: String, user: UserEntity, base64: String?){
+    private fun navigateToOtherProfileFragment(userId: String, user: User, base64: String?){
         try {
             val action = GroupChatDetailFragmentDirections.actionGroupChatDetailFragmentToOtherProfileFragment(userId)
             parent.firebaseViewModel.selectedUser.value = user

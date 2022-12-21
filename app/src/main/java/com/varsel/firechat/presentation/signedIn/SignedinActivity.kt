@@ -27,19 +27,19 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActivitySignedinBinding
-import com.varsel.firechat.data.local.Chat.ChatRoomEntity
-import com.varsel.firechat.data.local.Chat.GroupRoomEntity
-import com.varsel.firechat.data.local.Image.ImageEntity
+import com.varsel.firechat.data.local.Chat.ChatRoom
+import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.data.local.Image.Image
 import com.varsel.firechat.data.local.Image.ImageViewModel
-import com.varsel.firechat.data.local.Message.MessageEntity
-import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
+import com.varsel.firechat.data.local.Message.Message
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.ProfileImage.ProfileImageViewModel
-import com.varsel.firechat.data.local.PublicPost.PublicPostEntity
+import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.data.local.PublicPost.PublicPostViewModel
 import com.varsel.firechat.data.local.ReadReceipt.ReadReceiptViewModel
-import com.varsel.firechat.data.local.Setting.SettingEntity
+import com.varsel.firechat.data.local.Setting.Setting
 import com.varsel.firechat.data.local.Setting.SettingViewModel
-import com.varsel.firechat.data.local.User.UserEntity
+import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.presentation.signedOut.SignedoutActivity
@@ -107,7 +107,7 @@ class SignedinActivity : AppCompatActivity() {
         }
 
         firebaseViewModel.chatRooms.observe(this, Observer {
-            val sorted = MessageUtils.sortChats(it as MutableList<ChatRoomEntity>)
+            val sorted = MessageUtils.sortChats(it as MutableList<ChatRoom>)
 
             // TODO: Collect receipts that came after getUserSingle was re-run
             getNewMessage(it, navController)
@@ -132,7 +132,7 @@ class SignedinActivity : AppCompatActivity() {
             if(it?.friendRequests != null && it.friendRequests.isNotEmpty()){
                 getFriendRequests(it.friendRequests)
             } else {
-                firebaseViewModel.friendRequests.value = mutableListOf<UserEntity>()
+                firebaseViewModel.friendRequests.value = mutableListOf<User>()
             }
 
             if(it?.friends != null && it.friends.isNotEmpty()){
@@ -160,7 +160,7 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     // TODO: Run in a coroutine
-    private fun getNewMessage(chatRooms: MutableList<ChatRoomEntity>, navController: NavController){
+    private fun getNewMessage(chatRooms: MutableList<ChatRoom>, navController: NavController){
         val lastRunTimestamp = getUserSingleTimestamp
         val currentUserId = firebaseAuth.currentUser!!.uid
 
@@ -187,7 +187,7 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     // TODO: Run in a coroutine
-    private fun getNewGroupMessage(groupRooms: MutableList<GroupRoomEntity>, navController: NavController){
+    private fun getNewGroupMessage(groupRooms: MutableList<GroupRoom>, navController: NavController){
         val lastRunTimestamp = getUserSingleTimestamp
         val currentUserId = firebaseAuth.currentUser!!.uid
         val selectedGroupRoom = firebaseViewModel.selectedGroupRoom
@@ -203,7 +203,7 @@ class SignedinActivity : AppCompatActivity() {
         }
     }
 
-    private fun getOtherUser(chatRoom: ChatRoomEntity, userCallback: (user: UserEntity)-> Unit){
+    private fun getOtherUser(chatRoom: ChatRoom, userCallback: (user: User)-> Unit){
         val otherUserId = UserUtils.getOtherUserId(chatRoom.participants, this)
         UserUtils.getUser(otherUserId, this) {
             userCallback(it)
@@ -211,7 +211,7 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     var prevFriendRequests = -1
-    fun determineShowRequesBottomInfobar(user: UserEntity){
+    fun determineShowRequesBottomInfobar(user: User){
         val sorted = UserUtils.sortByTimestamp(user.friendRequests.toSortedMap())
 
         if (prevFriendRequests < user.friendRequests.count() && prevFriendRequests != -1){
@@ -224,7 +224,7 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     var prevFriends = -1
-    fun determineNewFriendBottomInfobar(user: UserEntity){
+    fun determineNewFriendBottomInfobar(user: User){
         val sorted = UserUtils.sortByTimestamp(user.friends.toSortedMap())
 
         if(prevFriends < user.friends.count() && prevFriends != -1){
@@ -236,7 +236,7 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     var prevGroups = -1
-    fun determineShowGroupAddBottomInfobar(user: UserEntity){
+    fun determineShowGroupAddBottomInfobar(user: User){
         val sorted = UserUtils.sortByTimestamp(user.groupRooms.toSortedMap())
 
         if(prevGroups < user.groupRooms.count() && prevGroups != -1){
@@ -437,7 +437,7 @@ class SignedinActivity : AppCompatActivity() {
             if(it != null){
                 settingViewModel.settingConfig.value = it
             } else {
-                val setting = SettingEntity(currentUserID)
+                val setting = Setting(currentUserID)
                 settingViewModel.storeSetting(setting)
             }
         })
@@ -460,7 +460,7 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-    private fun determineCurrentUserImgFetchMethod(user: UserEntity){
+    private fun determineCurrentUserImgFetchMethod(user: User){
 
         val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
 
@@ -500,7 +500,7 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-    private fun fetchProfileImage_fullObject(userId: String, afterCallback: (image: ProfileImageEntity?)-> Unit){
+    private fun fetchProfileImage_fullObject(userId: String, afterCallback: (image: ProfileImage?)-> Unit){
         Log.d("IMAGE_FETCH", "Get image called for ${userId}")
 
         firebaseViewModel.getProfileImage(userId, firebaseStorage, mDbRef, {
@@ -520,7 +520,7 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-    fun determineOtherImgFetchMethod(user: UserEntity, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
+    fun determineOtherImgFetchMethod(user: User, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
         val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
 
         imageLiveData?.observeOnce(this, Observer {
@@ -545,7 +545,7 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-    fun determineOtherImgFetchMethod_fullObject(user: UserEntity, fetchCallback: (image: ProfileImageEntity?)-> Unit, dbCallback: (image: ProfileImageEntity?)-> Unit){
+    fun determineOtherImgFetchMethod_fullObject(user: User, fetchCallback: (image: ProfileImage?)-> Unit, dbCallback: (image: ProfileImage?)-> Unit){
         val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
 
         imageLiveData?.observeOnce(this, Observer {
@@ -572,7 +572,7 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-    fun determineGroupFetchMethod(group: GroupRoomEntity, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
+    fun determineGroupFetchMethod(group: GroupRoom, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
         val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(group.roomUID)
 
         imageLiveData?.observeOnce(this, Observer {
@@ -597,7 +597,7 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-    fun determineGroupFetchMethod_fullObject(group: GroupRoomEntity, fetchCallback: (image: ProfileImageEntity?)-> Unit, dbCallback: (image: ProfileImageEntity?)-> Unit){
+    fun determineGroupFetchMethod_fullObject(group: GroupRoom, fetchCallback: (image: ProfileImage?)-> Unit, dbCallback: (image: ProfileImage?)-> Unit){
         val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(group.roomUID)
 
         imageLiveData?.observeOnce(this, Observer {
@@ -636,7 +636,7 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-    fun determineMessageImgFetchMethod(message: MessageEntity, chatRoomId: String, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
+    fun determineMessageImgFetchMethod(message: Message, chatRoomId: String, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
         val imageLiveData = imageViewModel.checkForImgInRoom(message.message)
 
         imageLiveData.observeOnce(this, Observer {
@@ -657,7 +657,7 @@ class SignedinActivity : AppCompatActivity() {
         If it exists, it stores the image in room and provides it in a callback,
         else, it returns null in that callback
     */
-    fun fetchChatImage_fullObject(imageId: String, chatRoomId: String, afterCallback: (image: ImageEntity?)-> Unit){
+    fun fetchChatImage_fullObject(imageId: String, chatRoomId: String, afterCallback: (image: Image?)-> Unit){
         Log.d("IMAGE_FETCH", "Get image from firebase called for ${imageId}")
 
         firebaseViewModel.getChatImage(imageId, chatRoomId, mDbRef, firebaseStorage, {
@@ -673,7 +673,7 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-    fun determineMessageImgFetchMethod_fullObject(message: MessageEntity, chatRoomId: String, imgCallback: (image: ImageEntity?)-> Unit){
+    fun determineMessageImgFetchMethod_fullObject(message: Message, chatRoomId: String, imgCallback: (image: Image?)-> Unit){
         val imageLiveData = imageViewModel.checkForImgInRoom(message.message)
 
         imageLiveData.observeOnce(this, Observer {
@@ -694,7 +694,7 @@ class SignedinActivity : AppCompatActivity() {
         If it exists, it stores the PUBLIC POST in room and provides it in a callback,
         else, it returns null in that callback
     */
-    fun fetchPublicPost_fullObject(postId: String, afterCallback: (publicPost: PublicPostEntity?)-> Unit){
+    fun fetchPublicPost_fullObject(postId: String, afterCallback: (publicPost: PublicPost?)-> Unit){
         Log.d("POST_FETCH", "Get public post from firebase called for ${postId}")
 
         firebaseViewModel.getPublicPost(postId, firebaseStorage,mDbRef, {
@@ -715,7 +715,7 @@ class SignedinActivity : AppCompatActivity() {
         if: returns the post from room in a callback
         else: fetches from firebase and returns it in a callback
     */
-    fun determinePublicPostFetchMethod_fullObject(postId: String, postCallback: (publicPost: PublicPostEntity?)-> Unit){
+    fun determinePublicPostFetchMethod_fullObject(postId: String, postCallback: (publicPost: PublicPost?)-> Unit){
         val postLiveData = publicPostViewModel.checkIfPostInRoom(postId)
 
         postLiveData.observeOnce(this, Observer {
@@ -736,7 +736,7 @@ class SignedinActivity : AppCompatActivity() {
         Just checks if the image is in the database,
         It does not fetch
     */
-    fun checkIfImgMessageInDb(message: MessageEntity, image: (image: ImageEntity?)-> Unit){
+    fun checkIfImgMessageInDb(message: Message, image: (image: Image?)-> Unit){
         val imageLiveData = imageViewModel.checkForImgInRoom(message.message)
 
         imageLiveData.observeOnce(this, Observer {
@@ -750,7 +750,7 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-    fun checkIfPostInDb(ID: String, post: (post: PublicPostEntity?)-> Unit){
+    fun checkIfPostInDb(ID: String, post: (post: PublicPost?)-> Unit){
         val postLiveData = publicPostViewModel.checkIfPostInRoom(ID)
 
         postLiveData.observeOnce(this, Observer {
@@ -820,7 +820,7 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     private fun getFriendRequests(requests: HashMap<String, Long>){
-        val users = mutableListOf<UserEntity>()
+        val users = mutableListOf<User>()
         val sortedMap = UserUtils.sortByTimestamp(requests.toSortedMap())
 
         for(i in sortedMap.keys){
@@ -837,7 +837,7 @@ class SignedinActivity : AppCompatActivity() {
     private fun getAllFriends(friends: HashMap<String, Long>){
         val sortedMap = UserUtils.sortByTimestamp(friends.toSortedMap())
 
-        val users = mutableListOf<UserEntity>()
+        val users = mutableListOf<User>()
         for(i in sortedMap.keys){
             firebaseViewModel.getUserSingle(i, mDbRef, {
                 if(it != null){
@@ -860,7 +860,7 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     var getUserSingleTimestamp: Long = -1L
-    private fun compareUsers(user: UserEntity){
+    private fun compareUsers(user: User){
         val chatRoomSize: Int = firebaseViewModel.currentUserSingle.value?.chatRooms?.size ?: 0
         val groupRoomSize: Int = firebaseViewModel.currentUserSingle.value?.groupRooms?.size ?: 0
 

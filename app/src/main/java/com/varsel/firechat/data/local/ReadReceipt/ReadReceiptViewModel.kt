@@ -12,13 +12,13 @@ class ReadReceiptViewModel @Inject constructor(
     val dao: ReadReceiptDao
 ): ViewModel() {
 
-    fun storeReceipt(receipt: ReadReceiptEntity){
+    fun storeReceipt(receipt: ReadReceipt){
         viewModelScope.launch {
             dao.insert(receipt)
         }
     }
 
-    fun fetchReceipt(id: String): LiveData<ReadReceiptEntity> {
+    fun fetchReceipt(id: String): LiveData<ReadReceipt> {
         val receipt = dao.get(id)
         return receipt
     }

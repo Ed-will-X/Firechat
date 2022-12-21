@@ -1,7 +1,7 @@
 package com.varsel.firechat.utils
 
 import android.util.Log
-import com.varsel.firechat.data.local.User.UserEntity
+import com.varsel.firechat.data.local.User.User
 import kotlin.system.measureTimeMillis
 
 class DebugUtils {
@@ -12,7 +12,7 @@ class DebugUtils {
             }
         }
 
-        fun log_array_users(array: List<UserEntity>){
+        fun log_array_users(array: List<User>){
             for(i in array){
                 Log.d("LLL", "${i.name}")
             }

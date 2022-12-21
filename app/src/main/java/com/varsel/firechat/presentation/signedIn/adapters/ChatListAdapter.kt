@@ -15,11 +15,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
-import com.varsel.firechat.data.local.Chat.ChatRoomEntity
-import com.varsel.firechat.data.local.User.UserEntity
-import com.varsel.firechat.data.local.Message.MessageEntity
+import com.varsel.firechat.data.local.Chat.ChatRoom
+import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageType
-import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.UserUtils
@@ -27,11 +27,11 @@ import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
 class ChatListAdapter(
     val activity: SignedinActivity,
-    val parentClickListener: (userId: String, chatRoomId: String, user: UserEntity, base64: String?)-> Unit,
-    val profileImageClickListener: (profileImage: ProfileImageEntity, user: UserEntity)-> Unit,
-    val readReceiptChange: (unreadChatRooms: MutableMap<String, ChatRoomEntity>)-> Unit
-) : ListAdapter<ChatRoomEntity, ChatListAdapter.ChatItemViewHolder>(ChatsListAdapterDiffItemCallback()) {
-    val unreadChatRooms: MutableMap<String, ChatRoomEntity> = mutableMapOf()
+    val parentClickListener: (userId: String, chatRoomId: String, user: User, base64: String?)-> Unit,
+    val profileImageClickListener: (profileImage: ProfileImage, user: User)-> Unit,
+    val readReceiptChange: (unreadChatRooms: MutableMap<String, ChatRoom>)-> Unit
+) : ListAdapter<ChatRoom, ChatListAdapter.ChatItemViewHolder>(ChatsListAdapterDiffItemCallback()) {
+    val unreadChatRooms: MutableMap<String, ChatRoom> = mutableMapOf()
 
 
     class ChatItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -51,7 +51,7 @@ class ChatListAdapter(
     }
 
     override fun onBindViewHolder(holder: ChatItemViewHolder, position: Int) {
-        val item: ChatRoomEntity = getItem(position)
+        val item: ChatRoom = getItem(position)
 
         val lastMessageObject = MessageUtils.getLastMessageObject(item)
         if(lastMessageObject != null){
@@ -123,7 +123,7 @@ class ChatListAdapter(
     }
 
     // TODO: Modularise
-    private fun determineReceipts(item: ChatRoomEntity, lastMessage: MessageEntity, receiptCallback: ()-> Unit, noReceiptCallback: ()-> Unit){
+    private fun determineReceipts(item: ChatRoom, lastMessage: Message, receiptCallback: ()-> Unit, noReceiptCallback: ()-> Unit){
         val receipt = activity.readReceiptViewModel.fetchReceipt("${item.roomUID}:${activity.firebaseAuth.currentUser!!.uid}")
 
         receipt.observe(activity, Observer {
@@ -138,8 +138,8 @@ class ChatListAdapter(
     }
 
     // TODO: Show shimmer if the adapter can't account for every username
-    private fun getUser(id: String, afterCallback: (user: UserEntity)-> Unit) {
-        lateinit var user: UserEntity
+    private fun getUser(id: String, afterCallback: (user: User)-> Unit) {
+        lateinit var user: User
         activity.firebaseViewModel.getUserSingle(id, activity.mDbRef, {
             if (it != null) {
                 user = it
@@ -150,10 +150,10 @@ class ChatListAdapter(
     }
 }
 
-class ChatsListAdapterDiffItemCallback(): DiffUtil.ItemCallback<ChatRoomEntity>(){
-    override fun areItemsTheSame(oldItem: ChatRoomEntity, newItem: ChatRoomEntity): Boolean = oldItem.roomUID == newItem.roomUID
+class ChatsListAdapterDiffItemCallback(): DiffUtil.ItemCallback<ChatRoom>(){
+    override fun areItemsTheSame(oldItem: ChatRoom, newItem: ChatRoom): Boolean = oldItem.roomUID == newItem.roomUID
 
     @SuppressLint("DiffUtilEquals")
-    override fun areContentsTheSame(oldItem: ChatRoomEntity, newItem: ChatRoomEntity): Boolean = oldItem == newItem
+    override fun areContentsTheSame(oldItem: ChatRoom, newItem: ChatRoom): Boolean = oldItem == newItem
 
 }

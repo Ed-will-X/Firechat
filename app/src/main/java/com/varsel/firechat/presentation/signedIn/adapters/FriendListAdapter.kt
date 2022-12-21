@@ -9,17 +9,17 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
-import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
-import com.varsel.firechat.data.local.User.UserEntity
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
 class FriendListAdapter(
     val activity: SignedinActivity,
-    val parentListener: (id: String, user: UserEntity, base64: String?)-> Unit,
-    val profileImageClickListener: (profileImage: ProfileImageEntity, user: UserEntity) -> Unit
+    val parentListener: (id: String, user: User, base64: String?)-> Unit,
+    val profileImageClickListener: (profileImage: ProfileImage, user: User) -> Unit
 ): RecyclerView.Adapter<FriendListAdapter.FriendItemViewHolder>() {
-    var friends: MutableList<UserEntity> = mutableListOf()
+    var friends: MutableList<User> = mutableListOf()
 
     class FriendItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val name = itemView.findViewById<TextView>(R.id.name)
@@ -35,7 +35,7 @@ class FriendListAdapter(
     }
 
     override fun onBindViewHolder(holder: FriendItemViewHolder, position: Int) {
-        val item: UserEntity = friends[position]
+        val item: User = friends[position]
 
         holder.name.text = item.name
 

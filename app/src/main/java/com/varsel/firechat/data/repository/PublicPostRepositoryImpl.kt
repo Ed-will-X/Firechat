@@ -1,9 +1,8 @@
 package com.varsel.firechat.data.repository
 
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.data.mapper.toPublicPost
+import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.data.remote.Firebase
-import com.varsel.firechat.domain.model.PublicPost
 import com.varsel.firechat.domain.repository.PublicPostRepository
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -25,7 +24,7 @@ class PublicPostRepositoryImpl(
 
     override suspend fun getPublicPost(postId: String): PublicPost = suspendCoroutine { continuation ->
         firebase.getPublicPost(postId, {
-            continuation.resume(it.toPublicPost())
+            continuation.resume(it)
         }, {})
     }
 }

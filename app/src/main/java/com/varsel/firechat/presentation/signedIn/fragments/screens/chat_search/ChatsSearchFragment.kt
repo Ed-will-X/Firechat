@@ -9,8 +9,8 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.varsel.firechat.databinding.FragmentChatsSearchBinding
-import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
-import com.varsel.firechat.data.local.User.UserEntity
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -62,7 +62,7 @@ class ChatsSearchFragment : Fragment() {
         chatsSearchAdapter.notifyDataSetChanged()
     }
 
-    private fun navigateToGroupChatPage(groupId: String, image: ProfileImageEntity?){
+    private fun navigateToGroupChatPage(groupId: String, image: ProfileImage?){
         try {
             val action = ChatsSearchFragmentDirections.actionChatsSearchFragmentToGroupChatPageFragment(groupId)
             view?.findNavController()?.navigate(action)
@@ -70,7 +70,7 @@ class ChatsSearchFragment : Fragment() {
         } catch (e: IllegalArgumentException){ }
     }
 
-    private fun navigateToChatPage(chatRoomId: String, user: UserEntity, base64: String?) {
+    private fun navigateToChatPage(chatRoomId: String, user: User, base64: String?) {
         try {
             val action = ChatsSearchFragmentDirections.actionChatsSearchFragmentToChatPageFragment(chatRoomId, user.userUID)
 
@@ -84,7 +84,7 @@ class ChatsSearchFragment : Fragment() {
     }
 
     private fun setPropsInVM(afterCallback: ()-> Unit){
-        val users = mutableListOf<UserEntity>()
+        val users = mutableListOf<User>()
         val chatRooms = parent.firebaseViewModel.chatRooms.value
         if (chatRooms != null) {
             for(i in chatRooms){
@@ -129,7 +129,7 @@ class ChatsSearchFragment : Fragment() {
     private fun submitResults(){
         val results = chatSearchViewModel.results.value
         for(i in results ?: mutableListOf()){
-            if (i is UserEntity){
+            if (i is User){
                 findChatRoom(i)
             }
         }
@@ -139,7 +139,7 @@ class ChatsSearchFragment : Fragment() {
         chatsSearchAdapter.notifyDataSetChanged()
     }
 
-    private fun findChatRoom(user: UserEntity){
+    private fun findChatRoom(user: User){
         val chatRooms = parent.firebaseViewModel.chatRooms.value
         val results = chatSearchViewModel.results.value
 

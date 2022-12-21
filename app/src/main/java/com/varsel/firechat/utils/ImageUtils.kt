@@ -19,13 +19,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.varsel.firechat.R
-import com.varsel.firechat.data.local.Chat.GroupRoomEntity
-import com.varsel.firechat.data.local.Image.ImageEntity
-import com.varsel.firechat.data.local.Message.MessageEntity
+import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.data.local.Image.Image
+import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageType
-import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
-import com.varsel.firechat.data.local.PublicPost.PublicPostEntity
-import com.varsel.firechat.data.local.User.UserEntity
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.data.local.PublicPost.PublicPost
+import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -175,7 +175,7 @@ class ImageUtils {
             viewParent.visibility = View.GONE
         }
 
-        fun setProfilePic_fullObject(profileImage: ProfileImageEntity, view: ImageView, viewParent: FrameLayout){
+        fun setProfilePic_fullObject(profileImage: ProfileImage, view: ImageView, viewParent: FrameLayout){
             if(profileImage.image?.isNotEmpty() == true){
                 val bitmap = base64ToBitmap(profileImage.image!!)
 
@@ -184,7 +184,7 @@ class ImageUtils {
             }
         }
 
-        fun setProfilePicOtherUser(user: UserEntity, view: ImageView, viewParent: FrameLayout, activity: SignedinActivity){
+        fun setProfilePicOtherUser(user: User, view: ImageView, viewParent: FrameLayout, activity: SignedinActivity){
             activity.determineOtherImgFetchMethod(user, {
                 if (it != null) {
                     setProfilePic(it, view, viewParent, activity)
@@ -196,7 +196,7 @@ class ImageUtils {
             })
         }
 
-        fun setProfilePicOtherUser(user: UserEntity, view: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: String?)-> Unit){
+        fun setProfilePicOtherUser(user: User, view: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: String?)-> Unit){
             activity.determineOtherImgFetchMethod(user, {
                 if (it != null) {
                     imgCallback(it)
@@ -214,7 +214,7 @@ class ImageUtils {
             })
         }
 
-        fun setProfilePicOtherUser_fullObject(user: UserEntity, view: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: ProfileImageEntity?)-> Unit){
+        fun setProfilePicOtherUser_fullObject(user: User, view: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: ProfileImage?)-> Unit){
             activity.determineOtherImgFetchMethod_fullObject(user, {
                 if (it?.image != null) {
                     imgCallback(it)
@@ -234,7 +234,7 @@ class ImageUtils {
             })
         }
 
-        fun setProfilePicGroup(group: GroupRoomEntity, view: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: String?)-> Unit){
+        fun setProfilePicGroup(group: GroupRoom, view: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: String?)-> Unit){
             activity.determineGroupFetchMethod(group, {
                 if (it != null) {
                     imgCallback(it)
@@ -252,7 +252,7 @@ class ImageUtils {
             })
         }
 
-        fun setProfilePicGroup_fullObject(group: GroupRoomEntity, view: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: ProfileImageEntity?)-> Unit){
+        fun setProfilePicGroup_fullObject(group: GroupRoom, view: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: ProfileImage?)-> Unit){
             activity.determineGroupFetchMethod_fullObject(group, {
                 if (it != null) {
                     imgCallback(it)
@@ -353,7 +353,7 @@ class ImageUtils {
             }
         }
 
-        fun getAndSetChatImage(message: MessageEntity, chatRoomId: String, image: ImageView, viewParent: FrameLayout, activity: SignedinActivity){
+        fun getAndSetChatImage(message: Message, chatRoomId: String, image: ImageView, viewParent: FrameLayout, activity: SignedinActivity){
             activity.determineMessageImgFetchMethod(message, chatRoomId, {
                 if(it != null){
                     setChatImage(it, image, viewParent, activity)
@@ -365,7 +365,7 @@ class ImageUtils {
             })
         }
 
-        fun getAndSetChatImage(message: MessageEntity, chatRoomId: String, image: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: String)-> Unit){
+        fun getAndSetChatImage(message: Message, chatRoomId: String, image: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: String)-> Unit){
             activity.determineMessageImgFetchMethod(message, chatRoomId,{
                 if(it != null){
                     setChatImage(it, image, viewParent, activity)
@@ -384,7 +384,7 @@ class ImageUtils {
             if: It sets the image from the DB in the image view
             else: It fetches the image from firebase and sets it in the image view
         */
-        fun getAndSetChatImage_fullObject(message: MessageEntity, chatRoomId: String, imageView: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: ImageEntity)-> Unit){
+        fun getAndSetChatImage_fullObject(message: Message, chatRoomId: String, imageView: ImageView, viewParent: FrameLayout, activity: SignedinActivity, imgCallback: (image: Image)-> Unit){
             activity.determineMessageImgFetchMethod_fullObject(message, chatRoomId) {
                 if(it != null){
                     setChatImage(it.image, imageView, viewParent, activity)
@@ -393,7 +393,7 @@ class ImageUtils {
             }
         }
 
-        fun check_if_chat_image_in_db(message: MessageEntity, activity: SignedinActivity, imageCallback: (image: ImageEntity?) -> Unit){
+        fun check_if_chat_image_in_db(message: Message, activity: SignedinActivity, imageCallback: (image: Image?) -> Unit){
             activity.checkIfImgMessageInDb(message) {
                 if(it != null){
                     imageCallback(it)
@@ -403,7 +403,7 @@ class ImageUtils {
             }
         }
 
-        fun displayImageMessage(image: ImageEntity, message: MessageEntity, activity: SignedinActivity){
+        fun displayImageMessage(image: Image, message: Message, activity: SignedinActivity){
             val otherUser = activity.firebaseViewModel.selectedChatRoomUser.value
             val currentUserId = activity.firebaseAuth.currentUser!!.uid
 
@@ -430,12 +430,12 @@ class ImageUtils {
             }
         }
 
-        fun displayImageMessage_group(image: ImageEntity, message: MessageEntity, activity: SignedinActivity){
+        fun displayImageMessage_group(image: Image, message: Message, activity: SignedinActivity){
             val currentUserId = activity.firebaseAuth.currentUser!!.uid
             val selectedGroupRoomParticipants = activity.firebaseViewModel.selectedGroupParticipants.value
 
             if(selectedGroupRoomParticipants != null){
-                var selectedUser: UserEntity? = null
+                var selectedUser: User? = null
                 for(i in selectedGroupRoomParticipants){
                     if(i.userUID == image.ownerId){
                         selectedUser = i
@@ -465,7 +465,7 @@ class ImageUtils {
         }
 
 
-        fun displayProfilePicture(image: ProfileImageEntity, user: UserEntity, activity: SignedinActivity){
+        fun displayProfilePicture(image: ProfileImage, user: User, activity: SignedinActivity){
             val currentUserId = activity.firebaseViewModel.currentUser.value
 
             activity.hideKeyboard()
@@ -490,7 +490,7 @@ class ImageUtils {
             }
         }
 
-        fun displayGroupImage(image: ProfileImageEntity, group: GroupRoomEntity, activity: SignedinActivity){
+        fun displayGroupImage(image: ProfileImage, group: GroupRoom, activity: SignedinActivity){
             activity.hideKeyboard()
 
             if(image.image != null){
@@ -507,7 +507,7 @@ class ImageUtils {
             }
         }
 
-        fun displayPublicPostImage(post: PublicPostEntity, user: UserEntity, activity: SignedinActivity){
+        fun displayPublicPostImage(post: PublicPost, user: User, activity: SignedinActivity){
             if(post.image != null){
                 var imageOwnerFormat = user.name
 
@@ -523,15 +523,15 @@ class ImageUtils {
         }
 
 
-        fun uploadChatImage(uri: Uri, chatRoomId: String, activity: SignedinActivity, success: (message: MessageEntity, image: ImageEntity)-> Unit){
+        fun uploadChatImage(uri: Uri, chatRoomId: String, activity: SignedinActivity, success: (message: Message, image: Image)-> Unit){
             val encoded = encodeUri(uri, activity)
             val imageId = MessageUtils.generateUID(30)
 
             if(encoded != null){
 
                 // TODO: Change owner id from current user to current chat room
-                val image = ImageEntity(imageId, activity.firebaseAuth.currentUser!!.uid)
-                val message = MessageEntity(MessageUtils.generateUID(30), imageId, System.currentTimeMillis(), activity.firebaseAuth.currentUser!!.uid, MessageType.IMAGE)
+                val image = Image(imageId, activity.firebaseAuth.currentUser!!.uid)
+                val message = Message(MessageUtils.generateUID(30), imageId, System.currentTimeMillis(), activity.firebaseAuth.currentUser!!.uid, MessageType.IMAGE)
 
                 // Shows bottom infobar
                 activity.showBottomInfobar(activity.getString(R.string.uploading_chat_image), InfobarColors.UPLOADING)

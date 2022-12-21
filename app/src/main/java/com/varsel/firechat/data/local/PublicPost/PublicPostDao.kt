@@ -7,14 +7,14 @@ import androidx.room.*
 interface PublicPostDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(publicPost: PublicPostEntity)
+    suspend fun insert(publicPost: PublicPost)
 
     @Update
-    suspend fun update(publicPost: PublicPostEntity)
+    suspend fun update(publicPost: PublicPost)
 
     @Delete
-    suspend fun delete(publicPost: PublicPostEntity)
+    suspend fun delete(publicPost: PublicPost)
 
     @Query("SELECT * FROM public_post_table WHERE postId = :postId")
-    fun get(postId: String): LiveData<PublicPostEntity>
+    fun get(postId: String): LiveData<PublicPost>
 }

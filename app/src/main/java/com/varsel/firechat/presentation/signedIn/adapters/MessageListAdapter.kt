@@ -15,12 +15,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.R
-import com.varsel.firechat.data.local.Image.ImageEntity
-import com.varsel.firechat.data.local.Message.MessageEntity
+import com.varsel.firechat.data.local.Image.Image
+import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageStatus
 import com.varsel.firechat.data.local.Message.MessageType
-import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
-import com.varsel.firechat.data.local.User.UserEntity
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.UserUtils
@@ -42,11 +42,11 @@ class MessageListAdapter(
     val context: Context,
     val pageType: Int,
     val firebaseViewModel: FirebaseViewModel,
-    val imgClickListener: (message: MessageEntity, image: ImageEntity)-> Unit,
-    val onLongClickListener: (message: MessageEntity, messageType: Int, messageStatus: Int)-> Unit,
-    val profileImgClickListener: (profileImage: ProfileImageEntity, user: UserEntity) -> Unit
+    val imgClickListener: (message: Message, image: Image)-> Unit,
+    val onLongClickListener: (message: Message, messageType: Int, messageStatus: Int)-> Unit,
+    val profileImgClickListener: (profileImage: ProfileImage, user: User) -> Unit
     )
-    : ListAdapter<MessageEntity, RecyclerView.ViewHolder>(MessagesCallback()) {
+    : ListAdapter<Message, RecyclerView.ViewHolder>(MessagesCallback()) {
 
     class SentViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val textParent = itemView.findViewById<LinearLayout>(R.id.text_parent)
@@ -92,7 +92,7 @@ class MessageListAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val item: MessageEntity = getItem(position)
+        val item: Message = getItem(position)
 
         if(holder.javaClass == SentViewHolder::class.java){
             // Sent Holder
@@ -108,7 +108,7 @@ class MessageListAdapter(
             }
 
             try {
-                val prev: MessageEntity? = getItem(position - 1)
+                val prev: Message? = getItem(position - 1)
                 if(prev?.sender.equals(item.sender) && MessageUtils.calculateTimestampDifferenceLess(item.time!!, prev?.time!!)){
                     viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat_second) }
                     if(item.type == MessageType.IMAGE){
@@ -130,7 +130,7 @@ class MessageListAdapter(
             }
 
             try {
-                val next: MessageEntity? = getItem(position + 1)
+                val next: Message? = getItem(position + 1)
                 if(next?.sender == item.sender && MessageUtils.calculateTimestampDifferenceLess(next?.time!!, item.time!!)){
                     viewHolder.timestamp.visibility = View.GONE
                 } else {
@@ -169,7 +169,7 @@ class MessageListAdapter(
             }
 
             try {
-                val next: MessageEntity? = getItem(position + 1)
+                val next: Message? = getItem(position + 1)
                 if(next?.sender.equals(item.sender)){
                     viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_other_user_chat) }
                     viewHolder.timestamp.visibility = View.GONE
@@ -198,7 +198,7 @@ class MessageListAdapter(
 
 
             try {
-                val prev: MessageEntity? = getItem(position - 1)
+                val prev: Message? = getItem(position - 1)
                 if(prev?.sender.equals(item.sender)){
                     viewHolder.profilePicContainer.visibility = View.GONE
                     viewHolder.emptyPadding.visibility = View.VISIBLE
@@ -232,7 +232,7 @@ class MessageListAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        val item: MessageEntity = getItem(position)
+        val item: Message = getItem(position)
         if(item.sender.toString() == activity.firebaseAuth.currentUser?.uid.toString()){
             return MessageStatus.SENT
         } else if(item.sender == "SYSTEM"){
@@ -243,7 +243,7 @@ class MessageListAdapter(
     }
 
     private fun handleDownloadOnClick(
-        item: MessageEntity,
+        item: Message,
         imageView: ImageView,
         imageViewParent: FrameLayout,
         image_view_parent_to_hide: FrameLayout,
@@ -285,7 +285,7 @@ class MessageListAdapter(
 
     }
 
-    private fun setOtherUserTimestamp(viewHolder: ReceivedViewHolder, item: MessageEntity){
+    private fun setOtherUserTimestamp(viewHolder: ReceivedViewHolder, item: Message){
         if(pageType == ChatPageType.INDIVIDUAL){
             viewHolder.timestamp.text = MessageUtils.formatStampMessage(item.time.toString())
         } else {
@@ -297,10 +297,10 @@ class MessageListAdapter(
     }
 }
 
-class MessagesCallback(): DiffUtil.ItemCallback<MessageEntity>(){
-    override fun areItemsTheSame(oldItem: MessageEntity, newItem: MessageEntity): Boolean  = oldItem.messageUID == newItem.messageUID
+class MessagesCallback(): DiffUtil.ItemCallback<Message>(){
+    override fun areItemsTheSame(oldItem: Message, newItem: Message): Boolean  = oldItem.messageUID == newItem.messageUID
 
     // TODO: Fix potential bug
     @SuppressLint("DiffUtilEquals")
-    override fun areContentsTheSame(oldItem: MessageEntity, newItem: MessageEntity): Boolean = oldItem == newItem
+    override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean = oldItem == newItem
 }

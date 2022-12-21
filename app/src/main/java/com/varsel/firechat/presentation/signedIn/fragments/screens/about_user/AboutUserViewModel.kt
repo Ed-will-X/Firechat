@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentAboutUserBinding
-import com.varsel.firechat.data.local.User.UserEntity
+import com.varsel.firechat.data.local.User.User
 
 class AboutUserViewModel: ViewModel() {
     private var userDetailsVisible = MutableLiveData<Boolean>(false)
@@ -27,7 +27,7 @@ class AboutUserViewModel: ViewModel() {
         }
     }
 
-    fun setBindings(binding: FragmentAboutUserBinding, user: UserEntity, context: Context){
+    fun setBindings(binding: FragmentAboutUserBinding, user: User, context: Context){
         binding.userName.text = user.name
         binding.occupation.text = user.occupation ?: context.getString(R.string.no_occupation)
     }

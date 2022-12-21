@@ -15,7 +15,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.varsel.firechat.databinding.FragmentAddFriendsBinding
-import com.varsel.firechat.data.local.User.UserEntity
+import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.showKeyboard
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
@@ -71,7 +71,7 @@ class AddFriendsFragment : Fragment() {
             toggleNotFoundIconVisibility(it)
             toggleRecentSearchVisibility(binding.addFriendsSearchBox)
             friendsSearchAdapter.run {
-                users = it as ArrayList<UserEntity>
+                users = it as ArrayList<User>
                 notifyDataSetChanged()
             }
         })
@@ -89,7 +89,7 @@ class AddFriendsFragment : Fragment() {
         requireContext().showKeyboard()
     }
 
-    private fun navigateToOtherProfileFragment(user: UserEntity) {
+    private fun navigateToOtherProfileFragment(user: User) {
         try {
             val action = AddFriendsFragmentDirections.actionAddFriendsToOtherProfileFragment(user.userUID)
 
@@ -149,7 +149,7 @@ class AddFriendsFragment : Fragment() {
         }
     }
 
-    private fun toggleNotFoundIconVisibility(users: List<UserEntity>){
+    private fun toggleNotFoundIconVisibility(users: List<User>){
         if(users.isEmpty() && binding.addFriendsSearchBox.text.isNotEmpty()){
             binding.searchRecyclerView.visibility = View.GONE
             binding.notFound.visibility = View.VISIBLE

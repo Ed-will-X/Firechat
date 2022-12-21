@@ -3,8 +3,8 @@ package com.varsel.firechat.presentation.signedIn
 import android.os.CountDownTimer
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.varsel.firechat.data.local.Chat.ChatRoomEntity
-import com.varsel.firechat.data.local.Chat.GroupRoomEntity
+import com.varsel.firechat.data.local.Chat.ChatRoom
+import com.varsel.firechat.data.local.Chat.GroupRoom
 
 class SignedinViewModel(): ViewModel() {
     val currentChatRoomId = MutableLiveData<String>()
@@ -46,7 +46,7 @@ class SignedinViewModel(): ViewModel() {
     }
 
     private fun getAllChats(activity: SignedinActivity, chatRoomsUID: List<String>){
-        val chatRooms = mutableListOf<ChatRoomEntity>()
+        val chatRooms = mutableListOf<ChatRoom>()
         for(i in chatRoomsUID){
             activity.firebaseViewModel.getChatRoomRecurrent(i, activity.mDbRef, { chatRoom ->
                 if(activity.firebaseViewModel.chatRooms.value != null){
@@ -68,7 +68,7 @@ class SignedinViewModel(): ViewModel() {
     }
 
     private fun getAllGroupChats(activity: SignedinActivity, groupRoomIDs: List<String>){
-        val groupRooms = mutableListOf<GroupRoomEntity>()
+        val groupRooms = mutableListOf<GroupRoom>()
 
         for (i in groupRoomIDs){
             // TODO: Fix bug here:
@@ -92,7 +92,7 @@ class SignedinViewModel(): ViewModel() {
         }
     }
 
-    fun determineChatroom(userId: String, chatRooms: MutableList<ChatRoomEntity>?): Boolean{
+    fun determineChatroom(userId: String, chatRooms: MutableList<ChatRoom>?): Boolean{
         // TODO: Fix potential null pointer exception
         val chatRooms = chatRooms!!
         var contains: Boolean = false
@@ -106,7 +106,7 @@ class SignedinViewModel(): ViewModel() {
         return contains
     }
 
-    fun findChatRoom(userId: String, chatRooms: MutableList<ChatRoomEntity?>?): ChatRoomEntity?{
+    fun findChatRoom(userId: String, chatRooms: MutableList<ChatRoom?>?): ChatRoom?{
         // TODO: Fix potential null pointer exception
         val chatRooms = chatRooms!!
         for(i in chatRooms){

@@ -1,8 +1,7 @@
 package com.varsel.firechat.domain.repository
 
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.data.local.User.UserEntity
-import com.varsel.firechat.domain.model.User
+import com.varsel.firechat.data.local.User.User
 
 // TODO: Add after callback for get requests
 interface CurrentUserRepository {

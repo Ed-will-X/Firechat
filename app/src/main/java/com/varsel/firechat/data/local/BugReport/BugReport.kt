@@ -2,7 +2,7 @@ package com.varsel.firechat.data.local.BugReport
 
 import com.varsel.firechat.utils.MessageUtils
 
-class BugReportEntity {
+class BugReport {
     lateinit var title: String
     lateinit var message: String
     lateinit var reportId: String

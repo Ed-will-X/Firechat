@@ -1,6 +1,6 @@
 package com.varsel.firechat.data.local.Message
 
-class MessageEntity {
+class Message {
 //    var id: Long = 0L
     var messageUID: String? = null
     lateinit var message: String

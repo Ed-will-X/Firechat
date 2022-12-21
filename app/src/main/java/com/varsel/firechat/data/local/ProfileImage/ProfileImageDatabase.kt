@@ -3,7 +3,7 @@ package com.varsel.firechat.data.local.ProfileImage
 import androidx.room.Database
 import androidx.room.RoomDatabase
 
-@Database(entities = [ProfileImageEntity::class], version = 1, exportSchema = false)
+@Database(entities = [ProfileImage::class], version = 1, exportSchema = false)
 abstract class ProfileImageDatabase: RoomDatabase() {
     abstract val profileImageDao: ProfileImageDao
 

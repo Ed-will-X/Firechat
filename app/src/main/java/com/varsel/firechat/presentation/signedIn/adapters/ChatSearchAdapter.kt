@@ -4,12 +4,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.RecyclerViewIndividualChatItemBinding
-import com.varsel.firechat.data.local.Chat.ChatRoomEntity
-import com.varsel.firechat.data.local.Chat.GroupRoomEntity
-import com.varsel.firechat.data.local.Message.MessageEntity
+import com.varsel.firechat.data.local.Chat.ChatRoom
+import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageType
-import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
-import com.varsel.firechat.data.local.User.UserEntity
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.UserUtils
@@ -20,10 +20,10 @@ import com.varsel.firechat.presentation.signedIn.fragments.screens.chat_search.C
 class ChatSearchAdapter(
     val activity: SignedinActivity,
     val fragment: ChatsSearchFragment,
-    val chatRoomClick: (chatRoom: ChatRoomEntity, profileImage: ProfileImageEntity?, user: UserEntity)-> Unit,
-    val groupRoomClick: (groupRoom: GroupRoomEntity, profileImage: ProfileImageEntity?)-> Unit,
-    val imageClickChatRoom: (profileImage: ProfileImageEntity, user: UserEntity)-> Unit,
-    val imageClickGroup: (profileImage: ProfileImageEntity, groupRoom: GroupRoomEntity)-> Unit
+    val chatRoomClick: (chatRoom: ChatRoom, profileImage: ProfileImage?, user: User)-> Unit,
+    val groupRoomClick: (groupRoom: GroupRoom, profileImage: ProfileImage?)-> Unit,
+    val imageClickChatRoom: (profileImage: ProfileImage, user: User)-> Unit,
+    val imageClickGroup: (profileImage: ProfileImage, groupRoom: GroupRoom)-> Unit
     ): RecyclerView.Adapter<ChatSearchAdapter.ChatSearchItem>() {
 
     var results = mutableListOf<Any>()
@@ -45,8 +45,8 @@ class ChatSearchAdapter(
     override fun onBindViewHolder(holder: ChatSearchItem, position: Int) {
         val item = results[position]
 
-        if(item is GroupRoomEntity){
-            val groupRoom = item as GroupRoomEntity
+        if(item is GroupRoom){
+            val groupRoom = item as GroupRoom
 
             val lastMessage = MessageUtils.getLastMessageObject(groupRoom)
 
@@ -75,8 +75,8 @@ class ChatSearchAdapter(
                     }
                 }
             }
-        }else if(item is ChatRoomEntity){
-            val chatRoom = item as ChatRoomEntity
+        }else if(item is ChatRoom){
+            val chatRoom = item as ChatRoom
             val otherUserId = UserUtils.getOtherUserId(chatRoom.participants ?: hashMapOf(), activity)
             val lastMessage = MessageUtils.getLastMessageObject(chatRoom)
 
@@ -109,7 +109,7 @@ class ChatSearchAdapter(
         }
     }
 
-    private fun formatLastMessage(lastMessage: MessageEntity?, holder: ChatSearchItem) {
+    private fun formatLastMessage(lastMessage: Message?, holder: ChatSearchItem) {
         if(lastMessage?.type == MessageType.IMAGE){
             holder.lastMessage.text = UserUtils.truncate(activity.getString(R.string.image_with_emoji), 50)
         } else if(lastMessage?.sender == "SYSTEM"){

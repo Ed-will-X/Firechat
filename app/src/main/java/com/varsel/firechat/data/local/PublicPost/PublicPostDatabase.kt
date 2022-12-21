@@ -3,7 +3,7 @@ package com.varsel.firechat.data.local.PublicPost
 import androidx.room.Database
 import androidx.room.RoomDatabase
 
-@Database(entities = [PublicPostEntity::class], version = 1, exportSchema = false)
+@Database(entities = [PublicPost::class], version = 1, exportSchema = false)
 abstract class PublicPostDatabase: RoomDatabase() {
     abstract val publicPostDao: PublicPostDao
 

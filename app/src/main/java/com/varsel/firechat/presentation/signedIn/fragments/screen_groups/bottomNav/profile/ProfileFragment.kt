@@ -18,9 +18,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActionSheetPublicPostBinding
 import com.varsel.firechat.databinding.FragmentProfileBinding
-import com.varsel.firechat.data.local.PublicPost.PublicPostEntity
+import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.data.local.PublicPost.PublicPostType
-import com.varsel.firechat.data.local.User.UserEntity
+import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.gestures.FriendRequestSwipeGesture
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -124,7 +124,7 @@ class ProfileFragment : Fragment() {
             val uid = ":${System.currentTimeMillis()}-${MessageUtils.generateUID(15)}:${PublicPostType.IMAGE}"
             val timestamp = System.currentTimeMillis()
             val currentUserId = parent.firebaseAuth.currentUser!!.uid
-            val publicPost = PublicPostEntity(currentUserId, uid, PublicPostType.IMAGE, caption, timestamp)
+            val publicPost = PublicPost(currentUserId, uid, PublicPostType.IMAGE, caption, timestamp)
 
             // Shows bottom infobar
             parent.showBottomInfobar(parent.getString(R.string.uploading_chat_image), InfobarColors.UPLOADING)
@@ -186,14 +186,14 @@ class ProfileFragment : Fragment() {
         dialog.show()
     }
 
-    private fun displayPublicPostImage(post: PublicPostEntity){
+    private fun displayPublicPostImage(post: PublicPost){
         val currentUser = firebaseViewModel.currentUser.value
         if(currentUser != null){
             ImageUtils.displayPublicPostImage(post, currentUser, parent)
         }
     }
 
-    private fun setUser(user: UserEntity){
+    private fun setUser(user: User){
         if(user.name != null){
             binding.name.text = user?.name
         }
@@ -355,7 +355,7 @@ class ProfileFragment : Fragment() {
         dialog.show()
     }
 
-    private fun navigateToOtherProfile(id: String, user: UserEntity, base64: String?) {
+    private fun navigateToOtherProfile(id: String, user: User, base64: String?) {
         try {
             val action = ProfileFragmentDirections.actionProfileFragmentToOtherProfileFragment(id)
             parent.firebaseViewModel.selectedUser.value = user

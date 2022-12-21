@@ -9,20 +9,16 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.varsel.firechat.data.local.BugReport.BugReportEntity
-import com.varsel.firechat.data.local.Chat.ChatRoomEntity
-import com.varsel.firechat.data.local.Chat.GroupRoomEntity
-import com.varsel.firechat.data.local.Message.MessageEntity
+import com.varsel.firechat.data.local.BugReport.BugReport
+import com.varsel.firechat.data.local.Chat.ChatRoom
+import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.data.local.Image.Image
+import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.Message.SystemMessageType
-import com.varsel.firechat.data.local.User.UserEntity
-import com.varsel.firechat.data.remote.dto.ImageDto
-import com.varsel.firechat.data.remote.dto.ProfileImageDto
-import com.varsel.firechat.data.remote.dto.PublicPostDto
-import com.varsel.firechat.data.remote.dto.UserDto
-import com.varsel.firechat.domain.model.Image
-import com.varsel.firechat.domain.model.ProfileImage
-import com.varsel.firechat.domain.model.PublicPost
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.data.local.PublicPost.PublicPost
+import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.DebugUtils
 import com.varsel.firechat.utils.ImageUtils
 
@@ -71,7 +67,7 @@ class Firebase(
         onSuccessCallback: ()-> Unit,
         onFailureCallback: ()-> Unit
     ){
-        mDbRef.child("Users").child(UID).setValue(UserEntity(name, email, UID))
+        mDbRef.child("Users").child(UID).setValue(User(name, email, UID))
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     DebugUtils.log_firebase("save user to db successful")
@@ -102,14 +98,14 @@ class Firebase(
         })
     }
 
-    fun getCurrentUserRecurrent(successCallback: (user: UserEntity) -> Unit, beforeCallback: () -> Unit = {}, afterCallback: () -> Unit = {}){
+    fun getCurrentUserRecurrent(successCallback: (user: User) -> Unit, beforeCallback: () -> Unit = {}, afterCallback: () -> Unit = {}){
         mDbRef.child("Users").orderByChild("userUID").equalTo(mAuth?.currentUser?.uid.toString()).addValueEventListener(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 beforeCallback()
 
                 for (item in snapshot.children){
-                    val user = item.getValue(UserEntity::class.java)
+                    val user = item.getValue(User::class.java)
                     DebugUtils.log_firebase("fetch current user recurrent successful")
 
                     if(user != null){
@@ -126,14 +122,14 @@ class Firebase(
         })
     }
 
-    fun getCurrentUserSingle(successCallback: (user: UserDto) -> Unit, beforeCallback: () -> Unit = {}, afterCallback: () -> Unit = {}){
+    fun getCurrentUserSingle(successCallback: (user: User) -> Unit, beforeCallback: () -> Unit = {}, afterCallback: () -> Unit = {}){
         mDbRef.child("Users").orderByChild("userUID").equalTo(mAuth?.currentUser?.uid.toString()).addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 beforeCallback()
 
                 for (item in snapshot.children){
-                    val user = item.getValue(UserDto::class.java)
+                    val user = item.getValue(User::class.java)
                     DebugUtils.log_firebase("fetch current user single successful")
 
                     if(user != null){
@@ -151,14 +147,14 @@ class Firebase(
     }
 
     // used to fetch a user that is being displayed on a separate page
-    fun getUserById(uid: String, beforeCallback: () -> Unit, successCallback: (user: UserDto) -> Unit, afterCallback: ()-> Unit = {}) {
+    fun getUserById(uid: String, beforeCallback: () -> Unit, successCallback: (user: User) -> Unit, afterCallback: ()-> Unit = {}) {
         mDbRef.child("Users").orderByChild("userUID").equalTo(uid).addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 beforeCallback()
 
                 for(item in snapshot.children){
-                    val user = item.getValue(UserDto::class.java)
+                    val user = item.getValue(User::class.java)
                     DebugUtils.log_firebase("get user by id single successful")
 
                     if(user != null){
@@ -178,12 +174,12 @@ class Firebase(
 
 
     // used to fetch a user for a recycler view
-    fun getUserSingle(UID: String, loopCallback: (user: UserDto) -> Unit, afterCallback: () -> Unit){
+    fun getUserSingle(UID: String, loopCallback: (user: User) -> Unit, afterCallback: () -> Unit){
         mDbRef.child("Users").orderByChild("userUID").equalTo(UID).addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (i in snapshot.children){
-                    var user = i.getValue(UserDto::class.java)
+                    var user = i.getValue(User::class.java)
                     DebugUtils.log_firebase("get user single successful")
 
                     if(user != null) {
@@ -200,12 +196,12 @@ class Firebase(
         })
     }
 
-    fun getUserRecurrent(UID: String, loopCallback: (user: UserEntity?) -> Unit, afterCallback: () -> Unit){
+    fun getUserRecurrent(UID: String, loopCallback: (user: User?) -> Unit, afterCallback: () -> Unit){
         mDbRef.child("Users").orderByChild("userUID").equalTo(UID).addValueEventListener(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (i in snapshot.children){
-                    var user = i.getValue(UserEntity::class.java)
+                    var user = i.getValue(User::class.java)
                     DebugUtils.log_firebase("get user recurrent successful")
 
                     loopCallback(user)
@@ -224,13 +220,13 @@ class Firebase(
 //        selectedUser.value = null
     }
 
-    fun getAllUsers(beforeCallback: ()-> Unit, successCallback: (users: List<UserEntity>) -> Unit = {}){
+    fun getAllUsers(beforeCallback: ()-> Unit, successCallback: (users: List<User>) -> Unit = {}){
         mDbRef.child("Users").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 beforeCallback()
-                val users = arrayListOf<UserEntity>()
+                val users = arrayListOf<User>()
                 for(item in snapshot.children){
-                    val user = item.getValue(UserEntity::class.java)
+                    val user = item.getValue(User::class.java)
                     DebugUtils.log_firebase("get all users successful")
                     if(mAuth.currentUser?.uid != user?.userUID){
                         users.add(user!!)
@@ -245,14 +241,14 @@ class Firebase(
         })
     }
 
-    fun queryUsers(queryString: String, successCallback: (users: List<UserDto>) -> Unit, beforeCallback: ()-> Unit = {}, afterCallback: () -> Unit = {}){
+    fun queryUsers(queryString: String, successCallback: (users: List<User>) -> Unit, beforeCallback: ()-> Unit = {}, afterCallback: () -> Unit = {}){
         mDbRef.child("Users").orderByChild("name").startAt(queryString).endAt(queryString+"\uf8ff").addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 beforeCallback()
-                val users = arrayListOf<UserDto>()
+                val users = arrayListOf<User>()
                 for(item in snapshot.children){
-                    val user = item.getValue(UserDto::class.java)
+                    val user = item.getValue(User::class.java)
                     if(mAuth.currentUser?.uid != user?.userUID && queryString.isNotEmpty()){
                         users.add(user!!)
                     }
@@ -269,7 +265,7 @@ class Firebase(
         })
     }
 
-    fun sendFriendRequest(user: UserEntity, successCallback: () -> Unit, failureCallback: ()-> Unit){
+    fun sendFriendRequest(user: User, successCallback: () -> Unit, failureCallback: ()-> Unit){
         val currentUserUid = mAuth.currentUser!!.uid
 
         if(currentUserUid == user.userUID.toString()){
@@ -292,7 +288,7 @@ class Firebase(
             }
     }
 
-    fun revokeFriendRequest(user: UserEntity, successCallback: () -> Unit, failureCallback: () -> Unit){
+    fun revokeFriendRequest(user: User, successCallback: () -> Unit, failureCallback: () -> Unit){
         mDbRef
             .child("Users")
             .child(user.userUID.toString())
@@ -309,7 +305,7 @@ class Firebase(
             }
     }
 
-    fun acceptFriendRequest(user: UserEntity, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}) {
+    fun acceptFriendRequest(user: User, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}) {
         val otherUserRef = mDbRef.child("Users").child(user.userUID.toString())
         val currentUserRef = mDbRef.child("Users").child(mAuth.currentUser?.uid.toString())
 
@@ -359,7 +355,7 @@ class Firebase(
 
     }
 
-    fun rejectFriendRequest(user: UserEntity, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
+    fun rejectFriendRequest(user: User, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
         val currentUserId = mAuth.currentUser!!.uid
         val currentUserRef = mDbRef.child("Users").child(currentUserId)
 
@@ -376,7 +372,7 @@ class Firebase(
             }
     }
 
-    fun unfriendUser(user: UserEntity, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
+    fun unfriendUser(user: User, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
 
         val currentUserId = mAuth.currentUser!!.uid
         val currentUserRef = mDbRef.child("Users").child(currentUserId)
@@ -406,7 +402,7 @@ class Firebase(
     }
 
     fun sendMessage(
-        message: MessageEntity,
+        message: Message,
         chatRoomUID: String,
         successCallback: () -> Unit,
         failureCallback: () -> Unit){
@@ -429,7 +425,7 @@ class Firebase(
     }
 
 
-    fun appendParticipants(chatRoom: ChatRoomEntity, successCallback: () -> Unit, failureCallback: () -> Unit){
+    fun appendParticipants(chatRoom: ChatRoom, successCallback: () -> Unit, failureCallback: () -> Unit){
         mDbRef
             .child("chatRooms")
             .child(chatRoom.roomUID!!)
@@ -474,7 +470,7 @@ class Firebase(
             }
     }
 
-    fun getChatRoomRecurrent(chatRoomUID: String, loopCallback: (chatRoom: ChatRoomEntity?) -> Unit, afterCallback: () -> Unit){
+    fun getChatRoomRecurrent(chatRoomUID: String, loopCallback: (chatRoom: ChatRoom?) -> Unit, afterCallback: () -> Unit){
         mDbRef
             .child("chatRooms")
             .orderByChild("roomUID")
@@ -482,7 +478,7 @@ class Firebase(
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (i in snapshot.children){
-                        val item = i.getValue(ChatRoomEntity::class.java)
+                        val item = i.getValue(ChatRoom::class.java)
                         loopCallback(item)
                         DebugUtils.log_firebase("get chat room recurrent successful")
                     }
@@ -496,7 +492,7 @@ class Firebase(
             })
     }
 
-    fun getChatRoomSingle(chatRoomUID: String, loopCallback: (chatRoom: ChatRoomEntity?) -> Unit, afterCallback: () -> Unit){
+    fun getChatRoomSingle(chatRoomUID: String, loopCallback: (chatRoom: ChatRoom?) -> Unit, afterCallback: () -> Unit){
         mDbRef
             .child("chatRooms")
             .orderByChild("roomUID")
@@ -504,7 +500,7 @@ class Firebase(
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (i in snapshot.children){
-                        val item = i.getValue(ChatRoomEntity::class.java)
+                        val item = i.getValue(ChatRoom::class.java)
                         loopCallback(item)
                         DebugUtils.log_firebase("get chat room recurrent successful")
                     }
@@ -518,7 +514,7 @@ class Firebase(
             })
     }
 
-    fun createGroup(groupObj: GroupRoomEntity, successCallback: () -> Unit, failureCallback: () -> Unit){
+    fun createGroup(groupObj: GroupRoom, successCallback: () -> Unit, failureCallback: () -> Unit){
         val groupRef = mDbRef.child("groupRooms")
 
         groupRef
@@ -572,7 +568,7 @@ class Firebase(
             }
     }
 
-    fun getGroupChatRoomSingle(chatRoomUID: String, loopCallback: (chatRoom: GroupRoomEntity?) -> Unit, afterCallback: () -> Unit){
+    fun getGroupChatRoomSingle(chatRoomUID: String, loopCallback: (chatRoom: GroupRoom?) -> Unit, afterCallback: () -> Unit){
         mDbRef
             .child("groupRooms")
             .orderByChild("roomUID")
@@ -580,7 +576,7 @@ class Firebase(
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (i in snapshot.children){
-                        val item = i.getValue(GroupRoomEntity::class.java)
+                        val item = i.getValue(GroupRoom::class.java)
                         loopCallback(item)
                         DebugUtils.log_firebase("get group room single successful")
 
@@ -596,7 +592,7 @@ class Firebase(
             })
     }
 
-    fun getGroupChatRoomRecurrent(chatRoomUID: String, loopCallback: (groupRoom: GroupRoomEntity?) -> Unit, afterCallback: () -> Unit){
+    fun getGroupChatRoomRecurrent(chatRoomUID: String, loopCallback: (groupRoom: GroupRoom?) -> Unit, afterCallback: () -> Unit){
         mDbRef
             .child("groupRooms")
             .orderByChild("roomUID")
@@ -604,7 +600,7 @@ class Firebase(
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (i in snapshot.children){
-                        val item = i.getValue(GroupRoomEntity::class.java)
+                        val item = i.getValue(GroupRoom::class.java)
                         loopCallback(item)
                         DebugUtils.log_firebase("get group room recurrent successful")
                     }
@@ -620,7 +616,7 @@ class Firebase(
 
     // TODO: Modify to accommodate simultaneous first message possibilities
     fun sendGroupMessage(
-        message: MessageEntity,
+        message: Message,
         chatRoomID: String,
         successCallback: () -> Unit,
         failureCallback: () -> Unit){
@@ -664,7 +660,7 @@ class Firebase(
     }
 
 
-    fun removeAdmin(userId: String, selectedGroupRoom: GroupRoomEntity, successCallback: () -> Unit, failureCallback: () -> Unit){
+    fun removeAdmin(userId: String, selectedGroupRoom: GroupRoom, successCallback: () -> Unit, failureCallback: () -> Unit){
         val reference = mDbRef.child("groupRooms").child(selectedGroupRoom.roomUID)
         val admins = selectedGroupRoom.admins
         val currentUserId = mAuth.currentUser!!.uid
@@ -767,7 +763,7 @@ class Firebase(
 
     }
 
-    fun leaveGroup(selectedGroupRoom: GroupRoomEntity, successCallback: () -> Unit, failureCallback: () -> Unit){
+    fun leaveGroup(selectedGroupRoom: GroupRoom, successCallback: () -> Unit, failureCallback: () -> Unit){
         val groupReference = mDbRef.child("groupRooms").child(selectedGroupRoom.roomUID)
         val userReference = mDbRef.child("Users").child(mAuth.currentUser!!.uid)
         val currentUserId: String = mAuth.currentUser!!.uid
@@ -832,7 +828,7 @@ class Firebase(
         val usersInString = users.joinToString(
             separator = " ",
         )
-        val message = MessageEntity(SystemMessageType.GROUP_ADD, "${mAuth.currentUser!!.uid} ${usersInString}", System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val message = Message(SystemMessageType.GROUP_ADD, "${mAuth.currentUser!!.uid} ${usersInString}", System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
         val databaseReference = mDbRef.child("groupRooms")
 
         databaseReference
@@ -851,7 +847,7 @@ class Firebase(
     }
 
     fun groupExitMessage(roomId: String, successCallback: () -> Unit, failureCallback: () -> Unit){
-        val message = MessageEntity(SystemMessageType.GROUP_EXIT, mAuth.currentUser!!.uid, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val message = Message(SystemMessageType.GROUP_EXIT, mAuth.currentUser!!.uid, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
         val databaseReference = mDbRef.child("groupRooms")
 
         databaseReference
@@ -870,7 +866,7 @@ class Firebase(
     }
 
     fun groupRemoveMessage(userId: String, roomId: String, successCallback: () -> Unit, failureCallback: () -> Unit){
-        val message = MessageEntity(SystemMessageType.GROUP_REMOVE, "${mAuth.currentUser!!.uid} ${userId}", System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val message = Message(SystemMessageType.GROUP_REMOVE, "${mAuth.currentUser!!.uid} ${userId}", System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
         val databaseReference = mDbRef.child("groupRooms")
 
         databaseReference
@@ -889,7 +885,7 @@ class Firebase(
     }
 
     fun groupNowAdminMessage(userId: String, roomId: String, successCallback: () -> Unit, failureCallback: () -> Unit){
-        val message = MessageEntity(SystemMessageType.NOW_ADMIN, userId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val message = Message(SystemMessageType.NOW_ADMIN, userId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
         val databaseReference = mDbRef.child("groupRooms")
 
         databaseReference
@@ -908,7 +904,7 @@ class Firebase(
     }
 
     fun groupNotAdminMessage(userId: String, roomId: String, successCallback: () -> Unit, failureCallback: () -> Unit){
-        val message = MessageEntity(SystemMessageType.NOT_ADMIN, userId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val message = Message(SystemMessageType.NOT_ADMIN, userId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
         val databaseReference = mDbRef.child("groupRooms")
 
         databaseReference
@@ -927,7 +923,7 @@ class Firebase(
     }
 
     fun groupCreateMessage(roomId: String, successCallback: () -> Unit, failureCallback: () -> Unit){
-        val message = MessageEntity(SystemMessageType.GROUP_CREATE, mAuth.currentUser!!.uid, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val message = Message(SystemMessageType.GROUP_CREATE, mAuth.currentUser!!.uid, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
         val databaseReference = mDbRef.child("groupRooms")
 
         databaseReference
@@ -1059,7 +1055,7 @@ class Firebase(
         }
     }
 
-    fun uploadGroupImage(groupRoom: GroupRoomEntity, profileImage: ProfileImage, base64: String, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+    fun uploadGroupImage(groupRoom: GroupRoom, profileImage: ProfileImage, base64: String, successCallback: ()-> Unit, failureCallback: ()-> Unit){
         val reference = mDbRef.child("ProfileImages").child(groupRoom.roomUID)
         val decoded = ImageUtils.base64ToByteArray(base64)
 
@@ -1102,7 +1098,7 @@ class Firebase(
         }
     }
 
-    fun getProfileImage(userId: String, loopCallback: (profileImage: ProfileImageDto?) -> Unit, afterCallback: () -> Unit, snapshotExistenceCallback: (bool: Boolean)-> Unit){
+    fun getProfileImage(userId: String, loopCallback: (profileImage: ProfileImage?) -> Unit, afterCallback: () -> Unit, snapshotExistenceCallback: (bool: Boolean)-> Unit){
         val storageRef = firebaseStorage.reference.child("/profileImages/${userId}")
         storageRef.getBytes(2_000_000).addOnCompleteListener {
 
@@ -1114,10 +1110,10 @@ class Firebase(
                             Log.d("SNAPSHOT_IMG", "profile image exists for ${userId}")
 
                             for(item in snapshot.children){
-                                val profileImage = item.getValue(ProfileImageDto::class.java)
+                                val profileImage = item.getValue(ProfileImage::class.java)
                                 if(profileImage != null){
                                     val encoded = ImageUtils.byteArraytoBase64(it.result)
-                                    val profileImage_withBase64 = profileImage.copy(ownerId = profileImage.ownerId, imgChangeTimestamp = profileImage.imgChangeTimestamp, image = encoded)
+                                    val profileImage_withBase64 = ProfileImage(profileImage, encoded)
                                     loopCallback(profileImage_withBase64)
 
                                     DebugUtils.log_firebase("get profile image successful")
@@ -1189,7 +1185,7 @@ class Firebase(
                     .setValue(image)
                     .addOnCompleteListener {
                         if(it.isSuccessful){
-                            val image_with_base64 = Image(imageId = image.imageId, ownerId = image.ownerId, image = base64)
+                            val image_with_base64 = Image(image, base64)
                             successCallback(image_with_base64)
                             DebugUtils.log_firebase("upload chat image successful")
                         } else {
@@ -1202,7 +1198,7 @@ class Firebase(
         }
     }
 
-    fun getChatImage(imageId: String, chatRoomID: String, loopCallback: (image: ImageDto) -> Unit, afterCallback: () -> Unit){
+    fun getChatImage(imageId: String, chatRoomID: String, loopCallback: (image: Image) -> Unit, afterCallback: () -> Unit){
         val storageRef = firebaseStorage.reference.child("/chatImages/${chatRoomID}/${imageId}")
         storageRef.getBytes(2000000).addOnCompleteListener {
             if(it.isSuccessful){
@@ -1211,10 +1207,10 @@ class Firebase(
                     override fun onDataChange(snapshot: DataSnapshot) {
                         for(item in snapshot.children){
 
-                            val image = item.getValue(ImageDto::class.java)
+                            val image = item.getValue(Image::class.java)
                             val encoded = ImageUtils.byteArraytoBase64(it.result)
                             if(image != null){
-                                val image_withBase64 = ImageDto(imageId = image.imageId, ownerId = image.ownerId, image = encoded)
+                                val image_withBase64 = Image(image, encoded)
                                 loopCallback(image_withBase64)
                                 DebugUtils.log_firebase("get chat image successful")
                             }
@@ -1243,7 +1239,7 @@ class Firebase(
                     .setValue(publicPost)
                     .addOnCompleteListener {
                         if(it.isSuccessful){
-                            val publicPost_withBase64 = publicPost.copy(image = base64)
+                            val publicPost_withBase64 = PublicPost(publicPost, base64)
                             successCallback(publicPost_withBase64)
                             DebugUtils.log_firebase("upload public post successful")
                         } else {
@@ -1292,7 +1288,7 @@ class Firebase(
         }
     }
 
-    fun getPublicPost(postId: String, loopCallback: (publicPost: PublicPostDto) -> Unit, afterCallback: () -> Unit){
+    fun getPublicPost(postId: String, loopCallback: (publicPost: PublicPost) -> Unit, afterCallback: () -> Unit){
         val storageRef = firebaseStorage.reference.child("/publicPosts/${postId}")
         storageRef.getBytes(2000000).addOnCompleteListener {
             if(it.isSuccessful){
@@ -1301,10 +1297,10 @@ class Firebase(
                     override fun onDataChange(snapshot: DataSnapshot) {
                         for(item in snapshot.children){
 
-                            val post = item.getValue(PublicPostDto::class.java)
+                            val post = item.getValue(PublicPost::class.java)
                             val encoded = ImageUtils.byteArraytoBase64(it.result)
                             if(post != null){
-                                val post_withImage = post.copy(image = encoded)
+                                val post_withImage = PublicPost(post, encoded)
                                 loopCallback(post_withImage)
                                 DebugUtils.log_firebase("get public post successful")
                             }
@@ -1376,7 +1372,7 @@ class Firebase(
     }
 
     // TODO: Not tested
-    fun uploadBugReport(bugReportEntity: BugReportEntity, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
+    fun uploadBugReport(bugReportEntity: BugReport, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
         val databaseReference = mDbRef.child("bug_reports").child(mAuth.currentUser!!.uid)
         databaseReference.child(bugReportEntity.reportId).setValue(bugReportEntity)
             .addOnCompleteListener {

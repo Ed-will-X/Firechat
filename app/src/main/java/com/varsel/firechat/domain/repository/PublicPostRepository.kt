@@ -1,9 +1,7 @@
 package com.varsel.firechat.domain.repository
 
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.data.local.PublicPost.PublicPostEntity
-import com.varsel.firechat.data.remote.dto.PublicPostDto
-import com.varsel.firechat.domain.model.PublicPost
+import com.varsel.firechat.data.local.PublicPost.PublicPost
 
 interface PublicPostRepository {
 

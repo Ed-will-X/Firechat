@@ -14,9 +14,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
-import com.varsel.firechat.data.local.Chat.GroupRoomEntity
-import com.varsel.firechat.data.local.Message.MessageEntity
-import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
+import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.data.local.Message.Message
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.utils.AnimationUtils
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
@@ -29,13 +29,13 @@ class GroupChatsListAdapter(
     val activity: SignedinActivity,
     val context: Context,
     val addNewListener: ()-> Unit,
-    val groupItemListener: (id: String, image: ProfileImageEntity?)-> Unit,
-    val imageClickListener: (groupImage: ProfileImageEntity, group: GroupRoomEntity) -> Unit
-) : ListAdapter<GroupRoomEntity, RecyclerView.ViewHolder>(GroupChatDiffUtilItemCallback()) {
+    val groupItemListener: (id: String, image: ProfileImage?)-> Unit,
+    val imageClickListener: (groupImage: ProfileImage, group: GroupRoom) -> Unit
+) : ListAdapter<GroupRoom, RecyclerView.ViewHolder>(GroupChatDiffUtilItemCallback()) {
     private val ADD_NEW = 0
     private val GROUP_CHAT = 1
 
-    val unreadGroups = mutableMapOf<String, GroupRoomEntity>()
+    val unreadGroups = mutableMapOf<String, GroupRoom>()
 
     class GroupChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val parent = itemView.findViewById<MaterialCardView>(R.id.group_parent)
@@ -67,7 +67,7 @@ class GroupChatsListAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val item: GroupRoomEntity = getItem(position)
+        val item: GroupRoom = getItem(position)
 
 
         if(holder.javaClass == AddNewViewHolder::class.java){
@@ -133,7 +133,7 @@ class GroupChatsListAdapter(
         }
     }
 
-    private fun determineReceipts(item: GroupRoomEntity, lastMessage: MessageEntity, receiptCallback: ()-> Unit, noReceiptCallback: ()-> Unit){
+    private fun determineReceipts(item: GroupRoom, lastMessage: Message, receiptCallback: ()-> Unit, noReceiptCallback: ()-> Unit){
         val receipt = activity.readReceiptViewModel.fetchReceipt("${item.roomUID}:${activity.firebaseAuth.currentUser!!.uid}")
 
 
@@ -242,10 +242,10 @@ class GroupChatsListAdapter(
     }
 }
 
-class GroupChatDiffUtilItemCallback(): DiffUtil.ItemCallback<GroupRoomEntity>(){
-    override fun areItemsTheSame(oldItem: GroupRoomEntity, newItem: GroupRoomEntity): Boolean = oldItem.roomUID == newItem.roomUID
+class GroupChatDiffUtilItemCallback(): DiffUtil.ItemCallback<GroupRoom>(){
+    override fun areItemsTheSame(oldItem: GroupRoom, newItem: GroupRoom): Boolean = oldItem.roomUID == newItem.roomUID
 
     @SuppressLint("DiffUtilEquals")
-    override fun areContentsTheSame(oldItem: GroupRoomEntity, newItem: GroupRoomEntity): Boolean = oldItem == newItem
+    override fun areContentsTheSame(oldItem: GroupRoom, newItem: GroupRoom): Boolean = oldItem == newItem
 
 }

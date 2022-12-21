@@ -6,14 +6,14 @@ import androidx.room.*
 @Dao
 interface ReadReceiptDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(readReceipt: ReadReceiptEntity)
+    suspend fun insert(readReceipt: ReadReceipt)
 
     @Delete
-    suspend fun delete(readReceipt: ReadReceiptEntity)
+    suspend fun delete(readReceipt: ReadReceipt)
 
     @Update
-    suspend fun update(readReceipt: ReadReceiptEntity)
+    suspend fun update(readReceipt: ReadReceipt)
 
     @Query("SELECT * FROM read_receipts_table WHERE roomId = :roomId")
-    fun get(roomId: String): LiveData<ReadReceiptEntity>
+    fun get(roomId: String): LiveData<ReadReceipt>
 }

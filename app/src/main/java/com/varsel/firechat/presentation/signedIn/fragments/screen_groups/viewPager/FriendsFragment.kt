@@ -11,7 +11,7 @@ import androidx.navigation.NavDirections
 import androidx.navigation.findNavController
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentFriendsBinding
-import com.varsel.firechat.data.local.User.UserEntity
+import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.FriendsAdapter
@@ -61,7 +61,7 @@ class FriendsFragment : Fragment() {
             if (it != null){
                 friendsAdapter.submitList(it)
             } else {
-                friendsAdapter.submitList(arrayListOf<UserEntity>())
+                friendsAdapter.submitList(arrayListOf<User>())
             }
         })
 
@@ -73,7 +73,7 @@ class FriendsFragment : Fragment() {
         view?.doOnPreDraw { startPostponedEnterTransition() }
     }
 
-    private fun toggleVisibility(it: List<UserEntity?>){
+    private fun toggleVisibility(it: List<User?>){
         val currentUser = parent.firebaseViewModel.currentUser.value
         if(it.isNotEmpty() && currentUser != null){
             binding.noFriends.visibility = View.GONE
@@ -84,7 +84,7 @@ class FriendsFragment : Fragment() {
         }
     }
 
-    private fun navigateToProfile(id: String, user: UserEntity, base64: String?){
+    private fun navigateToProfile(id: String, user: User, base64: String?){
         try {
             val action = ChatsFragmentDirections.actionChatsFragmentToOtherProfileFragment(id)
             binding.root.findNavController().navigate(action)
@@ -104,7 +104,7 @@ class FriendsFragment : Fragment() {
         binding.root.findNavController().navigate(action)
     }
 
-    private fun toggleShimmerVisibility(friends: List<UserEntity?>){
+    private fun toggleShimmerVisibility(friends: List<User?>){
         if(friends != null){
             binding.shimmerFriends.visibility = View.GONE
         } else {

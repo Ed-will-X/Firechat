@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "profile_image_table")
-class ProfileImageEntity {
+class ProfileImage {
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "owner_id")
     lateinit var ownerId: String
@@ -19,7 +19,7 @@ class ProfileImageEntity {
         this.imgChangeTimestamp = imgChangeTimestamp
     }
 
-    constructor(profileImage: ProfileImageEntity, base64: String){
+    constructor(profileImage: ProfileImage, base64: String){
         this.ownerId = profileImage.ownerId
         this.imgChangeTimestamp = profileImage.imgChangeTimestamp
         this.image = base64

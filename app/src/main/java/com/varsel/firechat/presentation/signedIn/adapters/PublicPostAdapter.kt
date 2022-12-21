@@ -7,7 +7,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
-import com.varsel.firechat.data.local.PublicPost.PublicPostEntity
+import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.PostUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -27,7 +27,7 @@ class PublicPostAdapterShapes {
 class PublicPostAdapter(
     val activity: SignedinActivity,
     val shape: Int,
-    val postClickListener: (publicPost: PublicPostEntity) -> Unit
+    val postClickListener: (publicPost: PublicPost) -> Unit
 ): RecyclerView.Adapter<PublicPostAdapter.ImageViewHolder>() {
 
     var publicPostStrings = listOf<String>()
@@ -100,7 +100,7 @@ class PublicPostAdapter(
         }
     }
 
-    fun setImage(post: PublicPostEntity, image: ImageView, parent: MaterialCardView?){
+    fun setImage(post: PublicPost, image: ImageView, parent: MaterialCardView?){
         if(post.image != null){
             val decoded = ImageUtils.base64ToBitmap(post.image!!)
 

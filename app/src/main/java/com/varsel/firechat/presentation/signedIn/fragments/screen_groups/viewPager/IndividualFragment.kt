@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.varsel.firechat.databinding.FragmentIndividualBinding
-import com.varsel.firechat.data.local.Chat.ChatRoomEntity
-import com.varsel.firechat.data.local.User.UserEntity
+import com.varsel.firechat.data.local.Chat.ChatRoom
+import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -49,7 +49,7 @@ class IndividualFragment : Fragment() {
         binding.individualChatsRecyclerView.adapter = chatListAdapter
 
         parent.firebaseViewModel.chatRooms.observe(viewLifecycleOwner, Observer {
-            val sorted = MessageUtils.sortChats(it as MutableList<ChatRoomEntity>)
+            val sorted = MessageUtils.sortChats(it as MutableList<ChatRoom>)
 
             toggleRecyclerViewVisibility(it)
             chatListAdapter.submitList(sorted)
@@ -68,7 +68,7 @@ class IndividualFragment : Fragment() {
         return view
     }
 
-    private fun navigateToChatPage(chatRoomId: String, user: UserEntity, base64: String?) {
+    private fun navigateToChatPage(chatRoomId: String, user: User, base64: String?) {
         try {
             val action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(chatRoomId, user.userUID)
 
@@ -81,7 +81,7 @@ class IndividualFragment : Fragment() {
         }
     }
 
-    private fun setUnreadIndicator(unreadRooms: MutableMap<String, ChatRoomEntity>){
+    private fun setUnreadIndicator(unreadRooms: MutableMap<String, ChatRoom>){
         // TODO: Set unread indicator in Tab Layout
 
 //        for(i in unreadRooms){
@@ -89,7 +89,7 @@ class IndividualFragment : Fragment() {
 //        }
     }
 
-    private fun toggleRecyclerViewVisibility(chats: MutableList<ChatRoomEntity>){
+    private fun toggleRecyclerViewVisibility(chats: MutableList<ChatRoom>){
         val currentUser = parent.firebaseViewModel.currentUser.value
         if(chats.isNotEmpty() && currentUser != null){
             binding.individualChatsRecyclerView.visibility = View.VISIBLE
@@ -100,7 +100,7 @@ class IndividualFragment : Fragment() {
         }
     }
 
-    private fun toggleShimmerVisibility(currentUser: UserEntity?){
+    private fun toggleShimmerVisibility(currentUser: User?){
         if(currentUser != null){
             binding.shimmerMessages.visibility = View.GONE
         } else {

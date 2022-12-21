@@ -8,38 +8,38 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.varsel.firechat.data.local.BugReport.BugReportEntity
-import com.varsel.firechat.data.local.Chat.ChatRoomEntity
-import com.varsel.firechat.data.local.Chat.GroupRoomEntity
-import com.varsel.firechat.data.local.Image.ImageEntity
-import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
-import com.varsel.firechat.data.local.User.UserEntity
-import com.varsel.firechat.data.local.Message.MessageEntity
+import com.varsel.firechat.data.local.BugReport.BugReport
+import com.varsel.firechat.data.local.Chat.ChatRoom
+import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.data.local.Image.Image
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.Message.SystemMessageType
-import com.varsel.firechat.data.local.PublicPost.PublicPostEntity
+import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.utils.DebugUtils
 import com.varsel.firechat.utils.ImageUtils
 
 class FirebaseViewModel: ViewModel() {
-    val usersLiveData = MutableLiveData<List<UserEntity>>()
-    val selectedUser = MutableLiveData<UserEntity>()
-    var selectedChatRoomUser = MutableLiveData<UserEntity>()
-    val currentUser = MutableLiveData<UserEntity>()
-    val currentUserSingle = MutableLiveData<UserEntity>()
-    val friendRequests = MutableLiveData<List<UserEntity>>()
-    private var _friends = MutableLiveData<List<UserEntity>>()
+    val usersLiveData = MutableLiveData<List<User>>()
+    val selectedUser = MutableLiveData<User>()
+    var selectedChatRoomUser = MutableLiveData<User>()
+    val currentUser = MutableLiveData<User>()
+    val currentUserSingle = MutableLiveData<User>()
+    val friendRequests = MutableLiveData<List<User>>()
+    private var _friends = MutableLiveData<List<User>>()
     val friends get() = _friends
-    var chatRooms = MutableLiveData<MutableList<ChatRoomEntity>>()
-    var selectedChatRoom = MutableLiveData<ChatRoomEntity>()
-    val groupRooms = MutableLiveData<MutableList<GroupRoomEntity>>()
-    val selectedGroupRoom = MutableLiveData<GroupRoomEntity>()
-    val usersQuery = MutableLiveData<List<UserEntity>>()
-    val selectedGroupParticipants = MutableLiveData<List<UserEntity>>()
-    val selectedGroup_nonParticipants = MutableLiveData<List<UserEntity>>()
+    var chatRooms = MutableLiveData<MutableList<ChatRoom>>()
+    var selectedChatRoom = MutableLiveData<ChatRoom>()
+    val groupRooms = MutableLiveData<MutableList<GroupRoom>>()
+    val selectedGroupRoom = MutableLiveData<GroupRoom>()
+    val usersQuery = MutableLiveData<List<User>>()
+    val selectedGroupParticipants = MutableLiveData<List<User>>()
+    val selectedGroup_nonParticipants = MutableLiveData<List<User>>()
     val isConnectedToDatabase = MutableLiveData<Boolean>(false)
 
-    fun setFriends(friends: List<UserEntity>){
+    fun setFriends(friends: List<User>){
         this._friends.value = friends
     }
 
@@ -85,7 +85,7 @@ class FirebaseViewModel: ViewModel() {
         onSuccessCallback: ()-> Unit,
         onFailureCallback: ()-> Unit
     ){
-        mDbRef.child("Users").child(UID).setValue(UserEntity(name, email, UID))
+        mDbRef.child("Users").child(UID).setValue(User(name, email, UID))
             .addOnCompleteListener {
                 if(it.isSuccessful){
                     DebugUtils.log_firebase("save user to db successful")
@@ -122,11 +122,11 @@ class FirebaseViewModel: ViewModel() {
                 beforeCallback()
 
                 for (item in snapshot.children){
-                    val user = item.getValue(UserEntity::class.java)
+                    val user = item.getValue(User::class.java)
                     DebugUtils.log_firebase("fetch current user recurrent successful")
 
                     if(user != null){
-                        currentUser.value = user as UserEntity
+                        currentUser.value = user as User
                     }
                 }
                 afterCallback()
@@ -145,11 +145,11 @@ class FirebaseViewModel: ViewModel() {
                 beforeCallback()
 
                 for (item in snapshot.children){
-                    val user = item.getValue(UserEntity::class.java)
+                    val user = item.getValue(User::class.java)
                     DebugUtils.log_firebase("fetch current user single successful")
 
                     if(user != null){
-                        currentUserSingle.value = user as UserEntity
+                        currentUserSingle.value = user as User
                     }
                 }
                 afterCallback()
@@ -169,11 +169,11 @@ class FirebaseViewModel: ViewModel() {
                 beforeCallback()
 
                 for(item in snapshot.children){
-                    val user = item.getValue(UserEntity::class.java)
+                    val user = item.getValue(User::class.java)
                     DebugUtils.log_firebase("get user by id single successful")
 
                     if(user != null){
-                        selectedUser.value = user as UserEntity
+                        selectedUser.value = user as User
                     }
                 }
 
@@ -189,11 +189,11 @@ class FirebaseViewModel: ViewModel() {
 
 
     // used to fetch a user for a recycler view
-    fun getUserSingle(UID: String, mDbRef: DatabaseReference, loopCallback: (user: UserEntity?) -> Unit, afterCallback: () -> Unit){
+    fun getUserSingle(UID: String, mDbRef: DatabaseReference, loopCallback: (user: User?) -> Unit, afterCallback: () -> Unit){
         mDbRef.child("Users").orderByChild("userUID").equalTo(UID).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (i in snapshot.children){
-                    var user = i.getValue(UserEntity::class.java)
+                    var user = i.getValue(User::class.java)
                     DebugUtils.log_firebase("get user single successful")
 
                     loopCallback(user)
@@ -208,11 +208,11 @@ class FirebaseViewModel: ViewModel() {
         })
     }
 
-    fun getUserRecurrent(UID: String, mDbRef: DatabaseReference, loopCallback: (user: UserEntity?) -> Unit, afterCallback: () -> Unit){
+    fun getUserRecurrent(UID: String, mDbRef: DatabaseReference, loopCallback: (user: User?) -> Unit, afterCallback: () -> Unit){
         mDbRef.child("Users").orderByChild("userUID").equalTo(UID).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (i in snapshot.children){
-                    var user = i.getValue(UserEntity::class.java)
+                    var user = i.getValue(User::class.java)
                     DebugUtils.log_firebase("get user recurrent successful")
 
                     loopCallback(user)
@@ -235,9 +235,9 @@ class FirebaseViewModel: ViewModel() {
         mDbRef.child("Users").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 beforeCallback()
-                val users = arrayListOf<UserEntity>()
+                val users = arrayListOf<User>()
                 for(item in snapshot.children){
-                    val user = item.getValue(UserEntity::class.java)
+                    val user = item.getValue(User::class.java)
                     DebugUtils.log_firebase("get all users successful")
                     if(mAuth.currentUser?.uid != user?.userUID){
                         users.add(user!!)
@@ -256,9 +256,9 @@ class FirebaseViewModel: ViewModel() {
         mDbRef.child("Users").orderByChild("name").startAt(queryString).endAt(queryString+"\uf8ff").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 beforeCallback()
-                val users = arrayListOf<UserEntity>()
+                val users = arrayListOf<User>()
                 for(item in snapshot.children){
-                    val user = item.getValue(UserEntity::class.java)
+                    val user = item.getValue(User::class.java)
                     if(mAuth.currentUser?.uid != user?.userUID && queryString.isNotEmpty()){
                         users.add(user!!)
                     }
@@ -275,7 +275,7 @@ class FirebaseViewModel: ViewModel() {
         })
     }
 
-    fun sendFriendRequest(currentUserUid: String, user: UserEntity, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: ()-> Unit){
+    fun sendFriendRequest(currentUserUid: String, user: User, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: ()-> Unit){
         if(currentUserUid == user.userUID.toString()){
             return
         }
@@ -296,7 +296,7 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    fun revokeFriendRequest(currentUserId: String, user: UserEntity, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+    fun revokeFriendRequest(currentUserId: String, user: User, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
         mDbRef
             .child("Users")
             .child(user.userUID.toString())
@@ -313,7 +313,7 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    fun acceptFriendRequest(user: UserEntity, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}) {
+    fun acceptFriendRequest(user: User, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}) {
         val otherUserRef = mDbRef.child("Users").child(user.userUID.toString())
         val currentUserRef = mDbRef.child("Users").child(mAuth.currentUser?.uid.toString())
 
@@ -363,7 +363,7 @@ class FirebaseViewModel: ViewModel() {
 
     }
 
-    fun rejectFriendRequest(user: UserEntity, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
+    fun rejectFriendRequest(user: User, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
         val currentUserId = mAuth.currentUser!!.uid
         val currentUserRef = mDbRef.child("Users").child(currentUserId)
 
@@ -380,7 +380,7 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    fun unfriendUser(user: UserEntity, mAuth: FirebaseAuth, mDbRef: DatabaseReference, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
+    fun unfriendUser(user: User, mAuth: FirebaseAuth, mDbRef: DatabaseReference, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
 
         val currentUserId = mAuth.currentUser!!.uid
         val currentUserRef = mDbRef.child("Users").child(currentUserId)
@@ -410,7 +410,7 @@ class FirebaseViewModel: ViewModel() {
     }
 
     fun sendMessage(
-        message: MessageEntity,
+        message: Message,
         chatRoomUID: String,
         mDbRef: DatabaseReference,
         successCallback: () -> Unit,
@@ -434,7 +434,7 @@ class FirebaseViewModel: ViewModel() {
     }
 
 
-    fun appendParticipants(chatRoom: ChatRoomEntity, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
+    fun appendParticipants(chatRoom: ChatRoom, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
         mDbRef
             .child("chatRooms")
             .child(chatRoom.roomUID!!)
@@ -479,7 +479,7 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    fun getChatRoomRecurrent(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (chatRoom: ChatRoomEntity?) -> Unit, afterCallback: () -> Unit){
+    fun getChatRoomRecurrent(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (chatRoom: ChatRoom?) -> Unit, afterCallback: () -> Unit){
         mDbRef
             .child("chatRooms")
             .orderByChild("roomUID")
@@ -487,7 +487,7 @@ class FirebaseViewModel: ViewModel() {
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (i in snapshot.children){
-                        val item = i.getValue(ChatRoomEntity::class.java)
+                        val item = i.getValue(ChatRoom::class.java)
                         loopCallback(item)
                         DebugUtils.log_firebase("get chat room recurrent successful")
                     }
@@ -501,7 +501,7 @@ class FirebaseViewModel: ViewModel() {
             })
     }
 
-    fun getChatRoomSingle(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (chatRoom: ChatRoomEntity?) -> Unit, afterCallback: () -> Unit){
+    fun getChatRoomSingle(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (chatRoom: ChatRoom?) -> Unit, afterCallback: () -> Unit){
         mDbRef
             .child("chatRooms")
             .orderByChild("roomUID")
@@ -509,7 +509,7 @@ class FirebaseViewModel: ViewModel() {
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (i in snapshot.children){
-                        val item = i.getValue(ChatRoomEntity::class.java)
+                        val item = i.getValue(ChatRoom::class.java)
                         loopCallback(item)
                         DebugUtils.log_firebase("get chat room recurrent successful")
                     }
@@ -523,7 +523,7 @@ class FirebaseViewModel: ViewModel() {
             })
     }
 
-    fun createGroup(groupObj: GroupRoomEntity, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit, failureCallback: () -> Unit){
+    fun createGroup(groupObj: GroupRoom, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit, failureCallback: () -> Unit){
         val groupRef = mDbRef.child("groupRooms")
 
         groupRef
@@ -579,7 +579,7 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    fun getGroupChatRoomSingle(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (chatRoom: GroupRoomEntity?) -> Unit, afterCallback: () -> Unit){
+    fun getGroupChatRoomSingle(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (chatRoom: GroupRoom?) -> Unit, afterCallback: () -> Unit){
         mDbRef
             .child("groupRooms")
             .orderByChild("roomUID")
@@ -587,7 +587,7 @@ class FirebaseViewModel: ViewModel() {
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (i in snapshot.children){
-                        val item = i.getValue(GroupRoomEntity::class.java)
+                        val item = i.getValue(GroupRoom::class.java)
                         loopCallback(item)
                         DebugUtils.log_firebase("get group room single successful")
 
@@ -603,7 +603,7 @@ class FirebaseViewModel: ViewModel() {
             })
     }
 
-    fun getGroupChatRoomRecurrent(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (groupRoom: GroupRoomEntity?) -> Unit, afterCallback: () -> Unit){
+    fun getGroupChatRoomRecurrent(chatRoomUID: String, mDbRef: DatabaseReference, loopCallback: (groupRoom: GroupRoom?) -> Unit, afterCallback: () -> Unit){
         mDbRef
             .child("groupRooms")
             .orderByChild("roomUID")
@@ -611,7 +611,7 @@ class FirebaseViewModel: ViewModel() {
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (i in snapshot.children){
-                        val item = i.getValue(GroupRoomEntity::class.java)
+                        val item = i.getValue(GroupRoom::class.java)
                         loopCallback(item)
                         DebugUtils.log_firebase("get group room recurrent successful")
                     }
@@ -627,7 +627,7 @@ class FirebaseViewModel: ViewModel() {
 
     // TODO: Modify to accommodate simultaneous first message possibilities
     fun sendGroupMessage(
-        message: MessageEntity,
+        message: Message,
         chatRoomID: String,
         mDbRef: DatabaseReference,
         successCallback: () -> Unit,
@@ -840,7 +840,7 @@ class FirebaseViewModel: ViewModel() {
         val usersInString = users.joinToString(
             separator = " ",
         )
-        val message = MessageEntity(SystemMessageType.GROUP_ADD, "${currentUserId} ${usersInString}", System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val message = Message(SystemMessageType.GROUP_ADD, "${currentUserId} ${usersInString}", System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
         val databaseReference = mDbRef.child("groupRooms")
 
         databaseReference
@@ -859,7 +859,7 @@ class FirebaseViewModel: ViewModel() {
     }
 
     fun groupExitMessage(userId: String, roomId: String, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
-        val message = MessageEntity(SystemMessageType.GROUP_EXIT, userId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val message = Message(SystemMessageType.GROUP_EXIT, userId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
         val databaseReference = mDbRef.child("groupRooms")
 
         databaseReference
@@ -878,7 +878,7 @@ class FirebaseViewModel: ViewModel() {
     }
 
     fun groupRemoveMessage(currentUserId: String, userId: String, roomId: String, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
-        val message = MessageEntity(SystemMessageType.GROUP_REMOVE, "${currentUserId} ${userId}", System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val message = Message(SystemMessageType.GROUP_REMOVE, "${currentUserId} ${userId}", System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
         val databaseReference = mDbRef.child("groupRooms")
 
         databaseReference
@@ -897,7 +897,7 @@ class FirebaseViewModel: ViewModel() {
     }
 
     fun groupNowAdminMessage(userId: String, roomId: String, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
-        val message = MessageEntity(SystemMessageType.NOW_ADMIN, userId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val message = Message(SystemMessageType.NOW_ADMIN, userId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
         val databaseReference = mDbRef.child("groupRooms")
 
         databaseReference
@@ -916,7 +916,7 @@ class FirebaseViewModel: ViewModel() {
     }
 
     fun groupNotAdminMessage(userId: String, roomId: String, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
-        val message = MessageEntity(SystemMessageType.NOT_ADMIN, userId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val message = Message(SystemMessageType.NOT_ADMIN, userId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
         val databaseReference = mDbRef.child("groupRooms")
 
         databaseReference
@@ -935,7 +935,7 @@ class FirebaseViewModel: ViewModel() {
     }
 
     fun groupCreateMessage(currentUserId: String, roomId: String, mDbRef: DatabaseReference, successCallback: () -> Unit, failureCallback: () -> Unit){
-        val message = MessageEntity(SystemMessageType.GROUP_CREATE, currentUserId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
+        val message = Message(SystemMessageType.GROUP_CREATE, currentUserId, System.currentTimeMillis(), "SYSTEM", MessageType.TEXT)
         val databaseReference = mDbRef.child("groupRooms")
 
         databaseReference
@@ -1035,7 +1035,7 @@ class FirebaseViewModel: ViewModel() {
         DebugUtils.log_firebase("sign out called")
     }
 
-    fun uploadProfileImage(profileImage: ProfileImageEntity, base64: String, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, userId: String, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+    fun uploadProfileImage(profileImage: ProfileImage, base64: String, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, userId: String, successCallback: ()-> Unit, failureCallback: ()-> Unit){
         val reference = mDbRef.child("ProfileImages").child(userId)
         val decoded = ImageUtils.base64ToByteArray(base64)
 
@@ -1078,7 +1078,7 @@ class FirebaseViewModel: ViewModel() {
         }
     }
 
-    fun getProfileImage(userId: String, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, loopCallback: (profileImage: ProfileImageEntity?) -> Unit, afterCallback: () -> Unit, snapshotExistenceCallback: (bool: Boolean)-> Unit){
+    fun getProfileImage(userId: String, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, loopCallback: (profileImage: ProfileImage?) -> Unit, afterCallback: () -> Unit, snapshotExistenceCallback: (bool: Boolean)-> Unit){
         val storageRef = firebaseStorage.reference.child("/profileImages/${userId}")
         storageRef.getBytes(2_000_000).addOnCompleteListener {
 
@@ -1089,10 +1089,10 @@ class FirebaseViewModel: ViewModel() {
                             Log.d("SNAPSHOT_IMG", "profile image exists for ${userId}")
 
                             for(item in snapshot.children){
-                                val profileImage = item.getValue(ProfileImageEntity::class.java)
+                                val profileImage = item.getValue(ProfileImage::class.java)
                                 if(profileImage != null){
                                     val encoded = ImageUtils.byteArraytoBase64(it.result)
-                                    val profileImage_withBase64 = ProfileImageEntity(profileImage, encoded)
+                                    val profileImage_withBase64 = ProfileImage(profileImage, encoded)
                                     loopCallback(profileImage_withBase64)
 
                                     DebugUtils.log_firebase("get profile image successful")
@@ -1152,7 +1152,7 @@ class FirebaseViewModel: ViewModel() {
             }
     }
 
-    fun uploadChatImage(image: ImageEntity, chatRoomID: String, base64: String, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, successCallback: (image: ImageEntity)-> Unit, failureCallback: ()-> Unit){
+    fun uploadChatImage(image: Image, chatRoomID: String, base64: String, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, successCallback: (image: Image)-> Unit, failureCallback: ()-> Unit){
         val reference = mDbRef.child("chatImages")
 
         val decoded = ImageUtils.base64ToByteArray(base64)
@@ -1164,7 +1164,7 @@ class FirebaseViewModel: ViewModel() {
                     .setValue(image)
                     .addOnCompleteListener {
                         if(it.isSuccessful){
-                            val image_with_base64 = ImageEntity(image, base64)
+                            val image_with_base64 = Image(image, base64)
                             successCallback(image_with_base64)
                             DebugUtils.log_firebase("upload chat image successful")
                         } else {
@@ -1177,7 +1177,7 @@ class FirebaseViewModel: ViewModel() {
         }
     }
 
-    fun getChatImage(imageId: String, chatRoomID: String, mDbRef: DatabaseReference, firebaseStorage: FirebaseStorage, loopCallback: (image: ImageEntity?) -> Unit, afterCallback: () -> Unit){
+    fun getChatImage(imageId: String, chatRoomID: String, mDbRef: DatabaseReference, firebaseStorage: FirebaseStorage, loopCallback: (image: Image?) -> Unit, afterCallback: () -> Unit){
         val storageRef = firebaseStorage.reference.child("/chatImages/${chatRoomID}/${imageId}")
         storageRef.getBytes(2000000).addOnCompleteListener {
             if(it.isSuccessful){
@@ -1185,10 +1185,10 @@ class FirebaseViewModel: ViewModel() {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         for(item in snapshot.children){
 
-                            val image = item.getValue(ImageEntity::class.java)
+                            val image = item.getValue(Image::class.java)
                             val encoded = ImageUtils.byteArraytoBase64(it.result)
                             if(image != null){
-                                val image_withBase64 = ImageEntity(image, encoded)
+                                val image_withBase64 = Image(image, encoded)
                                 loopCallback(image_withBase64)
                                 DebugUtils.log_firebase("get chat image successful")
                             }
@@ -1206,7 +1206,7 @@ class FirebaseViewModel: ViewModel() {
         }
     }
 
-    fun uploadPublicPost(publicPost: PublicPostEntity, base64: String, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, successCallback: (publicPost: PublicPostEntity)-> Unit, failureCallback: ()-> Unit){
+    fun uploadPublicPost(publicPost: PublicPost, base64: String, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, successCallback: (publicPost: PublicPost)-> Unit, failureCallback: ()-> Unit){
         val reference = mDbRef.child("public_posts")
         val decoded = ImageUtils.base64ToByteArray(base64)
 
@@ -1217,7 +1217,7 @@ class FirebaseViewModel: ViewModel() {
                     .setValue(publicPost)
                     .addOnCompleteListener {
                         if(it.isSuccessful){
-                            val publicPost_withBase64 = PublicPostEntity(publicPost, base64)
+                            val publicPost_withBase64 = PublicPost(publicPost, base64)
                             successCallback(publicPost_withBase64)
                             DebugUtils.log_firebase("upload public post successful")
                         } else {
@@ -1231,7 +1231,7 @@ class FirebaseViewModel: ViewModel() {
     }
 
     // TODO: Not tested
-    fun removePublicPost(publicPost: PublicPostEntity, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: ()-> Unit = {}, failureCallback: ()-> Unit = {}){
+    fun removePublicPost(publicPost: PublicPost, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: ()-> Unit = {}, failureCallback: ()-> Unit = {}){
         val publicPostReference = mDbRef.child("public_posts")
         val currentUserId = mAuth.currentUser!!.uid
         val currentUserReference = mDbRef.child("Users")
@@ -1266,7 +1266,7 @@ class FirebaseViewModel: ViewModel() {
         }
     }
 
-    fun getPublicPost(postId: String, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, loopCallback: (publicPost: PublicPostEntity?) -> Unit, afterCallback: () -> Unit){
+    fun getPublicPost(postId: String, firebaseStorage: FirebaseStorage, mDbRef: DatabaseReference, loopCallback: (publicPost: PublicPost?) -> Unit, afterCallback: () -> Unit){
         val storageRef = firebaseStorage.reference.child("/publicPosts/${postId}")
         storageRef.getBytes(2000000).addOnCompleteListener {
             if(it.isSuccessful){
@@ -1274,10 +1274,10 @@ class FirebaseViewModel: ViewModel() {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         for(item in snapshot.children){
 
-                            val post = item.getValue(PublicPostEntity::class.java)
+                            val post = item.getValue(PublicPost::class.java)
                             val encoded = ImageUtils.byteArraytoBase64(it.result)
                             if(post != null){
-                                val post_withImage = PublicPostEntity(post, encoded)
+                                val post_withImage = PublicPost(post, encoded)
                                 loopCallback(post_withImage)
                                 DebugUtils.log_firebase("get public post successful")
                             }
@@ -1349,7 +1349,7 @@ class FirebaseViewModel: ViewModel() {
     }
 
     // TODO: Not tested
-    fun uploadBugReport(bugReportEntity: BugReportEntity, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
+    fun uploadBugReport(bugReportEntity: BugReport, mDbRef: DatabaseReference, mAuth: FirebaseAuth, successCallback: () -> Unit = {}, failureCallback: () -> Unit = {}){
         val databaseReference = mDbRef.child("bug_reports").child(mAuth.currentUser!!.uid)
         databaseReference.child(bugReportEntity.reportId).setValue(bugReportEntity)
             .addOnCompleteListener {

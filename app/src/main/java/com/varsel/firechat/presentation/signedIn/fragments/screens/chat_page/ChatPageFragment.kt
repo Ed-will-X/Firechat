@@ -12,10 +12,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.databinding.FragmentChatPageBinding
-import com.varsel.firechat.data.local.Chat.ChatRoomEntity
-import com.varsel.firechat.data.local.Message.MessageEntity
+import com.varsel.firechat.data.local.Chat.ChatRoom
+import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageType
-import com.varsel.firechat.data.local.ReadReceipt.ReadReceiptEntity
+import com.varsel.firechat.data.local.ReadReceipt.ReadReceipt
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.MessageUtils
@@ -37,7 +37,7 @@ class ChatPageFragment : Fragment() {
     private lateinit var userUID: String
     lateinit var newChatRoomId: String
     var firstMessageSent: Boolean? = null
-    lateinit var newChatRoom: ChatRoomEntity
+    lateinit var newChatRoom: ChatRoom
     lateinit var messagesListAdapter: MessageListAdapter
     val chatPageViewModel: ChatPageViewModel by activityViewModels()
 
@@ -99,7 +99,7 @@ class ChatPageFragment : Fragment() {
 
         // Chatroom initialisation
         newChatRoomId = MessageUtils.generateUID(30)
-        newChatRoom = ChatRoomEntity(newChatRoomId, hashMapOf<String, String>(userUID to userUID, parent.firebaseAuth.uid.toString() to parent.firebaseAuth.uid.toString()))
+        newChatRoom = ChatRoom(newChatRoomId, hashMapOf<String, String>(userUID to userUID, parent.firebaseAuth.uid.toString() to parent.firebaseAuth.uid.toString()))
 
         val fragment = this
         lifecycleScope.launch(Dispatchers.Main) {
@@ -147,7 +147,7 @@ class ChatPageFragment : Fragment() {
             val messageText = binding.messageEditText.text.toString().trim()
 
             // TODO: Amend to accommodate other message types
-            val message = MessageEntity(MessageUtils.generateUID(30), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
+            val message = Message(MessageUtils.generateUID(30), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
 
             if(binding.messageEditText.text.toString() != ""){
                 sendMessage(message) {
@@ -185,11 +185,11 @@ class ChatPageFragment : Fragment() {
 
     private fun updateReadReceipt(){
         if(existingChatRoomId != null){
-            val receipt = ReadReceiptEntity("${existingChatRoomId}:${parent.firebaseAuth.currentUser!!.uid}", System.currentTimeMillis())
+            val receipt = ReadReceipt("${existingChatRoomId}:${parent.firebaseAuth.currentUser!!.uid}", System.currentTimeMillis())
             parent.readReceiptViewModel.storeReceipt(receipt)
         } else {
             if(firstMessageSent == true){
-                val receipt = ReadReceiptEntity("${newChatRoomId}:${parent.firebaseAuth.currentUser!!.uid}", System.currentTimeMillis())
+                val receipt = ReadReceipt("${newChatRoomId}:${parent.firebaseAuth.currentUser!!.uid}", System.currentTimeMillis())
                 parent.readReceiptViewModel.storeReceipt(receipt)
             }
         }
@@ -216,7 +216,7 @@ class ChatPageFragment : Fragment() {
         })
     }
 
-    private fun getMessages(it: ChatRoomEntity?){
+    private fun getMessages(it: ChatRoom?){
         if(existingChatRoomId != null){
             val sorted = it?.messages?.values?.sortedBy {
                 it.time
@@ -229,7 +229,7 @@ class ChatPageFragment : Fragment() {
         }
     }
 
-    private fun setShimmerVisibility(chatRoom: ChatRoomEntity?){
+    private fun setShimmerVisibility(chatRoom: ChatRoom?){
         if(chatRoom == null){
             binding.shimmerMessages.visibility = View.VISIBLE
         } else {
@@ -237,7 +237,7 @@ class ChatPageFragment : Fragment() {
         }
     }
 
-    private fun getMessagesDelayed(chatRoom: ChatRoomEntity?){
+    private fun getMessagesDelayed(chatRoom: ChatRoom?){
         if(existingChatRoomId != null){
             val sorted = chatRoom?.messages?.values?.sortedBy {
                 it.time
@@ -284,7 +284,7 @@ class ChatPageFragment : Fragment() {
         },{})
     }
 
-    private fun sendMessage(message: MessageEntity, success: ()-> Unit){
+    private fun sendMessage(message: Message, success: ()-> Unit){
         if(existingChatRoomId != null){
             // Existing chat room
             parent.firebaseViewModel.sendMessage(message, existingChatRoomId!!, parent.mDbRef, {
@@ -315,10 +315,10 @@ class ChatPageFragment : Fragment() {
 
     // This function listens for messages from the other end if the chat page is open without messages
     // only fires up when there is a change to the current user
-    private fun listenForSimultaneousFirstInitialisation(chatRooms: List<ChatRoomEntity?>){
+    private fun listenForSimultaneousFirstInitialisation(chatRooms: List<ChatRoom?>){
         Log.d("LLL", "Listen for simultaneous init ran")
         // check chatrooms which have both the current user
-        val chatRoom = parent.signedinViewModel.findChatRoom(userUID, chatRooms as MutableList<ChatRoomEntity?>)
+        val chatRoom = parent.signedinViewModel.findChatRoom(userUID, chatRooms as MutableList<ChatRoom?>)
         if(chatRoom != null){
             // if found, set the existingChatRoomId to that chatroom
             existingChatRoomId = chatRoom.roomUID

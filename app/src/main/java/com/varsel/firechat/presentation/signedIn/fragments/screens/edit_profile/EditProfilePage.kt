@@ -14,7 +14,7 @@ import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActionSheetEditProfileBinding
 import com.varsel.firechat.databinding.ActionSheetProfileImageBinding
 import com.varsel.firechat.databinding.FragmentEditProfilePageBinding
-import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.utils.AnimationUtils
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.utils.ImageUtils
@@ -85,18 +85,18 @@ class EditProfilePage : Fragment() {
     }
 
     // gallery
-    private fun uploadImage(uri: Uri, successCallback: (profileImage: ProfileImageEntity)-> Unit){
+    private fun uploadImage(uri: Uri, successCallback: (profileImage: ProfileImage)-> Unit){
         val base64: String? = ImageUtils.encodeUri(uri, parent)
         if(base64 != null){
             val currentUser = parent.firebaseAuth.currentUser!!.uid
             val timestamp = System.currentTimeMillis()
-            val profileImage = ProfileImageEntity(currentUser, timestamp)
+            val profileImage = ProfileImage(currentUser, timestamp)
 
             parent.showBottomInfobar(parent.getString(R.string.uploading_profile_image), InfobarColors.UPLOADING)
 
             parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, currentUser, {
                 parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
-                    val profileImage_withBase64 = ProfileImageEntity(profileImage, base64)
+                    val profileImage_withBase64 = ProfileImage(profileImage, base64)
                     parent.profileImageViewModel.storeImage(profileImage_withBase64)
                     parent.profileImageViewModel.profileImage_currentUser.value = profileImage_withBase64
 
@@ -116,13 +116,13 @@ class EditProfilePage : Fragment() {
     private fun uploadImage(base64: String, successCallback: () -> Unit){
         val currentUser = parent.firebaseAuth.currentUser!!.uid
         val timestamp = System.currentTimeMillis()
-        val profileImage = ProfileImageEntity( currentUser, timestamp)
+        val profileImage = ProfileImage( currentUser, timestamp)
 
         parent.showBottomInfobar(parent.getString(R.string.uploading_profile_image), InfobarColors.UPLOADING)
 
         parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, currentUser, {
             parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
-                val profileImage_withBase64 = ProfileImageEntity(profileImage, base64)
+                val profileImage_withBase64 = ProfileImage(profileImage, base64)
 
                 parent.profileImageViewModel.storeImage(profileImage_withBase64)
                 parent.profileImageViewModel.profileImage_currentUser.value = profileImage_withBase64

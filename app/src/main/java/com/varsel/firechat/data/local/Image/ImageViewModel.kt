@@ -38,31 +38,31 @@ class ImageViewModel @Inject constructor(
         this.image.value = null
     }
 
-    fun getImageById(id: String): LiveData<ImageEntity> {
+    fun getImageById(id: String): LiveData<Image> {
         val image = dao.get(id)
         return image
     }
 
-    fun storeImage(image: ImageEntity){
+    fun storeImage(image: Image){
         viewModelScope.launch {
             dao.insert(image)
         }
     }
 
-    fun storeImage(image: ImageEntity, afterCallback: ()-> Unit){
+    fun storeImage(image: Image, afterCallback: ()-> Unit){
         viewModelScope.launch {
             dao.insert(image)
             afterCallback()
         }
     }
 
-    fun deleteImage(image: ImageEntity){
+    fun deleteImage(image: Image){
         viewModelScope.launch {
             dao.delete(image)
         }
     }
 
-    fun checkForImgInRoom(imageId: String): LiveData<ImageEntity> {
+    fun checkForImgInRoom(imageId: String): LiveData<Image> {
         val imageLiveData = dao.get(imageId)
         return imageLiveData
     }

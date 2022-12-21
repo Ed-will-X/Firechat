@@ -1,7 +1,7 @@
 package com.varsel.firechat.data.local.Setting
 
 import androidx.lifecycle.*
-import com.varsel.firechat.data.local.BugReport.BugReportEntity
+import com.varsel.firechat.data.local.BugReport.BugReport
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -11,38 +11,38 @@ import javax.inject.Inject
 class SettingViewModel @Inject constructor(
     private val dao: SettingDao
 ) : ViewModel() {
-    val settingConfig = MutableLiveData<SettingEntity>()
+    val settingConfig = MutableLiveData<Setting>()
 
-    fun storeSetting(setting: SettingEntity){
+    fun storeSetting(setting: Setting){
         viewModelScope.launch {
             dao.insert(setting)
         }
     }
 
-    fun updateSetting(setting: SettingEntity){
+    fun updateSetting(setting: Setting){
         viewModelScope.launch {
             dao.update(setting)
         }
     }
 
-    fun getSetting(userId: String): LiveData<SettingEntity> {
+    fun getSetting(userId: String): LiveData<Setting> {
         val configuration = dao.get(userId)
         return configuration
     }
 
-    fun revertSettingsToDefault(setting: SettingEntity){
-        val defaults = SettingEntity(setting)
+    fun revertSettingsToDefault(setting: Setting){
+        val defaults = Setting(setting)
 
         viewModelScope.launch {
             dao.insert(defaults)
         }
     }
 
-    fun setDarkMode(setting: SettingEntity, value: Boolean){
+    fun setDarkMode(setting: Setting, value: Boolean){
         setting.setDarkMode(value)
     }
 
-    fun overrideSystemTheme(setting: SettingEntity, value: Boolean){
+    fun overrideSystemTheme(setting: Setting, value: Boolean){
         setting.setOverrideSystemTheme(value)
     }
 
@@ -65,7 +65,7 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    fun uploadBugReport(bugReportEntity: BugReportEntity, activity: SignedinActivity, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+    fun uploadBugReport(bugReportEntity: BugReport, activity: SignedinActivity, successCallback: ()-> Unit, failureCallback: ()-> Unit){
         activity.firebaseViewModel.uploadBugReport(bugReportEntity, activity.mDbRef, activity.firebaseAuth, {
             successCallback()
         }, {

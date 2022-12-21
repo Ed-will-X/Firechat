@@ -4,7 +4,7 @@ import android.view.View
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
-import com.varsel.firechat.data.local.PublicPost.PublicPostEntity
+import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
 class PostUtils {
@@ -51,7 +51,7 @@ class PostUtils {
             }
         }
 
-        fun check_if_post_in_room(id: String, activity: SignedinActivity, postCallback: (post: PublicPostEntity?) -> Unit){
+        fun check_if_post_in_room(id: String, activity: SignedinActivity, postCallback: (post: PublicPost?) -> Unit){
             activity.checkIfPostInDb(id) {
                 if(it != null){
                     postCallback(it)
@@ -61,7 +61,7 @@ class PostUtils {
             }
         }
 
-        fun setPostImage(post: PublicPostEntity, image: ImageView, viewParent: MaterialCardView, activity: SignedinActivity){
+        fun setPostImage(post: PublicPost, image: ImageView, viewParent: MaterialCardView, activity: SignedinActivity){
             if(post.image != null && post.image?.isNotEmpty() == true){
                 val bitmap = ImageUtils.base64ToBitmap(post.image!!)
                 Glide.with(activity).load(bitmap).dontAnimate().into(image)

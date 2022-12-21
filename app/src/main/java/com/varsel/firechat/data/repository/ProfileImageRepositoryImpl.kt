@@ -1,11 +1,9 @@
 package com.varsel.firechat.data.repository
 
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.data.local.Chat.GroupRoomEntity
-import com.varsel.firechat.data.local.ProfileImage.ProfileImageEntity
-import com.varsel.firechat.data.mapper.toProfileImage
+import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.remote.Firebase
-import com.varsel.firechat.domain.model.ProfileImage
 import com.varsel.firechat.domain.repository.ProfileImageRepository
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -25,7 +23,7 @@ class ProfileImageRepositoryImpl(
         })
     }
 
-    override suspend fun uploadGroupImage(groupRoom: GroupRoomEntity, profileImage: ProfileImage, base64: String): Response = suspendCoroutine { continuation ->
+    override suspend fun uploadGroupImage(groupRoom: GroupRoom, profileImage: ProfileImage, base64: String): Response = suspendCoroutine { continuation ->
         firebase.uploadGroupImage(groupRoom, profileImage, base64, {
             firebase.appendGroupImageTimestamp(groupRoom.roomUID, System.currentTimeMillis(), {
                 continuation.resume(Response.Success())
@@ -37,7 +35,7 @@ class ProfileImageRepositoryImpl(
         })
     }
 
-    override suspend fun removeGroupImage(groupRoom: GroupRoomEntity): Response = suspendCoroutine { continuation ->
+    override suspend fun removeGroupImage(groupRoom: GroupRoom): Response = suspendCoroutine { continuation ->
         firebase.removeProfileImage(groupRoom.roomUID, {
             firebase.appendGroupImageTimestamp(groupRoom.roomUID, System.currentTimeMillis(), {
                 continuation.resume(Response.Success())
@@ -63,7 +61,7 @@ class ProfileImageRepositoryImpl(
 
     override suspend fun getProfileImage(userId: String): ProfileImage? = suspendCoroutine { continuation ->
         firebase.getProfileImage(userId, {
-            continuation.resume(it?.toProfileImage())
+            continuation.resume(it)
         }, {}, {})
     }
 }
