@@ -21,7 +21,7 @@
         <item name="user_card_background_profile_fragment_bottom">@color/white_grey</item>
         <item name="background_profile_fragment">@color/cream</item>
 
-        <item name="background_chats_fragment">@color/cream</item>
+        <item name="background_chats_fragment">@color/white</item>
 
 
         <!-- Horizontal rule color-->

@@ -20,14 +20,8 @@ object RemoteModule {
 
     @Provides
     @Singleton
-    fun provideOtherUserRepository(firebase: Firebase): OtherUserRepository {
-        return OtherUserRepositoryImpl(firebase)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSearchUserUserCase(repository: OtherUserRepository): SearchUsersUseCase {
-        return SearchUsersUseCase(repository as OtherUserRepositoryImpl)
+    fun provideOtherUserRepository(firebase: Firebase, databaseReference: DatabaseReference): OtherUserRepository {
+        return OtherUserRepositoryImpl(firebase, databaseReference)
     }
 
     @Provides

@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.Flow
 // TODO: Add after callback for get requests
 interface OtherUserRepository {
 
-    fun getUserById(id: String) : Flow<User>
-    suspend fun getUserSingle(id: String) : User   // for single occurrences like recycler views
+    fun getUserById(id: String) : Flow<User>    // for single occurrences like recycler views
+    fun getUserRecurrent(id: String) : Flow<User>
     fun queryUsers(queryString: String) : Flow<List<User>>
-    suspend fun sendFriendRequest(user: User) : Response
-    suspend fun revokeFriendRequest(user: User) : Response
-    suspend fun acceptFriendRequest(user: User) : Response
-    suspend fun rejectFriendRequest(user: User) : Response
-    suspend fun unfriendUser(user: User) : Response
+    fun sendFriendRequest(user: User) : Flow<Response>
+    fun revokeFriendRequest(user: User) : Flow<Response>
+    fun acceptFriendRequest(user: User) : Flow<Response>
+    fun rejectFriendRequest(user: User) : Flow<Response>
+    fun unfriendUser(user: User) : Flow<Response>
 
 }

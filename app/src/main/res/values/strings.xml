@@ -39,6 +39,7 @@
     <string name="about_user">About %s</string>
     <string name="photos">Photos</string>
     <string name="add">Add</string>
+    <string name="revoke">Revoke</string>
     <string name="remove">Remove</string>
     <string name="send_request_confirmation_header">Send Friend Request?</string>
     <string name="send_request_confirmation_body">Are you sure you want to send a friend request to %s?</string>
@@ -249,7 +250,7 @@
 
     <string name="new_message_from">You have a new message from %s</string>
     <string name="new_message_in">You have a new message in %s</string>
-    <string name="is_now_your_friend">% is now your friend</string>
+    <string name="is_now_your_friend">%s is now your friend</string>
     <string name="you_have_been_added_to">You have been added to %s</string>
     <string name="friend_request_From">You have a friend request from %s</string>
 

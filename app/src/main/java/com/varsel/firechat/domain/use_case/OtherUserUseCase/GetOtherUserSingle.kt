@@ -1,4 +1,4 @@
-package com.varsel.firechat.domain.use_case.GetOtherUseCase
+package com.varsel.firechat.domain.use_case.OtherUserUseCase
 
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.repository.OtherUserRepositoryImpl

@@ -1,13 +1,13 @@
 package com.varsel.firechat.presentation.signedIn.fragments.screens.other_profile
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -23,7 +23,7 @@ import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapterShapes
-import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,7 +32,7 @@ class OtherProfileFragment : Fragment() {
     private var _binding: FragmentOtherProfileBinding? = null
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
-    private val firebaseViewModel: FirebaseViewModel by activityViewModels()
+    private val viewModel: OtherProfileViewModel by activityViewModels()
     private lateinit var userUtils: UserUtils
     private lateinit var postAdapter: PublicPostAdapter
 
@@ -48,12 +48,19 @@ class OtherProfileFragment : Fragment() {
 
         LifecycleUtils.observeInternetStatus(parent, this, {
             binding.addFriendBtn.isEnabled = true
+            binding.revokeBtn.isEnabled = true
+            binding.unfriendBtn.isEnabled = true
         }, {
             binding.addFriendBtn.isEnabled = false
+            binding.revokeBtn.isEnabled = false
+            binding.unfriendBtn.isEnabled = false
         })
 
 
         val uid = OtherProfileFragmentArgs.fromBundle(requireArguments()).userId
+        viewModel.getOtherUser(uid)
+        collectState()
+
 
         userUtils = UserUtils(this)
 
@@ -61,43 +68,61 @@ class OtherProfileFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        // sets props to page
-        firebaseViewModel.selectedUser.observe(viewLifecycleOwner, Observer {
-            setBindings(it)
-            if (it != null) {
-                ImageUtils.setProfilePicOtherUser_fullObject(it, binding.profileImage, binding.profileImageParent, parent) { profileImage ->
-                    parent.profileImageViewModel.selectedOtherUserProfilePic.value = profileImage?.image
-
-                    if(profileImage != null){
-                        binding.profileImage.setOnClickListener { it2 ->
-                            ImageUtils.displayProfilePicture(profileImage, it, parent)
-                        }
-                    }
-                }
-            }
-        })
-
-        setPublicPostRecyclerView()
 
         return view
     }
 
-    private fun setPublicPostRecyclerView(){
+    private fun collectState() {
+        collectLatestLifecycleFlow(viewModel.state) {
+            if (it.user != null && !it.isLoading) {
+                Log.d("CLEAN", "${it.user.friendRequests.count()}")
+                setBindings(it.user)
+                setPublicPostRecyclerView(it.user)
+                setClickListeners(it.user)
+                determineBtn(it.user)
+
+                ImageUtils.setProfilePicOtherUser_fullObject(it.user, binding.profileImage, binding.profileImageParent, parent) { profileImage ->
+                    parent.profileImageViewModel.selectedOtherUserProfilePic.value = profileImage?.image
+
+                    if(profileImage != null){
+                        binding.profileImage.setOnClickListener { it2 ->
+                            ImageUtils.displayProfilePicture(profileImage, it.user, parent)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setClickListeners(selectedUser: User) {
+        binding.publicPostsSeeAll.setOnClickListener {
+            showPublicPostActionsheet(selectedUser)
+        }
+
+        binding.addFriendBtn.setOnClickListener {
+            showSendRequestActionSheet(selectedUser)
+        }
+
+        binding.revokeBtn.setOnClickListener {
+            showRevokeRequestActionsheet(selectedUser)
+        }
+
+        binding.unfriendBtn.setOnClickListener {
+            showUnfriendActionsheet(selectedUser)
+        }
+    }
+
+    private fun setPublicPostRecyclerView(otherUser: User){
         lifecycleScope.launch(Dispatchers.Main) {
             delay(300)
             postAdapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANGLE_SMALL) {
-                val otherUser = parent.firebaseViewModel.selectedUser.value
-                if(otherUser != null){
-                    ImageUtils.displayPublicPostImage(it, otherUser, parent)
-                }
+                ImageUtils.displayPublicPostImage(it, otherUser, parent)
             }
 
-            binding.publicPostsSeeAll.setOnClickListener {
-                showPublicPostActionsheet()
-            }
+
             binding.miniPublicPostsRecyclerView.adapter = postAdapter
 
-            val otherUserPosts = parent.firebaseViewModel.selectedUser.value?.public_posts?.keys?.toList()
+            val otherUserPosts = otherUser.public_posts?.keys?.toList()
 
             if(otherUserPosts != null && otherUserPosts.isNotEmpty()){
                 val reversed = PostUtils.sortPublicPosts_reversed(otherUserPosts).take(4)
@@ -115,48 +140,39 @@ class OtherProfileFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        firebaseViewModel.selectedUser.value = null
         parent.profileImageViewModel.selectedOtherUserProfilePic.value = null
         _binding = null
     }
 
-    fun setBindings(user: User?){
-        if(user?.name != null){
-            binding.aboutTextHeader.text = userUtils.getFirstName(user.name)
-        }
+    fun setBindings(user: User){
+        binding.aboutTextHeader.text = userUtils.getFirstName(user.name)
 
-        if(user?.occupation != null){
-            binding.firstName.setText(user?.name)
-            binding.occupation.setText(user?.occupation)
+        if(user.occupation != null){
+            binding.firstName.setText(user.name)
+            binding.occupation.setText(user.occupation)
             binding.userProps.visibility = View.VISIBLE
             binding.nameWithoutOccupation.visibility = View.GONE
         } else {
-            binding.nameWithoutOccupation.text = user?.name
+            binding.nameWithoutOccupation.text = user.name
             binding.nameWithoutOccupation.visibility = View.VISIBLE
             binding.userProps.visibility = View.GONE
         }
 
-        if (user?.about != null){
+        if (user.about != null){
             binding.aboutTextBody.setText(UserUtils.truncate(user.about!!, 150))
             binding.moreAboutClickable.setOnClickListener { it2 ->
-                showAboutActionSheet(userUtils.getFirstName(user.name), user.about)
+                showAboutActionSheet(userUtils.getFirstName(user.name), user.about, user)
             }
             binding.aboutTextBody.visibility = View.VISIBLE
         } else {
             binding.aboutTextBody.visibility = View.GONE
 
             binding.moreAboutClickable.setOnClickListener {
-                showAboutActionSheet(userUtils.getFirstName(user?.name ?: ""), null)
+                showAboutActionSheet(userUtils.getFirstName(user?.name ?: ""), null, user)
             }
 
             // TODO: Show no about ux thingy
             binding.noAbout.visibility = View.VISIBLE
-        }
-
-        if(user != null){
-            binding.addFriendBtn.setOnClickListener {
-                determineActionsheet(user)
-            }
         }
     }
 
@@ -169,7 +185,7 @@ class OtherProfileFragment : Fragment() {
 
     }
 
-    fun showPublicPostActionsheet(){
+    fun showPublicPostActionsheet(selectedUser: User){
         val dialog = BottomSheetDialog(requireContext())
         val dialogBinding = ActionsheetOtherUserPublicPostsBinding.inflate(layoutInflater, this.binding.root, false)
         dialog.setContentView(dialogBinding.root)
@@ -178,15 +194,12 @@ class OtherProfileFragment : Fragment() {
             delay(300)
 
             val adapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANCLE) {
-                val otherUser: User? = parent.firebaseViewModel.selectedUser.value
-                if(otherUser != null){
-                    dialog.dismiss()
-                    ImageUtils.displayPublicPostImage(it, otherUser, parent)
-                }
+                dialog.dismiss()
+                ImageUtils.displayPublicPostImage(it, selectedUser, parent)
             }
             dialogBinding.otherUserPublicPostsRecyclerViewFull.adapter = adapter
 
-            val otherUserPosts = parent.firebaseViewModel.selectedUser.value?.public_posts?.keys?.toList()
+            val otherUserPosts = selectedUser.public_posts?.keys?.toList()
             if(otherUserPosts != null && otherUserPosts.isNotEmpty()){
                 val reversed = PostUtils.sortPublicPosts_reversed(otherUserPosts)
                 adapter.publicPostStrings = reversed
@@ -197,7 +210,6 @@ class OtherProfileFragment : Fragment() {
                 dialogBinding.shimmerPublicPosts.visibility = View.GONE
                 dialogBinding.noPublicPosts.visibility = View.VISIBLE
 
-                val selectedUser = parent.firebaseViewModel.selectedUser.value
                 dialogBinding.noPublicPostsYetBody.setText(getString(R.string.no_public_post_yet__body, selectedUser?.name))
             }
         }
@@ -205,7 +217,7 @@ class OtherProfileFragment : Fragment() {
         dialog.show()
     }
 
-    fun showAboutActionSheet(headerText: String, bodyText: String?){
+    fun showAboutActionSheet(headerText: String, bodyText: String?, selectedUser: User){
         val dialog = BottomSheetDialog(parent)
         dialog.setContentView(R.layout.action_sheet_about_user)
 
@@ -213,8 +225,6 @@ class OtherProfileFragment : Fragment() {
         val body = dialog.findViewById<TextView>(R.id.dialog_about_body)
         val no_about = dialog.findViewById<LinearLayout>(R.id.no_about)
         val no_about_body = dialog.findViewById<TextView>(R.id.no_about_body)
-
-        val selectedUser = parent.firebaseViewModel.selectedUser.value
 
         header?.text = headerText
 
@@ -230,7 +240,7 @@ class OtherProfileFragment : Fragment() {
         dialog.show()
     }
 
-    private fun showSendRequestActionSheet(user: User?){
+    private fun showSendRequestActionSheet(user: User){
         val dialog = BottomSheetDialog(parent)
         dialog.setContentView(R.layout.action_sheet_send_friend_request)
 
@@ -240,7 +250,7 @@ class OtherProfileFragment : Fragment() {
 
         sendRequestBody?.text = getString(R.string.send_request_confirmation_body, user?.name)
         yesBtn?.setOnClickListener {
-            sendFriendRequest(user)
+            viewModel.sendFriendRequest(user)
             dialog.dismiss()
         }
 
@@ -251,7 +261,7 @@ class OtherProfileFragment : Fragment() {
         dialog.show()
     }
 
-    private fun showRevokeRequest(user: User?){
+    private fun showRevokeRequestActionsheet(user: User){
         val dialog = BottomSheetDialog(parent)
         dialog.setContentView(R.layout.action_sheet_revoke_request)
 
@@ -266,7 +276,7 @@ class OtherProfileFragment : Fragment() {
         }
 
         yes?.setOnClickListener {
-            revokeFriendRequest(user)
+            viewModel.revokeFriendRequest(user)
             dialog.dismiss()
         }
 
@@ -283,7 +293,7 @@ class OtherProfileFragment : Fragment() {
 
         // TODO: Implement unfriend user
         dialogBinding.yesBtn.setOnClickListener {
-            parent.firebaseViewModel.unfriendUser(user, parent.firebaseAuth, parent.mDbRef)
+            viewModel.unfriendUser(user)
             dialog.dismiss()
         }
 
@@ -293,27 +303,18 @@ class OtherProfileFragment : Fragment() {
         dialog.show()
     }
 
-    private fun determineActionsheet(user: User){
-        if(user?.friendRequests?.contains(parent.firebaseAuth.currentUser?.uid) == true){
-            showRevokeRequest(user)
+    private fun determineBtn(user: User){
+        binding.revokeBtn.visibility = View.GONE
+        binding.unfriendBtn.visibility = View.GONE
+        binding.addFriendBtn.visibility = View.GONE
 
-            // TODO: Fix lifecycle bug Here
-        } else if(parent.firebaseViewModel.currentUser.value?.friends?.contains(user.userUID) == true){
-            showUnfriendActionsheet(user)
-        }
-        else {
-            showSendRequestActionSheet(user)
-        }
-    }
-
-    private fun determineBtn(user: User?){
         if(user?.friendRequests?.contains(parent.firebaseAuth.currentUser?.uid) == true){
-            // TODO: Show revoke request button
+            binding.revokeBtn.visibility = View.VISIBLE
         } else if(user?.friends?.contains(parent.firebaseAuth.currentUser?.uid) == true){
-            // TODO: Show unfriend user button
+            binding.unfriendBtn.visibility = View.VISIBLE
         }
         else {
-            // TODO: Show send request button
+            binding.addFriendBtn.visibility = View.VISIBLE
         }
     }
 
@@ -326,28 +327,4 @@ class OtherProfileFragment : Fragment() {
 
     }
 
-    private fun revokeFriendRequest(user: User?){
-        if (user != null) {
-            firebaseViewModel.revokeFriendRequest(parent.firebaseAuth.currentUser?.uid.toString(), user, parent.mDbRef, {
-                firebaseViewModel.getUserById(user.userUID!!, parent.mDbRef, {
-
-                }, { })
-
-            }, {
-
-            })
-        }
-    }
-
-    private fun sendFriendRequest(user: User?){
-        if (user != null) {
-            firebaseViewModel.sendFriendRequest(parent.firebaseAuth.currentUser?.uid.toString(), user, parent.mDbRef, {
-                firebaseViewModel.getUserById(user.userUID!!, parent.mDbRef, {
-
-                }, { })
-            }, {
-
-            })
-        }
-    }
 }

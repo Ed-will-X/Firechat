@@ -163,10 +163,37 @@
                             android:fontFamily="sans-serif"
                             android:id="@+id/add_friend_btn"
                             android:textAllCaps="false"
-                            android:layout_width="70dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="35dp"
                             android:textSize="14sp"
                             android:text="@string/add"
+                            android:textColor="@color/white"
+                            android:background="@drawable/bg_other_profile_button"
+                            />
+
+                        <Button
+                            android:visibility="gone"
+                            android:layout_gravity="center_vertical"
+                            android:fontFamily="sans-serif"
+                            android:id="@+id/revoke_btn"
+                            android:textAllCaps="false"
+                            android:layout_width="wrap_content"
+                            android:layout_height="35dp"
+                            android:textSize="14sp"
+                            android:text="@string/revoke"
+                            android:textColor="@color/white"
+                            android:background="@drawable/bg_other_profile_button"
+                            />
+                        <Button
+                            android:visibility="gone"
+                            android:layout_gravity="center_vertical"
+                            android:fontFamily="sans-serif"
+                            android:id="@+id/unfriend_btn"
+                            android:textAllCaps="false"
+                            android:layout_width="wrap_content"
+                            android:layout_height="35dp"
+                            android:textSize="14sp"
+                            android:text="@string/unfriend"
                             android:textColor="@color/white"
                             android:background="@drawable/bg_other_profile_button"
                             />

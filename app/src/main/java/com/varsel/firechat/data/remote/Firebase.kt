@@ -147,7 +147,7 @@ class Firebase(
     }
 
     // used to fetch a user that is being displayed on a separate page
-    fun getUserById(uid: String, beforeCallback: () -> Unit, successCallback: (user: User) -> Unit, afterCallback: ()-> Unit = {}) {
+    fun getUserById(uid: String, beforeCallback: () -> Unit, successCallback: (user: User) -> Unit, afterCallback: ()-> Unit = {}, cancelCallback: () -> Unit = {}) {
         mDbRef.child("Users").orderByChild("userUID").equalTo(uid).addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -196,24 +196,29 @@ class Firebase(
         })
     }
 
-    fun getUserRecurrent(UID: String, loopCallback: (user: User?) -> Unit, afterCallback: () -> Unit){
-        mDbRef.child("Users").orderByChild("userUID").equalTo(UID).addValueEventListener(object :
+    // TODO: Fix potential concurrency bug in pertinence to cancellation
+    fun getUserRecurrent(UID: String, loopCallback: (user: User) -> Unit, afterCallback: () -> Unit, cancelCallback: ()-> Unit = {}): ValueEventListener{
+        val listener = mDbRef.child("Users").orderByChild("userUID").equalTo(UID).addValueEventListener(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (i in snapshot.children){
                     var user = i.getValue(User::class.java)
                     DebugUtils.log_firebase("get user recurrent successful")
 
-                    loopCallback(user)
+                    if(user != null) {
+                        loopCallback(user)
+                    }
                 }
                 afterCallback()
             }
 
             override fun onCancelled(error: DatabaseError) {
-
+                cancelCallback()
             }
 
         })
+
+        return listener
     }
 
     fun clearSelectedUser(){

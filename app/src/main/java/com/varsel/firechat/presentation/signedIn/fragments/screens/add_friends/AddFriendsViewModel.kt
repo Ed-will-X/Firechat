@@ -41,7 +41,6 @@ class AddFriendsViewModel @Inject constructor(
 
             val usersFlow = searchUsersUseCase(query)
             usersFlow.onEach {
-                Log.d("CLEAN", it.count().toString())
 
                 if(it.isNotEmpty()) {
                     _state.value = _state.value.copy(users = it, isLoading = false)
