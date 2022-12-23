@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.domain.use_case.OtherUserUseCase.GetOtherUserRecurrent
-import com.varsel.firechat.domain.use_case.OtherUserUseCase.RevokeFriendRequestUseCase
-import com.varsel.firechat.domain.use_case.OtherUserUseCase.SendFriendRequestUseCase
-import com.varsel.firechat.domain.use_case.OtherUserUseCase.UnfriendUserUseCase
+import com.varsel.firechat.domain.use_case.other_user.GetOtherUserRecurrent
+import com.varsel.firechat.domain.use_case.other_user.RevokeFriendRequestUseCase
+import com.varsel.firechat.domain.use_case.other_user.SendFriendRequestUseCase
+import com.varsel.firechat.domain.use_case.other_user.UnfriendUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn

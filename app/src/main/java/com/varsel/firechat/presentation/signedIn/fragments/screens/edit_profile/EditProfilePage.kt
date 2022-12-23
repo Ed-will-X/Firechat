@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -15,18 +16,21 @@ import com.varsel.firechat.databinding.ActionSheetEditProfileBinding
 import com.varsel.firechat.databinding.ActionSheetProfileImageBinding
 import com.varsel.firechat.databinding.FragmentEditProfilePageBinding
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case.current_user.EditUserFields
 import com.varsel.firechat.utils.AnimationUtils
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.InfobarColors
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
-import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 
 class EditProfilePage : Fragment() {
     private var _binding: FragmentEditProfilePageBinding? = null
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
+    private val viewModel: EditProfileViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,7 +42,8 @@ class EditProfilePage : Fragment() {
         parent = activity as SignedinActivity
         parent.changeStatusBarColor(R.color.light_blue, false)
 
-        setBindings()
+        viewModel.getCurrentUser()
+        collectState()
 
         binding.backButton.setOnClickListener {
             popNavigation()
@@ -52,16 +57,26 @@ class EditProfilePage : Fragment() {
             }
         })
 
-        LifecycleUtils.observeInternetStatus(parent, this, {
-            binding.actionSheetClickable.setOnClickListener {
-                openEditProfileActionsheet()
-            }
-        }, {
-            binding.actionSheetClickable.setOnClickListener(null)
-        })
-
 
         return view
+    }
+
+    private fun collectState() {
+        collectLatestLifecycleFlow(viewModel.state) {
+            if(it.user != null) {
+                setBindings(it.user)
+
+                // TODO: Fix potential memory leak
+                LifecycleUtils.observeInternetStatus(parent, this, {
+                    binding.actionSheetClickable.setOnClickListener { it2 ->
+                        openEditProfileActionsheet(it.user)
+                    }
+                }, {
+                    binding.actionSheetClickable.setOnClickListener(null)
+                })
+
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -166,7 +181,7 @@ class EditProfilePage : Fragment() {
         })
     }
 
-    private fun openEditProfileActionsheet(){
+    private fun openEditProfileActionsheet(currentUser: User){
         val dialog = BottomSheetDialog(requireContext())
         val dialogBinding = ActionSheetEditProfileBinding.inflate(layoutInflater, this.binding.root, false)
         val view = dialogBinding.root
@@ -177,7 +192,7 @@ class EditProfilePage : Fragment() {
         val occupationEditText = dialogBinding.occupationEditText
         val aboutEditText = dialogBinding.aboutEditText
 
-        setActionsheetBindings(dialogBinding)
+        setActionsheetBindings(dialogBinding, currentUser)
         dialog.setContentView(view)
 
         LifecycleUtils.observeInternetStatus(parent, this, {
@@ -200,29 +215,27 @@ class EditProfilePage : Fragment() {
         dialog.show()
     }
 
-    private fun setBindings(){
-        parent.firebaseViewModel.currentUser.observe(viewLifecycleOwner, Observer {
-            binding.emailText.text = it?.email ?: "-"
-            binding.nameText.text = it?.name ?: "-"
-            binding.locationText.text = it?.location ?: "-"
-            binding.phoneText.text = it?.phone ?: "-"
-            binding.occupationText.text = it?.occupation ?: "-"
+    private fun setBindings(currentUser: User){
+        binding.emailText.text = currentUser.email ?: "-"
+        binding.nameText.text = currentUser.name ?: "-"
+        binding.locationText.text = currentUser.location ?: "-"
+        binding.phoneText.text = currentUser.phone ?: "-"
+        binding.occupationText.text = currentUser.occupation ?: "-"
 
-            binding.imageIcon.setOnClickListener {
-                showImageOptionsActionsheet()
-            }
+        binding.imageIcon.setOnClickListener {
+            showImageOptionsActionsheet(currentUser)
+        }
 
-            binding.profileImageSilhouette.setOnClickListener {
-                showImageOptionsActionsheet()
-            }
+        binding.profileImageSilhouette.setOnClickListener {
+            showImageOptionsActionsheet(currentUser)
+        }
 
 //            setProfilePic()
 
 //            ImageUtils.setProfileImage(it?.profileImage, binding.profileImageParent, binding.profileImage)
-        })
     }
 
-    private fun showImageOptionsActionsheet(){
+    private fun showImageOptionsActionsheet(currentUser: User){
         val dialog = BottomSheetDialog(requireContext())
         val dialogBinding = ActionSheetProfileImageBinding.inflate(layoutInflater, this.binding.root, false)
         val view = dialogBinding.root
@@ -241,7 +254,6 @@ class EditProfilePage : Fragment() {
         })
 
         dialogBinding.expand.setOnClickListener {
-            val currentUser = parent.firebaseViewModel.currentUser.value
             val image = parent.profileImageViewModel.profileImage_currentUser.value
             if(currentUser != null && image != null){
                 ImageUtils.displayProfilePicture(image, currentUser, parent)
@@ -271,31 +283,29 @@ class EditProfilePage : Fragment() {
         dialog.show()
     }
 
-    private fun setActionsheetBindings(dialogBinding: ActionSheetEditProfileBinding){
-        val firebaseViewModel: FirebaseViewModel = parent.firebaseViewModel
+    private fun setActionsheetBindings(dialogBinding: ActionSheetEditProfileBinding, currentUser: User){
+        dialogBinding.nameEditText.setText(currentUser.name)
 
-        dialogBinding.nameEditText.setText(firebaseViewModel.currentUser.value?.name)
-
-        if(firebaseViewModel.currentUser.value?.phone == null){
+        if(currentUser.phone == null){
             dialogBinding.phoneEditText.setText("+")
         } else {
-            dialogBinding.phoneEditText.setText(firebaseViewModel.currentUser.value?.phone)
+            dialogBinding.phoneEditText.setText(currentUser.phone)
         }
 
-        dialogBinding.occupationEditText.setText(firebaseViewModel.currentUser.value?.occupation)
-        dialogBinding.locationEditText.setText(firebaseViewModel.currentUser.value?.location)
-        dialogBinding.aboutEditText.setText(firebaseViewModel.currentUser.value?.about)
+        dialogBinding.occupationEditText.setText(currentUser.occupation)
+        dialogBinding.locationEditText.setText(currentUser.location)
+        dialogBinding.aboutEditText.setText(currentUser.about)
     }
 
     private fun editUser(dialogBinding: ActionSheetEditProfileBinding){
-        parent.firebaseViewModel.editUser("name",dialogBinding.nameEditText.text.toString(), parent.firebaseAuth, parent.mDbRef)
-        parent.firebaseViewModel.editUser("about",dialogBinding.aboutEditText.text.toString(), parent.firebaseAuth, parent.mDbRef)
+        viewModel.editUser(EditUserFields.NAME, dialogBinding.nameEditText.text.toString())
+        viewModel.editUser(EditUserFields.ABOUT, dialogBinding.aboutEditText.text.toString())
+        viewModel.editUser(EditUserFields.OCCUPATION, dialogBinding.occupationEditText.text.toString())
+        viewModel.editUser(EditUserFields.LOCATION, dialogBinding.locationEditText.text.toString())
 
         if(dialogBinding.phoneEditText.text.length in 9..19){
-            parent.firebaseViewModel.editUser("phone",dialogBinding.phoneEditText.text.toString(), parent.firebaseAuth, parent.mDbRef)
+            viewModel.editUser(EditUserFields.PHONE, dialogBinding.phoneEditText.text.toString())
         }
-        parent.firebaseViewModel.editUser("occupation",dialogBinding.occupationEditText.text.toString(), parent.firebaseAuth, parent.mDbRef)
-        parent.firebaseViewModel.editUser("location",dialogBinding.locationEditText.text.toString(), parent.firebaseAuth, parent.mDbRef)
     }
 
     override fun onDestroyView() {

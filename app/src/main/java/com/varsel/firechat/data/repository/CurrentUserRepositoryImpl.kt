@@ -1,89 +1,125 @@
 package com.varsel.firechat.data.repository
 
+import android.util.Log
+import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.domain.repository.CurrentUserRepository
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class CurrentUserRepositoryImpl @Inject constructor(
     val firebase: Firebase
 ) : CurrentUserRepository {
+    // TODO: Remove Experimental Code
+    private var currentUser: MutableStateFlow<Resource<User>> = MutableStateFlow(Resource.Loading())
 
-    override suspend fun getCurrentUserSingle(): User = suspendCoroutine { continuation ->
+    override fun getCurrentUserSingle(): Flow<User> = callbackFlow {
         firebase.getCurrentUserSingle({
-            continuation.resume(it)
-        })
+            trySend(it)
+        }, cancelCallback = { cancel() })
     }
 
-    override suspend fun getCurrentUserRecurrent(): User {
-        TODO("Not yet implemented")
+    override fun initialiseGetUserRecurrentStream(): Flow<Response> = callbackFlow {
+        trySend(Response.Loading())
+        val listener = firebase.getCurrentUserRecurrent({
+            if(it != null) {
+                Log.d("CLEAN", "STREAM SUCCESSFULLY ASSIGNED TO PROPERTY")
+                currentUser.value = Resource.Success(it)
+                trySend(Response.Success())
+            } else {
+                currentUser.value = Resource.Error("")
+                trySend(Response.Fail())
+            }
+        },{},{})
+
+        awaitClose { firebase.mDbRef.removeEventListener(listener) }
     }
 
-    override suspend fun signUp(name: String, email: String, password: String): Response = suspendCoroutine { continuation ->
+    override fun getCurrentUserRecurrent(): MutableStateFlow<Resource<User>> {
+        return currentUser
+    }
+
+    override fun signUp(name: String, email: String, password: String): Flow<Response> = callbackFlow {
         firebase.signUp(email, password, {
             firebase.saveUser(name, email, firebase.mAuth.currentUser!!.uid, {
-                continuation.resume(Response.Success())
+                trySend(Response.Success())
             }, {
-                continuation.resume(Response.Fail())
+                trySend(Response.Fail())
             })
         }, {
-            continuation.resume(Response.Fail())
+            trySend(Response.Fail())
         })
+
+        awaitClose {  }
     }
 
-    override suspend fun signIn(email: String, password: String) : Response = suspendCoroutine { continuation ->
+    override fun signIn(email: String, password: String) : Flow<Response> = callbackFlow {
         firebase.signin(email, password, {
-            continuation.resume(Response.Success())
+            trySend(Response.Success())
         }, {
-            continuation.resume(Response.Fail())
+            trySend(Response.Fail())
         })
+
+        awaitClose {  }
     }
 
-    override suspend fun editUser(key: String, value: String) : Response = suspendCoroutine { continuation ->
+    override fun editUser(key: String, value: String) : Flow<Response> = callbackFlow {
         firebase.editUser(key, value, {
-            continuation.resume(Response.Success())
+            trySend(Response.Success())
         }, {
-            continuation.resume(Response.Fail())
+            trySend(Response.Fail())
         })
+
+        awaitClose {  }
     }
 
-    override suspend fun addToRecentSearch(userId: String): Response = suspendCoroutine { continuation ->
+    override fun addToRecentSearch(userId: String): Flow<Response> = callbackFlow {
         firebase.addToRecentSearch(userId, {
-            continuation.resume(Response.Success())
+            trySend(Response.Success())
         }, {
-            continuation.resume(Response.Fail())
+            trySend(Response.Fail())
         })
+
+        awaitClose {  }
     }
 
-    override suspend fun deleteRecentSearchHistory() : Response = suspendCoroutine { continuation ->
+    override fun deleteRecentSearchHistory() : Flow<Response> = callbackFlow {
         firebase.deleteRecentSearchHistory({
-            continuation.resume(Response.Success())
+            trySend(Response.Success())
         }, {
-            continuation.resume(Response.Fail())
+            trySend(Response.Fail())
         })
+
+        awaitClose {  }
     }
 
     override fun signOut(after: ()-> Unit) {
         after()
     }
 
-    override suspend fun addGroupToFavorites(groupId: String): Response = suspendCoroutine { continuation ->
+    override fun addGroupToFavorites(groupId: String): Flow<Response> = callbackFlow {
         firebase.addGroupToFavorites(groupId, {
-            continuation.resume(Response.Success())
+            trySend(Response.Success())
         }, {
-            continuation.resume(Response.Fail())
+            trySend(Response.Fail())
         })
+
+        awaitClose {  }
     }
 
-    override suspend fun removeGroupFromFavorites(groupId: String): Response = suspendCoroutine { continuation ->
+    override fun removeGroupFromFavorites(groupId: String): Flow<Response> = callbackFlow {
         firebase.removeGroupFromFavorites(groupId, {
-            continuation.resume(Response.Success())
+            trySend(Response.Success())
         }, {
-            continuation.resume(Response.Fail())
+            trySend(Response.Fail())
         })
+
+        awaitClose {  }
     }
 
 }

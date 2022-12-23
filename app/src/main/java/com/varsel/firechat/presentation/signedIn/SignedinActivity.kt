@@ -61,7 +61,7 @@ class SignedinActivity : AppCompatActivity() {
     lateinit var mDbRef: DatabaseReference
     lateinit var firebaseStorage: FirebaseStorage
     lateinit var firebaseViewModel: FirebaseViewModel
-    lateinit var signedinViewModel: SignedinViewModel
+    val signedinViewModel: SignedinViewModel by viewModels()
     val imageViewModel: ImageViewModel by viewModels()
 //    var timer: CountDownTimer? = null
     val settingViewModel: SettingViewModel by viewModels()
@@ -73,7 +73,6 @@ class SignedinActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         firebaseViewModel = ViewModelProvider(this).get(FirebaseViewModel::class.java)
-        signedinViewModel = ViewModelProvider(this).get(SignedinViewModel::class.java)
 
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance()

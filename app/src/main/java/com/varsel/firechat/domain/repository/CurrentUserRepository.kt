@@ -1,21 +1,26 @@
 package com.varsel.firechat.domain.repository
 
+import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.User.User
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 // TODO: Add after callback for get requests
 interface CurrentUserRepository {
 
-    suspend fun getCurrentUserSingle(): User
-    suspend fun getCurrentUserRecurrent(): User
-    suspend fun signUp(name: String, email: String, password: String) : Response
-    suspend fun signIn(email: String, password: String) : Response
-    suspend fun editUser(key: String, value: String) : Response
-    suspend fun addToRecentSearch(userId: String) : Response
-    suspend fun deleteRecentSearchHistory() : Response
+    fun getCurrentUserSingle(): Flow<User>
+    fun getCurrentUserRecurrent(): MutableStateFlow<Resource<User>>
+    fun initialiseGetUserRecurrentStream(): Flow<Response>
+
+    fun signUp(name: String, email: String, password: String) : Flow<Response>
+    fun signIn(email: String, password: String) : Flow<Response>
+    fun editUser(key: String, value: String) : Flow<Response>
+    fun addToRecentSearch(userId: String) : Flow<Response>
+    fun deleteRecentSearchHistory() : Flow<Response>
 
     fun signOut(after: ()-> Unit)
 
-    suspend fun addGroupToFavorites(groupId: String) : Response
-    suspend fun removeGroupFromFavorites(groupId: String) : Response
+    fun addGroupToFavorites(groupId: String) : Flow<Response>
+    fun removeGroupFromFavorites(groupId: String) : Flow<Response>
 }

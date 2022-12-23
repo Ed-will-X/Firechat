@@ -1,13 +1,9 @@
 package com.varsel.firechat.presentation.signedIn.fragments.screens.add_friends
 
-import android.os.CountDownTimer
-import android.util.Base64
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.domain.use_case.SearchUsersUseCase.SearchUsersUseCase
+import com.varsel.firechat.domain.use_case.other_user.SearchUsersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

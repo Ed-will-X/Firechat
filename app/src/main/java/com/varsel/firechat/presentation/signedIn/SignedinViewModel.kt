@@ -3,26 +3,28 @@ package com.varsel.firechat.presentation.signedIn
 import android.os.CountDownTimer
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
+import com.varsel.firechat.domain.use_case.current_user.OpenCurrentUserCollectionStream
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
 
-class SignedinViewModel(): ViewModel() {
+@HiltViewModel
+class SignedinViewModel @Inject constructor(
+    val openCurrentUserCollectionStream: OpenCurrentUserCollectionStream
+): ViewModel() {
     val currentChatRoomId = MutableLiveData<String>()
+//    private val signedInState = MutableStateFlow(SignedInActivityState(dataState = ))
 
-    fun setNetworkOverlayTimer(onEnd: ()-> Unit): CountDownTimer {
-        val timer = object : CountDownTimer(4000, 1000){
-            override fun onTick(millisUntilFinished: Long) {
-                if(millisUntilFinished > 5000){
-                    this.cancel()
-                }
-            }
+    init {
+        openCurrentUserCollectionStream().onEach {
 
-            override fun onFinish() {
-                onEnd()
-            }
-        }.start()
-
-        return timer
+        }.launchIn(viewModelScope)
     }
 
     fun getCurrentUserSingle(activity: SignedinActivity){

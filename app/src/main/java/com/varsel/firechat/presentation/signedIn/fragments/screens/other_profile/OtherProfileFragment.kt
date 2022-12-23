@@ -75,7 +75,6 @@ class OtherProfileFragment : Fragment() {
     private fun collectState() {
         collectLatestLifecycleFlow(viewModel.state) {
             if (it.user != null && !it.isLoading) {
-                Log.d("CLEAN", "${it.user.friendRequests.count()}")
                 setBindings(it.user)
                 setPublicPostRecyclerView(it.user)
                 setClickListeners(it.user)
@@ -90,6 +89,10 @@ class OtherProfileFragment : Fragment() {
                         }
                     }
                 }
+            } else if(it.isLoading) {
+                // TODO: Handle Loading
+            } else if(!it.isLoading && it.user == null) {
+                // TODO: Handle User Null
             }
         }
     }

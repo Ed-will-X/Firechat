@@ -98,8 +98,8 @@ class Firebase(
         })
     }
 
-    fun getCurrentUserRecurrent(successCallback: (user: User) -> Unit, beforeCallback: () -> Unit = {}, afterCallback: () -> Unit = {}){
-        mDbRef.child("Users").orderByChild("userUID").equalTo(mAuth?.currentUser?.uid.toString()).addValueEventListener(object :
+    fun getCurrentUserRecurrent(successCallback: (user: User?) -> Unit, beforeCallback: () -> Unit = {}, afterCallback: () -> Unit = {}) : ValueEventListener{
+        val listener = mDbRef.child("Users").orderByChild("userUID").equalTo(mAuth?.currentUser?.uid.toString()).addValueEventListener(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 beforeCallback()
@@ -108,9 +108,7 @@ class Firebase(
                     val user = item.getValue(User::class.java)
                     DebugUtils.log_firebase("fetch current user recurrent successful")
 
-                    if(user != null){
-                        successCallback(user)
-                    }
+                    successCallback(user)
                 }
                 afterCallback()
             }
@@ -118,11 +116,12 @@ class Firebase(
             override fun onCancelled(error: DatabaseError) {
 
             }
-
         })
+
+        return listener
     }
 
-    fun getCurrentUserSingle(successCallback: (user: User) -> Unit, beforeCallback: () -> Unit = {}, afterCallback: () -> Unit = {}){
+    fun getCurrentUserSingle(successCallback: (user: User) -> Unit, beforeCallback: () -> Unit = {}, afterCallback: () -> Unit = {}, cancelCallback: () -> Unit = {}){
         mDbRef.child("Users").orderByChild("userUID").equalTo(mAuth?.currentUser?.uid.toString()).addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -140,7 +139,7 @@ class Firebase(
             }
 
             override fun onCancelled(error: DatabaseError) {
-
+                cancelCallback()
             }
 
         })

@@ -127,7 +127,7 @@ class ProfileFragment : Fragment() {
             val publicPost = PublicPost(currentUserId, uid, PublicPostType.IMAGE, caption, timestamp)
 
             // Shows bottom infobar
-            parent.showBottomInfobar(parent.getString(R.string.uploading_chat_image), InfobarColors.UPLOADING)
+            parent.showBottomInfobar(parent.getString(R.string.uploading_public_post), InfobarColors.UPLOADING)
 
             parent.firebaseViewModel.uploadPublicPost(publicPost, encoded, parent.firebaseStorage, parent.mDbRef, {
                 parent.firebaseViewModel.appendPublicPostIdToUser(parent.firebaseAuth, parent.mDbRef, uid, {
