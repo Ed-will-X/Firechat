@@ -13,6 +13,9 @@ interface CurrentUserRepository {
     fun getCurrentUserRecurrent(): MutableStateFlow<Resource<User>>
     fun initialiseGetUserRecurrentStream(): Flow<Response>
 
+    fun initialiseFetchFriendStream(friends: HashMap<String, Long>): Flow<Response>
+    fun fetchFriends(): MutableStateFlow<Resource<List<User>>>
+
     fun signUp(name: String, email: String, password: String) : Flow<Response>
     fun signIn(email: String, password: String) : Flow<Response>
     fun editUser(key: String, value: String) : Flow<Response>

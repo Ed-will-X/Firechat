@@ -26,6 +26,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.varsel.firechat.R
+import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.databinding.ActivitySignedinBinding
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
@@ -292,39 +293,6 @@ class SignedinActivity : AppCompatActivity() {
 
         binding.imgOverlayParent.setOnClickListener {
             handleImgBackPress()
-        }
-    }
-
-    private fun getPublicPosts(publicPosts: List<String>?){
-        publicPostViewModel.currentUserPublicPosts.value = mutableListOf()
-
-        if(publicPosts != null && publicPosts.isNotEmpty()){
-            for(i in publicPosts){
-                determinePublicPostFetchMethod_fullObject(i) {
-                    if(it != null){
-                        publicPostViewModel.currentUserPublicPosts.value?.add(it)
-                    }
-                }
-            }
-
-        }
-    }
-
-    private fun getPublicPosts_first_5(publicPosts: List<String>?){
-        publicPostViewModel.currentUserPublicPosts.value = mutableListOf()
-        val first_5 = publicPosts?.take(5)
-
-        if(first_5 != null && first_5.isNotEmpty()){
-            val reversed = PostUtils.sortPublicPosts_reversed(first_5)
-
-            for(i in reversed){
-                determinePublicPostFetchMethod_fullObject(i) {
-                    if(it != null){
-                        publicPostViewModel.currentUserPublicPosts.value?.add(it)
-                    }
-                }
-            }
-
         }
     }
 

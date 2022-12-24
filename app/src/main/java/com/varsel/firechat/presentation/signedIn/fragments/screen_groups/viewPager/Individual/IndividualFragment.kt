@@ -1,4 +1,4 @@
-package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager
+package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.Individual
 
 import android.annotation.SuppressLint
 import android.os.Bundle

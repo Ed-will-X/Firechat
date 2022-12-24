@@ -17,3 +17,10 @@ package com.varsel.firechat.common
 
 // TODO: Remove all dependencies on firebase view model
 // TODO: Add proper error handling
+
+// TODO: Implement Clean architecture in caching:
+    // TODO: Current User Profile Image
+    // TODO: Other User profile Image
+    // TODO: Group Image
+    // TODO: Image message
+    // TODO: Public Post

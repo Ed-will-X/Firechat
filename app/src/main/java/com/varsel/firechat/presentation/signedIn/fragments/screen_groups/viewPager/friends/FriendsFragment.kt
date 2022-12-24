@@ -1,4 +1,4 @@
-package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager
+package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.friends
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavDirections
 import androidx.navigation.findNavController
 import com.varsel.firechat.R
@@ -16,6 +17,7 @@ import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.FriendsAdapter
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.chats_tab_page.ChatsFragmentDirections
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import java.lang.IllegalArgumentException
 
 class FriendsFragment : Fragment() {
@@ -23,6 +25,8 @@ class FriendsFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
     private lateinit var currentChatRoomId: String
+    private lateinit var viewModel: FriendsViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -30,9 +34,11 @@ class FriendsFragment : Fragment() {
         _binding = FragmentFriendsBinding.inflate(inflater, container, false)
         val view = binding.root
 
+        viewModel = ViewModelProvider(this).get(FriendsViewModel::class.java)
         parent = activity as SignedinActivity
 
         postponeTransition()
+
 
 
         binding.addFriendsClickable.setOnClickListener {
@@ -52,9 +58,9 @@ class FriendsFragment : Fragment() {
         })
         binding.friendsRecyclerView.adapter = friendsAdapter
 
-        parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
-            toggleVisibility(it)
-        })
+//        parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
+//            toggleVisibility(it)
+//        })
 
         parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
             toggleShimmerVisibility(it)
@@ -68,12 +74,18 @@ class FriendsFragment : Fragment() {
         return view
     }
 
+    private fun collectFlow() {
+        collectLatestLifecycleFlow(viewModel.state) {
+            toggleVisibility(it.friends)
+        }
+    }
+
     private fun postponeTransition(){
         postponeEnterTransition()
         view?.doOnPreDraw { startPostponedEnterTransition() }
     }
 
-    private fun toggleVisibility(it: List<User?>){
+    private fun toggleVisibility(it: List<User>){
         val currentUser = parent.firebaseViewModel.currentUser.value
         if(it.isNotEmpty() && currentUser != null){
             binding.noFriends.visibility = View.GONE

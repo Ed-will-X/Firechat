@@ -3,9 +3,8 @@ package com.varsel.firechat.di
 import com.varsel.firechat.data.repository.OtherUserRepositoryImpl
 import com.varsel.firechat.domain.repository.CurrentUserRepository
 import com.varsel.firechat.domain.repository.OtherUserRepository
-import com.varsel.firechat.domain.use_case.current_user.EditUserUseCase
-import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
-import com.varsel.firechat.domain.use_case.current_user.OpenCurrentUserCollectionStream
+import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
+import com.varsel.firechat.domain.use_case.current_user.*
 import com.varsel.firechat.domain.use_case.other_user.GetOtherUserRecurrent
 import com.varsel.firechat.domain.use_case.other_user.RevokeFriendRequestUseCase
 import com.varsel.firechat.domain.use_case.other_user.SendFriendRequestUseCase
@@ -67,5 +66,23 @@ object AppModule {
     @Singleton
     fun provideEditProfileUseCase(repository: CurrentUserRepository): EditUserUseCase {
         return EditUserUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetFriendsUseCase(repository: CurrentUserRepository): GetFriendsUseCase {
+        return GetFriendsUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOpenFriendsUpdateStream(repository: CurrentUserRepository): OpenFriendsUpdateStream {
+        return OpenFriendsUpdateStream(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSetupSearchbarUseCase(): SetupSearchBarUseCase {
+        return SetupSearchBarUseCase()
     }
 }

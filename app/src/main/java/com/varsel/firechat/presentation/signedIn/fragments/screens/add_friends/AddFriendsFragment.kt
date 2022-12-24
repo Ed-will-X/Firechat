@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -22,15 +22,16 @@ import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.AddFriendsSearchAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.RecentSearchAdapter
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
-import com.varsel.firechat.utils.UserUtils
+import com.varsel.firechat.common._utils.UserUtils
+import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
 
-
+@AndroidEntryPoint
 class AddFriendsFragment : Fragment() {
     private var _binding: FragmentAddFriendsBinding? = null
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
-    private val viewModel: AddFriendsViewModel by activityViewModels()
+    private lateinit var viewModel: AddFriendsViewModel
     private var timer: CountDownTimer? = null
     private lateinit var recentSearchAdapter: RecentSearchAdapter
     private lateinit var addFriendsSearchAdapter: AddFriendsSearchAdapter
@@ -42,6 +43,8 @@ class AddFriendsFragment : Fragment() {
         _binding = FragmentAddFriendsBinding.inflate(inflater, container, false)
         val view = binding.root
         parent = activity as SignedinActivity
+
+        viewModel = ViewModelProvider(this).get(AddFriendsViewModel::class.java)
 
         LifecycleUtils.observeInternetStatus(parent, this, {
             binding.addFriendsSearchBox.isEnabled = true

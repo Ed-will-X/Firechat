@@ -1,7 +1,6 @@
 package com.varsel.firechat.presentation.signedIn.fragments.screens.other_profile
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.LinearLayout
@@ -19,7 +18,7 @@ import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.PostUtils
-import com.varsel.firechat.utils.UserUtils
+import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapterShapes

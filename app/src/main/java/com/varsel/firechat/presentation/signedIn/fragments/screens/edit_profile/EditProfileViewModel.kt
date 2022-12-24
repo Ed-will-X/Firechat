@@ -27,15 +27,12 @@ class EditProfileViewModel @Inject constructor(
             when(it) {
                 is Resource.Success -> {
                     _state.value = _state.value.copy(user = it.data, isLoading = false)
-                    Log.d("CLEAN", "${it.data?.name}")
                 }
                 is Resource.Loading -> {
                     _state.value = _state.value.copy(user = null, isLoading = true)
-                    Log.d("CLEAN", "Still Loading")
                 }
                 is Resource.Error -> {
                     _state.value = _state.value.copy(user = null, isLoading = false, errorMessage = it.message)
-                    Log.d("CLEAN", "Error")
                 }
             }
         }.launchIn(viewModelScope)

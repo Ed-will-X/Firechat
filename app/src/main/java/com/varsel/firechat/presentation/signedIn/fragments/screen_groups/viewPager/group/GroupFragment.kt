@@ -1,4 +1,4 @@
-package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager
+package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.group
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

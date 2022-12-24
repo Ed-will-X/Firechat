@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -21,20 +21,23 @@ import com.varsel.firechat.utils.ExtensionFunctions.Companion.showKeyboard
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.SearchUtils
-import com.varsel.firechat.utils.UserUtils
+import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.utils.gestures.FriendsSwipeGesture
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.FriendListAdapter
 import com.varsel.firechat.presentation.viewModel.FriendListFragmentViewModel
 import com.varsel.firechat.presentation.viewModel.SortTypes
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
 
+@AndroidEntryPoint
 class FriendListFragment : Fragment() {
     private var _binding: FragmentFriendListBinding? = null
     private val binding get() = _binding!!
     private var adapter: FriendListAdapter? = null
     private lateinit var parent: SignedinActivity
-    private val viewModel: FriendListFragmentViewModel by activityViewModels()
+    private lateinit var viewModel: FriendListFragmentViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,45 +46,84 @@ class FriendListFragment : Fragment() {
         _binding = FragmentFriendListBinding.inflate(layoutInflater, container, false)
         val view = binding.root
 
+        viewModel = ViewModelProvider(this).get(FriendListFragmentViewModel::class.java)
+
         parent = activity as SignedinActivity
 
-        SearchUtils.setupSearchBar(
-            binding.clearText,
-            binding.searchBox,
-            this,
-            binding.noFriends,
-            binding.noMatch,
-            binding.allFriendsRecyclerView,
-            parent.firebaseViewModel.friends,
-            {
-                // resets the searchbar visibility
-                viewModel.isSearchBarVisible.value = false
+        collectState()
 
-                viewModel.isSearchBarVisible.observe(viewLifecycleOwner, Observer {
-                    // Sets the visibilities of the search bar and the soft keyboard
-                    if(it){
-                        binding.searchBar.visibility = View.VISIBLE
-                        binding.searchBox.requestFocus()
-                        requireContext().showKeyboard()
-                    } else {
-                        binding.searchBar.visibility = View.GONE
-                        hideKeyboard()
-                    }
-                })
+        setupFriendsAdapter()
+        setupSearchBar()
+        setClickListeners()
+        setupSortDialogOverlay(viewModel.state.value.friends.toList())
 
-                binding.searchIcon.setOnClickListener {
-                    viewModel.toggleSearchBarVisible()
-                }
-            }, {
-                submitListToAdapter(it)
-            }
-        )
+        return view
+    }
 
+    private fun collectState() {
+        collectLatestLifecycleFlow(viewModel.state) {
 
-        binding.addFriendsClickable.setOnClickListener {
-            navigateToAddfriends()
         }
+    }
 
+    private fun setupSearchBar() {
+        viewModel.setupSearchBar(binding, parent, this, {
+            // resets the searchbar visibility
+            viewModel.isSearchBarVisible.value = false
+
+            viewModel.isSearchBarVisible.observe(viewLifecycleOwner, Observer {
+                // Sets the visibilities of the search bar and the soft keyboard
+                if(it){
+                    binding.searchBar.visibility = View.VISIBLE
+                    binding.searchBox.requestFocus()
+                    requireContext().showKeyboard()
+                } else {
+                    binding.searchBar.visibility = View.GONE
+                    hideKeyboard()
+                }
+            })
+
+            binding.searchIcon.setOnClickListener {
+                viewModel.toggleSearchBarVisible()
+            }
+        }, {
+            submitListToAdapter(it)
+        })
+//
+//        SearchUtils.setupSearchBar(
+//            binding.clearText,
+//            binding.searchBox,
+//            this,
+//            binding.noFriends,
+//            binding.noMatch,
+//            binding.allFriendsRecyclerView,
+//            parent.firebaseViewModel.friends,
+//            {
+//                // resets the searchbar visibility
+//                viewModel.isSearchBarVisible.value = false
+//
+//                viewModel.isSearchBarVisible.observe(viewLifecycleOwner, Observer {
+//                    // Sets the visibilities of the search bar and the soft keyboard
+//                    if(it){
+//                        binding.searchBar.visibility = View.VISIBLE
+//                        binding.searchBox.requestFocus()
+//                        requireContext().showKeyboard()
+//                    } else {
+//                        binding.searchBar.visibility = View.GONE
+//                        hideKeyboard()
+//                    }
+//                })
+//
+//                binding.searchIcon.setOnClickListener {
+//                    viewModel.toggleSearchBarVisible()
+//                }
+//            }, {
+//                submitListToAdapter(it)
+//            }
+//        )
+    }
+
+    private fun setupFriendsAdapter() {
         adapter = FriendListAdapter(parent, { id, user, base64 ->
             navigateToOtherProfile(id, user, base64)
         }, { profileImage, user ->
@@ -94,7 +136,7 @@ class FriendListFragment : Fragment() {
                 LifecycleUtils.observeInternetStatus(parent, this@FriendListFragment, {
                     if(direction == ItemTouchHelper.LEFT){
                         if(adapter != null){
-                            parent.firebaseViewModel.unfriendUser(adapter!!.friends[viewHolder.adapterPosition], parent.firebaseAuth, parent.mDbRef)
+                            viewModel.unfriendUser(adapter!!.friends[viewHolder.adapterPosition])
                             removeFromAdapter(adapter!!, viewHolder)
                         }
                     }
@@ -110,14 +152,16 @@ class FriendListFragment : Fragment() {
         }, {
             touchHelper.attachToRecyclerView(null)
         })
+    }
+
+    private fun setClickListeners() {
+        binding.addFriendsClickable.setOnClickListener {
+            navigateToAddfriends()
+        }
 
         binding.backButton.setOnClickListener {
             popNavigation()
         }
-
-        setupSortDialogOverlay()
-
-        return view
     }
 
     private fun navigateToOtherProfile(userId: String, user: User, base64: String?) {
@@ -174,7 +218,7 @@ class FriendListFragment : Fragment() {
         }
     }
 
-    private fun setupSortDialogOverlay(){
+    private fun setupSortDialogOverlay(friends: List<User>){
         viewModel.setBinding(binding)
 
         viewModel.changeSortMethod(SortTypes.ASCENDING)
@@ -198,7 +242,7 @@ class FriendListFragment : Fragment() {
         })
 
         viewModel.sortMethod.observe(viewLifecycleOwner, Observer {
-            setSortFilterText(it)
+            setSortFilterText(it, friends)
         })
     }
 
@@ -224,8 +268,7 @@ class FriendListFragment : Fragment() {
         }
     }
 
-    private fun setSortFilterText(sortType: Int){
-        val friends = parent.firebaseViewModel.friends.value?.toList()
+    private fun setSortFilterText(sortType: Int, friends: List<User>){
         addFriendsToAdapter_initial(friends, sortType)
 
         if(sortType == SortTypes.ASCENDING){
@@ -254,45 +297,6 @@ class FriendListFragment : Fragment() {
             binding.noFriends.visibility = View.VISIBLE
             binding.allFriendsRecyclerView.visibility = View.GONE
         }
-    }
-
-    private fun setupSearchBar(){
-        // resets the searchbar visibility
-        viewModel.isSearchBarVisible.value = false
-
-        binding.clearText.setOnClickListener {
-            binding.searchBox.setText("")
-        }
-
-        // Actual search code
-        binding.searchBox.doAfterTextChanged {
-            val friends = parent.firebaseViewModel.friends.value?.toList() as ArrayList<User>
-
-            if(it != null){
-                searchRecyclerView(friends, it)
-            }
-        }
-
-        parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
-            checkIfEmptyFriends(it)
-        })
-        // Sets the visibilities of the search bar and the soft keyboard
-        viewModel.isSearchBarVisible.observe(viewLifecycleOwner, Observer {
-            if(it){
-                binding.searchBar.visibility = View.VISIBLE
-                binding.searchBox.requestFocus()
-                requireContext().showKeyboard()
-            } else {
-                binding.searchBar.visibility = View.GONE
-                hideKeyboard()
-            }
-        })
-
-        binding.searchIcon.setOnClickListener {
-            viewModel.toggleSearchBarVisible()
-        }
-
-        toggleCancelIconVisibility()
     }
 
     private fun toggleCancelIconVisibility(){

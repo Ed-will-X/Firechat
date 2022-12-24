@@ -20,7 +20,7 @@ import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.utils.AnimationUtils
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
-import com.varsel.firechat.utils.UserUtils
+import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
 val FAVORITE_ICON_DARK_MODE = R.color.grey

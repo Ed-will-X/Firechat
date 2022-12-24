@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
+import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.data.local.User.User
 
 // TODO: Refactor to fit other types

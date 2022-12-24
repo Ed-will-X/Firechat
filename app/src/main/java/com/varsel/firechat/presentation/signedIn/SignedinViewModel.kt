@@ -1,13 +1,17 @@
 package com.varsel.firechat.presentation.signedIn
 
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
+import com.varsel.firechat.domain.use_case.current_user.GetFriendsUseCase
 import com.varsel.firechat.domain.use_case.current_user.OpenCurrentUserCollectionStream
+import com.varsel.firechat.domain.use_case.current_user.OpenFriendsUpdateStream
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -16,14 +20,36 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignedinViewModel @Inject constructor(
-    val openCurrentUserCollectionStream: OpenCurrentUserCollectionStream
+    val openCurrentUserCollectionStream: OpenCurrentUserCollectionStream,
+    val getCurrentUserRecurrentUseCase: GetCurrentUserRecurrentUseCase,
+    val openFriendsUpdateStream: OpenFriendsUpdateStream,
+    val getFriendsUseCase: GetFriendsUseCase
 ): ViewModel() {
     val currentChatRoomId = MutableLiveData<String>()
 //    private val signedInState = MutableStateFlow(SignedInActivityState(dataState = ))
 
     init {
+        // Opens the realtime database stream to receive current user
         openCurrentUserCollectionStream().onEach {
 
+        }.launchIn(viewModelScope)
+
+        // Observes the user
+        getCurrentUserRecurrentUseCase().onEach {
+            Log.d("CLEAN", "${it.data?.name}")
+            // TODO: Initialise fetch friend stream
+            if(it.data?.friends != null) {
+                openFriendsUpdateStream(it.data.friends).onEach {
+                    if(it == Response.Success()){
+                        Log.d("CLEAN", "Successfully opened friend update stream")
+                    }
+                }.launchIn(viewModelScope)
+            }
+
+        }.launchIn(viewModelScope)
+
+        getFriendsUseCase().onEach {
+            Log.d("CLEAN", "Friend Count: ${it.data?.size}")
         }.launchIn(viewModelScope)
     }
 

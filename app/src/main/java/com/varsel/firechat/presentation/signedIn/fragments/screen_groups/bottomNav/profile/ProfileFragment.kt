@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
+import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.databinding.ActionSheetPublicPostBinding
 import com.varsel.firechat.databinding.FragmentProfileBinding
 import com.varsel.firechat.data.local.PublicPost.PublicPost
