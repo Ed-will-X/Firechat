@@ -6,8 +6,10 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.data.repository.CurrentUserRepositoryImpl
+import com.varsel.firechat.data.repository.MessageRepositoryImpl
 import com.varsel.firechat.data.repository.OtherUserRepositoryImpl
 import com.varsel.firechat.domain.repository.CurrentUserRepository
+import com.varsel.firechat.domain.repository.MessageRepository
 import com.varsel.firechat.domain.repository.OtherUserRepository
 import dagger.Module
 import dagger.Provides
@@ -18,6 +20,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object RemoteModule {
+
+    @Provides
+    @Singleton
+    fun provideMessageRepository(firebase: Firebase, currentUserRepository: CurrentUserRepository): MessageRepository {
+        return MessageRepositoryImpl(firebase, currentUserRepository)
+    }
 
     @Provides
     @Singleton

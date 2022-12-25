@@ -1,17 +1,18 @@
 package com.varsel.firechat.presentation.signedIn
 
-import android.os.CountDownTimer
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
-import com.varsel.firechat.domain.use_case.current_user.GetFriendsUseCase
 import com.varsel.firechat.domain.use_case.current_user.OpenCurrentUserCollectionStream
 import com.varsel.firechat.domain.use_case.current_user.OpenFriendsUpdateStream
+import com.varsel.firechat.domain.use_case.message.GetChatRoomsRecurrentUseCase
+import com.varsel.firechat.domain.use_case.message.InitialiseChatRoomsStreamUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -23,9 +24,13 @@ class SignedinViewModel @Inject constructor(
     val openCurrentUserCollectionStream: OpenCurrentUserCollectionStream,
     val getCurrentUserRecurrentUseCase: GetCurrentUserRecurrentUseCase,
     val openFriendsUpdateStream: OpenFriendsUpdateStream,
-    val getFriendsUseCase: GetFriendsUseCase
+    val initialiseChatRoomsStreamUseCase: InitialiseChatRoomsStreamUseCase,
+    val getChatRoomsRecurrentUseCase: GetChatRoomsRecurrentUseCase
 ): ViewModel() {
     val currentChatRoomId = MutableLiveData<String>()
+    private val hasGetUserRecurrentRun = MutableStateFlow<Boolean>(false)
+    private val lastChatRoomCount = MutableStateFlow<Int>(-1)
+    private val lastGroupRoomCount = MutableStateFlow<Int>(-1)
 //    private val signedInState = MutableStateFlow(SignedInActivityState(dataState = ))
 
     init {
@@ -36,21 +41,38 @@ class SignedinViewModel @Inject constructor(
 
         // Observes the user
         getCurrentUserRecurrentUseCase().onEach {
-            Log.d("CLEAN", "${it.data?.name}")
-            // TODO: Initialise fetch friend stream
-            if(it.data?.friends != null) {
-                openFriendsUpdateStream(it.data.friends).onEach {
-                    if(it == Response.Success()){
-                        Log.d("CLEAN", "Successfully opened friend update stream")
+            when(it){
+                is Resource.Success -> {
+                    if(lastChatRoomCount.value == -1 || lastChatRoomCount.value != it.data?.chatRooms?.keys?.size){
+                        initialiseChatRoomsStreamUseCase().onEach {
+                            Log.d("CLEAN", "Stream opened")
+                        }.launchIn(viewModelScope)
                     }
-                }.launchIn(viewModelScope)
+
+                    if(lastGroupRoomCount.value == -1 || lastGroupRoomCount.value != it.data?.groupRooms?.keys?.size){
+                        // TODO: Initialise group room stream here
+
+                    }
+
+                    if(it.data?.friends != null) {
+                        openFriendsUpdateStream(it.data.friends).onEach {
+
+                        }.launchIn(viewModelScope)
+                    }
+                }
+                is Resource.Loading -> {
+
+                }
+                is Resource.Error -> {
+
+                }
             }
 
         }.launchIn(viewModelScope)
 
-        getFriendsUseCase().onEach {
-            Log.d("CLEAN", "Friend Count: ${it.data?.size}")
+        getChatRoomsRecurrentUseCase().onEach {
         }.launchIn(viewModelScope)
+
     }
 
     fun getCurrentUserSingle(activity: SignedinActivity){
@@ -75,6 +97,7 @@ class SignedinViewModel @Inject constructor(
 
     private fun getAllChats(activity: SignedinActivity, chatRoomsUID: List<String>){
         val chatRooms = mutableListOf<ChatRoom>()
+        // TODO: Fix potential memory leak
         for(i in chatRoomsUID){
             activity.firebaseViewModel.getChatRoomRecurrent(i, activity.mDbRef, { chatRoom ->
                 if(activity.firebaseViewModel.chatRooms.value != null){
@@ -97,7 +120,7 @@ class SignedinViewModel @Inject constructor(
 
     private fun getAllGroupChats(activity: SignedinActivity, groupRoomIDs: List<String>){
         val groupRooms = mutableListOf<GroupRoom>()
-
+        // TODO: Fix potential memory leak
         for (i in groupRoomIDs){
             // TODO: Fix bug here:
             activity.firebaseViewModel.getGroupChatRoomRecurrent(i, activity.mDbRef, {

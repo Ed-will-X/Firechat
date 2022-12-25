@@ -1,15 +1,14 @@
 package com.varsel.firechat.domain.use_case.current_user
 
-import com.varsel.firechat.common.Resource
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.repository.CurrentUserRepository
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetFriendsUseCase @Inject constructor(
+class GetCurrentUserSingleUseCase @Inject constructor(
     val currentUserRepository: CurrentUserRepository
 ) {
-    operator fun invoke(): MutableStateFlow<Resource<List<User>>> {
-        return currentUserRepository.getFriendsSingle()
+    operator fun invoke(): Flow<User?> {
+        return currentUserRepository.getCurrentUserSingle()
     }
 }

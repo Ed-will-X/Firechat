@@ -2,9 +2,12 @@ package com.varsel.firechat.di
 
 import com.varsel.firechat.data.repository.OtherUserRepositoryImpl
 import com.varsel.firechat.domain.repository.CurrentUserRepository
+import com.varsel.firechat.domain.repository.MessageRepository
 import com.varsel.firechat.domain.repository.OtherUserRepository
 import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
 import com.varsel.firechat.domain.use_case.current_user.*
+import com.varsel.firechat.domain.use_case.message.GetChatRoomsRecurrentUseCase
+import com.varsel.firechat.domain.use_case.message.InitialiseChatRoomsStreamUseCase
 import com.varsel.firechat.domain.use_case.other_user.GetOtherUserRecurrent
 import com.varsel.firechat.domain.use_case.other_user.RevokeFriendRequestUseCase
 import com.varsel.firechat.domain.use_case.other_user.SendFriendRequestUseCase
@@ -84,5 +87,23 @@ object AppModule {
     @Singleton
     fun provideSetupSearchbarUseCase(): SetupSearchBarUseCase {
         return SetupSearchBarUseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetCurrentUserSingle(repository: CurrentUserRepository): GetCurrentUserSingleUseCase {
+        return GetCurrentUserSingleUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetChatRoomsRecurrent(repository: MessageRepository): GetChatRoomsRecurrentUseCase {
+        return GetChatRoomsRecurrentUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInitialiseChatRoomStream(repository: MessageRepository): InitialiseChatRoomsStreamUseCase {
+        return InitialiseChatRoomsStreamUseCase(repository)
     }
 }

@@ -18,14 +18,17 @@ import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.FriendsAdapter
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.chats_tab_page.ChatsFragmentDirections
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
 
+@AndroidEntryPoint
 class FriendsFragment : Fragment() {
     private var _binding: FragmentFriendsBinding? = null
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
     private lateinit var currentChatRoomId: String
     private lateinit var viewModel: FriendsViewModel
+    private lateinit var friendsAdapter: FriendsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,17 +41,28 @@ class FriendsFragment : Fragment() {
         parent = activity as SignedinActivity
 
         postponeTransition()
-
+        setupAdapter()
+        collectFlow()
 
 
         binding.addFriendsClickable.setOnClickListener {
             view.findNavController().navigate(R.id.action_chatsFragment_to_addFriends)
         }
 
-        val friendsAdapter = FriendsAdapter(parent, { user, base64 ->
+        return view
+    }
+
+    private fun collectFlow() {
+        collectLatestLifecycleFlow(viewModel.state) {
+            toggleVisibility(it.friends)
+            toggleShimmerVisibility(it.isLoading)
+            friendsAdapter.submitList(it.friends)
+        }
+    }
+
+    private fun setupAdapter() {
+        friendsAdapter = FriendsAdapter(parent, { user, base64 ->
             navigateToProfile(user.userUID, user, base64)
-
-
         },{ user, base64 ->
             parent.profileImageViewModel.selectedOtherUserProfilePicChat.value = base64
             parent.firebaseViewModel.selectedChatRoomUser.value = user
@@ -57,27 +71,6 @@ class FriendsFragment : Fragment() {
             ImageUtils.displayProfilePicture(profileImage, user, parent)
         })
         binding.friendsRecyclerView.adapter = friendsAdapter
-
-//        parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
-//            toggleVisibility(it)
-//        })
-
-        parent.firebaseViewModel.friends.observe(viewLifecycleOwner, Observer {
-            toggleShimmerVisibility(it)
-            if (it != null){
-                friendsAdapter.submitList(it)
-            } else {
-                friendsAdapter.submitList(arrayListOf<User>())
-            }
-        })
-
-        return view
-    }
-
-    private fun collectFlow() {
-        collectLatestLifecycleFlow(viewModel.state) {
-            toggleVisibility(it.friends)
-        }
     }
 
     private fun postponeTransition(){
@@ -86,8 +79,7 @@ class FriendsFragment : Fragment() {
     }
 
     private fun toggleVisibility(it: List<User>){
-        val currentUser = parent.firebaseViewModel.currentUser.value
-        if(it.isNotEmpty() && currentUser != null){
+        if(it.isNotEmpty()){
             binding.noFriends.visibility = View.GONE
             binding.friendsRecyclerView.visibility = View.VISIBLE
         } else {
@@ -116,8 +108,8 @@ class FriendsFragment : Fragment() {
         binding.root.findNavController().navigate(action)
     }
 
-    private fun toggleShimmerVisibility(friends: List<User?>){
-        if(friends != null){
+    private fun toggleShimmerVisibility(isLoading: Boolean){
+        if(!isLoading){
             binding.shimmerFriends.visibility = View.GONE
         } else {
             binding.shimmerFriends.visibility = View.VISIBLE

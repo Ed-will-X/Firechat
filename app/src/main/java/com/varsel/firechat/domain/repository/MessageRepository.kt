@@ -1,38 +1,44 @@
 package com.varsel.firechat.domain.repository
 
 import android.os.Message
+import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.User.User
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 interface MessageRepository {
+    fun sendMessage(message: Message, chatRoomId: String) : Flow<Response>
+    fun appendParticipants(chatRoom: ChatRoom) : Flow<Response>
+    fun appendChatroomToUser(chatRoom: ChatRoom, otherUser: User) : Flow<Response>
+    fun getChatRoomsRecurrent(): MutableStateFlow<Resource<List<ChatRoom>>>
+    fun initialiseGetChatRoomsRecurrentStream(): Flow<Response>
+    fun getChatRoomRecurrent(id: String) : MutableStateFlow<Resource<ChatRoom>>
+    fun getChatRoomSingle(id: String) : ChatRoom
 
-    suspend fun sendMessage(message: Message, chatRoomId: String) : Response
-    suspend fun appendParticipants(chatRoom: ChatRoom) : Response
-    suspend fun appendChatroomToUser(chatRoom: ChatRoom, otherUser: User) : Response
-    suspend fun getChatRoomRecurrent(id: String) : ChatRoom
-    suspend fun getChatRoomSingle(id: String) : ChatRoom
+
+    fun createGroup(group: GroupRoom) : Flow<Response>
+    fun appendGroupRoomsToUser(group: GroupRoom, user: User) : Flow<Response>
+    fun getGroupRoomSingle(id: String) : GroupRoom
+    fun getGroupRoomsRecurrent(): MutableStateFlow<Resource<List<GroupRoom>>>
+    fun getGroupRoomRecurrent(id: String) : MutableStateFlow<Resource<GroupRoom>>
+    fun sendGroupMessage(message: Message, group: GroupRoom) : Flow<Response>
+    fun makeAdmin(user: User, group: GroupRoom) : Flow<Response>
+    fun removeAdmin(user: User, group: GroupRoom) : Flow<Response>
+    fun removeFromGroup(user: User, group: GroupRoom) : Flow<Response>
+    fun addGroupMembers(user: User, group: GroupRoom) : Flow<Response>
+    fun leaveGroup(chatRoom: GroupRoom) : Flow<Response>
 
 
-    suspend fun createGroup(group: GroupRoom) : Response
-    suspend fun appendGroupRoomsToUser(group: GroupRoom, user: User) : Response
-    suspend fun getGroupRoomSingle(id: String) : GroupRoom
-    suspend fun getGroupRoomRecurrent(id: String) : GroupRoom
-    suspend fun sendGroupMessage(message: Message, group: GroupRoom) : Response
-    suspend fun makeAdmin(user: User, group: GroupRoom) : Response
-    suspend fun removeAdmin(user: User, group: GroupRoom) : Response
-    suspend fun removeFromGroup(user: User, group: GroupRoom) : Response
-    suspend fun addGroupMembers(user: User, group: GroupRoom) : Response
-    suspend fun leaveGroup(chatRoom: GroupRoom) : Response
-
-    suspend fun sendGroupAddMessage(users: List<String>, group: GroupRoom) : Response
-    suspend fun sendGroupExitMessage(group: GroupRoom) : Response
-    suspend fun sendGroupRemoveMessage(user: String, group: GroupRoom) : Response
-    suspend fun sendGroupNowAdminMessage(user: String, group: GroupRoom) : Response
-    suspend fun sendGroupNotAdminMessage(user: String, group: GroupRoom) : Response
-    suspend fun groupCreateMessage(group: GroupRoom) : Response
-    suspend fun editGroup(key: String, value: String, groupId: String) : Response
+    fun sendGroupAddMessage(users: List<String>, group: GroupRoom) : Flow<Response>
+    fun sendGroupExitMessage(group: GroupRoom) : Flow<Response>
+    fun sendGroupRemoveMessage(user: String, group: GroupRoom) : Flow<Response>
+    fun sendGroupNowAdminMessage(user: String, group: GroupRoom) : Flow<Response>
+    fun sendGroupNotAdminMessage(user: String, group: GroupRoom) : Flow<Response>
+    fun groupCreateMessage(group: GroupRoom) : Flow<Response>
+    fun editGroup(key: String, value: String, groupId: String) : Flow<Response>
 
 
 }

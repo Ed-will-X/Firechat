@@ -10,7 +10,6 @@ class OpenFriendsUpdateStream @Inject constructor(
     val currentUserRepository: CurrentUserRepository
 ) {
     operator fun invoke(friends: HashMap<String, Long>) : Flow<Response> {
-        Log.d("CLEAN", "Invoke ran")
-        return currentUserRepository.initialiseFetchFriendStream(friends)
+        return currentUserRepository.updateFriends(friends)
     }
 }

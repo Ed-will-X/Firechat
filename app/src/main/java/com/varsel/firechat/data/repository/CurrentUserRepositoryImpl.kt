@@ -18,11 +18,13 @@ class CurrentUserRepositoryImpl @Inject constructor(
     // TODO: Remove Experimental Code
     private var currentUser: MutableStateFlow<Resource<User>> = MutableStateFlow(Resource.Loading())
     private var friends: MutableStateFlow<Resource<List<User>>> = MutableStateFlow(Resource.Loading())
+    private var user_single: User? = null
 
-    override fun getCurrentUserSingle(): Flow<User> = callbackFlow {
+    override fun getCurrentUserSingle(): Flow<User?> = callbackFlow {
         firebase.getCurrentUserSingle({
             trySend(it)
         }, cancelCallback = { cancel() })
+//        return user_single
     }
 
     override fun initialiseGetUserRecurrentStream(): Flow<Response> = callbackFlow {
@@ -30,6 +32,7 @@ class CurrentUserRepositoryImpl @Inject constructor(
         val listener = firebase.getCurrentUserRecurrent({
             if(it != null) {
                 currentUser.value = Resource.Success(it)
+//                user_single = it
                 trySend(Response.Success())
             } else {
                 currentUser.value = Resource.Error("")
@@ -44,8 +47,7 @@ class CurrentUserRepositoryImpl @Inject constructor(
         return currentUser
     }
 
-    override fun initialiseFetchFriendStream(friendsMap: HashMap<String, Long>): Flow<Response> = callbackFlow {
-        Log.d("CLEAN", "Initialise stream ran")
+    override fun updateFriends(friendsMap: HashMap<String, Long>): Flow<Response> = callbackFlow {
         trySend(Response.Loading())
         friends.value = Resource.Loading()
 
@@ -74,7 +76,7 @@ class CurrentUserRepositoryImpl @Inject constructor(
         awaitClose {  }
     }
 
-    override fun fetchFriends(): MutableStateFlow<Resource<List<User>>> {
+    override fun getFriendsSingle(): MutableStateFlow<Resource<List<User>>> {
         return friends
     }
 

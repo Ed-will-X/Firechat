@@ -474,8 +474,8 @@ class Firebase(
             }
     }
 
-    fun getChatRoomRecurrent(chatRoomUID: String, loopCallback: (chatRoom: ChatRoom?) -> Unit, afterCallback: () -> Unit){
-        mDbRef
+    fun getChatRoomRecurrent(chatRoomUID: String, loopCallback: (chatRoom: ChatRoom) -> Unit, afterCallback: () -> Unit): ValueEventListener{
+        val listener = mDbRef
             .child("chatRooms")
             .orderByChild("roomUID")
             .equalTo(chatRoomUID)
@@ -483,7 +483,9 @@ class Firebase(
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (i in snapshot.children){
                         val item = i.getValue(ChatRoom::class.java)
-                        loopCallback(item)
+                        if(item != null) {
+                            loopCallback(item)
+                        }
                         DebugUtils.log_firebase("get chat room recurrent successful")
                     }
 
@@ -494,6 +496,8 @@ class Firebase(
 
                 }
             })
+
+        return listener
     }
 
     fun getChatRoomSingle(chatRoomUID: String, loopCallback: (chatRoom: ChatRoom?) -> Unit, afterCallback: () -> Unit){
