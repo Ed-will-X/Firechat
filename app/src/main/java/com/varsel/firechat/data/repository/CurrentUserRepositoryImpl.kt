@@ -20,6 +20,9 @@ class CurrentUserRepositoryImpl @Inject constructor(
     private var friends: MutableStateFlow<Resource<List<User>>> = MutableStateFlow(Resource.Loading())
     private var user_single: User? = null
 
+    override fun getCurrentUserId(): String {
+        return firebase.mAuth.currentUser!!.uid
+    }
     override fun getCurrentUserSingle(): Flow<User?> = callbackFlow {
         firebase.getCurrentUserSingle({
             trySend(it)

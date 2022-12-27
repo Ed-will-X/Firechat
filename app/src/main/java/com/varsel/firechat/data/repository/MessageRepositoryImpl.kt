@@ -50,7 +50,6 @@ class MessageRepositoryImpl @Inject constructor(
 
         for(i in chatRoomsUID ?: listOf()){
             val listener = firebase.getChatRoomRecurrent(i, { chatRoom ->
-                Log.d("CLEAN", "Value event listener count ${listeners.count()}")
                 if(chatRoomsFlow.value.data != null) {
                     val groupIterator = chatRoomsFlow.value.data!!.iterator()
                     while (groupIterator.hasNext()){
@@ -89,12 +88,24 @@ class MessageRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun createGroup(group: GroupRoom): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun createGroup(group: GroupRoom): Flow<Response> = callbackFlow {
+        firebase.createGroup(group, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
-    override fun appendGroupRoomsToUser(group: GroupRoom, user: User): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun appendGroupRoomsToUser(group: GroupRoom, user: String): Flow<Response> = callbackFlow {
+        firebase.appendGroupRoomsToUser(group.roomUID, user, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
     override fun getGroupRoomSingle(id: String): GroupRoom {

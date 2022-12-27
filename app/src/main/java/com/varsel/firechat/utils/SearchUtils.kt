@@ -16,6 +16,7 @@ import com.varsel.firechat.data.local.User.User
 // TODO: Refactor to fit other types
 class SearchUtils {
     companion object {
+        // TODO: Create a static version of this function
         fun setupSearchBar(
             cancelButton: ImageView,
             searchBox: EditText,
@@ -41,8 +42,6 @@ class SearchUtils {
                         recyclerView.visibility = View.VISIBLE
                         noMatchLayout.visibility = View.GONE
                         noFriendsLayout.visibility = View.GONE
-
-
                     }
                 }
             }

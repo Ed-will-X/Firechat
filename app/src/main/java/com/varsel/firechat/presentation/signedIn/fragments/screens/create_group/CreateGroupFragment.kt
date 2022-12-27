@@ -2,12 +2,14 @@ package com.varsel.firechat.presentation.signedIn.fragments.screens.create_group
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -21,13 +23,17 @@ import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.SearchUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.CreateGroupAdapter
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CreateGroupFragment : Fragment() {
     private var _binding: FragmentCreateGroupBinding? = null
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
     private lateinit var adapter: CreateGroupAdapter
     private val createGroupViewModel: CreateGroupViewModel by activityViewModels()
+    private lateinit var viewModel: CreateGroupViewModel
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -39,8 +45,40 @@ class CreateGroupFragment : Fragment() {
         val view = binding.root
         parent = activity as SignedinActivity
 
-        observeInternetStatus()
+        viewModel = ViewModelProvider(this).get(CreateGroupViewModel::class.java)
 
+        observeInternetStatus()
+        collectState()
+        setupSearchBar()
+        initialiseAdapter(viewModel.getFriends().value.data ?: listOf())
+        setClickListeners()
+
+        return view
+    }
+
+    private fun collectState() {
+        collectLatestLifecycleFlow(viewModel.state) {
+            if(it.friends != null) {
+
+            }
+        }
+    }
+
+    private fun setClickListeners() {
+        binding.createGroupBtn.setOnClickListener {
+            showActionsheet()
+        }
+
+        binding.doneClickable.setOnClickListener {
+            showActionsheet()
+        }
+
+        binding.backButton.setOnClickListener {
+            popNavigation()
+        }
+    }
+
+    private fun setupSearchBar() {
         SearchUtils.setupSearchBar(
             binding.clearText,
             binding.searchBox,
@@ -56,8 +94,9 @@ class CreateGroupFragment : Fragment() {
                 submitListToAdapter(it)
             }
         )
+    }
 
-
+    private fun initialiseAdapter(friends: List<User>) {
         adapter = CreateGroupAdapter(parent, {
             toggleBtnEnable()
         }, { profileImage, user ->
@@ -69,32 +108,13 @@ class CreateGroupFragment : Fragment() {
 //        parent.profileImageViewModel.selectedGroupImageEncoded.value = null
         parent.profileImageViewModel.selectedGroupImage.value = null
 
-        val friends = parent.firebaseViewModel.friends.value
-        if(friends != null && friends?.isNotEmpty() == true){
-            submitListToAdapter(parent.firebaseViewModel.friends.value!!)
-        } else {
-
-        }
-
-        binding.createGroupBtn.setOnClickListener {
-            showActionsheet()
-        }
-
-        binding.doneClickable.setOnClickListener {
-            showActionsheet()
-        }
-
-        binding.backButton.setOnClickListener {
-            popNavigation()
-        }
-
-        return view
+        submitListToAdapter(friends)
     }
 
     private fun submitListToAdapter(list: List<User?>){
         adapter.friends = arrayListOf()
 
-        if(list != null && list.isNotEmpty()){
+        if(list.isNotEmpty()){
             adapter.friends = list.toMutableList()
 
 //            binding.friendsRecyclerView.visibility = View.VISIBLE
@@ -160,8 +180,8 @@ class CreateGroupFragment : Fragment() {
             val groupNameText = dialogBinding.groupName.text.toString().trim()
             val group = GroupRoom(newRoomId, participants, groupNameText, makeCurrentUserAdmin())
 
-            appendRoomIdToUsers(participants.values.toList(), newRoomId) {
-                parent.firebaseViewModel.createGroup(group, parent.mDbRef, parent.firebaseAuth, {
+            appendRoomIdToUsers(participants.values.toList(), group) {
+                viewModel.createGroup(group, {
                     navigateToGroupPage(newRoomId)
                     dialogBinding.btnCreateGroup.isEnabled = true
                     createGroupViewModel.hasBtnBeenClicked.value = false
@@ -180,7 +200,7 @@ class CreateGroupFragment : Fragment() {
     private fun addParticipants(): HashMap<String, String>{
         val participants = adapter.selected.associateWith { it } as HashMap<String, String>
 
-        val currentUser: String = parent.firebaseAuth.currentUser?.uid.toString()
+        val currentUser: String = viewModel.getCurrentUserId()
         participants.put(currentUser, currentUser)
 
         return participants
@@ -193,16 +213,16 @@ class CreateGroupFragment : Fragment() {
 
     private fun makeCurrentUserAdmin(): HashMap<String, String>{
         val admins: HashMap<String, String> = HashMap()
-        val currentUser: String = parent.firebaseAuth.currentUser?.uid.toString()
+        val currentUser: String = viewModel.getCurrentUserId()
 
         admins.put(currentUser, currentUser)
 
         return admins
     }
 
-    private fun appendRoomIdToUsers(users: List<String>, newRoomId: String, afterCallback: ()-> Unit){
+    private fun appendRoomIdToUsers(users: List<String>, groupRoom: GroupRoom, afterCallback: ()-> Unit){
         for (i in users){
-            parent.firebaseViewModel.appendGroupRoomsToUser(newRoomId, i, parent.firebaseAuth, parent.mDbRef, {}, {})
+            viewModel.appendGroupIdToUser(groupRoom, i)
         }
         afterCallback()
     }

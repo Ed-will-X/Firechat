@@ -76,7 +76,6 @@ class IndividualFragment : Fragment() {
         collectLatestLifecycleFlow(viewModel.state) {
             val sorted = MessageUtils.sortChats(it.chatRooms)
 
-            Log.d("CLEAN", "_______________________________${it.chatRooms.size}")
             toggleRecyclerViewVisibility(it.chatRooms)
             chatListAdapter.submitList(sorted)
             chatListAdapter.notifyDataSetChanged()

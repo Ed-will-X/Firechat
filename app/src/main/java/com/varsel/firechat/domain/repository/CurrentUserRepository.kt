@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 // TODO: Add after callback for get requests
 interface CurrentUserRepository {
 
+    fun getCurrentUserId(): String
     fun getCurrentUserSingle(): Flow<User?>
     fun getCurrentUserRecurrent(): MutableStateFlow<Resource<User>>
     fun initialiseGetUserRecurrentStream(): Flow<Response>

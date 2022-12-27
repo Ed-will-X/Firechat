@@ -29,7 +29,6 @@ class IndividualViewModel @Inject constructor(
         getChatRoomsRecurrentUseCase().onEach {
             when(it) {
                 is Resource.Success -> {
-                    Log.d("CLEAN", "Chat Room Count: ${it.data?.size}")
                     _state.value = _state.value.copy(isLoading = false, chatRooms = it.data ?: listOf())
                 }
                 is Resource.Loading -> {

@@ -45,7 +45,7 @@ class SignedinViewModel @Inject constructor(
                 is Resource.Success -> {
                     if(lastChatRoomCount.value == -1 || lastChatRoomCount.value != it.data?.chatRooms?.keys?.size){
                         initialiseChatRoomsStreamUseCase().onEach {
-                            Log.d("CLEAN", "Stream opened")
+
                         }.launchIn(viewModelScope)
                     }
 
