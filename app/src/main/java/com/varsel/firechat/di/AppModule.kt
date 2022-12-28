@@ -6,10 +6,7 @@ import com.varsel.firechat.domain.repository.MessageRepository
 import com.varsel.firechat.domain.repository.OtherUserRepository
 import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
 import com.varsel.firechat.domain.use_case.current_user.*
-import com.varsel.firechat.domain.use_case.message.AppendGroupIdToUserUseCase
-import com.varsel.firechat.domain.use_case.message.CreateGroupUseCase
-import com.varsel.firechat.domain.use_case.message.GetChatRoomsRecurrentUseCase
-import com.varsel.firechat.domain.use_case.message.InitialiseChatRoomsStreamUseCase
+import com.varsel.firechat.domain.use_case.message.*
 import com.varsel.firechat.domain.use_case.other_user.GetOtherUserRecurrent
 import com.varsel.firechat.domain.use_case.other_user.RevokeFriendRequestUseCase
 import com.varsel.firechat.domain.use_case.other_user.SendFriendRequestUseCase
@@ -125,5 +122,17 @@ object AppModule {
     @Singleton
     fun provideGetUserId(repository: CurrentUserRepository) : GetCurrentUserIdUseCase {
         return GetCurrentUserIdUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInitialiseGroupRoomStream(repository: MessageRepository): InitialiseGroupRoomsStreamUseCase {
+        return InitialiseGroupRoomsStreamUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetGroupRoomsRecurrent(repository: MessageRepository): GetGroupRoomsRecurrentUseCase {
+        return GetGroupRoomsRecurrentUseCase(repository)
     }
 }

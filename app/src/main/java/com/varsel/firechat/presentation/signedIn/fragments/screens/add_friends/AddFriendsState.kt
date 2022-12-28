@@ -7,5 +7,5 @@ data class AddFriendsState(
     val isFieldEmpty: Boolean = true,
     val users: List<User> = listOf(),
     val textCount: Int = 0,
-
+    val currentUser: User? = null
 )

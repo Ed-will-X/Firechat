@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -29,12 +30,14 @@ import com.varsel.firechat.presentation.signedIn.adapters.FriendRequestsAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapterShapes
 import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
-
+@AndroidEntryPoint
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
@@ -43,6 +46,7 @@ class ProfileFragment : Fragment() {
     private lateinit var userUtils: UserUtils
     private lateinit var friendRequestsAdapter: FriendRequestsAdapter
     private lateinit var publicPostAdapter: PublicPostAdapter
+    private lateinit var viewModel: ProfileViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,6 +59,8 @@ class ProfileFragment : Fragment() {
         parent.changeStatusBarColor(R.color.light_blue, false)
 
         userUtils = UserUtils(this)
+        viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
+        collectState()
 
         LifecycleUtils.observeInternetStatus(parent, this, {
             binding.friendRequestsClickable.isEnabled = true
@@ -75,7 +81,7 @@ class ProfileFragment : Fragment() {
             *   Adds the first 4 public post string IDs to the recycler view
             *
             * */
-            val IDs = parent.firebaseViewModel.currentUser.value?.public_posts?.keys?.toList()
+            val IDs = viewModel.getCurrentUserRecurrentUseCase().value.data?.public_posts?.keys?.toList()
             if(IDs != null && IDs.isNotEmpty()){
                 val reversed = PostUtils.sortPublicPosts_reversed(IDs).take(4)
 
@@ -96,13 +102,15 @@ class ProfileFragment : Fragment() {
 
         observeProfileImage()
 
-        firebaseViewModel.currentUser.observe(viewLifecycleOwner, Observer {
-            if (it != null) {
-                setUser(it)
-            }
-        })
-
         return view
+    }
+
+    private fun collectState() {
+        collectLatestLifecycleFlow(viewModel.state) {
+            if(it.currentUser != null) {
+                setUser(it.currentUser)
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -160,7 +168,7 @@ class ProfileFragment : Fragment() {
 
             dialogBinding.allPostsRecyclerView.adapter = publicPostAdapter
 
-            val currentUserPosts = parent.firebaseViewModel.currentUser.value?.public_posts?.keys?.toList()
+            val currentUserPosts = viewModel.getCurrentUserRecurrentUseCase().value.data?.public_posts?.keys?.toList()
             if(currentUserPosts != null && currentUserPosts.isNotEmpty()){
                 // TODO: Extract timestamps then reverse
                 val reversed = PostUtils.sortPublicPosts_reversed(currentUserPosts)
@@ -188,7 +196,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun displayPublicPostImage(post: PublicPost){
-        val currentUser = firebaseViewModel.currentUser.value
+        val currentUser = viewModel.getCurrentUserRecurrentUseCase().value.data
         if(currentUser != null){
             ImageUtils.displayPublicPostImage(post, currentUser, parent)
         }
@@ -268,7 +276,7 @@ class ProfileFragment : Fragment() {
                 ImageUtils.setProfilePic(it.image!!, binding.profileImage, binding.profileImageParent, parent)
                 binding.profileImageParent.visibility = View.VISIBLE
                 binding.profileImage.setOnClickListener { it2 ->
-                    val currentUser = parent.firebaseViewModel.currentUser.value
+                    val currentUser = viewModel.getCurrentUserRecurrentUseCase().value.data
                     if(currentUser != null){
                         ImageUtils.displayProfilePicture(it, currentUser, parent)
                     }

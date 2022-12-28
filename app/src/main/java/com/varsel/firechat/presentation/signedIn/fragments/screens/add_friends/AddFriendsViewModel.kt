@@ -3,6 +3,8 @@ package com.varsel.firechat.presentation.signedIn.fragments.screens.add_friends
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.varsel.firechat.common.Resource
+import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
 import com.varsel.firechat.domain.use_case.other_user.SearchUsersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -13,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddFriendsViewModel @Inject constructor(
-    val searchUsersUseCase: SearchUsersUseCase
+    val searchUsersUseCase: SearchUsersUseCase,
+    val getCurrentUserRecurrentUseCase: GetCurrentUserRecurrentUseCase
 ): ViewModel() {
     val shouldRun = MutableLiveData<Boolean>(true)
 
@@ -25,6 +28,25 @@ class AddFriendsViewModel @Inject constructor(
 
     private var searchJob: Job? = null
 
+    init {
+        getCurrentUser()
+    }
+
+    fun getCurrentUser() {
+        getCurrentUserRecurrentUseCase().onEach {
+            when(it) {
+                is Resource.Success -> {
+                    _state.value = _state.value.copy(currentUser = it.data)
+                }
+                is Resource.Loading -> {
+                    _state.value = _state.value.copy(currentUser = null)
+                }
+                is Resource.Error -> {
+                    _state.value = _state.value.copy(currentUser = null)
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
 
     fun onSearch(query: String) {
         _state.value = _state.value.copy(isFieldEmpty = query.isEmpty(), textCount = query.length)

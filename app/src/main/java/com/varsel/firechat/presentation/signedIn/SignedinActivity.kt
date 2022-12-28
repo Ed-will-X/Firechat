@@ -47,6 +47,7 @@ import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.presentation.signedOut.SignedoutActivity
 import com.varsel.firechat.presentation.signedOut.fragments.AuthType
 import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -63,7 +64,7 @@ class SignedinActivity : AppCompatActivity() {
     lateinit var mDbRef: DatabaseReference
     lateinit var firebaseStorage: FirebaseStorage
     lateinit var firebaseViewModel: FirebaseViewModel
-    val signedinViewModel: SignedinViewModel by viewModels()
+    lateinit var signedinViewModel: SignedinViewModel
     val imageViewModel: ImageViewModel by viewModels()
 //    var timer: CountDownTimer? = null
     val settingViewModel: SettingViewModel by viewModels()
@@ -85,6 +86,9 @@ class SignedinActivity : AppCompatActivity() {
         mDbRef = FirebaseDatabase.getInstance().reference
         firebaseStorage = FirebaseStorage.getInstance()
         infobarController = InfobarControllerUseCase(this, this, binding.bottomInfobar, binding.bottomInfobarText)
+        signedinViewModel = ViewModelProvider(this).get(SignedinViewModel::class.java)
+
+        collectState()
 
         initialiseSettingConfiguration()
 
@@ -122,30 +126,30 @@ class SignedinActivity : AppCompatActivity() {
             getNewGroupMessage(it, navController)
         })
 
-        firebaseViewModel.currentUser.observe(this, Observer {
-            if (it != null) {
-                compareUsers(it)
-                determineShowRequesBottomInfobar(it)
-                determineNewFriendBottomInfobar(it)
-                determineShowGroupAddBottomInfobar(it)
-
-                if(it.public_posts != null && it.public_posts!!.isNotEmpty()){
-//                    getPublicPosts_first_5(it.public_posts?.values?.toList()!!)
-                }
-            }
-
-            if(it?.friendRequests != null && it.friendRequests.isNotEmpty()){
-                getFriendRequests(it.friendRequests)
-            } else {
-                firebaseViewModel.friendRequests.value = mutableListOf<User>()
-            }
-
-            if(it?.friends != null && it.friends.isNotEmpty()){
-                getAllFriends(it.friends)
-            } else {
-                firebaseViewModel.setFriends(listOf())
-            }
-        })
+//        firebaseViewModel.currentUser.observe(this, Observer {
+//            if (it != null) {
+//                compareUsers(it)
+//                determineShowRequesBottomInfobar(it)
+//                determineNewFriendBottomInfobar(it)
+//                determineShowGroupAddBottomInfobar(it)
+//
+//                if(it.public_posts != null && it.public_posts!!.isNotEmpty()){
+////                    getPublicPosts_first_5(it.public_posts?.values?.toList()!!)
+//                }
+//            }
+//
+//            if(it?.friendRequests != null && it.friendRequests.isNotEmpty()){
+//                getFriendRequests(it.friendRequests)
+//            } else {
+//                firebaseViewModel.friendRequests.value = mutableListOf<User>()
+//            }
+//
+//            if(it?.friends != null && it.friends.isNotEmpty()){
+//                getAllFriends(it.friends)
+//            } else {
+//                firebaseViewModel.setFriends(listOf())
+//            }
+//        })
 
         firebaseViewModel.currentUser.observeOnce(this, Observer {
             if(it != null){
@@ -162,6 +166,33 @@ class SignedinActivity : AppCompatActivity() {
         setOverlayBindings()
 
 //        profileImageViewModel.setClearBlacklistCountdown()
+    }
+
+    private fun collectState() {
+        collectLatestLifecycleFlow(signedinViewModel.signedInState) {
+            if (it.currentUser != null) {
+                compareUsers(it.currentUser)
+                determineShowRequesBottomInfobar(it.currentUser)
+                determineNewFriendBottomInfobar(it.currentUser)
+                determineShowGroupAddBottomInfobar(it.currentUser)
+
+                if(it.currentUser.public_posts != null && it.currentUser.public_posts!!.isNotEmpty()){
+//                    getPublicPosts_first_5(it.public_posts?.values?.toList()!!)
+                }
+            }
+
+            if(it.currentUser?.friendRequests != null && it.currentUser.friendRequests.isNotEmpty()){
+                getFriendRequests(it.currentUser.friendRequests)
+            } else {
+                firebaseViewModel.friendRequests.value = mutableListOf<User>()
+            }
+
+            if(it.currentUser?.friends != null && it.currentUser.friends.isNotEmpty()){
+                getAllFriends(it.currentUser.friends)
+            } else {
+                firebaseViewModel.setFriends(listOf())
+            }
+        }
     }
 
     // TODO: Run in a coroutine
@@ -253,22 +284,6 @@ class SignedinActivity : AppCompatActivity() {
         }
         prevGroups = user.groupRooms.count()
     }
-
-//    fun showBottomInfobar(customString: String?, customColor: Int?){
-//        this.lifecycleScope.launch(Dispatchers.Main) {
-//            setInfobarProps(customString, customColor)
-//            binding.bottomInfobar.visibility = View.VISIBLE
-//
-//            delay(3000)
-//
-//            binding.bottomInfobar.visibility = View.GONE
-//        }
-//    }
-//
-//    private fun setInfobarProps(customString: String? = null, customColor: Int? = null){
-//        binding.bottomInfobarText.text = customString
-//        binding.bottomInfobar.setBackgroundColor(this.resources.getColor(customColor ?: R.color.black))
-//    }
 
     fun setOverlayBindings(){
         imageViewModel.showProfileImage.observe(this, Observer {

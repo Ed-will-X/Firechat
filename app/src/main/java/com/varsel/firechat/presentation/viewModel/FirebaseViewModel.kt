@@ -34,7 +34,7 @@ class FirebaseViewModel: ViewModel() {
     var selectedChatRoom = MutableLiveData<ChatRoom>()
     val groupRooms = MutableLiveData<MutableList<GroupRoom>>()
     val selectedGroupRoom = MutableLiveData<GroupRoom>()
-    val usersQuery = MutableLiveData<List<User>>()
+    val usersQuery = MutableLiveData<List<User>>()  // TODO: Delete
     val selectedGroupParticipants = MutableLiveData<List<User>>()
     val selectedGroup_nonParticipants = MutableLiveData<List<User>>()
     val isConnectedToDatabase = MutableLiveData<Boolean>(false)

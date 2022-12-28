@@ -21,6 +21,7 @@ interface MessageRepository {
 
     fun createGroup(group: GroupRoom) : Flow<Response>
     fun appendGroupRoomsToUser(group: GroupRoom, user: String) : Flow<Response>
+    fun initialiseGetGroupRoomsRecurrentStream(): Flow<Response>
     fun getGroupRoomSingle(id: String) : GroupRoom
     fun getGroupRoomsRecurrent(): MutableStateFlow<Resource<List<GroupRoom>>>
     fun getGroupRoomRecurrent(id: String) : MutableStateFlow<Resource<GroupRoom>>

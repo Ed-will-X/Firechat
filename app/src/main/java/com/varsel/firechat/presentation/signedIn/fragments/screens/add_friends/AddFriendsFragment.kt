@@ -113,7 +113,7 @@ class AddFriendsFragment : Fragment() {
     }
 
     private fun setupRecentSearchAdapter() {
-        val recentSearches = parent.firebaseViewModel.currentUser.value?.recent_search
+        val recentSearches = viewModel.getCurrentUserRecurrentUseCase().value.data?.recent_search
         recentSearchAdapter = RecentSearchAdapter(parent, this) {
             navigateToOtherProfileFragment(it, null)
 

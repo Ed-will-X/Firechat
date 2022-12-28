@@ -22,7 +22,7 @@ class MessageRepositoryImpl @Inject constructor(
     val currentUserRepository: CurrentUserRepository
 ): MessageRepository {
     private val chatRoomsFlow = MutableStateFlow<Resource<MutableList<ChatRoom>>>(Resource.Loading())
-    private val groupRooms = MutableStateFlow<Resource<MutableList<GroupRoom>>>(Resource.Loading())
+    private val groupRoomsFlow = MutableStateFlow<Resource<MutableList<GroupRoom>>>(Resource.Loading())
 
     override fun sendMessage(message: Message, chatRoomId: String): Flow<Response> {
         TODO("Not yet implemented")
@@ -72,10 +72,52 @@ class MessageRepositoryImpl @Inject constructor(
 
         awaitClose {
             Log.d("CLEAN", "Await close for chat room ran")
-            Log.d("CLEAN", "Listener Count: ${listeners.size}")
+            Log.d("CLEAN", "Chat Room Listener Count: ${listeners.size}")
             for (i in listeners) {
                 // TODO: Remove value event listeners
 //                firebase.mDbRef.removeEventListener(i)
+            }
+        }
+    }
+
+    override fun initialiseGetGroupRoomsRecurrentStream(): Flow<Response> = callbackFlow {
+        groupRoomsFlow.value = Resource.Loading()
+        trySend(Response.Loading())
+
+        val groupRoomIDs = currentUserRepository.getCurrentUserRecurrent().value.data?.groupRooms?.keys
+        val groupRooms = mutableListOf<GroupRoom>()
+        val listeners = mutableListOf<ValueEventListener>()
+
+        // TODO: Fix potential memory leak
+        for (i in groupRoomIDs ?: listOf()){
+            // TODO: Fix bug here:
+            val listener = firebase.getGroupChatRoomRecurrent(i, {
+                if(groupRoomsFlow.value.data != null){
+                    val groupIterator = groupRoomsFlow.value.data!!.iterator()
+                    while (groupIterator.hasNext()){
+                        val g = groupIterator.next()
+                        if(g.roomUID == it.roomUID){
+                            groupIterator.remove()
+                        }
+                    }
+                }
+                groupRooms.add(it)
+            }, {
+                groupRoomsFlow.value = Resource.Success(groupRooms)
+                trySend(Response.Success())
+                Log.d("CLEAN", "Group room count in data: ${groupRooms.count()}")
+
+            })
+
+            listeners.add(listener)
+        }
+
+        awaitClose {
+            Log.d("CLEAN", "Await close for group room ran")
+            Log.d("CLEAN", "Group Room Listener Count: ${listeners.size}")
+            for (i in listeners) {
+                // TODO: Remove value event listeners
+                firebase.mDbRef.removeEventListener(i)
             }
         }
     }
@@ -113,7 +155,7 @@ class MessageRepositoryImpl @Inject constructor(
     }
 
     override fun getGroupRoomsRecurrent(): MutableStateFlow<Resource<List<GroupRoom>>> {
-        TODO("Not yet implemented")
+        return groupRoomsFlow as MutableStateFlow<Resource<List<GroupRoom>>>
     }
 
     override fun getGroupRoomRecurrent(id: String): MutableStateFlow<Resource<GroupRoom>> {

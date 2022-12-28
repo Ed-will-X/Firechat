@@ -13,6 +13,7 @@ import com.varsel.firechat.domain.use_case.current_user.OpenCurrentUserCollectio
 import com.varsel.firechat.domain.use_case.current_user.OpenFriendsUpdateStream
 import com.varsel.firechat.domain.use_case.message.GetChatRoomsRecurrentUseCase
 import com.varsel.firechat.domain.use_case.message.InitialiseChatRoomsStreamUseCase
+import com.varsel.firechat.domain.use_case.message.InitialiseGroupRoomsStreamUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -25,13 +26,16 @@ class SignedinViewModel @Inject constructor(
     val getCurrentUserRecurrentUseCase: GetCurrentUserRecurrentUseCase,
     val openFriendsUpdateStream: OpenFriendsUpdateStream,
     val initialiseChatRoomsStreamUseCase: InitialiseChatRoomsStreamUseCase,
-    val getChatRoomsRecurrentUseCase: GetChatRoomsRecurrentUseCase
+    val getChatRoomsRecurrentUseCase: GetChatRoomsRecurrentUseCase,
+    val initialiseGroupRoomsStreamUseCase: InitialiseGroupRoomsStreamUseCase
 ): ViewModel() {
     val currentChatRoomId = MutableLiveData<String>()
     private val hasGetUserRecurrentRun = MutableStateFlow<Boolean>(false)
     private val lastChatRoomCount = MutableStateFlow<Int>(-1)
     private val lastGroupRoomCount = MutableStateFlow<Int>(-1)
-//    private val signedInState = MutableStateFlow(SignedInActivityState(dataState = ))
+
+    private val _signedInState = MutableStateFlow(SignedInActivityState())
+    val signedInState = _signedInState
 
     init {
         // Opens the realtime database stream to receive current user
@@ -43,6 +47,7 @@ class SignedinViewModel @Inject constructor(
         getCurrentUserRecurrentUseCase().onEach {
             when(it){
                 is Resource.Success -> {
+                    _signedInState.value = _signedInState.value.copy(currentUser = it.data, isLoading = false)
                     if(lastChatRoomCount.value == -1 || lastChatRoomCount.value != it.data?.chatRooms?.keys?.size){
                         initialiseChatRoomsStreamUseCase().onEach {
 
@@ -50,8 +55,11 @@ class SignedinViewModel @Inject constructor(
                     }
 
                     if(lastGroupRoomCount.value == -1 || lastGroupRoomCount.value != it.data?.groupRooms?.keys?.size){
-                        // TODO: Initialise group room stream here
-
+                        initialiseGroupRoomsStreamUseCase().onEach {
+                            if(it == Response.Success()) {
+                                Log.d("CLEAN", "Group room stream successfully initialised")
+                            }
+                        }.launchIn(viewModelScope)
                     }
 
                     if(it.data?.friends != null) {
@@ -61,10 +69,10 @@ class SignedinViewModel @Inject constructor(
                     }
                 }
                 is Resource.Loading -> {
-
+                    _signedInState.value = _signedInState.value.copy(currentUser = null, isLoading = true)
                 }
                 is Resource.Error -> {
-
+                    _signedInState.value = _signedInState.value.copy(currentUser = null, isLoading = false)
                 }
             }
 

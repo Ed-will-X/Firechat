@@ -1,11 +1,13 @@
 package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.group
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentGroupBinding
@@ -17,13 +19,17 @@ import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.GroupChatsListAdapter
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.chats_tab_page.ChatsFragmentDirections
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
 
+@AndroidEntryPoint
 class GroupFragment : Fragment() {
     private var _binding: FragmentGroupBinding? = null
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
     private lateinit var adapter: GroupChatsListAdapter
+    private lateinit var viewModel: GroupViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,6 +39,8 @@ class GroupFragment : Fragment() {
         val view = binding.root
 
         parent = activity as SignedinActivity
+        viewModel = ViewModelProvider(this).get(GroupViewModel::class.java)
+        collectState()
 
         adapter = GroupChatsListAdapter(parent, requireContext(),{
             navigateToCreateGroup()
@@ -43,25 +51,23 @@ class GroupFragment : Fragment() {
             ImageUtils.displayGroupImage(groupImage, group, parent)
         })
 
-        parent.firebaseViewModel.currentUser.observe(viewLifecycleOwner, Observer {
-            toggleShimmerVisibility(it)
-            if(it != null){
+        binding.groupChatsRecyclerView.adapter = adapter
+
+        return view
+    }
+
+    private fun collectState() {
+        collectLatestLifecycleFlow(viewModel.state) {
+            submitListToAdapter(it.groupRooms)
+            toggleVisibility(it.groupRooms)
+            toggleShimmerVisibility(it.currentUser)
+            if(it.currentUser != null){
                 binding.createGroupClickable.setOnClickListener {
                     navigateToCreateGroup()
                 }
             }
-        })
-
-        binding.groupChatsRecyclerView.adapter = adapter
-
-        parent.firebaseViewModel.groupRooms.observe(viewLifecycleOwner, Observer {
-            toggleVisibility(it)
-
-
-            submitListToAdapter(it as List<GroupRoom>?)
-        })
-
-        return view
+            Log.d("CLEAN", "Group room count in fragment: ${it.groupRooms.count()}")
+        }
     }
 
     fun navigateToCreateGroup(){
@@ -100,8 +106,7 @@ class GroupFragment : Fragment() {
     }
 
     private fun toggleVisibility(groupRooms: List<GroupRoom?>){
-        val currentUser = parent.firebaseViewModel.currentUser.value
-        if(groupRooms.isNotEmpty() && currentUser != null){
+        if(groupRooms.isNotEmpty()){
             binding.noGroups.visibility = View.GONE
             binding.groupChatsRecyclerView.visibility = View.VISIBLE
         } else {

@@ -600,8 +600,8 @@ class Firebase(
             })
     }
 
-    fun getGroupChatRoomRecurrent(chatRoomUID: String, loopCallback: (groupRoom: GroupRoom?) -> Unit, afterCallback: () -> Unit){
-        mDbRef
+    fun getGroupChatRoomRecurrent(chatRoomUID: String, loopCallback: (groupRoom: GroupRoom) -> Unit, afterCallback: () -> Unit): ValueEventListener{
+        val listener = mDbRef
             .child("groupRooms")
             .orderByChild("roomUID")
             .equalTo(chatRoomUID)
@@ -609,7 +609,9 @@ class Firebase(
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (i in snapshot.children){
                         val item = i.getValue(GroupRoom::class.java)
-                        loopCallback(item)
+                        if(item != null) {
+                            loopCallback(item)
+                        }
                         DebugUtils.log_firebase("get group room recurrent successful")
                     }
 
@@ -620,6 +622,8 @@ class Firebase(
 
                 }
             })
+
+        return listener
     }
 
     // TODO: Modify to accommodate simultaneous first message possibilities
