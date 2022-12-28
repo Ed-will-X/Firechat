@@ -107,7 +107,7 @@ class EditProfilePage : Fragment() {
             val timestamp = System.currentTimeMillis()
             val profileImage = ProfileImage(currentUser, timestamp)
 
-            parent.showBottomInfobar(parent.getString(R.string.uploading_profile_image), InfobarColors.UPLOADING)
+            parent.infobarController.showBottomInfobar(parent.getString(R.string.uploading_profile_image), InfobarColors.UPLOADING)
 
             parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, currentUser, {
                 parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
@@ -115,14 +115,14 @@ class EditProfilePage : Fragment() {
                     parent.profileImageViewModel.storeImage(profileImage_withBase64)
                     parent.profileImageViewModel.profileImage_currentUser.value = profileImage_withBase64
 
-                    parent.showBottomInfobar(parent.getString(R.string.profile_image_upload_successful), InfobarColors.SUCCESS)
+                    parent.infobarController.showBottomInfobar(parent.getString(R.string.profile_image_upload_successful), InfobarColors.SUCCESS)
 
                     successCallback(profileImage)
                 }, {
-                    parent.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
+                    parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
                 })
             }, {
-                parent.showBottomInfobar(parent.getString(R.string.profile_image_upload_error), InfobarColors.FAILURE)
+                parent.infobarController.showBottomInfobar(parent.getString(R.string.profile_image_upload_error), InfobarColors.FAILURE)
             })
         }
     }
@@ -133,7 +133,7 @@ class EditProfilePage : Fragment() {
         val timestamp = System.currentTimeMillis()
         val profileImage = ProfileImage( currentUser, timestamp)
 
-        parent.showBottomInfobar(parent.getString(R.string.uploading_profile_image), InfobarColors.UPLOADING)
+        parent.infobarController.showBottomInfobar(parent.getString(R.string.uploading_profile_image), InfobarColors.UPLOADING)
 
         parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, currentUser, {
             parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
@@ -142,13 +142,13 @@ class EditProfilePage : Fragment() {
                 parent.profileImageViewModel.storeImage(profileImage_withBase64)
                 parent.profileImageViewModel.profileImage_currentUser.value = profileImage_withBase64
 
-                parent.showBottomInfobar(parent.getString(R.string.profile_image_upload_successful), InfobarColors.SUCCESS)
+                parent.infobarController.showBottomInfobar(parent.getString(R.string.profile_image_upload_successful), InfobarColors.SUCCESS)
                 successCallback()
             }, {
-                parent.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
+                parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
             })
         }, {
-            parent.showBottomInfobar(parent.getString(R.string.profile_image_upload_error), InfobarColors.FAILURE)
+            parent.infobarController.showBottomInfobar(parent.getString(R.string.profile_image_upload_error), InfobarColors.FAILURE)
         })
     }
 
@@ -156,12 +156,12 @@ class EditProfilePage : Fragment() {
         val currentUserId = parent.firebaseAuth.currentUser!!.uid
         val timestamp = System.currentTimeMillis()
 
-        parent.showBottomInfobar(parent.getString(R.string.removing_profile_image), InfobarColors.UPLOADING)
+        parent.infobarController.showBottomInfobar(parent.getString(R.string.removing_profile_image), InfobarColors.UPLOADING)
 
         parent.firebaseViewModel.removeProfileImage(parent.mDbRef, parent.firebaseAuth.currentUser!!.uid, parent.firebaseStorage, {
             parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
 
-                parent.showBottomInfobar(parent.getString(R.string.remove_profile_image_successful), InfobarColors.SUCCESS)
+                parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_profile_image_successful), InfobarColors.SUCCESS)
 
                 val image = parent.profileImageViewModel.getImageById(currentUserId)
 
@@ -174,10 +174,10 @@ class EditProfilePage : Fragment() {
                 })
                 successCallback()
             }, {
-                parent.showBottomInfobar(parent.getString(R.string.remove_profile_image_error), InfobarColors.FAILURE)
+                parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_profile_image_error), InfobarColors.FAILURE)
             })
         }, {
-            parent.showBottomInfobar(parent.getString(R.string.remove_profile_image_error), InfobarColors.FAILURE)
+            parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_profile_image_error), InfobarColors.FAILURE)
         })
     }
 

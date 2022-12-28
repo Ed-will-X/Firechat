@@ -41,6 +41,7 @@ import com.varsel.firechat.data.local.ReadReceipt.ReadReceiptViewModel
 import com.varsel.firechat.data.local.Setting.Setting
 import com.varsel.firechat.data.local.Setting.SettingViewModel
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case._util.InfobarControllerUseCase
 import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.presentation.signedOut.SignedoutActivity
@@ -69,9 +70,13 @@ class SignedinActivity : AppCompatActivity() {
     val profileImageViewModel: ProfileImageViewModel by viewModels()
     val publicPostViewModel: PublicPostViewModel by viewModels()
     val readReceiptViewModel: ReadReceiptViewModel by viewModels()
+    lateinit var infobarController: InfobarControllerUseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ActivitySignedinBinding.inflate(layoutInflater)
+        val view = binding.root
 
         firebaseViewModel = ViewModelProvider(this).get(FirebaseViewModel::class.java)
 
@@ -79,6 +84,7 @@ class SignedinActivity : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         mDbRef = FirebaseDatabase.getInstance().reference
         firebaseStorage = FirebaseStorage.getInstance()
+        infobarController = InfobarControllerUseCase(this, this, binding.bottomInfobar, binding.bottomInfobarText)
 
         initialiseSettingConfiguration()
 
@@ -90,8 +96,7 @@ class SignedinActivity : AppCompatActivity() {
         // get current user single
         signedinViewModel.getCurrentUserSingle(this)
 
-        binding = ActivitySignedinBinding.inflate(layoutInflater)
-        val view = binding.root
+
         setContentView(view)
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.signed_in_nav_host_fragment) as NavHostFragment
@@ -179,7 +184,7 @@ class SignedinActivity : AppCompatActivity() {
                     *   Shows the info bar if the selected chatRoom user is not the one who just sent the message
                     * */
                     if(it.userUID != selectedChatRoomUser?.userUID || navController.currentDestination?.id != R.id.chatPageFragment){
-                        showBottomInfobar(this.getString(R.string.new_message_from, UserUtils.truncate(it.name, 15)), InfobarColors.NEW_MESSAGE)
+                        infobarController.showBottomInfobar(this.getString(R.string.new_message_from, UserUtils.truncate(it.name, 15)), InfobarColors.NEW_MESSAGE)
                     }
                 }
             }
@@ -197,7 +202,7 @@ class SignedinActivity : AppCompatActivity() {
 
             if((lastMessage?.time ?: 0L) > lastRunTimestamp && lastMessage?.sender != currentUserId){
                 if(i.roomUID != selectedGroupRoom.value?.roomUID || navController.currentDestination?.id != R.id.groupChatPageFragment){
-                    showBottomInfobar(this.getString(R.string.new_message_in, UserUtils.truncate(i.groupName, 15)), InfobarColors.NEW_MESSAGE)
+                    infobarController.showBottomInfobar(this.getString(R.string.new_message_in, UserUtils.truncate(i.groupName, 15)), InfobarColors.NEW_MESSAGE)
                 }
             }
         }
@@ -216,7 +221,7 @@ class SignedinActivity : AppCompatActivity() {
 
         if (prevFriendRequests < user.friendRequests.count() && prevFriendRequests != -1){
             UserUtils.getUser(sorted.keys.last(), this) {
-                showBottomInfobar(this.getString(R.string.friend_request_From, UserUtils.truncate(it.name, 15)), InfobarColors.NEW_FRIEND_REQUEST)
+                infobarController.showBottomInfobar(this.getString(R.string.friend_request_From, UserUtils.truncate(it.name, 15)), InfobarColors.NEW_FRIEND_REQUEST)
 
             }
         }
@@ -229,7 +234,7 @@ class SignedinActivity : AppCompatActivity() {
 
         if(prevFriends < user.friends.count() && prevFriends != -1){
             UserUtils.getUser(sorted.keys.last(), this) {
-                showBottomInfobar(this.getString(R.string.is_now_your_friend, UserUtils.truncate(it.name, 15)), InfobarColors.NEW_FRIEND)
+                infobarController.showBottomInfobar(this.getString(R.string.is_now_your_friend, UserUtils.truncate(it.name, 15)), InfobarColors.NEW_FRIEND)
             }
         }
         prevFriends = user.friends.count()
@@ -242,29 +247,28 @@ class SignedinActivity : AppCompatActivity() {
         if(prevGroups < user.groupRooms.count() && prevGroups != -1){
             firebaseViewModel.getGroupChatRoomSingle(sorted.keys.last(), mDbRef, {
                 if(it?.admins?.contains(firebaseAuth.currentUser!!.uid) == false){
-                    showBottomInfobar(this.getString(R.string.you_have_been_added_to, UserUtils.truncate(it.groupName, 10)), InfobarColors.GROUP_ADD)
+                    infobarController.showBottomInfobar(this.getString(R.string.you_have_been_added_to, UserUtils.truncate(it.groupName, 10)), InfobarColors.GROUP_ADD)
                 }
             }, {})
         }
         prevGroups = user.groupRooms.count()
     }
 
-    // TODO: Replace strings with resources
-    fun showBottomInfobar(customString: String?, customColor: Int?){
-        lifecycleScope.launch(Dispatchers.Main) {
-            setInfobarProps(customString, customColor)
-            binding.bottomInfobar.visibility = View.VISIBLE
-
-            delay(3000)
-
-            binding.bottomInfobar.visibility = View.GONE
-        }
-    }
-
-    private fun setInfobarProps(customString: String? = null, customColor: Int? = null){
-        binding.bottomInfobarText.text = customString
-        binding.bottomInfobar.setBackgroundColor(this.resources.getColor(customColor ?: R.color.black))
-    }
+//    fun showBottomInfobar(customString: String?, customColor: Int?){
+//        this.lifecycleScope.launch(Dispatchers.Main) {
+//            setInfobarProps(customString, customColor)
+//            binding.bottomInfobar.visibility = View.VISIBLE
+//
+//            delay(3000)
+//
+//            binding.bottomInfobar.visibility = View.GONE
+//        }
+//    }
+//
+//    private fun setInfobarProps(customString: String? = null, customColor: Int? = null){
+//        binding.bottomInfobarText.text = customString
+//        binding.bottomInfobar.setBackgroundColor(this.resources.getColor(customColor ?: R.color.black))
+//    }
 
     fun setOverlayBindings(){
         imageViewModel.showProfileImage.observe(this, Observer {
@@ -736,7 +740,7 @@ class SignedinActivity : AppCompatActivity() {
         firebaseViewModel.checkFirebaseConnection {
             if(it){
                 firebaseViewModel.isConnectedToDatabase.value = true
-                showBottomInfobar(this.getString(R.string.back_online), InfobarColors.ONLINE)
+                infobarController.showBottomInfobar(this.getString(R.string.back_online), InfobarColors.ONLINE)
 
                 if(offlineInfobarTimer != null){
                     offlineInfobarTimer?.cancel()
@@ -749,7 +753,7 @@ class SignedinActivity : AppCompatActivity() {
             } else {
                 firebaseViewModel.isConnectedToDatabase.value = false
                 offlineInfobarTimer = fixedRateTimer("no_connection_timer", false, 0L, 5 * 1000 + 3000) {
-                    showBottomInfobar(this@SignedinActivity.getString(R.string.no_connection), InfobarColors.OFFLINE)
+                    infobarController.showBottomInfobar(this@SignedinActivity.getString(R.string.no_connection), InfobarColors.OFFLINE)
                 }
 
 //                timer = signedinViewModel.setNetworkOverlayTimer {

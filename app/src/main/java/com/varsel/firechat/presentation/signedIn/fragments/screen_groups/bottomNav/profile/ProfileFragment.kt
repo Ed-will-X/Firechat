@@ -128,19 +128,19 @@ class ProfileFragment : Fragment() {
             val publicPost = PublicPost(currentUserId, uid, PublicPostType.IMAGE, caption, timestamp)
 
             // Shows bottom infobar
-            parent.showBottomInfobar(parent.getString(R.string.uploading_public_post), InfobarColors.UPLOADING)
+            parent.infobarController.showBottomInfobar(parent.getString(R.string.uploading_public_post), InfobarColors.UPLOADING)
 
             parent.firebaseViewModel.uploadPublicPost(publicPost, encoded, parent.firebaseStorage, parent.mDbRef, {
                 parent.firebaseViewModel.appendPublicPostIdToUser(parent.firebaseAuth, parent.mDbRef, uid, {
 
-                    parent.showBottomInfobar(parent.getString(R.string.public_post_upload_successful), InfobarColors.SUCCESS)
+                    parent.infobarController.showBottomInfobar(parent.getString(R.string.public_post_upload_successful), InfobarColors.SUCCESS)
 
                     parent.publicPostViewModel.storePost(it)
                 }, {
-                    parent.showBottomInfobar(parent.getString(R.string.chat_image_upload_error), InfobarColors.FAILURE)
+                    parent.infobarController.showBottomInfobar(parent.getString(R.string.chat_image_upload_error), InfobarColors.FAILURE)
                 })
             }, {
-                parent.showBottomInfobar(parent.getString(R.string.chat_image_upload_error), InfobarColors.FAILURE)
+                parent.infobarController.showBottomInfobar(parent.getString(R.string.chat_image_upload_error), InfobarColors.FAILURE)
             })
         }
     }
