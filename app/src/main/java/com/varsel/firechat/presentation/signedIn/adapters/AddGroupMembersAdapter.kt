@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
@@ -13,9 +15,15 @@ import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
+import com.varsel.firechat.presentation.signedIn.fragments.screens.add_group_members.AddGroupMembersViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class AddGroupMembersAdapter(
     val activity: SignedinActivity,
+    val lifecycleOwner: LifecycleOwner,
+    val viewModel: AddGroupMembersViewModel,
     val checkChanged: ()-> Unit,
     val profileImageListener: (profileImage: ProfileImage, user: User)-> Unit
 ): RecyclerView.Adapter<AddGroupMembersAdapter.AddMemberViewHolder>() {
@@ -40,13 +48,26 @@ class AddGroupMembersAdapter(
 
         if(item != null){
             holder.checkbox.text = item.name
-            ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) {
-                if(it != null){
-                    holder.profileImage.setOnClickListener { it2 ->
-                        profileImageListener(it, item)
+
+            lifecycleOwner.lifecycleScope.launch {
+                viewModel.getOtherUserProfileImageUseCase(item).onEach {
+                    if(it?.image != null){
+                        viewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
+                        holder.profileImage.setOnClickListener { it2 ->
+                            profileImageListener(it, item)
+                        }
+                    } else {
+                        holder.profileImageParent.visibility = View.GONE
                     }
-                }
+                }.launchIn(this)
             }
+//            ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) {
+//                if(it != null){
+//                    holder.profileImage.setOnClickListener { it2 ->
+//                        profileImageListener(it, item)
+//                    }
+//                }
+//            }
 
             holder.checkbox.setOnCheckedChangeListener { buttonView, isChecked ->
                 if(isChecked){

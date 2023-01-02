@@ -2,6 +2,7 @@ package com.varsel.firechat.data.repository
 
 import android.util.Log
 import com.google.firebase.database.DatabaseReference
+import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.remote.Firebase
@@ -27,12 +28,14 @@ class OtherUserRepositoryImpl @Inject constructor(
         }, {},{ cancel() })
     }
 
-    override fun getUserRecurrent(id: String): Flow<User> = callbackFlow {
+    override fun getUserRecurrent(id: String): Flow<Resource<User>> = callbackFlow {
+        trySend(Resource.Loading())
         val listener = firebase.getUserRecurrent(id, {
-            trySendBlocking(it)
+            trySendBlocking(Resource.Success(it))
         }, {  },{  })
 
         awaitClose {
+            Log.d("CLEAN", "Await close ran for get user recurrent")
             databaseReference.removeEventListener(listener)
         }
     }

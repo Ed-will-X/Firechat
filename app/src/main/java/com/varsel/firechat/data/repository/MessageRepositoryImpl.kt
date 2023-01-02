@@ -71,8 +71,6 @@ class MessageRepositoryImpl @Inject constructor(
         }
 
         awaitClose {
-            Log.d("CLEAN", "Await close for chat room ran")
-            Log.d("CLEAN", "Chat Room Listener Count: ${listeners.size}")
             for (i in listeners) {
                 // TODO: Remove value event listeners
 //                firebase.mDbRef.removeEventListener(i)
@@ -105,7 +103,6 @@ class MessageRepositoryImpl @Inject constructor(
             }, {
                 groupRoomsFlow.value = Resource.Success(groupRooms)
                 trySend(Response.Success())
-                Log.d("CLEAN", "Group room count in data: ${groupRooms.count()}")
 
             })
 
@@ -113,8 +110,6 @@ class MessageRepositoryImpl @Inject constructor(
         }
 
         awaitClose {
-            Log.d("CLEAN", "Await close for group room ran")
-            Log.d("CLEAN", "Group Room Listener Count: ${listeners.size}")
             for (i in listeners) {
                 // TODO: Remove value event listeners
                 firebase.mDbRef.removeEventListener(i)

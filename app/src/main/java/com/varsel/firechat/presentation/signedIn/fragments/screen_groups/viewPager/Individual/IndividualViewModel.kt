@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
 import com.varsel.firechat.domain.use_case.message.GetChatRoomsRecurrentUseCase
+import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
+import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -15,7 +17,9 @@ import javax.inject.Inject
 @HiltViewModel
 class IndividualViewModel @Inject constructor(
     val getChatRoomsRecurrentUseCase: GetChatRoomsRecurrentUseCase,
-    val getCurrentUserRecurrentUseCase: GetCurrentUserRecurrentUseCase
+    val getCurrentUserRecurrentUseCase: GetCurrentUserRecurrentUseCase,
+    val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase,
+    val setProfilePicUseCase: SetProfilePicUseCase
 ): ViewModel() {
     private val _state = MutableStateFlow<IndividualFragmentState>(IndividualFragmentState())
     val state = _state

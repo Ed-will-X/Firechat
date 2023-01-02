@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -19,11 +21,16 @@ import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
+import com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_detail.GroupChatDetailViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class ParticipantsListAdapter(
     val activity: SignedinActivity,
     val context: Context,
-    val firebaseAuth: FirebaseAuth,
+    val lifecycleOwner: LifecycleOwner,
+    val viewModel: GroupChatDetailViewModel,
     val groupRoom: GroupRoom,
     val pressListener: (userId: String, user: User, base64: String?)-> Unit,
     val longPressListener: (userId: String, user: User, base64: String?) -> Unit,
@@ -75,28 +82,46 @@ class ParticipantsListAdapter(
             holder.name.text = item.name
         }
 
-        ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { image ->
-            if(image != null){
-                holder.profileImage.setOnClickListener {
-                    imageClickListener(image, item)
-                }
-            }
-            if(isCurrentUser(item.userUID)){
-                holder.parentClickable.setOnLongClickListener {
-                    longPressListener(item.userUID, item, image?.image)
-                    true
-                }
-            } else {
-                holder.parentClickable.setOnClickListener {
-                    pressListener(item.userUID, item, image?.image)
-                }
+        lifecycleOwner.lifecycleScope.launch {
+            viewModel.getOtherUserProfileImageUseCase(item).onEach {
+                if(it?.image != null){
+                    viewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
+                    holder.profileImage.setOnClickListener { _ ->
+                        imageClickListener(it, item)
+                    }
 
-                holder.parentClickable.setOnLongClickListener {
-                    longPressListener(item.userUID, item, image?.image)
-                    true
+                    if(isCurrentUser(item.userUID)){
+                        holder.parentClickable.setOnLongClickListener { _ ->
+                            longPressListener(item.userUID, item, it.image)
+                            true
+                        }
+                    }
                 }
-            }
+            }.launchIn(this)
         }
+
+//        ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { image ->
+//            if(image != null){
+//                holder.profileImage.setOnClickListener {
+//                    imageClickListener(image, item)
+//                }
+//            }
+//            if(isCurrentUser(item.userUID)){
+//                holder.parentClickable.setOnLongClickListener {
+//                    longPressListener(item.userUID, item, image?.image)
+//                    true
+//                }
+//            } else {
+//                holder.parentClickable.setOnClickListener {
+//                    pressListener(item.userUID, item, image?.image)
+//                }
+//
+//                holder.parentClickable.setOnLongClickListener {
+//                    longPressListener(item.userUID, item, image?.image)
+//                    true
+//                }
+//            }
+//        }
     }
 
     private fun isAdmin(id: String): Boolean{
@@ -112,7 +137,7 @@ class ParticipantsListAdapter(
     }
 
     private fun isCurrentUser(id: String): Boolean{
-        if(id == firebaseAuth.currentUser?.uid.toString()){
+        if(id == activity.firebaseAuth.currentUser?.uid.toString()){
             return true
         }
 

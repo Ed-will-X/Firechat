@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
 import com.varsel.firechat.domain.use_case.other_user.SearchUsersUseCase
+import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
+import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -16,7 +18,9 @@ import javax.inject.Inject
 @HiltViewModel
 class AddFriendsViewModel @Inject constructor(
     val searchUsersUseCase: SearchUsersUseCase,
-    val getCurrentUserRecurrentUseCase: GetCurrentUserRecurrentUseCase
+    val getCurrentUserRecurrentUseCase: GetCurrentUserRecurrentUseCase,
+    val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase,
+    val setProfilePicUseCase: SetProfilePicUseCase
 ): ViewModel() {
     val shouldRun = MutableLiveData<Boolean>(true)
 

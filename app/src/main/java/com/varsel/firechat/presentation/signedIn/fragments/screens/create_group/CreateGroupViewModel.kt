@@ -12,6 +12,8 @@ import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentU
 import com.varsel.firechat.domain.use_case.current_user.GetFriendsUseCase
 import com.varsel.firechat.domain.use_case.message.AppendGroupIdToUserUseCase
 import com.varsel.firechat.domain.use_case.message.CreateGroupUseCase
+import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
+import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -24,7 +26,9 @@ class CreateGroupViewModel @Inject constructor(
     val getFriends: GetFriendsUseCase,
     val createGroupUseCase: CreateGroupUseCase,
     val appendGroupIdToUserUseCase: AppendGroupIdToUserUseCase,
-    val getCurrentUserId: GetCurrentUserIdUseCase
+    val getCurrentUserId: GetCurrentUserIdUseCase,
+    val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase,
+    val setProfilePicUseCase: SetProfilePicUseCase
 ) : ViewModel() {
     val hasBtnBeenClicked = MutableLiveData<Boolean>(false)
     private val _state = MutableStateFlow(CreateGroupState())

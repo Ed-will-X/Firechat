@@ -18,7 +18,10 @@ interface ProfileImageDao {
 //    fun deleteById(imageId: String): LiveData<Image>
 
     @Query("SELECT * FROM profile_image_table WHERE owner_id = :ownerId")
-    fun get(ownerId: String): LiveData<ProfileImage>
+    fun get_liveData(ownerId: String): LiveData<ProfileImage>
+
+    @Query("SELECT * FROM profile_image_table WHERE owner_id = :ownerId")
+    suspend fun get(ownerId: String): ProfileImage?
 
     // TODO: Add remove all and remove by id
 }

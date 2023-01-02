@@ -104,7 +104,7 @@ class ChatPageFragment : Fragment() {
         val fragment = this
         lifecycleScope.launch(Dispatchers.Main) {
             delay(300)
-            messagesListAdapter = MessageListAdapter(existingChatRoomId ?: newChatRoomId, parent, fragment, requireContext(), ChatPageType.INDIVIDUAL, parent.firebaseViewModel,
+            messagesListAdapter = MessageListAdapter(existingChatRoomId ?: newChatRoomId, parent, fragment, requireContext(), this@ChatPageFragment, chatPageViewModel, ChatPageType.INDIVIDUAL, parent.firebaseViewModel,
                 { message, image ->
                     ImageUtils.displayImageMessage(image, message, parent)
                 }, { _, _, _ ->

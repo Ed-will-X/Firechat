@@ -11,6 +11,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +27,12 @@ import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
+import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.chats_tab_page.ChatsViewModel
+import com.varsel.firechat.presentation.signedIn.fragments.screens.chat_page.ChatPageViewModel
 import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class ChatPageType {
@@ -40,6 +47,8 @@ class MessageListAdapter(
     val activity: SignedinActivity,
     val fragment: Fragment,
     val context: Context,
+    val lifecycleOwner: LifecycleOwner,
+    val viewModel: ChatPageViewModel,
     val pageType: Int,
     val firebaseViewModel: FirebaseViewModel,
     val imgClickListener: (message: Message, image: Image)-> Unit,
@@ -204,26 +213,51 @@ class MessageListAdapter(
                     viewHolder.emptyPadding.visibility = View.VISIBLE
                 } else {
                     UserUtils.getUser(item.sender, activity){ user ->
-                        ImageUtils.setProfilePicOtherUser_fullObject(user, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
-                            holder.profileImage.setOnClickListener {
-                                if (profileImage != null){
-                                    profileImgClickListener(profileImage, user)
+                        lifecycleOwner.lifecycleScope.launch {
+                            viewModel.getOtherUserProfileImageUseCase(user).onEach {
+                                if(it?.image != null) {
+                                    viewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
+                                    holder.profileImage.setOnClickListener { _ ->
+                                        profileImgClickListener(it, user)
+                                    }
+                                } else {
+                                    holder.imageViewParent.visibility = View.GONE
                                 }
-                            }
+                            }.launchIn(this)
                         }
+//                        ImageUtils.setProfilePicOtherUser_fullObject(user, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
+//                            holder.profileImage.setOnClickListener {
+//                                if (profileImage != null){
+//                                    profileImgClickListener(profileImage, user)
+//                                }
+//                            }
+//                        }
                     }
                     viewHolder.profilePicContainer.visibility = View.VISIBLE
                     viewHolder.emptyPadding.visibility = View.GONE
                 }
             } catch (e: Exception) {
                 UserUtils.getUser(item.sender, activity){ user ->
-                    ImageUtils.setProfilePicOtherUser_fullObject(user, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
-                        holder.profileImage.setOnClickListener {
-                            if (profileImage != null){
-                                profileImgClickListener(profileImage, user)
+
+                    lifecycleOwner.lifecycleScope.launch {
+                        viewModel.getOtherUserProfileImageUseCase(user).onEach {
+                            if(it?.image != null) {
+                                viewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
+                                holder.profileImage.setOnClickListener { _ ->
+                                    profileImgClickListener(it, user)
+                                }
+                            } else {
+                                holder.imageViewParent.visibility = View.GONE
                             }
-                        }
+                        }.launchIn(this)
                     }
+//                    ImageUtils.setProfilePicOtherUser_fullObject(user, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
+//                        holder.profileImage.setOnClickListener {
+//                            if (profileImage != null){
+//                                profileImgClickListener(profileImage, user)
+//                            }
+//                        }
+//                    }
                 }
                 viewHolder.profilePicContainer.visibility = View.VISIBLE
                 viewHolder.emptyPadding.visibility = View.GONE

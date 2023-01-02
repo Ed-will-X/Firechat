@@ -6,6 +6,8 @@ import com.varsel.firechat.common.Resource
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserSingleUseCase
 import com.varsel.firechat.domain.use_case.current_user.GetFriendsUseCase
+import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
+import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -15,7 +17,9 @@ import javax.inject.Inject
 @HiltViewModel
 class FriendsViewModel @Inject constructor(
     val getFriendsUseCase: GetFriendsUseCase,
-    val getCurrentUserSingleUseCase: GetCurrentUserSingleUseCase
+    val getCurrentUserSingleUseCase: GetCurrentUserSingleUseCase,
+    val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase,
+    val setProfilePicUseCase: SetProfilePicUseCase
 ): ViewModel() {
     private val _state = MutableStateFlow(FriendsFragmentState())
     val state = _state

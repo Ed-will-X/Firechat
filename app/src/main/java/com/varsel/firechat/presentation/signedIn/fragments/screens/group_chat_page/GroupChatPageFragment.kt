@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -31,11 +32,14 @@ import com.varsel.firechat.presentation.signedIn.adapters.FriendListAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.MessageListAdapter
 import com.varsel.firechat.presentation.signedIn.fragments.screens.chat_page.ChatPageViewModel
 import com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_detail.GroupChatDetailViewModel
+import com.varsel.firechat.presentation.viewModel.FriendListFragmentViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
+@AndroidEntryPoint
 class GroupChatPageFragment : Fragment() {
     private var _binding: FragmentGroupChatPageBinding? = null
     private val binding get() = _binding!!
@@ -44,6 +48,7 @@ class GroupChatPageFragment : Fragment() {
     private lateinit var messageAdapter: MessageListAdapter
     private val groupPageViewModel: GroupChatDetailViewModel by activityViewModels()
     private val chatPageViewModel: ChatPageViewModel by activityViewModels()
+    private lateinit var friendsViewModel: FriendListFragmentViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -59,6 +64,8 @@ class GroupChatPageFragment : Fragment() {
         val view = binding.root
         parent = activity as SignedinActivity
         roomId = GroupChatPageFragmentArgs.fromBundle(requireArguments()).groupRoomId
+
+        friendsViewModel = ViewModelProvider(this).get(FriendListFragmentViewModel::class.java)
 
         LifecycleUtils.observeInternetStatus(parent, this, {
             binding.sendMessageBtn.isEnabled = true
@@ -76,7 +83,7 @@ class GroupChatPageFragment : Fragment() {
         val fragment = this
         lifecycleScope.launch(Dispatchers.Main) {
             delay(300)
-            messageAdapter = MessageListAdapter(roomId, parent,fragment, requireContext(), ChatPageType.GROUP, parent.firebaseViewModel,
+            messageAdapter = MessageListAdapter(roomId, parent,fragment, requireContext(), this@GroupChatPageFragment, chatPageViewModel, ChatPageType.GROUP, parent.firebaseViewModel,
                 { message, image ->
                     ImageUtils.displayImageMessage_group(image, message, parent)
                 }, { message, messageType, messageStatus ->
@@ -252,7 +259,7 @@ class GroupChatPageFragment : Fragment() {
         val dialog = BottomSheetDialog(requireContext())
         dialog.setContentView(R.layout.action_sheet_system_message)
         val recyclerView = dialog.findViewById<RecyclerView>(R.id.system_message_participant_recycler_view)
-        val adapter = FriendListAdapter(parent, { id, user, base64 ->
+        val adapter = FriendListAdapter(parent, this, friendsViewModel, { id, user, base64 ->
             dialog.dismiss()
             navigateToOtherProfilePage(id, user, base64)
         }, { profileImage, user ->
@@ -275,7 +282,7 @@ class GroupChatPageFragment : Fragment() {
             val action = GroupChatPageFragmentDirections.actionGroupChatPageFragmentToOtherProfileFragment(id)
             binding.root.findNavController().navigate(action)
 
-            parent.firebaseViewModel.selectedUser.value = user
+//            parent.firebaseViewModel.selectedUser.value = user
             parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
         } catch (e: IllegalArgumentException){ }
     }

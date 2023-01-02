@@ -12,6 +12,8 @@ import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
 import com.varsel.firechat.domain.use_case.current_user.GetFriendsUseCase
 import com.varsel.firechat.domain.use_case.other_user.UnfriendUserUseCase
+import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
+import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.fragments.screens.friend_list.FriendListFragment
 import com.varsel.firechat.presentation.signedIn.fragments.screens.friend_list.FriendListState
@@ -37,7 +39,9 @@ class FriendListFragmentViewModel @Inject constructor(
     val unfriendUserUseCase: UnfriendUserUseCase,
     val getFriendsUseCase: GetFriendsUseCase,
     val getCurrentUserRecurrentUseCase: GetCurrentUserRecurrentUseCase,
-    val setupSearchBarUseCase: SetupSearchBarUseCase
+    val setupSearchBarUseCase: SetupSearchBarUseCase,
+    val setImageUseCase: SetProfilePicUseCase,
+    val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase
 ) : ViewModel() {
     val isSearchBarVisible = MutableLiveData<Boolean>(false)
     val isSortDialogOverlayOpen = MutableLiveData<Boolean>(false)

@@ -496,7 +496,6 @@ class SignedinActivity : AppCompatActivity() {
             } else {
                 afterCallback(null)
             }
-            // TODO: Remove image from DB if it is null
         }, {
             afterCallback(null)
         }, { exists ->

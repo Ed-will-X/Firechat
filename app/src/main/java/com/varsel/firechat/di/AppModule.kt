@@ -1,9 +1,11 @@
 package com.varsel.firechat.di
 
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.repository.OtherUserRepositoryImpl
 import com.varsel.firechat.domain.repository.CurrentUserRepository
 import com.varsel.firechat.domain.repository.MessageRepository
 import com.varsel.firechat.domain.repository.OtherUserRepository
+import com.varsel.firechat.domain.repository.ProfileImageRepository
 import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
 import com.varsel.firechat.domain.use_case.current_user.*
 import com.varsel.firechat.domain.use_case.message.*
@@ -12,6 +14,9 @@ import com.varsel.firechat.domain.use_case.other_user.RevokeFriendRequestUseCase
 import com.varsel.firechat.domain.use_case.other_user.SendFriendRequestUseCase
 import com.varsel.firechat.domain.use_case.other_user.UnfriendUserUseCase
 import com.varsel.firechat.domain.use_case.other_user.SearchUsersUseCase
+import com.varsel.firechat.domain.use_case.profile_image.GetGroupImageUseCase
+import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
+import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -134,5 +139,23 @@ object AppModule {
     @Singleton
     fun provideGetGroupRoomsRecurrent(repository: MessageRepository): GetGroupRoomsRecurrentUseCase {
         return GetGroupRoomsRecurrentUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun getOtherUserProfileImage(repository: ProfileImageRepository): GetOtherUserProfileImageUseCase {
+        return GetOtherUserProfileImageUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun setProfilePicUseCase(): SetProfilePicUseCase {
+        return SetProfilePicUseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun getGroupImage(repository: ProfileImageRepository): GetGroupImageUseCase {
+        return GetGroupImageUseCase(repository)
     }
 }

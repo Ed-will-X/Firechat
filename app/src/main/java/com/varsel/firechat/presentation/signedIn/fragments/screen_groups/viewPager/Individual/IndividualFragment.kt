@@ -91,7 +91,7 @@ class IndividualFragment : Fragment() {
 
     private fun setupChatListAdapter() {
         // adapter
-        chatListAdapter = ChatListAdapter(parent, { userId, chatRoomId, user, base64 ->
+        chatListAdapter = ChatListAdapter(parent, viewModel, this, { userId, chatRoomId, user, base64 ->
             navigateToChatPage(chatRoomId, user, base64)
         }, { profileImage, user ->
             ImageUtils.displayProfilePicture(profileImage, user, parent)

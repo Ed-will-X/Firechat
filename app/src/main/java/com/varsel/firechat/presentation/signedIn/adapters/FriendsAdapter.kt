@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -15,9 +17,15 @@ import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
+import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.friends.FriendsViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class FriendsAdapter(
     val activity: SignedinActivity,
+    val viewModel: FriendsViewModel,
+    val lifecycleOwner: LifecycleOwner,
     val parentClickListener: (user: User, base64: String?)-> Unit,
     val chatIconClickListener: (user: User, base64: String?)-> Unit,
     val imageClickListener: (profileImage: ProfileImage, user: User) -> Unit
@@ -52,21 +60,43 @@ class FriendsAdapter(
         }
 
         holder.name.text = item.name
-        ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { image ->
-            holder.parentClickable.setOnClickListener {
-                parentClickListener(item, image?.image)
-            }
 
-            holder.messageIcon.setOnClickListener {
-                chatIconClickListener(item, image?.image)
-            }
+        lifecycleOwner.lifecycleScope.launch {
+            viewModel.getOtherUserProfileImageUseCase(item).onEach {
+                if(it?.image != null) {
+                    viewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
+                    holder.parentClickable.setOnClickListener { _ ->
+                        parentClickListener(item, it.image)
+                    }
 
-            if(image != null){
-                holder.profileImage.setOnClickListener {
-                    imageClickListener(image, item)
+                    holder.messageIcon.setOnClickListener { _ ->
+                        chatIconClickListener(item, it.image)
+                    }
+
+                    holder.profileImage.setOnClickListener { _ ->
+                        imageClickListener(it, item)
+                    }
+                } else {
+                    holder.profileImageParent.visibility = View.GONE
                 }
-            }
+            }.launchIn(this)
         }
+
+//        ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { image ->
+//            holder.parentClickable.setOnClickListener {
+//                parentClickListener(item, image?.image)
+//            }
+//
+//            holder.messageIcon.setOnClickListener {
+//                chatIconClickListener(item, image?.image)
+//            }
+//
+//            if(image != null){
+//                holder.profileImage.setOnClickListener {
+//                    imageClickListener(image, item)
+//                }
+//            }
+//        }
 
         if(item.occupation != null){
             holder.occupation.text = item.occupation

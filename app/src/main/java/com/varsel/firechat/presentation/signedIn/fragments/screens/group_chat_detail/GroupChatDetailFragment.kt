@@ -14,6 +14,8 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDirections
 import androidx.navigation.findNavController
@@ -31,8 +33,10 @@ import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ParticipantsListAdapter
+import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
 
+@AndroidEntryPoint
 class GroupChatDetailFragment : Fragment() {
     private var _binding: FragmentGroupChatDetailBinding? = null
     private val binding get() = _binding!!
@@ -40,8 +44,7 @@ class GroupChatDetailFragment : Fragment() {
     private lateinit var parent: SignedinActivity
     private var recyclerViewVisible: Boolean = false
     private lateinit var participantAdapter: ParticipantsListAdapter
-    private val fragmentViewModel: GroupChatDetailViewModel by activityViewModels()
-    private val groupPageViewModel: GroupChatDetailViewModel by activityViewModels()
+    private lateinit var fragmentViewModel: GroupChatDetailViewModel
 
     override fun onResume() {
         super.onResume()
@@ -55,6 +58,7 @@ class GroupChatDetailFragment : Fragment() {
         _binding = FragmentGroupChatDetailBinding.inflate(layoutInflater, container, false)
         val view = binding.root
         parent = activity as SignedinActivity
+        fragmentViewModel = ViewModelProvider(this).get(GroupChatDetailViewModel::class.java)
 
         observeGroupImage()
 
@@ -82,11 +86,11 @@ class GroupChatDetailFragment : Fragment() {
             }
 
             if (it != null) {
-                groupPageViewModel.determineGetParticipants(it, parent)
-                groupPageViewModel.getNonParticipants(parent)
+                fragmentViewModel.determineGetParticipants(it, parent)
+                fragmentViewModel.getNonParticipants(parent)
             }
             if(it!= null){
-                participantAdapter = ParticipantsListAdapter(parent, requireContext(), parent.firebaseAuth, it, { id, user, base64 ->
+                participantAdapter = ParticipantsListAdapter(parent, requireContext(), this, fragmentViewModel, it, { id, user, base64 ->
                     navigateToOtherProfileFragment(id, user, base64)
 
                 },{ id, user, base64 ->
@@ -344,7 +348,7 @@ class GroupChatDetailFragment : Fragment() {
     private fun navigateToOtherProfileFragment(userId: String, user: User, base64: String?){
         try {
             val action = GroupChatDetailFragmentDirections.actionGroupChatDetailFragmentToOtherProfileFragment(userId)
-            parent.firebaseViewModel.selectedUser.value = user
+//            parent.firebaseViewModel.selectedUser.value = user
             parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
             findNavController().navigate(action)
         } catch(e: IllegalArgumentException) { }

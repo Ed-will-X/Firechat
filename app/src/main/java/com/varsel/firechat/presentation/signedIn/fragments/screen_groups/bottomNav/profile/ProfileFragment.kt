@@ -299,7 +299,7 @@ class ProfileFragment : Fragment() {
 
         val recyclerView = dialog.findViewById<RecyclerView>(R.id.friend_requests_recycler_view)
 
-        friendRequestsAdapter = FriendRequestsAdapter(parent, { id, user, base64 ->
+        friendRequestsAdapter = FriendRequestsAdapter(parent, this, viewModel, { id, user, base64 ->
             dialog.dismiss()
 
             navigateToOtherProfile(id, user, base64)
@@ -367,7 +367,7 @@ class ProfileFragment : Fragment() {
     private fun navigateToOtherProfile(id: String, user: User, base64: String?) {
         try {
             val action = ProfileFragmentDirections.actionProfileFragmentToOtherProfileFragment(id)
-            parent.firebaseViewModel.selectedUser.value = user
+//            parent.firebaseViewModel.selectedUser.value = user
             parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
             binding.root.findNavController().navigate(action)
         } catch (e: IllegalArgumentException) {}

@@ -23,7 +23,7 @@ import com.varsel.firechat.utils.ImageUtils
 
 class FirebaseViewModel: ViewModel() {
     val usersLiveData = MutableLiveData<List<User>>()
-    val selectedUser = MutableLiveData<User>()
+    val selectedUser = MutableLiveData<User>()  // TODO: Delete
     var selectedChatRoomUser = MutableLiveData<User>()
     val currentUser = MutableLiveData<User>()
     val currentUserSingle = MutableLiveData<User>()

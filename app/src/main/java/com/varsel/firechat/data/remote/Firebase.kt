@@ -1111,7 +1111,7 @@ class Firebase(
     }
 
     // Added snapshot existence callback because the data usage was high even when image was null in DB
-    fun getProfileImage(userId: String, loopCallback: (profileImage: ProfileImage?) -> Unit, afterCallback: () -> Unit, snapshotExistenceCallback: (bool: Boolean)-> Unit){
+    fun getProfileImage(userId: String, loopCallback: (profileImage: ProfileImage) -> Unit, afterCallback: () -> Unit, snapshotExistenceCallback: (bool: Boolean)-> Unit){
         val storageRef = firebaseStorage.reference.child("/profileImages/${userId}")
         storageRef.getBytes(2_000_000).addOnCompleteListener {
 

@@ -8,7 +8,10 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -22,12 +25,20 @@ import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
+import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.group.GroupFragment
+import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.group.GroupViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 val FAVORITE_ICON_DARK_MODE = R.color.grey
 
 class GroupChatsListAdapter(
     val activity: SignedinActivity,
     val context: Context,
+    val fragment: GroupFragment,
+    val lifecycleOwner: LifecycleOwner,
+    val viewModel: GroupViewModel,
     val addNewListener: ()-> Unit,
     val groupItemListener: (id: String, image: ProfileImage?)-> Unit,
     val imageClickListener: (groupImage: ProfileImage, group: GroupRoom) -> Unit
@@ -114,22 +125,40 @@ class GroupChatsListAdapter(
                 setFavorite(item.roomUID, holder.favoriteIcon)
             }
 
-            ImageUtils.setProfilePicGroup_fullObject(item, holder.image, holder.imageParent, activity) { profileImage ->
-                viewHolder.parent.setOnClickListener {
-                    if(profileImage != null){
-                        groupItemListener(item.roomUID, profileImage)
+            lifecycleOwner.lifecycleScope.launch {
+                viewModel.getGroupImageUseCase(item).onEach {
+                    if(it?.image != null) {
+                        viewModel.setProfilePicUseCase(it.image!!, holder.image, holder.imageParent, activity)
+                        viewHolder.parent.setOnClickListener { _ ->
+                            groupItemListener(item.roomUID, it)
+                        }
+
+                        holder.image.setOnClickListener { _ ->
+                            imageClickListener(it, item)
+                        }
                     } else {
-                        groupItemListener(item.roomUID, null)
+                        holder.imageParent.visibility = View.GONE
                     }
-                }
-
-                if(profileImage != null){
-                    holder.image.setOnClickListener {
-                        imageClickListener(profileImage, item)
-
-                    }
-                }
+                }.launchIn(this)
             }
+
+//            ImageUtils.setProfilePicGroup_fullObject(item, holder.image, holder.imageParent, activity) { profileImage ->
+//                viewHolder.parent.setOnClickListener {
+//                    if(profileImage != null){
+//                        groupItemListener(item.roomUID, profileImage)
+//                    } else {
+//                        groupItemListener(item.roomUID, null)
+//                    }
+//                }
+//
+//                if(profileImage != null){
+//                    holder.image.setOnClickListener {
+//                        imageClickListener(profileImage, item)
+//
+//                    }
+//                }
+//            }
+
         }
     }
 
@@ -170,7 +199,7 @@ class GroupChatsListAdapter(
     }
 
     private fun isFavorite(groupID: String): Boolean{
-        val favorites = activity.firebaseViewModel.currentUser.value!!.favoriteGroups?.keys
+        val favorites = fragment.viewModel.getCurrentUserRecurrentUseCase().value.data?.favoriteGroups?.keys
 
         if (favorites != null) {
             for(i in favorites){

@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -19,19 +20,22 @@ import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.PostUtils
 import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapterShapes
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class OtherProfileFragment : Fragment() {
     private var _binding: FragmentOtherProfileBinding? = null
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
-    private val viewModel: OtherProfileViewModel by activityViewModels()
+    private lateinit var viewModel: OtherProfileViewModel
     private lateinit var userUtils: UserUtils
     private lateinit var postAdapter: PublicPostAdapter
 
@@ -42,6 +46,7 @@ class OtherProfileFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentOtherProfileBinding.inflate(inflater, container, false)
         val view = binding.root
+        viewModel = ViewModelProvider(this).get(OtherProfileViewModel::class.java)
 
         parent = activity as SignedinActivity
 
@@ -74,25 +79,45 @@ class OtherProfileFragment : Fragment() {
     private fun collectState() {
         collectLatestLifecycleFlow(viewModel.state) {
             if (it.user != null && !it.isLoading) {
+
+                if(!viewModel._hasRun.value){
+                    // Runs only once
+                    viewModel.getProfileImage(it.user)
+
+                    viewModel._hasRun.value = true
+                }
                 setBindings(it.user)
                 setPublicPostRecyclerView(it.user)
                 setClickListeners(it.user)
                 determineBtn(it.user)
+                setProfileImage(it.profileImage, it.user)
 
-                ImageUtils.setProfilePicOtherUser_fullObject(it.user, binding.profileImage, binding.profileImageParent, parent) { profileImage ->
-                    parent.profileImageViewModel.selectedOtherUserProfilePic.value = profileImage?.image
 
-                    if(profileImage != null){
-                        binding.profileImage.setOnClickListener { it2 ->
-                            ImageUtils.displayProfilePicture(profileImage, it.user, parent)
-                        }
-                    }
-                }
+//                ImageUtils.setProfilePicOtherUser_fullObject(it.user, binding.profileImage, binding.profileImageParent, parent) { profileImage ->
+//                    parent.profileImageViewModel.selectedOtherUserProfilePic.value = profileImage?.image
+//
+//                    if(profileImage != null){
+//                        binding.profileImage.setOnClickListener { it2 ->
+//                            ImageUtils.displayProfilePicture(profileImage, it.user, parent)
+//                        }
+//                    }
+//                }
             } else if(it.isLoading) {
                 // TODO: Handle Loading
             } else if(!it.isLoading && it.user == null) {
                 // TODO: Handle User Null
             }
+        }
+    }
+
+    private fun setProfileImage(profileImage: ProfileImage?, user: User) {
+        if(profileImage?.image != null){
+            viewModel.setProfilePicUseCase(profileImage.image!!, binding.profileImage, binding.profileImageParent, parent)
+            binding.profileImage.setOnClickListener { it2 ->
+                ImageUtils.displayProfilePicture(profileImage, user, parent)
+            }
+        } else {
+            binding.profileImageParent.visibility = View.GONE
         }
     }
 

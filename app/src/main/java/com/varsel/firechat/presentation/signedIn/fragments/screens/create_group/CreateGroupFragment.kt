@@ -97,7 +97,7 @@ class CreateGroupFragment : Fragment() {
     }
 
     private fun initialiseAdapter(friends: List<User>) {
-        adapter = CreateGroupAdapter(parent, {
+        adapter = CreateGroupAdapter(parent, this, viewModel, {
             toggleBtnEnable()
         }, { profileImage, user ->
             ImageUtils.displayProfilePicture(profileImage, user, parent)

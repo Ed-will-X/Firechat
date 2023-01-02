@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.databinding.FragmentAddGroupMembersBinding
 import com.varsel.firechat.data.local.User.User
@@ -12,13 +13,16 @@ import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.SearchUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.AddGroupMembersAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AddGroupMembersFragment : Fragment() {
     private var _binding: FragmentAddGroupMembersBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: AddGroupMembersAdapter
     private lateinit var parent: SignedinActivity
     lateinit var groupId: String
+    lateinit var viewModel: AddGroupMembersViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,6 +32,7 @@ class AddGroupMembersFragment : Fragment() {
         val view = binding.root
         groupId = AddGroupMembersFragmentArgs.fromBundle(requireArguments()).groupId
         parent = activity as SignedinActivity
+        viewModel = ViewModelProvider(this).get(AddGroupMembersViewModel::class.java)
 
         SearchUtils.setupSearchBar(
             binding.addFriendsCancelButton,
@@ -42,7 +47,7 @@ class AddGroupMembersFragment : Fragment() {
             }
         )
 
-        adapter = AddGroupMembersAdapter(parent, {
+        adapter = AddGroupMembersAdapter(parent, this, viewModel, {
             toggleBtnEnable()
         }, { profileImage, user ->
             ImageUtils.displayProfilePicture(profileImage, user, parent)

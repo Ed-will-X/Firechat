@@ -9,7 +9,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -24,12 +26,18 @@ import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
+import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.Individual.IndividualViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class ChatListAdapter(
     val activity: SignedinActivity,
+    val viewModel: IndividualViewModel,
+    val lifecycleOwner: LifecycleOwner,
     val parentClickListener: (userId: String, chatRoomId: String, user: User, base64: String?)-> Unit,
     val profileImageClickListener: (profileImage: ProfileImage, user: User)-> Unit,
-    val readReceiptChange: (unreadChatRooms: MutableMap<String, ChatRoom>)-> Unit
+    val readReceiptChange: (unreadChatRooms: MutableMap<String, ChatRoom>)-> Unit,
 ) : ListAdapter<ChatRoom, ChatListAdapter.ChatItemViewHolder>(ChatsListAdapterDiffItemCallback()) {
     val unreadChatRooms: MutableMap<String, ChatRoom> = mutableMapOf()
 
@@ -94,26 +102,41 @@ class ChatListAdapter(
             holder.lastMessage.text = activity.getString(R.string.image_with_emoji)
         }
 
-        if(item.participants != null){
-            // TODO: Replace with internal database code
-            getUser(UserUtils.getOtherUserId(item.participants!!, activity)){ user ->
-                holder.parent.setOnClickListener { _ ->
-                    parentClickListener(id, item.roomUID, user, null)
-                }
-                holder.name.text = user.name
-                ImageUtils.setProfilePicOtherUser_fullObject(user, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
-                    holder.parent.setOnClickListener { _ ->
-                        parentClickListener(id, item.roomUID, user, profileImage?.image)
-                    }
-
-                    if(profileImage != null){
-                        holder.profileImage.setOnClickListener {
-                            profileImageClickListener(profileImage, user)
-                        }
-                    }
-                }
-
+        getUser(UserUtils.getOtherUserId(item.participants, activity)){ user ->
+            holder.parent.setOnClickListener { _ ->
+                parentClickListener(id, item.roomUID, user, null)
             }
+            holder.name.text = user.name
+
+            lifecycleOwner.lifecycleScope.launch {
+                viewModel.getOtherUserProfileImageUseCase(user).onEach {
+                    if(it?.image != null) {
+                        viewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
+                        holder.parent.setOnClickListener { _ ->
+                            parentClickListener(id, item.roomUID, user, it.image)
+                        }
+
+                        holder.profileImage.setOnClickListener { _ ->
+                            profileImageClickListener(it, user)
+                        }
+                    } else {
+                        holder.profileImageParent.visibility = View.GONE
+                    }
+                }.launchIn(this)
+            }
+
+//            ImageUtils.setProfilePicOtherUser_fullObject(user, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
+//                holder.parent.setOnClickListener { _ ->
+//                    parentClickListener(id, item.roomUID, user, profileImage?.image)
+//                }
+//
+//                if(profileImage != null){
+//                    holder.profileImage.setOnClickListener {
+//                        profileImageClickListener(profileImage, user)
+//                    }
+//                }
+//            }
+
         }
 
         if(item.messages != null){

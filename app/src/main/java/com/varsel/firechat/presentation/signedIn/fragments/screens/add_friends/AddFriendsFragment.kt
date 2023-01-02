@@ -105,7 +105,7 @@ class AddFriendsFragment : Fragment() {
             parent.hideKeyboard()
             view?.findNavController()?.navigate(action)
 
-            parent.firebaseViewModel.selectedUser.value = user
+//            parent.firebaseViewModel.selectedUser.value = user
 
         } catch (e: IllegalArgumentException){
 
@@ -130,7 +130,7 @@ class AddFriendsFragment : Fragment() {
     }
 
     private fun setupAddFriendsSearchAdapter() {
-        addFriendsSearchAdapter = AddFriendsSearchAdapter(parent, { user, base64 ->
+        addFriendsSearchAdapter = AddFriendsSearchAdapter(parent, this, viewModel, { user, base64 ->
 
             navigateToOtherProfileFragment(user, base64)
 

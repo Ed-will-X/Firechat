@@ -33,7 +33,7 @@ class ProfileImageViewModel @Inject constructor(
     }
 
     fun getImageById(id: String): LiveData<ProfileImage> {
-        val image = dao.get(id)
+        val image = dao.get_liveData(id)
         return image
     }
 
@@ -50,7 +50,7 @@ class ProfileImageViewModel @Inject constructor(
     }
 
     fun checkForProfileImageInRoom(ownerId: String): LiveData<ProfileImage>?{
-        val image = dao.get(ownerId)
+        val image = dao.get_liveData(ownerId)
         return image
     }
 

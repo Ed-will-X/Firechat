@@ -60,7 +60,7 @@ class AboutUserFragment : Fragment() {
     private fun navigateToUserPage(view: View, userId: String){
         val action = AboutUserFragmentDirections.actionAboutUserFragmentToOtherProfileFragment(userId)
         parent.profileImageViewModel.selectedOtherUserProfilePic.value = userImg
-        parent.firebaseViewModel.selectedUser.value = user
+//        parent.firebaseViewModel.selectedUser.value = user
 
         view.findNavController().navigate(action)
     }

@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
@@ -13,9 +15,15 @@ import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
+import com.varsel.firechat.presentation.signedIn.fragments.screens.add_friends.AddFriendsViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class AddFriendsSearchAdapter(
     val activity: SignedinActivity,
+    val lifecycleOwner: LifecycleOwner,
+    val viewModel: AddFriendsViewModel,
     val clickListener: (user: User, base64: String?)-> Unit,
     val imageClickListener: (profileImage: ProfileImage, user: User) -> Unit
 ): RecyclerView.Adapter<AddFriendsSearchAdapter.UserItemViewHolder>() {
@@ -45,17 +53,36 @@ class AddFriendsSearchAdapter(
         holder.name.setText(item.name)
         holder.occupation.setText(item.occupation ?: "")
 
-        ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
-            holder.root.setOnClickListener {
-                clickListener(item, profileImage?.image)
-            }
+        lifecycleOwner.lifecycleScope.launch {
+            viewModel.getOtherUserProfileImageUseCase(item).onEach {
+                if(it?.image != null) {
+                    viewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
 
-            if(profileImage != null){
-                holder.profileImage.setOnClickListener {
-                    imageClickListener(profileImage, item)
+                    holder.root.setOnClickListener { _ ->
+                        clickListener(item, it.image)
+                    }
+
+                    holder.profileImage.setOnClickListener { _ ->
+                        imageClickListener(it, item)
+                    }
+                } else {
+                    holder.profileImageParent.visibility = View.GONE
                 }
-            }
+            }.launchIn(this)
         }
+
+//        ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
+//            holder.root.setOnClickListener {
+//                clickListener(item, profileImage?.image)
+//            }
+//
+//            if(profileImage != null){
+//                holder.profileImage.setOnClickListener {
+//                    imageClickListener(profileImage, item)
+//                }
+//            }
+//        }
+
     }
 
     override fun getItemCount(): Int {

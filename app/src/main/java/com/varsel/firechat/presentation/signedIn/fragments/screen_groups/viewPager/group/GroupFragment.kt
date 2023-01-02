@@ -29,7 +29,7 @@ class GroupFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
     private lateinit var adapter: GroupChatsListAdapter
-    private lateinit var viewModel: GroupViewModel
+    lateinit var viewModel: GroupViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,7 +42,7 @@ class GroupFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(GroupViewModel::class.java)
         collectState()
 
-        adapter = GroupChatsListAdapter(parent, requireContext(),{
+        adapter = GroupChatsListAdapter(parent, requireContext(), this, this, viewModel, {
             navigateToCreateGroup()
         }, { id, image ->
             navigateToGroupChatPage(id, image)
@@ -66,7 +66,6 @@ class GroupFragment : Fragment() {
                     navigateToCreateGroup()
                 }
             }
-            Log.d("CLEAN", "Group room count in fragment: ${it.groupRooms.count()}")
         }
     }
 

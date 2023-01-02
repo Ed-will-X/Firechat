@@ -56,9 +56,7 @@ class SignedinViewModel @Inject constructor(
 
                     if(lastGroupRoomCount.value == -1 || lastGroupRoomCount.value != it.data?.groupRooms?.keys?.size){
                         initialiseGroupRoomsStreamUseCase().onEach {
-                            if(it == Response.Success()) {
-                                Log.d("CLEAN", "Group room stream successfully initialised")
-                            }
+
                         }.launchIn(viewModelScope)
                     }
 

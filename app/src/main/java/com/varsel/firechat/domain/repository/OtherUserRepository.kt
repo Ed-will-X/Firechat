@@ -1,5 +1,6 @@
 package com.varsel.firechat.domain.repository
 
+import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.User.User
 import kotlinx.coroutines.flow.Flow
@@ -8,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface OtherUserRepository {
 
     fun getUserById(id: String) : Flow<User>    // for single occurrences like recycler views
-    fun getUserRecurrent(id: String) : Flow<User>
+    fun getUserRecurrent(id: String) : Flow<Resource<User>>
     fun queryUsers(queryString: String) : Flow<List<User>>
     fun sendFriendRequest(user: User) : Flow<Response>
     fun revokeFriendRequest(user: User) : Flow<Response>

@@ -124,7 +124,7 @@ class FriendListFragment : Fragment() {
     }
 
     private fun setupFriendsAdapter() {
-        adapter = FriendListAdapter(parent, { id, user, base64 ->
+        adapter = FriendListAdapter(parent, this, viewModel, { id, user, base64 ->
             navigateToOtherProfile(id, user, base64)
         }, { profileImage, user ->
             ImageUtils.displayProfilePicture(profileImage, user, parent)
@@ -169,7 +169,7 @@ class FriendListFragment : Fragment() {
             val action = FriendListFragmentDirections.actionFriendListFragmentToOtherProfileFragment(userId)
             view?.findNavController()?.navigate(action)
 
-            parent.firebaseViewModel.selectedUser.value = user
+//            parent.firebaseViewModel.selectedUser.value = user
             parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
         } catch (e: IllegalArgumentException) { }
     }
