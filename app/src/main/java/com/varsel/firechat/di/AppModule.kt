@@ -14,9 +14,7 @@ import com.varsel.firechat.domain.use_case.other_user.RevokeFriendRequestUseCase
 import com.varsel.firechat.domain.use_case.other_user.SendFriendRequestUseCase
 import com.varsel.firechat.domain.use_case.other_user.UnfriendUserUseCase
 import com.varsel.firechat.domain.use_case.other_user.SearchUsersUseCase
-import com.varsel.firechat.domain.use_case.profile_image.GetGroupImageUseCase
-import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
-import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
+import com.varsel.firechat.domain.use_case.profile_image.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -157,5 +155,35 @@ object AppModule {
     @Singleton
     fun getGroupImage(repository: ProfileImageRepository): GetGroupImageUseCase {
         return GetGroupImageUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun getProfileImageUseCase(repository: ProfileImageRepository): GetCurrentUserProfileImageUseCase {
+        return GetCurrentUserProfileImageUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRemoveGroupImage(repository: ProfileImageRepository): RemoveGroupImageUseCase {
+        return RemoveGroupImageUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRemoveProfileImage(repository: ProfileImageRepository) : RemoveProfileImageUseCase {
+        return RemoveProfileImageUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUploadGroupImage(repository: ProfileImageRepository): UploadGroupImageUseCase {
+        return UploadGroupImageUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUploadProfileImage(repository: ProfileImageRepository): UploadProfileImageUseCase {
+        return UploadProfileImageUseCase(repository)
     }
 }

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
@@ -24,13 +25,16 @@ import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.InfobarColors
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
+import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.profile.ProfileFragment
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class EditProfilePage : Fragment() {
     private var _binding: FragmentEditProfilePageBinding? = null
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
-    private val viewModel: EditProfileViewModel by activityViewModels()
+    private lateinit var viewModel: EditProfileViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,24 +42,24 @@ class EditProfilePage : Fragment() {
     ): View? {
         _binding = FragmentEditProfilePageBinding.inflate(layoutInflater, container, false)
         val view = binding.root
+        viewModel = ViewModelProvider(this).get(EditProfileViewModel::class.java)
 
         parent = activity as SignedinActivity
         parent.changeStatusBarColor(R.color.light_blue, false)
 
-        viewModel.getCurrentUser()
         collectState()
 
         binding.backButton.setOnClickListener {
             popNavigation()
         }
 
-        parent.profileImageViewModel.profileImage_currentUser.observe(viewLifecycleOwner, Observer {
-            if(it?.image != null){
-                ImageUtils.setProfilePic(it.image!!, binding.profileImage, binding.profileImageParent, parent)
-                binding.profileImageParent.visibility = View.VISIBLE
-
-            }
-        })
+//        parent.profileImageViewModel.profileImage_currentUser.observe(viewLifecycleOwner, Observer {
+//            if(it?.image != null){
+//                ImageUtils.setProfilePic(it.image!!, binding.profileImage, binding.profileImageParent, parent)
+//                binding.profileImageParent.visibility = View.VISIBLE
+//
+//            }
+//        })
 
 
         return view
@@ -65,17 +69,31 @@ class EditProfilePage : Fragment() {
         collectLatestLifecycleFlow(viewModel.state) {
             if(it.user != null) {
                 setBindings(it.user)
+                setProfileImage(it.profileImage)
 
                 // TODO: Fix potential memory leak
-                LifecycleUtils.observeInternetStatus(parent, this, {
-                    binding.actionSheetClickable.setOnClickListener { it2 ->
-                        openEditProfileActionsheet(it.user)
-                    }
-                }, {
-                    binding.actionSheetClickable.setOnClickListener(null)
-                })
+                if(!viewModel._hasRun.value) {
+                    LifecycleUtils.observeInternetStatus(parent, this, {
+                        binding.actionSheetClickable.setOnClickListener { it2 ->
+                            openEditProfileActionsheet(it.user)
+                        }
+                    }, {
+                        binding.actionSheetClickable.setOnClickListener(null)
+                    })
+
+                    viewModel._hasRun.value = true
+                }
 
             }
+        }
+    }
+
+    private fun setProfileImage(profileImage: ProfileImage?){
+        if(profileImage != null) {
+            viewModel.setProfilePicUseCase(profileImage.image!!, binding.profileImage, binding.profileImageParent, parent)
+        } else {
+            binding.profileImage.setImageBitmap(null)
+            binding.profileImageParent.visibility = View.GONE
         }
     }
 
@@ -107,23 +125,7 @@ class EditProfilePage : Fragment() {
             val timestamp = System.currentTimeMillis()
             val profileImage = ProfileImage(currentUser, timestamp)
 
-            parent.infobarController.showBottomInfobar(parent.getString(R.string.uploading_profile_image), InfobarColors.UPLOADING)
-
-            parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, currentUser, {
-                parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
-                    val profileImage_withBase64 = ProfileImage(profileImage, base64)
-                    parent.profileImageViewModel.storeImage(profileImage_withBase64)
-                    parent.profileImageViewModel.profileImage_currentUser.value = profileImage_withBase64
-
-                    parent.infobarController.showBottomInfobar(parent.getString(R.string.profile_image_upload_successful), InfobarColors.SUCCESS)
-
-                    successCallback(profileImage)
-                }, {
-                    parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
-                })
-            }, {
-                parent.infobarController.showBottomInfobar(parent.getString(R.string.profile_image_upload_error), InfobarColors.FAILURE)
-            })
+            viewModel.uploadImage(profileImage, base64, parent)
         }
     }
 
@@ -133,52 +135,38 @@ class EditProfilePage : Fragment() {
         val timestamp = System.currentTimeMillis()
         val profileImage = ProfileImage( currentUser, timestamp)
 
-        parent.infobarController.showBottomInfobar(parent.getString(R.string.uploading_profile_image), InfobarColors.UPLOADING)
-
-        parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, currentUser, {
-            parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
-                val profileImage_withBase64 = ProfileImage(profileImage, base64)
-
-                parent.profileImageViewModel.storeImage(profileImage_withBase64)
-                parent.profileImageViewModel.profileImage_currentUser.value = profileImage_withBase64
-
-                parent.infobarController.showBottomInfobar(parent.getString(R.string.profile_image_upload_successful), InfobarColors.SUCCESS)
-                successCallback()
-            }, {
-                parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
-            })
-        }, {
-            parent.infobarController.showBottomInfobar(parent.getString(R.string.profile_image_upload_error), InfobarColors.FAILURE)
-        })
+        viewModel.uploadImage(profileImage, base64, parent)
     }
 
     private fun removeImage(successCallback: () -> Unit){
         val currentUserId = parent.firebaseAuth.currentUser!!.uid
         val timestamp = System.currentTimeMillis()
 
-        parent.infobarController.showBottomInfobar(parent.getString(R.string.removing_profile_image), InfobarColors.UPLOADING)
+        viewModel.removeImage(parent)
 
-        parent.firebaseViewModel.removeProfileImage(parent.mDbRef, parent.firebaseAuth.currentUser!!.uid, parent.firebaseStorage, {
-            parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
+//        parent.infobarController.showBottomInfobar(parent.getString(R.string.removing_profile_image), InfobarColors.UPLOADING)
 
-                parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_profile_image_successful), InfobarColors.SUCCESS)
-
-                val image = parent.profileImageViewModel.getImageById(currentUserId)
-
-                image.observeOnce(viewLifecycleOwner, Observer {
-                    if(it != null){
-                        parent.profileImageViewModel.nullifyImageInRoom(currentUserId)
-                        parent.profileImageViewModel.profileImage_currentUser.value = null
-//                        parent.profileImageViewModel.profileImageEncodedCurrentUser.value = null
-                    }
-                })
-                successCallback()
-            }, {
-                parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_profile_image_error), InfobarColors.FAILURE)
-            })
-        }, {
-            parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_profile_image_error), InfobarColors.FAILURE)
-        })
+//        parent.firebaseViewModel.removeProfileImage(parent.mDbRef, parent.firebaseAuth.currentUser!!.uid, parent.firebaseStorage, {
+//            parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
+//
+//                parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_profile_image_successful), InfobarColors.SUCCESS)
+//
+//                val image = parent.profileImageViewModel.getImageById(currentUserId)
+//
+//                image.observeOnce(viewLifecycleOwner, Observer {
+//                    if(it != null){
+//                        parent.profileImageViewModel.nullifyImageInRoom(currentUserId)
+//                        parent.profileImageViewModel.profileImage_currentUser.value = null
+////                        parent.profileImageViewModel.profileImageEncodedCurrentUser.value = null
+//                    }
+//                })
+//                successCallback()
+//            }, {
+//                parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_profile_image_error), InfobarColors.FAILURE)
+//            })
+//        }, {
+//            parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_profile_image_error), InfobarColors.FAILURE)
+//        })
     }
 
     private fun openEditProfileActionsheet(currentUser: User){
@@ -229,10 +217,6 @@ class EditProfilePage : Fragment() {
         binding.profileImageSilhouette.setOnClickListener {
             showImageOptionsActionsheet(currentUser)
         }
-
-//            setProfilePic()
-
-//            ImageUtils.setProfileImage(it?.profileImage, binding.profileImageParent, binding.profileImage)
     }
 
     private fun showImageOptionsActionsheet(currentUser: User){

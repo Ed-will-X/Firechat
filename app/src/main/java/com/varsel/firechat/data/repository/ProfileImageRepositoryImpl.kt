@@ -8,6 +8,7 @@ import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.ProfileImage.ProfileImageDao
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.remote.Firebase
+import com.varsel.firechat.domain.repository.CurrentUserRepository
 import com.varsel.firechat.domain.repository.ProfileImageRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -18,14 +19,17 @@ import kotlin.coroutines.resume
 
 class ProfileImageRepositoryImpl @Inject constructor(
     val firebase: Firebase,
-    val dao: ProfileImageDao
+    val dao: ProfileImageDao,
+    val currentUserRepository: CurrentUserRepository
 ) : ProfileImageRepository {
     val profileImageFetchBlacklist = MutableLiveData<HashMap<String, Long>>(hashMapOf())
 
     override suspend fun uploadProfileImage(profileImage: ProfileImage, base64: String): Flow<Response> = callbackFlow {
         firebase.uploadProfileImage(profileImage, base64, {
-            firebase.appendProfileImageTimestamp(System.currentTimeMillis(), {
+            firebase.appendProfileImageTimestamp(profileImage.imgChangeTimestamp, {
                 trySend(Response.Success())
+                val profileImage_withBase64 = ProfileImage(profileImage, base64)
+                runBlocking { dao.insert(profileImage_withBase64) }
             }, {
                 trySend(Response.Fail())
             })
@@ -38,8 +42,11 @@ class ProfileImageRepositoryImpl @Inject constructor(
 
     override suspend fun uploadGroupImage(groupRoom: GroupRoom, profileImage: ProfileImage, base64: String): Flow<Response> = callbackFlow {
         firebase.uploadGroupImage(groupRoom, profileImage, base64, {
-            firebase.appendGroupImageTimestamp(groupRoom.roomUID, System.currentTimeMillis(), {
+            firebase.appendGroupImageTimestamp(groupRoom.roomUID, profileImage.imgChangeTimestamp, {
                 trySend(Response.Success())
+
+                val profileImage_withBase64 = ProfileImage(profileImage, base64)
+                runBlocking { dao.insert(profileImage_withBase64) }
             }, {
                 trySend(Response.Fail())
             })
@@ -54,6 +61,7 @@ class ProfileImageRepositoryImpl @Inject constructor(
         firebase.removeProfileImage(groupRoom.roomUID, {
             firebase.appendGroupImageTimestamp(groupRoom.roomUID, System.currentTimeMillis(), {
                 trySend(Response.Success())
+                runBlocking { nullifyImageInRoom(groupRoom.roomUID) }
             }, {
                 trySend(Response.Fail())
             })
@@ -64,10 +72,11 @@ class ProfileImageRepositoryImpl @Inject constructor(
         awaitClose {  }
     }
 
-    override suspend fun removeProfileImage(userId: String): Flow<Response> = callbackFlow {
-        firebase.removeProfileImage(userId, {
+    override suspend fun removeProfileImage(): Flow<Response> = callbackFlow {
+        firebase.removeProfileImage(firebase.mAuth.currentUser!!.uid, {
             firebase.appendProfileImageTimestamp(System.currentTimeMillis(), {
                 trySend(Response.Success())
+                runBlocking { nullifyImageInRoom(firebase.mAuth.currentUser!!.uid) }
             }, {
                 trySend(Response.Fail())
             })
@@ -78,24 +87,19 @@ class ProfileImageRepositoryImpl @Inject constructor(
         awaitClose {  }
     }
 
-    // TODO: Add blacklisting logic
     override suspend fun getProfileImage(user: User): Flow<ProfileImage?> = callbackFlow {
         val image = dao.get(user.userUID)
         if(image != null && user.imgChangeTimestamp == image.imgChangeTimestamp) {
             // Image hasn't changed in database
             trySend(image)
-            Log.d("CLEAN", "image exists in db")
         } else if(image != null && image.imgChangeTimestamp == 0L){
 
         } else {
             // image is null or has changed, so re-fetch
             isNotUserInBlacklist(user,{
                 addUserToBlacklist(user)
-                Log.d("CLEAN", "Else callback ran")
 
-                Log.d("CLEAN", "Image is null in db")
                 firebase.getProfileImage(user.userUID, {
-                    Log.d("CLEAN", "Image fetched from server")
                     trySend(it)
                     // Save in local db when fetched
                     runBlocking { dao.insert(it) }
@@ -104,7 +108,6 @@ class ProfileImageRepositoryImpl @Inject constructor(
                 }, { exists ->
                     // Callback runs when image is null to minimise data usage
                     if(!exists) {
-                        Log.d("CLEAN", "Nullified image in room")
                         runBlocking { nullifyImageInRoom(user.userUID) }
                     }
                 })
@@ -121,18 +124,14 @@ class ProfileImageRepositoryImpl @Inject constructor(
         if(image != null && groupRoom.imgChangeTimestamp == image.imgChangeTimestamp) {
             // Image hasn't changed in database
             trySend(image)
-            Log.d("CLEAN", "image exists in db")
         } else if(image != null && image.imgChangeTimestamp == 0L){
 
         } else {
             // image is null or has changed, so re-fetch
             isNotGroupInBlacklist(groupRoom,{
                 addGroupToBlacklist(groupRoom)
-                Log.d("CLEAN", "Else callback ran")
 
-                Log.d("CLEAN", "Image is null in db")
                 firebase.getProfileImage(groupRoom.roomUID, {
-                    Log.d("CLEAN", "Image fetched from server")
                     trySend(it)
                     // Save in local db when fetched
                     runBlocking { dao.insert(it) }
@@ -141,7 +140,6 @@ class ProfileImageRepositoryImpl @Inject constructor(
                 }, { exists ->
                     // Callback runs when image is null to minimise data usage
                     if(!exists) {
-                        Log.d("CLEAN", "Nullified image in room")
                         runBlocking { nullifyImageInRoom(groupRoom.roomUID) }
                     }
                 })
@@ -154,9 +152,23 @@ class ProfileImageRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getCurrentUserImage(): Flow<ProfileImage?> = callbackFlow {
-        firebase.getProfileImage(firebase.mAuth.currentUser!!.uid, {
-            trySend(it)
-        }, {}, {})
+        val image = dao.get(firebase.mAuth.currentUser!!.uid)
+        val user = currentUserRepository.getCurrentUserRecurrent().value.data
+
+        if(image != null && user?.imgChangeTimestamp == image.imgChangeTimestamp){
+            trySend(image)
+        } else if(image != null && image.imgChangeTimestamp == 0L){
+
+        } else {
+            firebase.getProfileImage(firebase.mAuth.currentUser!!.uid, {
+                runBlocking { dao.insert(it) }
+                trySend(it)
+            }, {}, { exists ->
+                if(!exists) {
+                    runBlocking { nullifyImageInRoom(firebase.mAuth.currentUser!!.uid) }
+                }
+            })
+        }
 
         awaitClose {  }
     }

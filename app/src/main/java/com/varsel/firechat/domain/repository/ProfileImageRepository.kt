@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ProfileImageRepository {
     suspend fun uploadProfileImage(profileImage: ProfileImage, base64: String) : Flow<Response>
-    suspend fun removeProfileImage(userId: String) : Flow<Response>
+    suspend fun removeProfileImage() : Flow<Response>
 
     suspend fun uploadGroupImage(groupRoom: GroupRoom, profileImage: ProfileImage, base64: String) : Flow<Response>
     suspend fun removeGroupImage(groupRoom: GroupRoom) : Flow<Response>

@@ -126,31 +126,6 @@ class SignedinActivity : AppCompatActivity() {
             getNewGroupMessage(it, navController)
         })
 
-//        firebaseViewModel.currentUser.observe(this, Observer {
-//            if (it != null) {
-//                compareUsers(it)
-//                determineShowRequesBottomInfobar(it)
-//                determineNewFriendBottomInfobar(it)
-//                determineShowGroupAddBottomInfobar(it)
-//
-//                if(it.public_posts != null && it.public_posts!!.isNotEmpty()){
-////                    getPublicPosts_first_5(it.public_posts?.values?.toList()!!)
-//                }
-//            }
-//
-//            if(it?.friendRequests != null && it.friendRequests.isNotEmpty()){
-//                getFriendRequests(it.friendRequests)
-//            } else {
-//                firebaseViewModel.friendRequests.value = mutableListOf<User>()
-//            }
-//
-//            if(it?.friends != null && it.friends.isNotEmpty()){
-//                getAllFriends(it.friends)
-//            } else {
-//                firebaseViewModel.setFriends(listOf())
-//            }
-//        })
-
         firebaseViewModel.currentUser.observeOnce(this, Observer {
             if(it != null){
                 determineCurrentUserImgFetchMethod(it)

@@ -26,8 +26,8 @@ object RemoteModule {
 
     @Provides
     @Singleton
-    fun provideProfileImageRepository(firebase: Firebase, dao: ProfileImageDao): ProfileImageRepository {
-        return ProfileImageRepositoryImpl(firebase, dao)
+    fun provideProfileImageRepository(firebase: Firebase, dao: ProfileImageDao, currentUserRepository: CurrentUserRepository): ProfileImageRepository {
+        return ProfileImageRepositoryImpl(firebase, dao, currentUserRepository)
     }
 
     @Provides

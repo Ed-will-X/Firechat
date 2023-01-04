@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.databinding.ActionSheetPublicPostBinding
 import com.varsel.firechat.databinding.FragmentProfileBinding
 import com.varsel.firechat.data.local.PublicPost.PublicPost
@@ -60,6 +61,7 @@ class ProfileFragment : Fragment() {
 
         userUtils = UserUtils(this)
         viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
+        viewModel.getProfileImage()
         collectState()
 
         LifecycleUtils.observeInternetStatus(parent, this, {
@@ -100,8 +102,6 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        observeProfileImage()
-
         return view
     }
 
@@ -109,6 +109,7 @@ class ProfileFragment : Fragment() {
         collectLatestLifecycleFlow(viewModel.state) {
             if(it.currentUser != null) {
                 setUser(it.currentUser)
+                setProfileImage(it.profileImage)
             }
         }
     }
@@ -263,26 +264,30 @@ class ProfileFragment : Fragment() {
         } catch (e: IllegalArgumentException) { }
     }
 
-    private fun observeProfileImage(){
-        // TODO: Delete
-//        parent.profileImageViewModel.profileImageEncodedCurrentUser.observe(viewLifecycleOwner, Observer {
-//            if(it != null){
-//                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
-//            }
-//        })
-
-        parent.profileImageViewModel.profileImage_currentUser.observe(viewLifecycleOwner, Observer {
-            if(it?.image != null){
-                ImageUtils.setProfilePic(it.image!!, binding.profileImage, binding.profileImageParent, parent)
-                binding.profileImageParent.visibility = View.VISIBLE
-                binding.profileImage.setOnClickListener { it2 ->
-                    val currentUser = viewModel.getCurrentUserRecurrentUseCase().value.data
-                    if(currentUser != null){
-                        ImageUtils.displayProfilePicture(it, currentUser, parent)
-                    }
+    private fun setProfileImage(profileImage: ProfileImage?){
+        if(profileImage?.image != null){
+            viewModel.setProfilePicUseCase(profileImage.image!!, binding.profileImage, binding.profileImageParent, parent)
+            binding.profileImage.setOnClickListener { it2 ->
+                val currentUser = viewModel.getCurrentUserRecurrentUseCase().value.data
+                if(currentUser != null){
+                    ImageUtils.displayProfilePicture(profileImage, currentUser, parent)
                 }
             }
-        })
+        } else {
+            binding.profileImageParent.visibility = View.GONE
+        }
+//        parent.profileImageViewModel.profileImage_currentUser.observe(viewLifecycleOwner, Observer {
+//            if(it?.image != null){
+//                ImageUtils.setProfilePic(it.image!!, binding.profileImage, binding.profileImageParent, parent)
+//                binding.profileImageParent.visibility = View.VISIBLE
+//                binding.profileImage.setOnClickListener { it2 ->
+//                    val currentUser = viewModel.getCurrentUserRecurrentUseCase().value.data
+//                    if(currentUser != null){
+//                        ImageUtils.displayProfilePicture(it, currentUser, parent)
+//                    }
+//                }
+//            }
+//        })
     }
 
     private fun removeFromAdapter(adapter: FriendRequestsAdapter, viewHolder: RecyclerView.ViewHolder){

@@ -35,7 +35,6 @@ class OtherUserRepositoryImpl @Inject constructor(
         }, {  },{  })
 
         awaitClose {
-            Log.d("CLEAN", "Await close ran for get user recurrent")
             databaseReference.removeEventListener(listener)
         }
     }

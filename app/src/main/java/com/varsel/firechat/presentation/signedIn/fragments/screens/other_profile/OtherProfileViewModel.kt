@@ -56,14 +56,11 @@ class OtherProfileViewModel @Inject constructor(
 
     fun getProfileImage(user: User) {
         viewModelScope.launch {
-            Log.d("CLEAN", "VIEW MODEL SCOPE LAUNCHED")
             getOtherUserProfileImageUseCase(user).onEach {
                 if(it != null) {
                     _state.value = _state.value.copy(profileImage = it)
-                    Log.d("CLEAN", "IMAGE NOT NULL IN VIEW MODEL")
                 } else {
                     _state.value = _state.value.copy(profileImage = null)
-                    Log.d("CLEAN", "IMAGE NULL IN VIEW MODEL")
                 }
             }.launchIn(this)
         }
