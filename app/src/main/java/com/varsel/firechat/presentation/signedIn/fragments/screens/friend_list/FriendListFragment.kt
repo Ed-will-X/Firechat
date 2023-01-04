@@ -22,6 +22,7 @@ import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.SearchUtils
 import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.gestures.FriendsSwipeGesture
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.FriendListAdapter
@@ -30,6 +31,7 @@ import com.varsel.firechat.presentation.viewModel.SortTypes
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class FriendListFragment : Fragment() {
@@ -38,6 +40,9 @@ class FriendListFragment : Fragment() {
     private var adapter: FriendListAdapter? = null
     private lateinit var parent: SignedinActivity
     private lateinit var viewModel: FriendListFragmentViewModel
+
+    @Inject
+    lateinit var displayProfileImage: DisplayProfileImage
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -127,7 +132,7 @@ class FriendListFragment : Fragment() {
         adapter = FriendListAdapter(parent, this, viewModel, { id, user, base64 ->
             navigateToOtherProfile(id, user, base64)
         }, { profileImage, user ->
-            ImageUtils.displayProfilePicture(profileImage, user, parent)
+            displayProfileImage(profileImage, user, parent)
         })
         binding.allFriendsRecyclerView.adapter = adapter
 

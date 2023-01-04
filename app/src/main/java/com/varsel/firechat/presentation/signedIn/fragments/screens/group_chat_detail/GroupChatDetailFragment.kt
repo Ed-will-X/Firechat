@@ -29,12 +29,14 @@ import com.varsel.firechat.databinding.FragmentGroupChatDetailBinding
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ParticipantsListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class GroupChatDetailFragment : Fragment() {
@@ -45,6 +47,9 @@ class GroupChatDetailFragment : Fragment() {
     private var recyclerViewVisible: Boolean = false
     private lateinit var participantAdapter: ParticipantsListAdapter
     private lateinit var fragmentViewModel: GroupChatDetailViewModel
+
+    @Inject
+    lateinit var displayProfileImage: DisplayProfileImage
 
     override fun onResume() {
         super.onResume()
@@ -98,7 +103,7 @@ class GroupChatDetailFragment : Fragment() {
                     parent.firebaseViewModel.selectedChatRoomUser.value = user
                     parent.profileImageViewModel.selectedOtherUserProfilePicChat.value = base64
                 }, { image, user ->
-                    ImageUtils.displayProfilePicture(image, user, parent)
+                    displayProfileImage(image, user, parent)
                 })
 
                 binding.partipantsRecyclerView.adapter = participantAdapter

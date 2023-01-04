@@ -26,6 +26,7 @@ import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
 import com.varsel.firechat.presentation.signedIn.adapters.FriendListAdapter
@@ -38,6 +39,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class GroupChatPageFragment : Fragment() {
@@ -49,6 +51,9 @@ class GroupChatPageFragment : Fragment() {
     private val groupPageViewModel: GroupChatDetailViewModel by activityViewModels()
     private val chatPageViewModel: ChatPageViewModel by activityViewModels()
     private lateinit var friendsViewModel: FriendListFragmentViewModel
+
+    @Inject
+    lateinit var displayProfileImage: DisplayProfileImage
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -92,7 +97,7 @@ class GroupChatPageFragment : Fragment() {
                         showSystemMessageActionsheet(users)
                     }
                 }, { profileImage, user ->
-                    ImageUtils.displayProfilePicture(profileImage, user, parent)
+                    displayProfileImage(profileImage, user, parent)
                 })
 
             binding.messagesRecyclerView.adapter = messageAdapter
@@ -263,7 +268,7 @@ class GroupChatPageFragment : Fragment() {
             dialog.dismiss()
             navigateToOtherProfilePage(id, user, base64)
         }, { profileImage, user ->
-            ImageUtils.displayProfilePicture(profileImage, user, parent)
+            displayProfileImage(profileImage, user, parent)
             dialog.dismiss()
         })
 

@@ -23,8 +23,10 @@ import com.varsel.firechat.presentation.signedIn.adapters.AddFriendsSearchAdapte
 import com.varsel.firechat.presentation.signedIn.adapters.RecentSearchAdapter
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddFriendsFragment : Fragment() {
@@ -35,6 +37,9 @@ class AddFriendsFragment : Fragment() {
     private var timer: CountDownTimer? = null
     private lateinit var recentSearchAdapter: RecentSearchAdapter
     private lateinit var addFriendsSearchAdapter: AddFriendsSearchAdapter
+
+    @Inject
+    lateinit var displayProfileImage: DisplayProfileImage
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -135,7 +140,7 @@ class AddFriendsFragment : Fragment() {
             navigateToOtherProfileFragment(user, base64)
 
         }, { profileImage, user ->
-            ImageUtils.displayProfilePicture(profileImage, user, parent)
+            displayProfileImage(profileImage, user, parent)
             parent.hideKeyboard()
         })
 

@@ -186,4 +186,10 @@ object AppModule {
     fun provideUploadProfileImage(repository: ProfileImageRepository): UploadProfileImageUseCase {
         return UploadProfileImageUseCase(repository)
     }
+
+    @Provides
+    @Singleton
+    fun provideDisplayProfileImage(repository: CurrentUserRepository): DisplayProfileImage {
+        return DisplayProfileImage(repository)
+    }
 }

@@ -9,11 +9,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.databinding.FragmentAddGroupMembersBinding
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.SearchUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.AddGroupMembersAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddGroupMembersFragment : Fragment() {
@@ -23,6 +25,9 @@ class AddGroupMembersFragment : Fragment() {
     private lateinit var parent: SignedinActivity
     lateinit var groupId: String
     lateinit var viewModel: AddGroupMembersViewModel
+
+    @Inject
+    lateinit var displayProfileImage: DisplayProfileImage
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,7 +55,7 @@ class AddGroupMembersFragment : Fragment() {
         adapter = AddGroupMembersAdapter(parent, this, viewModel, {
             toggleBtnEnable()
         }, { profileImage, user ->
-            ImageUtils.displayProfilePicture(profileImage, user, parent)
+            displayProfileImage(profileImage, user, parent)
         })
         binding.usersRecyclerView.adapter = adapter
 

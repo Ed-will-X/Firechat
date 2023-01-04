@@ -16,6 +16,7 @@ import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.ReadReceipt.ReadReceipt
+import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.MessageUtils
@@ -27,6 +28,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
+import javax.inject.Inject
 
 
 class ChatPageFragment : Fragment() {
@@ -40,6 +42,9 @@ class ChatPageFragment : Fragment() {
     lateinit var newChatRoom: ChatRoom
     lateinit var messagesListAdapter: MessageListAdapter
     val chatPageViewModel: ChatPageViewModel by activityViewModels()
+
+    @Inject
+    lateinit var displayProfileImage: DisplayProfileImage
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -110,7 +115,7 @@ class ChatPageFragment : Fragment() {
                 }, { _, _, _ ->
 
                 }, { profileImage, user ->
-                    ImageUtils.displayProfilePicture(profileImage, user, parent)
+                    displayProfileImage(profileImage, user, parent)
                 })
             binding.messagesRecyclerView.adapter = messagesListAdapter
 

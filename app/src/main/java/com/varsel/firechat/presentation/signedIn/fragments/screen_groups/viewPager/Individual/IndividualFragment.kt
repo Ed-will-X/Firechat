@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import com.varsel.firechat.databinding.FragmentIndividualBinding
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -22,6 +23,7 @@ import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomN
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
+import javax.inject.Inject
 
 // TODO: Fix bugs, make sure:
     // TODO: The recycler view is populated immediately data loads
@@ -36,6 +38,9 @@ class IndividualFragment : Fragment() {
     private lateinit var parent: SignedinActivity
     private lateinit var viewModel: IndividualViewModel
     private lateinit var chatListAdapter: ChatListAdapter
+
+    @Inject
+    lateinit var displayProfileImage: DisplayProfileImage
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -94,7 +99,7 @@ class IndividualFragment : Fragment() {
         chatListAdapter = ChatListAdapter(parent, viewModel, this, { userId, chatRoomId, user, base64 ->
             navigateToChatPage(chatRoomId, user, base64)
         }, { profileImage, user ->
-            ImageUtils.displayProfilePicture(profileImage, user, parent)
+            displayProfileImage(profileImage, user, parent)
         }, {
 //            setUnreadIndicator(it)
 

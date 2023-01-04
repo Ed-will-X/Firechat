@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentFriendsBinding
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.FriendsAdapter
@@ -20,6 +21,7 @@ import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomN
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class FriendsFragment : Fragment() {
@@ -29,6 +31,9 @@ class FriendsFragment : Fragment() {
     private lateinit var currentChatRoomId: String
     private lateinit var viewModel: FriendsViewModel
     private lateinit var friendsAdapter: FriendsAdapter
+
+    @Inject
+    lateinit var displayProfileImage: DisplayProfileImage
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,7 +73,7 @@ class FriendsFragment : Fragment() {
             parent.firebaseViewModel.selectedChatRoomUser.value = user
             navigateToChats(user.userUID)
         }, { profileImage, user ->
-            ImageUtils.displayProfilePicture(profileImage, user, parent)
+            displayProfileImage(profileImage, user, parent)
         })
         binding.friendsRecyclerView.adapter = friendsAdapter
     }

@@ -24,6 +24,7 @@ import com.varsel.firechat.databinding.FragmentProfileBinding
 import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.data.local.PublicPost.PublicPostType
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.gestures.FriendRequestSwipeGesture
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -37,9 +38,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProfileFragment : Fragment() {
+class ProfileFragment: Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
@@ -48,6 +50,9 @@ class ProfileFragment : Fragment() {
     private lateinit var friendRequestsAdapter: FriendRequestsAdapter
     private lateinit var publicPostAdapter: PublicPostAdapter
     private lateinit var viewModel: ProfileViewModel
+
+    @Inject
+    lateinit var displayProfileImage: DisplayProfileImage
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -270,24 +275,12 @@ class ProfileFragment : Fragment() {
             binding.profileImage.setOnClickListener { it2 ->
                 val currentUser = viewModel.getCurrentUserRecurrentUseCase().value.data
                 if(currentUser != null){
-                    ImageUtils.displayProfilePicture(profileImage, currentUser, parent)
+                    displayProfileImage(profileImage, currentUser, parent)
                 }
             }
         } else {
             binding.profileImageParent.visibility = View.GONE
         }
-//        parent.profileImageViewModel.profileImage_currentUser.observe(viewLifecycleOwner, Observer {
-//            if(it?.image != null){
-//                ImageUtils.setProfilePic(it.image!!, binding.profileImage, binding.profileImageParent, parent)
-//                binding.profileImageParent.visibility = View.VISIBLE
-//                binding.profileImage.setOnClickListener { it2 ->
-//                    val currentUser = viewModel.getCurrentUserRecurrentUseCase().value.data
-//                    if(currentUser != null){
-//                        ImageUtils.displayProfilePicture(it, currentUser, parent)
-//                    }
-//                }
-//            }
-//        })
     }
 
     private fun removeFromAdapter(adapter: FriendRequestsAdapter, viewHolder: RecyclerView.ViewHolder){
@@ -314,7 +307,7 @@ class ProfileFragment : Fragment() {
             refreshRecyclerView()
         }, { image, user ->
             dialog.dismiss()
-            ImageUtils.displayProfilePicture(image, user, parent)
+            displayProfileImage(image, user, parent)
         })
         recyclerView?.adapter = friendRequestsAdapter
 

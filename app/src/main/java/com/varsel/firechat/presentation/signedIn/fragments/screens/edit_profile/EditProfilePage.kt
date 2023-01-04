@@ -19,6 +19,7 @@ import com.varsel.firechat.databinding.FragmentEditProfilePageBinding
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.use_case.current_user.EditUserFields
+import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.AnimationUtils
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.utils.ImageUtils
@@ -28,6 +29,7 @@ import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.profile.ProfileFragment
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class EditProfilePage : Fragment() {
@@ -35,6 +37,9 @@ class EditProfilePage : Fragment() {
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
     private lateinit var viewModel: EditProfileViewModel
+
+    @Inject
+    lateinit var displayProfileImage: DisplayProfileImage
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -240,7 +245,7 @@ class EditProfilePage : Fragment() {
         dialogBinding.expand.setOnClickListener {
             val image = parent.profileImageViewModel.profileImage_currentUser.value
             if(currentUser != null && image != null){
-                ImageUtils.displayProfilePicture(image, currentUser, parent)
+                displayProfileImage(image, currentUser, parent)
                 dialog.dismiss()
             }
         }

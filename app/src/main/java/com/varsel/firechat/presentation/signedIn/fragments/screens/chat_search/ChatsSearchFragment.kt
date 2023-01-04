@@ -13,9 +13,11 @@ import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatSearchAdapter
 import java.lang.IllegalArgumentException
+import javax.inject.Inject
 
 class ChatsSearchFragment : Fragment() {
     private var _binding: FragmentChatsSearchBinding? = null
@@ -23,6 +25,9 @@ class ChatsSearchFragment : Fragment() {
     private lateinit var chatsSearchAdapter: ChatSearchAdapter
     private lateinit var parent: SignedinActivity
     private val chatSearchViewModel: ChatSearchViewModel by activityViewModels()
+
+    @Inject
+    lateinit var displayProfileImage: DisplayProfileImage
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,7 +42,7 @@ class ChatsSearchFragment : Fragment() {
         }, { groupRoom, profileImage ->
            navigateToGroupChatPage(groupRoom.roomUID, profileImage)
         }, { profileImage, user ->
-            ImageUtils.displayProfilePicture(profileImage, user, parent)
+            displayProfileImage(profileImage, user, parent)
         }, { profileImage, groupRoom ->
             ImageUtils.displayGroupImage(profileImage, groupRoom, parent)
         })

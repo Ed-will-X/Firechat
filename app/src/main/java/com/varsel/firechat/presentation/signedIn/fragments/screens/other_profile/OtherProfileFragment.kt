@@ -21,6 +21,7 @@ import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.PostUtils
 import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapterShapes
@@ -29,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class OtherProfileFragment : Fragment() {
@@ -38,6 +40,9 @@ class OtherProfileFragment : Fragment() {
     private lateinit var viewModel: OtherProfileViewModel
     private lateinit var userUtils: UserUtils
     private lateinit var postAdapter: PublicPostAdapter
+
+    @Inject
+    lateinit var displayProfileImage: DisplayProfileImage
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -92,16 +97,6 @@ class OtherProfileFragment : Fragment() {
                 determineBtn(it.user)
                 setProfileImage(it.profileImage, it.user)
 
-
-//                ImageUtils.setProfilePicOtherUser_fullObject(it.user, binding.profileImage, binding.profileImageParent, parent) { profileImage ->
-//                    parent.profileImageViewModel.selectedOtherUserProfilePic.value = profileImage?.image
-//
-//                    if(profileImage != null){
-//                        binding.profileImage.setOnClickListener { it2 ->
-//                            ImageUtils.displayProfilePicture(profileImage, it.user, parent)
-//                        }
-//                    }
-//                }
             } else if(it.isLoading) {
                 // TODO: Handle Loading
             } else if(!it.isLoading && it.user == null) {
@@ -114,7 +109,7 @@ class OtherProfileFragment : Fragment() {
         if(profileImage?.image != null){
             viewModel.setProfilePicUseCase(profileImage.image!!, binding.profileImage, binding.profileImageParent, parent)
             binding.profileImage.setOnClickListener { it2 ->
-                ImageUtils.displayProfilePicture(profileImage, user, parent)
+                displayProfileImage(profileImage, user, parent)
             }
         } else {
             binding.profileImageParent.visibility = View.GONE

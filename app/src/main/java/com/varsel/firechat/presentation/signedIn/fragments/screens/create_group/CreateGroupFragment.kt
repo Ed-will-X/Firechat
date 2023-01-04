@@ -17,6 +17,7 @@ import com.varsel.firechat.databinding.ActionsheetCreateGroupBinding
 import com.varsel.firechat.databinding.FragmentCreateGroupBinding
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.MessageUtils
@@ -25,6 +26,7 @@ import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.CreateGroupAdapter
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CreateGroupFragment : Fragment() {
@@ -34,6 +36,9 @@ class CreateGroupFragment : Fragment() {
     private lateinit var adapter: CreateGroupAdapter
     private val createGroupViewModel: CreateGroupViewModel by activityViewModels()
     private lateinit var viewModel: CreateGroupViewModel
+
+    @Inject
+    lateinit var displayProfileImage: DisplayProfileImage
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -100,7 +105,7 @@ class CreateGroupFragment : Fragment() {
         adapter = CreateGroupAdapter(parent, this, viewModel, {
             toggleBtnEnable()
         }, { profileImage, user ->
-            ImageUtils.displayProfilePicture(profileImage, user, parent)
+            displayProfileImage(profileImage, user, parent)
         })
         binding.friendsRecyclerView.adapter = adapter
 

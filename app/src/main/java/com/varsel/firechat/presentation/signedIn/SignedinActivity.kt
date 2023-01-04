@@ -290,11 +290,11 @@ class SignedinActivity : AppCompatActivity() {
         }
     }
 
-    private fun hideStatusBar(){
+    fun hideStatusBar(){
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 
-    private fun showStatusBar(){
+    fun showStatusBar(){
         window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 
@@ -338,11 +338,23 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if(imageViewModel.showProfileImage.value != true){
-            super.onBackPressed()
+        if(binding.imgOverlayParent.visibility == View.VISIBLE) {
+            binding.imgOverlayParent.visibility = View.GONE
+            binding.imgOverlayName.setText("")
+            binding.imgOverlayType.setText("")
+            binding.imgOverlayTimestamp.setText("")
+            showStatusBar()
+
+            binding.imgOverlayImage.setImageBitmap(null)
         } else {
-            handleImgBackPress()
+            super.onBackPressed()
         }
+        // TODO: Delete
+//        if(imageViewModel.showProfileImage.value != true){
+//            super.onBackPressed()
+//        } else {
+//            handleImgBackPress()
+//        }
     }
 
     fun handleImgBackPress(){
