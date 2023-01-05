@@ -57,23 +57,6 @@ class IndividualFragment : Fragment() {
         toggleShimmerVisibility(null)
         setupChatListAdapter()
 
-//        parent.firebaseViewModel.chatRooms.observe(viewLifecycleOwner, Observer {
-//            val sorted = MessageUtils.sortChats(it as MutableList<ChatRoom>)
-//
-//            toggleRecyclerViewVisibility(it)
-//            chatListAdapter.submitList(sorted)
-//            chatListAdapter.notifyDataSetChanged()
-//        })
-
-//        parent.firebaseViewModel.currentUser.observe(viewLifecycleOwner, Observer {
-//            toggleShimmerVisibility(it)
-//            if(it != null){
-//                binding.chatPeopleClickable.setOnClickListener {
-//                    swipeToFriends()
-//                }
-//            }
-//        })
-
         return view
     }
 

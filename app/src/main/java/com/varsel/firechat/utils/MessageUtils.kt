@@ -1,5 +1,6 @@
 package com.varsel.firechat.utils
 
+import android.util.Log
 import com.varsel.firechat.R
 import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.data.local.Chat.ChatRoom
@@ -23,6 +24,10 @@ class MessageUtils {
                 return "1s"
             }else {
                 val arr = ago.split(" ").toTypedArray()
+
+                if(arr[1] == "month") {
+                    return "${arr[0]} mo"
+                }
                 return "${arr[0]}${arr[1][0]}"
             }
         }
