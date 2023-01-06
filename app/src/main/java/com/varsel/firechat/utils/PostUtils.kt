@@ -7,6 +7,7 @@ import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
+// TODO: Delete Class
 class PostUtils {
     companion object {
         fun sortPublicPosts_reversed(posts: List<String>): List<String> {

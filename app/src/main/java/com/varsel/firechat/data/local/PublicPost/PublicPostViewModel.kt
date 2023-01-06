@@ -15,7 +15,7 @@ class PublicPostViewModel @Inject constructor(
     val currentUserPublicPosts = MutableLiveData<MutableList<PublicPost>?>(mutableListOf())
 
     fun getPostById(id: String): LiveData<PublicPost> {
-        val post = dao.get(id)
+        val post = dao.get_liveData(id)
         return post
     }
 
@@ -32,7 +32,7 @@ class PublicPostViewModel @Inject constructor(
     }
 
     fun checkIfPostInRoom(ownerId: String): LiveData<PublicPost>{
-        val post = dao.get(ownerId)
+        val post = dao.get_liveData(ownerId)
         return post
     }
 }

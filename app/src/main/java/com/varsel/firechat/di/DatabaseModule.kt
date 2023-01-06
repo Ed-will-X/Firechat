@@ -61,7 +61,10 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providePublicPostDatabase(app: Application): PublicPostDatabase {
-        return Room.databaseBuilder(app.applicationContext, PublicPostDatabase:: class.java, "public_post_database").build()
+        return Room
+            .databaseBuilder(app.applicationContext, PublicPostDatabase:: class.java, "public_post_database")
+            .allowMainThreadQueries()   // TODO: Remove this line (After testing)
+            .build()
     }
 
     @Singleton

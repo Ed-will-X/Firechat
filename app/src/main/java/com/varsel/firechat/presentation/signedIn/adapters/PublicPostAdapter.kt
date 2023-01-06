@@ -4,13 +4,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
 import com.varsel.firechat.data.local.PublicPost.PublicPost
+import com.varsel.firechat.domain.use_case.public_post.DoesPostExistUseCase
+import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.PostUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
+import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.profile.ProfileViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 /*
 *   Set width and height to null to use the default
@@ -27,6 +35,9 @@ class PublicPostAdapterShapes {
 class PublicPostAdapter(
     val activity: SignedinActivity,
     val shape: Int,
+    val lifecycleOwner: LifecycleOwner,
+    val doesPostExistUseCase: DoesPostExistUseCase,
+    val getPublicPostUseCase: GetPublicPostUseCase,
     val postClickListener: (publicPost: PublicPost) -> Unit
 ): RecyclerView.Adapter<PublicPostAdapter.ImageViewHolder>() {
 
@@ -73,29 +84,56 @@ class PublicPostAdapter(
             }
         } else {
             // else: Check if it is in DB, then call the determine code on item press
-            PostUtils.check_if_post_in_room(item, activity) {
-                // check if in room
-                if(it != null && parent != null){
-                    // if: Bind it directly
-                    setImage(it, image, parent)
-                } else {
-                    // else: Set on click listener that downloads it from firebase
-                    parent?.setOnClickListener {
-                        if(!hasBeenClicked){
-                            hasBeenClicked = true
+            lifecycleOwner.lifecycleScope.launch {
+                doesPostExistUseCase(item).onEach {
+                    if(it != null) {
+                        // if: Bind it directly
+                        setImage(it, image, parent)
+                    } else {
+                        // else: Set on click listener that downloads it from firebase
+                        parent?.setOnClickListener {
+                            if(!hasBeenClicked){
+                                hasBeenClicked = true
 
-                            // TODO: Get and set image
-                            activity.fetchPublicPost_fullObject(item) {
-                                if(it != null){
-                                    setImage(it, image, parent)
+                                lifecycleOwner.lifecycleScope.launch {
+                                    getPublicPostUseCase(item).onEach {
+                                        setImage(it, image, parent)
+                                    }.launchIn(this)
                                 }
-                            }
 
+                            }
                         }
                     }
-
-                }
+                }.launchIn(this)
             }
+
+
+//            // else: Check if it is in DB, then call the determine code on item press
+//            PostUtils.check_if_post_in_room(item, activity) {
+//                // check if in room
+//                if(it != null && parent != null){
+//                    // if: Bind it directly
+//                    setImage(it, image, parent)
+//                } else {
+//                    // else: Set on click listener that downloads it from firebase
+//                    parent?.setOnClickListener {
+//                        if(!hasBeenClicked){
+//                            hasBeenClicked = true
+//
+//                            // TODO: Get and set image
+//                            activity.fetchPublicPost_fullObject(item) {
+//                                if(it != null){
+//                                    setImage(it, image, parent)
+//                                }
+//                            }
+//
+//                        }
+//                    }
+//
+//                }
+//            }
+
+
 
         }
     }

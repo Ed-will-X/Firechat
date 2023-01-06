@@ -7,6 +7,9 @@ import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentU
 import com.varsel.firechat.domain.use_case.profile_image.GetCurrentUserProfileImageUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
+import com.varsel.firechat.domain.use_case.public_post.DoesPostExistUseCase
+import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
+import com.varsel.firechat.domain.use_case.public_post.UploadPublicPostImageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn

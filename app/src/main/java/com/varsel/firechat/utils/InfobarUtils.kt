@@ -2,12 +2,6 @@ package com.varsel.firechat.utils
 
 import com.varsel.firechat.R
 
-class InfobarUtils {
-    companion object {
-
-    }
-}
-
 class InfobarColors {
     companion object {
         const val OFFLINE = R.color.orange_red

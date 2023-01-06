@@ -1,5 +1,6 @@
 package com.varsel.firechat.presentation.signedIn.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,8 +55,11 @@ class AddFriendsSearchAdapter(
         holder.occupation.setText(item.occupation ?: "")
 
         lifecycleOwner.lifecycleScope.launch {
+            holder.profileImage.setImageBitmap(null)
             viewModel.getOtherUserProfileImageUseCase(item).onEach {
                 if(it?.image != null) {
+                    Log.d("CLEAN", "Image present")
+                    holder.profileImageParent.visibility = View.VISIBLE
                     viewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
 
                     holder.root.setOnClickListener { _ ->
@@ -66,7 +70,9 @@ class AddFriendsSearchAdapter(
                         imageClickListener(it, item)
                     }
                 } else {
-                    holder.profileImageParent.visibility = View.GONE
+                    Log.d("CLEAN", "Image absent")
+//                    holder.profileImageParent.visibility = View.GONE
+                    holder.profileImage.setImageBitmap(null)
                 }
             }.launchIn(this)
         }

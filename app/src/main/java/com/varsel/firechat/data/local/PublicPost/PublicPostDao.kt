@@ -16,5 +16,8 @@ interface PublicPostDao {
     suspend fun delete(publicPost: PublicPost)
 
     @Query("SELECT * FROM public_post_table WHERE postId = :postId")
-    fun get(postId: String): LiveData<PublicPost>
+    fun get_liveData(postId: String): LiveData<PublicPost>
+
+    @Query("SELECT * FROM public_post_table WHERE postId = :postId")
+    fun get(postId: String): PublicPost?
 }

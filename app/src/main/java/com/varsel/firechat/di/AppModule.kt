@@ -2,10 +2,7 @@ package com.varsel.firechat.di
 
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.repository.OtherUserRepositoryImpl
-import com.varsel.firechat.domain.repository.CurrentUserRepository
-import com.varsel.firechat.domain.repository.MessageRepository
-import com.varsel.firechat.domain.repository.OtherUserRepository
-import com.varsel.firechat.domain.repository.ProfileImageRepository
+import com.varsel.firechat.domain.repository.*
 import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
 import com.varsel.firechat.domain.use_case.current_user.*
 import com.varsel.firechat.domain.use_case.message.*
@@ -15,6 +12,10 @@ import com.varsel.firechat.domain.use_case.other_user.SendFriendRequestUseCase
 import com.varsel.firechat.domain.use_case.other_user.UnfriendUserUseCase
 import com.varsel.firechat.domain.use_case.other_user.SearchUsersUseCase
 import com.varsel.firechat.domain.use_case.profile_image.*
+import com.varsel.firechat.domain.use_case.public_post.DoesPostExistUseCase
+import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
+import com.varsel.firechat.domain.use_case.public_post.SortPublicPostReversedUseCase
+import com.varsel.firechat.domain.use_case.public_post.UploadPublicPostImageUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -191,5 +192,29 @@ object AppModule {
     @Singleton
     fun provideDisplayProfileImage(repository: CurrentUserRepository): DisplayProfileImage {
         return DisplayProfileImage(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetPublicPost(repository: PublicPostRepository): GetPublicPostUseCase {
+        return GetPublicPostUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUploadPublicPostImage(repository: PublicPostRepository): UploadPublicPostImageUseCase {
+        return UploadPublicPostImageUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDoesPostExist(repository: PublicPostRepository): DoesPostExistUseCase {
+        return DoesPostExistUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSortPublicPost(): SortPublicPostReversedUseCase {
+        return SortPublicPostReversedUseCase()
     }
 }

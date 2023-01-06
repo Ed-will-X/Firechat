@@ -22,9 +22,13 @@ import com.varsel.firechat.utils.PostUtils
 import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
+import com.varsel.firechat.domain.use_case.public_post.DoesPostExistUseCase
+import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
+import com.varsel.firechat.domain.use_case.public_post.SortPublicPostReversedUseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapterShapes
+import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.profile.ProfileViewModel
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +47,15 @@ class OtherProfileFragment : Fragment() {
 
     @Inject
     lateinit var displayProfileImage: DisplayProfileImage
+
+    @Inject
+    lateinit var doesPostExist: DoesPostExistUseCase
+
+    @Inject
+    lateinit var getPublicPostUseCase: GetPublicPostUseCase
+
+    @Inject
+    lateinit var sortPublicPosts: SortPublicPostReversedUseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -137,7 +150,7 @@ class OtherProfileFragment : Fragment() {
     private fun setPublicPostRecyclerView(otherUser: User){
         lifecycleScope.launch(Dispatchers.Main) {
             delay(300)
-            postAdapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANGLE_SMALL) {
+            postAdapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANGLE_SMALL, this@OtherProfileFragment, doesPostExist, getPublicPostUseCase) {
                 ImageUtils.displayPublicPostImage(it, otherUser, parent)
             }
 
@@ -147,7 +160,7 @@ class OtherProfileFragment : Fragment() {
             val otherUserPosts = otherUser.public_posts?.keys?.toList()
 
             if(otherUserPosts != null && otherUserPosts.isNotEmpty()){
-                val reversed = PostUtils.sortPublicPosts_reversed(otherUserPosts).take(4)
+                val reversed = sortPublicPosts(otherUserPosts).take(4)
 
                 postAdapter.publicPostStrings = reversed
                 binding.shimmerPublicPosts.visibility = View.GONE
@@ -215,7 +228,7 @@ class OtherProfileFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.Main){
             delay(300)
 
-            val adapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANCLE) {
+            val adapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANCLE, this@OtherProfileFragment, doesPostExist, getPublicPostUseCase) {
                 dialog.dismiss()
                 ImageUtils.displayPublicPostImage(it, selectedUser, parent)
             }
@@ -223,7 +236,7 @@ class OtherProfileFragment : Fragment() {
 
             val otherUserPosts = selectedUser.public_posts?.keys?.toList()
             if(otherUserPosts != null && otherUserPosts.isNotEmpty()){
-                val reversed = PostUtils.sortPublicPosts_reversed(otherUserPosts)
+                val reversed = sortPublicPosts(otherUserPosts)
                 adapter.publicPostStrings = reversed
                 dialogBinding.otherUserPublicPostsRecyclerViewFull.visibility = View.VISIBLE
                 dialogBinding.shimmerPublicPosts.visibility = View.GONE

@@ -26,6 +26,9 @@ import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.data.local.PublicPost.PublicPostType
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
+import com.varsel.firechat.domain.use_case.public_post.DoesPostExistUseCase
+import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
+import com.varsel.firechat.domain.use_case.public_post.SortPublicPostReversedUseCase
 import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.gestures.FriendRequestSwipeGesture
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -55,6 +58,15 @@ class ProfileFragment: Fragment() {
     @Inject
     lateinit var displayProfileImage: DisplayProfileImage
 
+    @Inject
+    lateinit var doesPostExist: DoesPostExistUseCase
+
+    @Inject
+    lateinit var getPublicPostUseCase: GetPublicPostUseCase
+
+    @Inject
+    lateinit var sortPublicPosts: SortPublicPostReversedUseCase
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -79,7 +91,7 @@ class ProfileFragment: Fragment() {
         lifecycleScope.launch(Dispatchers.Main){
             delay(300)
 
-            publicPostAdapter = PublicPostAdapter(parent, PublicPostAdapterShapes.SQUARE) {
+            publicPostAdapter = PublicPostAdapter(parent, PublicPostAdapterShapes.SQUARE, this@ProfileFragment, doesPostExist, getPublicPostUseCase) {
                 showPublicPostActionSheet()
             }
 
@@ -91,7 +103,7 @@ class ProfileFragment: Fragment() {
             * */
             val IDs = viewModel.getCurrentUserRecurrentUseCase().value.data?.public_posts?.keys?.toList()
             if(IDs != null && IDs.isNotEmpty()){
-                val reversed = PostUtils.sortPublicPosts_reversed(IDs).take(4)
+                val reversed = sortPublicPosts(IDs).take(4)
 
                 publicPostAdapter.publicPostStrings = reversed
                 publicPostAdapter.notifyDataSetChanged()
@@ -168,7 +180,7 @@ class ProfileFragment: Fragment() {
 
         lifecycleScope.launch(Dispatchers.Main){
             delay(300)
-            val publicPostAdapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANCLE) {
+            val publicPostAdapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANCLE, this@ProfileFragment, doesPostExist, getPublicPostUseCase) {
                 dialog.dismiss()
                 displayPublicPostImage(it)
             }
@@ -178,7 +190,7 @@ class ProfileFragment: Fragment() {
             val currentUserPosts = viewModel.getCurrentUserRecurrentUseCase().value.data?.public_posts?.keys?.toList()
             if(currentUserPosts != null && currentUserPosts.isNotEmpty()){
                 // TODO: Extract timestamps then reverse
-                val reversed = PostUtils.sortPublicPosts_reversed(currentUserPosts)
+                val reversed = sortPublicPosts(currentUserPosts)
                 publicPostAdapter.publicPostStrings = reversed
 
                 dialogBinding.postsShimmer.visibility = View.GONE
