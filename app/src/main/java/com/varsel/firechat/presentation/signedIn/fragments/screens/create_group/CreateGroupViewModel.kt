@@ -7,6 +7,7 @@ import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserIdUseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
 import com.varsel.firechat.domain.use_case.current_user.GetFriendsUseCase
@@ -28,11 +29,16 @@ class CreateGroupViewModel @Inject constructor(
     val appendGroupIdToUserUseCase: AppendGroupIdToUserUseCase,
     val getCurrentUserId: GetCurrentUserIdUseCase,
     val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase,
-    val setProfilePicUseCase: SetProfilePicUseCase
+    val setProfilePicUseCase: SetProfilePicUseCase,
+    val setupSearchBarUseCase: SetupSearchBarUseCase
+
 ) : ViewModel() {
     val hasBtnBeenClicked = MutableLiveData<Boolean>(false)
     private val _state = MutableStateFlow(CreateGroupState())
     val state = _state
+
+    private val _friends = MutableStateFlow(listOf<User>())
+    val friends = _friends
 
     init {
         getUser()
@@ -60,12 +66,14 @@ class CreateGroupViewModel @Inject constructor(
             when(it) {
                 is Resource.Success -> {
                     _state.value = _state.value.copy(friends = it.data, isLoading = false)
+                    _friends.value = it.data ?: listOf()
                 }
                 is Resource.Loading -> {
                     _state.value = _state.value.copy(friends = null, isLoading = true)
                 }
                 is Resource.Error -> {
                     _state.value = _state.value.copy(friends = null, isLoading = false)
+                    _friends.value = listOf()
                 }
             }
         }.launchIn(viewModelScope)

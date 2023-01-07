@@ -6,5 +6,6 @@ import com.varsel.firechat.data.local.User.User
 data class ProfileState(
     val currentUser: User? = null,
     val isLoading: Boolean = true,
-    val profileImage: ProfileImage? = null
+    val profileImage: ProfileImage? = null,
+    val isConnectedToServer: Boolean = false
 )

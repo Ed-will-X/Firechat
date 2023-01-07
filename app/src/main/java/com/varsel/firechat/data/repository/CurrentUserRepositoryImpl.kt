@@ -19,6 +19,13 @@ class CurrentUserRepositoryImpl @Inject constructor(
     private var currentUser: MutableStateFlow<Resource<User>> = MutableStateFlow(Resource.Loading())
     private var friends: MutableStateFlow<Resource<List<User>>> = MutableStateFlow(Resource.Loading())
     private var user_single: User? = null
+    val isConnectedToFirebase = MutableStateFlow(false)
+
+    init {
+        firebase.checkFirebaseConnection {
+            isConnectedToFirebase.value = it
+        }
+    }
 
     override fun getCurrentUserId(): String {
         return firebase.mAuth.currentUser!!.uid
@@ -159,6 +166,10 @@ class CurrentUserRepositoryImpl @Inject constructor(
         })
 
         awaitClose {  }
+    }
+
+    override fun checkConnectivity(): MutableStateFlow<Boolean> {
+        return isConnectedToFirebase
     }
 
 }

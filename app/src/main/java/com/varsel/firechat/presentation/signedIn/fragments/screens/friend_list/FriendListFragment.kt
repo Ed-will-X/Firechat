@@ -9,6 +9,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -22,6 +23,7 @@ import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.SearchUtils
 import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.gestures.FriendsSwipeGesture
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -30,6 +32,8 @@ import com.varsel.firechat.presentation.viewModel.FriendListFragmentViewModel
 import com.varsel.firechat.presentation.viewModel.SortTypes
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
@@ -43,6 +47,9 @@ class FriendListFragment : Fragment() {
 
     @Inject
     lateinit var displayProfileImage: DisplayProfileImage
+
+    @Inject
+    lateinit var checkServerConnection: CheckServerConnectionUseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -138,25 +145,43 @@ class FriendListFragment : Fragment() {
 
         val swipeGesture = object : FriendsSwipeGesture(parent){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                LifecycleUtils.observeInternetStatus(parent, this@FriendListFragment, {
-                    if(direction == ItemTouchHelper.LEFT){
-                        if(adapter != null){
-                            viewModel.unfriendUser(adapter!!.friends[viewHolder.adapterPosition])
-                            removeFromAdapter(adapter!!, viewHolder)
+                checkServerConnection().onEach {
+                    if(it) {
+                        if(direction == ItemTouchHelper.LEFT){
+                            if(adapter != null){
+                                viewModel.unfriendUser(adapter!!.friends[viewHolder.adapterPosition])
+                                removeFromAdapter(adapter!!, viewHolder)
+                            }
                         }
                     }
-                }, {})
+                }.launchIn(lifecycleScope)
+//                LifecycleUtils.observeInternetStatus(parent, this@FriendListFragment, {
+//                    if(direction == ItemTouchHelper.LEFT){
+//                        if(adapter != null){
+//                            viewModel.unfriendUser(adapter!!.friends[viewHolder.adapterPosition])
+//                            removeFromAdapter(adapter!!, viewHolder)
+//                        }
+//                    }
+//                }, {})
             }
         }
 
         val touchHelper = ItemTouchHelper(swipeGesture)
 
         // Disables swipe if no internet
-        LifecycleUtils.observeInternetStatus(parent, this, {
-            touchHelper.attachToRecyclerView(binding.allFriendsRecyclerView)
-        }, {
-            touchHelper.attachToRecyclerView(null)
-        })
+//        LifecycleUtils.observeInternetStatus(parent, this, {
+//            touchHelper.attachToRecyclerView(binding.allFriendsRecyclerView)
+//        }, {
+//            touchHelper.attachToRecyclerView(null)
+//        })
+
+        checkServerConnection().onEach {
+            if(it) {
+                touchHelper.attachToRecyclerView(binding.allFriendsRecyclerView)
+            } else {
+                touchHelper.attachToRecyclerView(null)
+            }
+        }.launchIn(lifecycleScope)
     }
 
     private fun setClickListeners() {

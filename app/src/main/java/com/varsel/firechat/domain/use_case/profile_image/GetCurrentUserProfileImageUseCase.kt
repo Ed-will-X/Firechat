@@ -5,7 +5,7 @@ import com.varsel.firechat.domain.repository.ProfileImageRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetCurrentUserProfileImageUseCase @Inject constructor(
+class  GetCurrentUserProfileImageUseCase @Inject constructor(
     val repository: ProfileImageRepository
 ) {
     suspend operator fun invoke(): Flow<ProfileImage?> {

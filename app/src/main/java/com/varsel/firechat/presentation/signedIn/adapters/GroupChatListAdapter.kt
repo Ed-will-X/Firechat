@@ -112,12 +112,12 @@ class GroupChatsListAdapter(
             viewHolder.groupName.text = item.groupName?.let { UserUtils.truncate(it, 15) }
 
             if(isFavorite(item.roomUID)){
-                AnimationUtils.changeColor(holder.favoriteIcon, R.color.yellow, context)
+                viewModel.changeIconColor(holder.favoriteIcon, R.color.yellow, context)
             } else {
                 if(activity.isNightMode()){
-                    AnimationUtils.changeColor(holder.favoriteIcon, FAVORITE_ICON_DARK_MODE, context)
+                    viewModel.changeIconColor(holder.favoriteIcon, FAVORITE_ICON_DARK_MODE, context)
                 } else {
-                    AnimationUtils.changeColor(holder.favoriteIcon, R.color.light_grey_2, context)
+                    viewModel.changeIconColor(holder.favoriteIcon, R.color.light_grey_2, context)
                 }
             }
 
@@ -182,15 +182,15 @@ class GroupChatsListAdapter(
     private fun setFavorite(groupId: String, icon: ImageView){
         if(!isFavorite(groupId)){
             activity.firebaseViewModel.addGroupToFavorites(groupId, activity.firebaseAuth, activity.mDbRef, {
-                AnimationUtils.changeColor(icon, R.color.yellow, context)
+                viewModel.changeIconColor(icon, R.color.yellow, context)
             },{
             })
         } else {
             activity.firebaseViewModel.removeGroupFromFavorites(groupId, activity.firebaseAuth, activity.mDbRef, {
                 if(activity.isNightMode()){
-                    AnimationUtils.changeColor(icon, FAVORITE_ICON_DARK_MODE, context)
+                    viewModel.changeIconColor(icon, FAVORITE_ICON_DARK_MODE, context)
                 } else {
-                    AnimationUtils.changeColor(icon, R.color.light_grey_2, context)
+                    viewModel.changeIconColor(icon, R.color.light_grey_2, context)
                 }
             },{
 

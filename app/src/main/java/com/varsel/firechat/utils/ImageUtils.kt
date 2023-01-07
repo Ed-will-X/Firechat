@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -121,6 +122,7 @@ class ImageUtils {
 
         }
 
+        // TODO: Replace string with resource strings
         fun encodeUri(imageUri: Uri, activity: Activity): String? {
             val imageStream: InputStream? = activity.getContentResolver().openInputStream(imageUri)
             val selectedImage = BitmapFactory.decodeStream(imageStream)
@@ -131,7 +133,8 @@ class ImageUtils {
                 encodedImage = base64
             }, {
                 // Show toast
-                LifecycleUtils.showToast(activity, "Image too large")
+                Toast.makeText(activity, "Image too large", Toast.LENGTH_SHORT).show()
+
                encodedImage = null
             }, {
                 val resized = resizeImage(selectedImage)

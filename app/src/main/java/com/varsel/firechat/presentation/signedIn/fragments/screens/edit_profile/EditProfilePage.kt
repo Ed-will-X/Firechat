@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
@@ -18,6 +19,7 @@ import com.varsel.firechat.databinding.ActionSheetProfileImageBinding
 import com.varsel.firechat.databinding.FragmentEditProfilePageBinding
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.current_user.EditUserFields
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.AnimationUtils
@@ -29,6 +31,8 @@ import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.profile.ProfileFragment
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -40,6 +44,9 @@ class EditProfilePage : Fragment() {
 
     @Inject
     lateinit var displayProfileImage: DisplayProfileImage
+
+    @Inject
+    lateinit var checkServerConnection: CheckServerConnectionUseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -78,13 +85,23 @@ class EditProfilePage : Fragment() {
 
                 // TODO: Fix potential memory leak
                 if(!viewModel._hasRun.value) {
-                    LifecycleUtils.observeInternetStatus(parent, this, {
-                        binding.actionSheetClickable.setOnClickListener { it2 ->
-                            openEditProfileActionsheet(it.user)
+//                    LifecycleUtils.observeInternetStatus(parent, this, {
+//                        binding.actionSheetClickable.setOnClickListener { it2 ->
+//                            openEditProfileActionsheet(it.user)
+//                        }
+//                    }, {
+//                        binding.actionSheetClickable.setOnClickListener(null)
+//                    })
+
+                    checkServerConnection().onEach { isConnected ->
+                        if(isConnected) {
+                            binding.actionSheetClickable.setOnClickListener { it2 ->
+                                openEditProfileActionsheet(it.user)
+                            }
+                        } else {
+                            binding.actionSheetClickable.setOnClickListener(null)
                         }
-                    }, {
-                        binding.actionSheetClickable.setOnClickListener(null)
-                    })
+                    }.launchIn(lifecycleScope)
 
                     viewModel._hasRun.value = true
                 }
@@ -188,11 +205,15 @@ class EditProfilePage : Fragment() {
         setActionsheetBindings(dialogBinding, currentUser)
         dialog.setContentView(view)
 
-        LifecycleUtils.observeInternetStatus(parent, this, {
-            dialogBinding.editProfileBtn.isEnabled = true
-        }, {
-            dialogBinding.editProfileBtn.isEnabled = false
-        })
+//        LifecycleUtils.observeInternetStatus(parent, this, {
+//            dialogBinding.editProfileBtn.isEnabled = true
+//        }, {
+//            dialogBinding.editProfileBtn.isEnabled = false
+//        })
+
+        checkServerConnection().onEach {
+            dialogBinding.editProfileBtn.isEnabled = it
+        }.launchIn(lifecycleScope)
 
         dialogBinding.editProfileBtn.setOnClickListener {
             nameEditText.setText(nameEditText.text.trim())
@@ -232,15 +253,27 @@ class EditProfilePage : Fragment() {
 
         dialog.setContentView(view)
 
-        LifecycleUtils.observeInternetStatus(parent, this, {
-            dialogBinding.pickImage.isEnabled = true
-            dialogBinding.openCamera.isEnabled = true
-            dialogBinding.removeImage.isEnabled = true
-        }, {
-            dialogBinding.pickImage.isEnabled = false
-            dialogBinding.openCamera.isEnabled = false
-            dialogBinding.removeImage.isEnabled = false
-        })
+//        LifecycleUtils.observeInternetStatus(parent, this, {
+//            dialogBinding.pickImage.isEnabled = true
+//            dialogBinding.openCamera.isEnabled = true
+//            dialogBinding.removeImage.isEnabled = true
+//        }, {
+//            dialogBinding.pickImage.isEnabled = false
+//            dialogBinding.openCamera.isEnabled = false
+//            dialogBinding.removeImage.isEnabled = false
+//        })
+
+        checkServerConnection().onEach {
+            if(it) {
+                dialogBinding.pickImage.isEnabled = true
+                dialogBinding.openCamera.isEnabled = true
+                dialogBinding.removeImage.isEnabled = true
+            } else {
+                dialogBinding.pickImage.isEnabled = false
+                dialogBinding.openCamera.isEnabled = false
+                dialogBinding.removeImage.isEnabled = false
+            }
+        }.launchIn(lifecycleScope)
 
         dialogBinding.expand.setOnClickListener {
             val image = parent.profileImageViewModel.profileImage_currentUser.value
@@ -268,7 +301,7 @@ class EditProfilePage : Fragment() {
             }
         }
 
-        AnimationUtils.changeDialogDimAmount(dialog, 0f)
+        viewModel.changeDialogDimAmountUseCase(dialog, 0f)
         dialog.show()
     }
 

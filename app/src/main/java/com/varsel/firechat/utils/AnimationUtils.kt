@@ -10,6 +10,7 @@ import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import java.time.Duration
 
+// TODO: Delete class
 class AnimationUtils {
     companion object {
         fun changeColor(vector: ImageView, color: Int, context: Context){

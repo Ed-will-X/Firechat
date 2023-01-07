@@ -58,7 +58,6 @@ class AddFriendsSearchAdapter(
             holder.profileImage.setImageBitmap(null)
             viewModel.getOtherUserProfileImageUseCase(item).onEach {
                 if(it?.image != null) {
-                    Log.d("CLEAN", "Image present")
                     holder.profileImageParent.visibility = View.VISIBLE
                     viewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
 
@@ -70,7 +69,6 @@ class AddFriendsSearchAdapter(
                         imageClickListener(it, item)
                     }
                 } else {
-                    Log.d("CLEAN", "Image absent")
 //                    holder.profileImageParent.visibility = View.GONE
                     holder.profileImage.setImageBitmap(null)
                 }

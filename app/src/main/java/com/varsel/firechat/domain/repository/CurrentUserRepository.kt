@@ -27,4 +27,6 @@ interface CurrentUserRepository {
 
     fun addGroupToFavorites(groupId: String) : Flow<Response>
     fun removeGroupFromFavorites(groupId: String) : Flow<Response>
+
+    fun checkConnectivity(): MutableStateFlow<Boolean>
 }

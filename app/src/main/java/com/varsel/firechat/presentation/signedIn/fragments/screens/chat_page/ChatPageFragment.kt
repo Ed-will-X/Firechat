@@ -16,6 +16,7 @@ import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.ReadReceipt.ReadReceipt
+import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
@@ -23,14 +24,17 @@ import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
 import com.varsel.firechat.presentation.signedIn.adapters.MessageListAdapter
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class ChatPageFragment : Fragment() {
     private var _binding: FragmentChatPageBinding? = null
     private val binding get() = _binding!!
@@ -45,6 +49,9 @@ class ChatPageFragment : Fragment() {
 
     @Inject
     lateinit var displayProfileImage: DisplayProfileImage
+
+    @Inject
+    lateinit var checkServerConnection: CheckServerConnectionUseCase
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,11 +68,15 @@ class ChatPageFragment : Fragment() {
         val view = binding.root
         parent = activity as SignedinActivity
 
-        LifecycleUtils.observeInternetStatus(parent, this, {
-            binding.sendMessageBtn.isEnabled = true
-        }, {
-            binding.sendMessageBtn.isEnabled = false
-        })
+//        LifecycleUtils.observeInternetStatus(parent, this, {
+//            binding.sendMessageBtn.isEnabled = true
+//        }, {
+//            binding.sendMessageBtn.isEnabled = false
+//        })
+
+        checkServerConnection().onEach {
+            binding.sendMessageBtn.isEnabled = it
+        }.launchIn(lifecycleScope)
 
         chatPageViewModel.actionBarVisibility.value = false
 

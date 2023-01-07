@@ -21,6 +21,8 @@ import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.DebugUtils
 import com.varsel.firechat.utils.ImageUtils
+import kotlinx.coroutines.flow.MutableStateFlow
+import java.util.concurrent.Flow
 
 class Firebase(
     val mDbRef: DatabaseReference,

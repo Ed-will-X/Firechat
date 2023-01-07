@@ -51,6 +51,9 @@ class FriendListFragmentViewModel @Inject constructor(
     private val _state = MutableStateFlow(FriendListState())
     val state = _state
 
+    private val _friends = MutableStateFlow(listOf<User>())
+    val friends = _friends
+
     init {
         getFriends()
         getCurrentUser()
@@ -63,12 +66,14 @@ class FriendListFragmentViewModel @Inject constructor(
             when(it){
                 is Resource.Success -> {
                     _state.value = _state.value.copy(isLoading = false, friends = it.data ?: listOf())
+                    _friends.value = it.data ?: listOf()
                 }
                 is Resource.Loading -> {
                     _state.value = _state.value.copy(isLoading = true)
                 }
                 is Resource.Error -> {
                     _state.value = _state.value.copy(isLoading = false, friends = listOf())
+                    _friends.value = listOf()
                 }
             }
         }.launchIn(viewModelScope)
@@ -102,7 +107,7 @@ class FriendListFragmentViewModel @Inject constructor(
             binding.noFriends,
             binding.noMatch,
             binding.allFriendsRecyclerView,
-            parent.firebaseViewModel.friends,
+            friends,
             {
                 afterCallback()
             }, {

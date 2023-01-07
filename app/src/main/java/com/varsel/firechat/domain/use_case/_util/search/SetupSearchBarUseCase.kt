@@ -12,6 +12,8 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class SetupSearchBarUseCase {
     operator fun invoke (
@@ -21,7 +23,7 @@ class SetupSearchBarUseCase {
         noFriendsLayout: LinearLayout,
         noMatchLayout: LinearLayout,
         recyclerView: RecyclerView,
-        observableList: MutableLiveData<List<User>>,
+        observableList: MutableStateFlow<List<User>>,
         afterCallback: ()-> Unit,
         resultsCallback: (users: List<User>)-> Unit
     ){
@@ -33,21 +35,22 @@ class SetupSearchBarUseCase {
         searchBox.doAfterTextChanged {
             val friends = observableList.value?.toList()
 
-            if(it != null && friends != null){
+            if(it != null){
                 searchRecyclerView(friends, it, searchBox, noMatchLayout, recyclerView) {
                     resultsCallback(it)
                     recyclerView.visibility = View.VISIBLE
                     noMatchLayout.visibility = View.GONE
                     noFriendsLayout.visibility = View.GONE
-
-
                 }
             }
         }
 
-        observableList.observe(fragment.viewLifecycleOwner, Observer {
+        fragment.collectLatestLifecycleFlow(observableList) {
             checkIfEmptyFriends(it, noFriendsLayout, recyclerView)
-        })
+        }
+//        observableList.observe(fragment.viewLifecycleOwner, Observer {
+//            checkIfEmptyFriends(it, noFriendsLayout, recyclerView)
+//        })
 
         afterCallback()
 

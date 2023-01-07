@@ -13,16 +13,25 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentSettingsBinding
 import com.varsel.firechat.data.local.Setting.Setting
+import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.viewModel.*
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
     private val settingsViewModel: SettingsViewModel by activityViewModels()
     private lateinit var parent: SignedinActivity
+
+    @Inject
+    lateinit var checkServerConnection: CheckServerConnectionUseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,11 +45,15 @@ class SettingsFragment : Fragment() {
         val view = binding.root
 
 
-        LifecycleUtils.observeInternetStatus(parent, this, {
-            binding.logout.isEnabled = true
-        }, {
-            binding.logout.isEnabled = false
-        })
+//        LifecycleUtils.observeInternetStatus(parent, this, {
+//            binding.logout.isEnabled = true
+//        }, {
+//            binding.logout.isEnabled = false
+//        })
+
+        checkServerConnection().onEach {
+            binding.logout.isEnabled = it
+        }.launchIn(lifecycleScope)
 
         parent.settingViewModel.settingConfig.observe(viewLifecycleOwner, Observer {
             setNotificationBindings(it)

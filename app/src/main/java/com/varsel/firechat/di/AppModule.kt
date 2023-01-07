@@ -3,6 +3,9 @@ package com.varsel.firechat.di
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.repository.OtherUserRepositoryImpl
 import com.varsel.firechat.domain.repository.*
+import com.varsel.firechat.domain.use_case._util.animation.ChangeDialogDimAmountUseCase
+import com.varsel.firechat.domain.use_case._util.animation.ChangeIconColorUseCase
+import com.varsel.firechat.domain.use_case._util.animation.Rotate90UseCase
 import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
 import com.varsel.firechat.domain.use_case.current_user.*
 import com.varsel.firechat.domain.use_case.message.*
@@ -216,5 +219,28 @@ object AppModule {
     @Singleton
     fun provideSortPublicPost(): SortPublicPostReversedUseCase {
         return SortPublicPostReversedUseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCheckServerConnection(currentUserRepository: CurrentUserRepository): CheckServerConnectionUseCase {
+        return CheckServerConnectionUseCase(currentUserRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideChangeDialogDimAmount(): ChangeDialogDimAmountUseCase {
+        return ChangeDialogDimAmountUseCase()
+    }
+    @Provides
+    @Singleton
+    fun provideChangeIconColor(): ChangeIconColorUseCase {
+        return ChangeIconColorUseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRotate90UseCase(): Rotate90UseCase {
+        return Rotate90UseCase()
     }
 }

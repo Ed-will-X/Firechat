@@ -12,10 +12,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDirections
 import androidx.navigation.findNavController
@@ -29,12 +27,17 @@ import com.varsel.firechat.databinding.FragmentGroupChatDetailBinding
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case._util.animation.Direction
+import com.varsel.firechat.domain.use_case._util.animation.Rotate90UseCase
+import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ParticipantsListAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
@@ -46,10 +49,16 @@ class GroupChatDetailFragment : Fragment() {
     private lateinit var parent: SignedinActivity
     private var recyclerViewVisible: Boolean = false
     private lateinit var participantAdapter: ParticipantsListAdapter
-    private lateinit var fragmentViewModel: GroupChatDetailViewModel
+    private lateinit var viewModel: GroupChatDetailViewModel
 
     @Inject
     lateinit var displayProfileImage: DisplayProfileImage
+
+    @Inject
+    lateinit var checkServerConnection: CheckServerConnectionUseCase
+
+    @Inject
+    lateinit var rotate90UseCase: Rotate90UseCase
 
     override fun onResume() {
         super.onResume()
@@ -63,15 +72,24 @@ class GroupChatDetailFragment : Fragment() {
         _binding = FragmentGroupChatDetailBinding.inflate(layoutInflater, container, false)
         val view = binding.root
         parent = activity as SignedinActivity
-        fragmentViewModel = ViewModelProvider(this).get(GroupChatDetailViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(GroupChatDetailViewModel::class.java)
 
         observeGroupImage()
 
-        LifecycleUtils.observeInternetStatus(parent, this, {
-            binding.addMemberClickable.isEnabled = true
-        }, {
-            binding.addMemberClickable.isEnabled = false
-        })
+//        LifecycleUtils.observeInternetStatus(parent, this, {
+//            binding.addMemberClickable.isEnabled = true
+//        }, {
+//            binding.addMemberClickable.isEnabled = false
+//        })
+
+        checkServerConnection().onEach {
+            if(it) {
+                binding.addMemberClickable.isEnabled = true
+            } else {
+                binding.addMemberClickable.isEnabled = false
+            }
+        }.launchIn(lifecycleScope)
+
 
         // adapter init
         parent.firebaseViewModel.selectedGroupRoom.observe(viewLifecycleOwner, Observer {
@@ -91,11 +109,11 @@ class GroupChatDetailFragment : Fragment() {
             }
 
             if (it != null) {
-                fragmentViewModel.determineGetParticipants(it, parent)
-                fragmentViewModel.getNonParticipants(parent)
+                viewModel.determineGetParticipants(it, parent)
+                viewModel.getNonParticipants(parent)
             }
             if(it!= null){
-                participantAdapter = ParticipantsListAdapter(parent, requireContext(), this, fragmentViewModel, it, { id, user, base64 ->
+                participantAdapter = ParticipantsListAdapter(parent, requireContext(), this, viewModel, it, { id, user, base64 ->
                     navigateToOtherProfileFragment(id, user, base64)
 
                 },{ id, user, base64 ->
@@ -271,15 +289,26 @@ class GroupChatDetailFragment : Fragment() {
 
         dialog.setContentView(view)
 
-        LifecycleUtils.observeInternetStatus(parent, this, {
-            dialogBinding.pickImage.isEnabled = true
-            dialogBinding.openCamera.isEnabled = true
-            dialogBinding.removeImage.isEnabled = true
-        }, {
-            dialogBinding.pickImage.isEnabled = false
-            dialogBinding.openCamera.isEnabled = false
-            dialogBinding.removeImage.isEnabled = false
-        })
+        checkServerConnection().onEach {
+            if(it) {
+                dialogBinding.pickImage.isEnabled = true
+                dialogBinding.openCamera.isEnabled = true
+                dialogBinding.removeImage.isEnabled = true
+            } else {
+                dialogBinding.pickImage.isEnabled = false
+                dialogBinding.openCamera.isEnabled = false
+                dialogBinding.removeImage.isEnabled = false
+            }
+        }.launchIn(lifecycleScope)
+//        LifecycleUtils.observeInternetStatus(parent, this, {
+//            dialogBinding.pickImage.isEnabled = true
+//            dialogBinding.openCamera.isEnabled = true
+//            dialogBinding.removeImage.isEnabled = true
+//        }, {
+//            dialogBinding.pickImage.isEnabled = false
+//            dialogBinding.openCamera.isEnabled = false
+//            dialogBinding.removeImage.isEnabled = false
+//        })
 
         dialogBinding.expand.setOnClickListener {
             displayImage()
@@ -304,7 +333,7 @@ class GroupChatDetailFragment : Fragment() {
             }
         }
 
-        AnimationUtils.changeDialogDimAmount(dialog, 0f)
+        viewModel.changeDialogDimAmountUseCase(dialog, 0f)
         dialog.show()
     }
 
@@ -374,10 +403,11 @@ class GroupChatDetailFragment : Fragment() {
     private fun toggleRecyclerViewVisible(){
         if(recyclerViewVisible){
             binding.participantsRecyclerViewParent.visibility = View.VISIBLE
-            AnimationUtils.rotate90(binding.groupMembersIconAnimatable)
+            rotate90UseCase(binding.groupMembersIconAnimatable, Direction.Forward())
         } else {
             binding.participantsRecyclerViewParent.visibility = View.GONE
-            AnimationUtils.rotate90_back(binding.groupMembersIconAnimatable)
+            rotate90UseCase(binding.groupMembersIconAnimatable, Direction.Reverse())
+
         }
     }
 
@@ -454,7 +484,7 @@ class GroupChatDetailFragment : Fragment() {
         val view = dialogBinding.root
         dialog.setContentView(view)
 
-        fragmentViewModel.actionSheetUserId.value = userId
+        viewModel.actionSheetUserId.value = userId
 
         setUserActionButtonVisibilities(dialogBinding, dialog)
 
@@ -469,7 +499,7 @@ class GroupChatDetailFragment : Fragment() {
                 binding.removeAdminBtn.visibility = View.VISIBLE
                 binding.removeBtn.visibility = View.VISIBLE
 
-                if(isAdmin(fragmentViewModel.actionSheetUserId.value!!)){
+                if(isAdmin(viewModel.actionSheetUserId.value!!)){
                     binding.makeAdminBtn.visibility = View.GONE
                     binding.removeAdminBtn.visibility = View.VISIBLE
                 } else {
@@ -487,7 +517,7 @@ class GroupChatDetailFragment : Fragment() {
                 dialog.dismiss()
             }
 
-            if(currentUserId == fragmentViewModel.actionSheetUserId.value){
+            if(currentUserId == viewModel.actionSheetUserId.value){
                 binding.leaveBtn.visibility = View.VISIBLE
                 binding.makeAdminBtn.visibility = View.GONE
                 binding.removeBtn.visibility = View.GONE
@@ -498,17 +528,17 @@ class GroupChatDetailFragment : Fragment() {
             }
 
             binding.makeAdminBtn.setOnClickListener {
-                makeAdmin(fragmentViewModel.actionSheetUserId.value!!)
+                makeAdmin(viewModel.actionSheetUserId.value!!)
                 dialog.dismiss()
             }
 
             binding.removeAdminBtn.setOnClickListener {
-                removeAdmin(fragmentViewModel.actionSheetUserId.value!!)
+                removeAdmin(viewModel.actionSheetUserId.value!!)
                 dialog.dismiss()
             }
 
             binding.removeBtn.setOnClickListener {
-                removeFromGroup(fragmentViewModel.actionSheetUserId.value!!)
+                removeFromGroup(viewModel.actionSheetUserId.value!!)
                 dialog.dismiss()
             }
 
@@ -521,10 +551,10 @@ class GroupChatDetailFragment : Fragment() {
 
     private fun navigateToChats(){
         var action: NavDirections
-        if(parent.signedinViewModel.determineChatroom(fragmentViewModel.actionSheetUserId.value!!, parent.firebaseViewModel.chatRooms.value)){
-            action = GroupChatDetailFragmentDirections.actionGroupChatDetailFragmentToChatPageFragment(parent.signedinViewModel.currentChatRoomId.value, fragmentViewModel.actionSheetUserId.value!!)
+        if(parent.signedinViewModel.determineChatroom(viewModel.actionSheetUserId.value!!, parent.firebaseViewModel.chatRooms.value)){
+            action = GroupChatDetailFragmentDirections.actionGroupChatDetailFragmentToChatPageFragment(parent.signedinViewModel.currentChatRoomId.value, viewModel.actionSheetUserId.value!!)
         } else {
-            action = GroupChatDetailFragmentDirections.actionGroupChatDetailFragmentToChatPageFragment(null, fragmentViewModel.actionSheetUserId.value!!)
+            action = GroupChatDetailFragmentDirections.actionGroupChatDetailFragmentToChatPageFragment(null, viewModel.actionSheetUserId.value!!)
 
         }
         binding.root.findNavController().navigate(action)

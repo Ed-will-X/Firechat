@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 
+// TODO: Delete
 class LifecycleUtils {
     companion object {
         fun observeInternetStatus(activity: SignedinActivity, fragment: Fragment, connectedCallback: ()-> Unit, disconnectedCallback: ()-> Unit){

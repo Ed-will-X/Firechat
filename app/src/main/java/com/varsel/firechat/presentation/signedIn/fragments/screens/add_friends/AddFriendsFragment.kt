@@ -10,6 +10,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -23,8 +24,11 @@ import com.varsel.firechat.presentation.signedIn.adapters.AddFriendsSearchAdapte
 import com.varsel.firechat.presentation.signedIn.adapters.RecentSearchAdapter
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
@@ -41,6 +45,9 @@ class AddFriendsFragment : Fragment() {
     @Inject
     lateinit var displayProfileImage: DisplayProfileImage
 
+    @Inject
+    lateinit var checkServerConnection: CheckServerConnectionUseCase
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,11 +58,17 @@ class AddFriendsFragment : Fragment() {
 
         viewModel = ViewModelProvider(this).get(AddFriendsViewModel::class.java)
 
-        LifecycleUtils.observeInternetStatus(parent, this, {
-            binding.addFriendsSearchBox.isEnabled = true
-        }, {
-            binding.addFriendsSearchBox.isEnabled = false
-        })
+//        LifecycleUtils.observeInternetStatus(parent, this, {
+//            binding.addFriendsSearchBox.isEnabled = true
+//        }, {
+//            binding.addFriendsSearchBox.isEnabled = false
+//        })
+
+        checkServerConnection().onEach {
+            try {
+                binding.addFriendsSearchBox.isEnabled = it
+            } catch (e: Exception) { }
+        }.launchIn(lifecycleScope)
 
         setupRecentSearchAdapter()
 

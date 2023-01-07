@@ -1,8 +1,10 @@
 package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.profile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.common.Resource
+import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetCurrentUserProfileImageUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
@@ -22,14 +24,30 @@ class ProfileViewModel @Inject constructor(
     val getCurrentUserRecurrentUseCase: GetCurrentUserRecurrentUseCase,
     val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase,
     val setProfilePicUseCase: SetProfilePicUseCase,
-    val getCurrentUserProfileImageUseCase: GetCurrentUserProfileImageUseCase
+    val getCurrentUserProfileImageUseCase: GetCurrentUserProfileImageUseCase,
+    val checkServerConnection: CheckServerConnectionUseCase
 ): ViewModel() {
     private val _state = MutableStateFlow(ProfileState())
     val state = _state
 
     init {
         getCurrentUser()
+        checkConnection()
     }
+
+    fun checkConnection() {
+        checkServerConnection().onEach {
+            if(it){
+                Log.d("CLEAN", "Connected to server")
+                _state.value = _state.value.copy(isConnectedToServer = true)
+            } else {
+                Log.d("CLEAN", "Not connected to server")
+                _state.value = _state.value.copy(isConnectedToServer = false)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+
 
     fun getProfileImage() {
         viewModelScope.launch {

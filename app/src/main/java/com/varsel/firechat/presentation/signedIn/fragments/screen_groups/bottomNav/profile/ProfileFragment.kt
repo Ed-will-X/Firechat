@@ -40,6 +40,8 @@ import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifec
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
@@ -82,11 +84,11 @@ class ProfileFragment: Fragment() {
         viewModel.getProfileImage()
         collectState()
 
-        LifecycleUtils.observeInternetStatus(parent, this, {
-            binding.friendRequestsClickable.isEnabled = true
-        }, {
-            binding.friendRequestsClickable.isEnabled = false
-        })
+//        LifecycleUtils.observeInternetStatus(parent, this, {
+//            binding.friendRequestsClickable.isEnabled = true
+//        }, {
+//            binding.friendRequestsClickable.isEnabled = false
+//        })
 
         lifecycleScope.launch(Dispatchers.Main){
             delay(300)
@@ -128,8 +130,14 @@ class ProfileFragment: Fragment() {
             if(it.currentUser != null) {
                 setUser(it.currentUser)
                 setProfileImage(it.profileImage)
+                handleInternetConnectivity(it.isConnectedToServer)
             }
         }
+    }
+
+    private fun handleInternetConnectivity(isConnected: Boolean) {
+        Log.d("CLEAN", "${isConnected}")
+        binding.friendRequestsClickable.isEnabled = isConnected
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -327,28 +335,49 @@ class ProfileFragment: Fragment() {
 
         val friendRequestSwipeGesture = object : FriendRequestSwipeGesture(parent){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                LifecycleUtils.observeInternetStatus(parent, this@ProfileFragment, {
-                    if(direction == ItemTouchHelper.LEFT){
-                        firebaseViewModel.rejectFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
-                        removeFromAdapter(friendRequestsAdapter, viewHolder)
+                viewModel.checkServerConnection().onEach {
+                    if(it) {
+                        if(direction == ItemTouchHelper.LEFT){
+                            firebaseViewModel.rejectFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
+                            removeFromAdapter(friendRequestsAdapter, viewHolder)
 
-                    } else if (direction == ItemTouchHelper.RIGHT){
-                        firebaseViewModel.acceptFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
-                        removeFromAdapter(friendRequestsAdapter, viewHolder)
+                        } else if (direction == ItemTouchHelper.RIGHT){
+                            firebaseViewModel.acceptFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
+                            removeFromAdapter(friendRequestsAdapter, viewHolder)
 
+                        }
                     }
-                }, {})
+                }.launchIn(lifecycleScope)
+//                LifecycleUtils.observeInternetStatus(parent, this@ProfileFragment, {
+//                    if(direction == ItemTouchHelper.LEFT){
+//                        firebaseViewModel.rejectFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
+//                        removeFromAdapter(friendRequestsAdapter, viewHolder)
+//
+//                    } else if (direction == ItemTouchHelper.RIGHT){
+//                        firebaseViewModel.acceptFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
+//                        removeFromAdapter(friendRequestsAdapter, viewHolder)
+//
+//                    }
+//                }, {})
             }
         }
 
         val touchHelper = ItemTouchHelper(friendRequestSwipeGesture)
 
         // Disables swipe if no internet
-        LifecycleUtils.observeInternetStatus(parent, this, {
-            touchHelper.attachToRecyclerView(recyclerView)
-        }, {
-            touchHelper.attachToRecyclerView(null)
-        })
+        viewModel.checkServerConnection().onEach {
+            if(it) {
+                touchHelper.attachToRecyclerView(recyclerView)
+            } else {
+                touchHelper.attachToRecyclerView(null)
+            }
+        }.launchIn(lifecycleScope)
+
+//        LifecycleUtils.observeInternetStatus(parent, this, {
+//            touchHelper.attachToRecyclerView(recyclerView)
+//        }, {
+//            touchHelper.attachToRecyclerView(null)
+//        })
 
         recyclerView?.addItemDecoration(
             DividerItemDecoration(

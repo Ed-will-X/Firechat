@@ -21,6 +21,7 @@ import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.PostUtils
 import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.domain.use_case.public_post.DoesPostExistUseCase
 import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
@@ -33,6 +34,8 @@ import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifec
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -57,6 +60,9 @@ class OtherProfileFragment : Fragment() {
     @Inject
     lateinit var sortPublicPosts: SortPublicPostReversedUseCase
 
+    @Inject
+    lateinit var checkServerConnection: CheckServerConnectionUseCase
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -68,15 +74,27 @@ class OtherProfileFragment : Fragment() {
 
         parent = activity as SignedinActivity
 
-        LifecycleUtils.observeInternetStatus(parent, this, {
-            binding.addFriendBtn.isEnabled = true
-            binding.revokeBtn.isEnabled = true
-            binding.unfriendBtn.isEnabled = true
-        }, {
-            binding.addFriendBtn.isEnabled = false
-            binding.revokeBtn.isEnabled = false
-            binding.unfriendBtn.isEnabled = false
-        })
+//        LifecycleUtils.observeInternetStatus(parent, this, {
+//            binding.addFriendBtn.isEnabled = true
+//            binding.revokeBtn.isEnabled = true
+//            binding.unfriendBtn.isEnabled = true
+//        }, {
+//            binding.addFriendBtn.isEnabled = false
+//            binding.revokeBtn.isEnabled = false
+//            binding.unfriendBtn.isEnabled = false
+//        })
+
+        checkServerConnection().onEach {
+            if(it) {
+                binding.addFriendBtn.isEnabled = true
+                binding.revokeBtn.isEnabled = true
+                binding.unfriendBtn.isEnabled = true
+            } else {
+                binding.addFriendBtn.isEnabled = false
+                binding.revokeBtn.isEnabled = false
+                binding.unfriendBtn.isEnabled = false
+            }
+        }.launchIn(lifecycleScope)
 
 
         val uid = OtherProfileFragmentArgs.fromBundle(requireArguments()).userId

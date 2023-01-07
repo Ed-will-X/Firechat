@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -17,6 +18,7 @@ import com.varsel.firechat.databinding.ActionsheetCreateGroupBinding
 import com.varsel.firechat.databinding.FragmentCreateGroupBinding
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.LifecycleUtils
@@ -26,6 +28,8 @@ import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.CreateGroupAdapter
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -39,6 +43,9 @@ class CreateGroupFragment : Fragment() {
 
     @Inject
     lateinit var displayProfileImage: DisplayProfileImage
+
+    @Inject
+    lateinit var checkServerConnection: CheckServerConnectionUseCase
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -84,14 +91,14 @@ class CreateGroupFragment : Fragment() {
     }
 
     private fun setupSearchBar() {
-        SearchUtils.setupSearchBar(
+        viewModel.setupSearchBarUseCase(
             binding.clearText,
             binding.searchBox,
             this,
             binding.noFriends,
             binding.noMatch,
             binding.friendsRecyclerView,
-            parent.firebaseViewModel.friends,
+            viewModel.friends,
             {
 
             },
@@ -132,13 +139,24 @@ class CreateGroupFragment : Fragment() {
     }
 
     private fun observeInternetStatus(){
-        LifecycleUtils.observeInternetStatus(parent, this, {
-            if(adapter.selected.count() > 0){
-                binding.createGroupBtn.isEnabled = true
+        checkServerConnection().onEach {
+            if(it){
+                if(adapter.selected.count() > 0){
+                    binding.createGroupBtn.isEnabled = true
+                } else {
+                    binding.createGroupBtn.isEnabled = false
+                }
+            } else {
+                binding.createGroupBtn.isEnabled = false
             }
-        }, {
-            binding.createGroupBtn.isEnabled = false
-        })
+        }.launchIn(lifecycleScope)
+//        LifecycleUtils.observeInternetStatus(parent, this, {
+//            if(adapter.selected.count() > 0){
+//                binding.createGroupBtn.isEnabled = true
+//            }
+//        }, {
+//            binding.createGroupBtn.isEnabled = false
+//        })
     }
 
     private fun toggleBtnEnable(){
@@ -162,11 +180,15 @@ class CreateGroupFragment : Fragment() {
         val dialogBinding = ActionsheetCreateGroupBinding.inflate(layoutInflater, binding.root, false)
         dialog.setContentView(dialogBinding.root)
 
-        LifecycleUtils.observeInternetStatus(parent, this, {
-            dialogBinding.btnCreateGroup.isEnabled = true
-        }, {
-            dialogBinding.btnCreateGroup.isEnabled = false
-        })
+//        LifecycleUtils.observeInternetStatus(parent, this, {
+//            dialogBinding.btnCreateGroup.isEnabled = true
+//        }, {
+//            dialogBinding.btnCreateGroup.isEnabled = false
+//        })
+
+        checkServerConnection().onEach {
+            dialogBinding.btnCreateGroup.isEnabled = it
+        }.launchIn(lifecycleScope)
 
         dialogBinding.groupName.doAfterTextChanged {
             if(createGroupViewModel.hasBtnBeenClicked.value == false){

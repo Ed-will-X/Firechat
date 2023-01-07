@@ -7,6 +7,7 @@ import com.varsel.firechat.R
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.domain.use_case._util.animation.ChangeDialogDimAmountUseCase
 import com.varsel.firechat.domain.use_case.current_user.EditUserUseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetCurrentUserProfileImageUseCase
@@ -29,7 +30,8 @@ class EditProfileViewModel @Inject constructor(
     val getCurrentUserProfileImageUseCase: GetCurrentUserProfileImageUseCase,
     val setProfilePicUseCase: SetProfilePicUseCase,
     val uploadProfileImageUseCase: UploadProfileImageUseCase,
-    val removeProfileImageUseCase: RemoveProfileImageUseCase
+    val removeProfileImageUseCase: RemoveProfileImageUseCase,
+    val changeDialogDimAmountUseCase: ChangeDialogDimAmountUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(EditProfileState(user = null, isLoading = true))
     val _hasRun = MutableStateFlow(false)

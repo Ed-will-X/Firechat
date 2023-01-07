@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case._util.animation.ChangeDialogDimAmountUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -13,7 +14,8 @@ import javax.inject.Inject
 @HiltViewModel
 class GroupChatDetailViewModel @Inject constructor(
     val setProfilePicUseCase: SetProfilePicUseCase,
-    val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase
+    val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase,
+    val changeDialogDimAmountUseCase: ChangeDialogDimAmountUseCase
 ): ViewModel() {
     val actionSheetUserId = MutableLiveData<String>()
     var prevParticipantSize = MutableLiveData<Int>()
