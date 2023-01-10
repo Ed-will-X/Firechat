@@ -3,6 +3,7 @@ package com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_d
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
+import com.varsel.firechat.common.Response
 import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.databinding.ActionSheetParticipantActionsBinding
 import com.varsel.firechat.databinding.ActionSheetProfileImageBinding
@@ -72,15 +74,13 @@ class GroupChatDetailFragment : Fragment() {
         _binding = FragmentGroupChatDetailBinding.inflate(layoutInflater, container, false)
         val view = binding.root
         parent = activity as SignedinActivity
+        groupId = GroupChatDetailFragmentArgs.fromBundle(requireArguments()).groupId
+
         viewModel = ViewModelProvider(this).get(GroupChatDetailViewModel::class.java)
+        viewModel.getGroupChat(groupId)
+        collectState()
 
         observeGroupImage()
-
-//        LifecycleUtils.observeInternetStatus(parent, this, {
-//            binding.addMemberClickable.isEnabled = true
-//        }, {
-//            binding.addMemberClickable.isEnabled = false
-//        })
 
         checkServerConnection().onEach {
             if(it) {
@@ -91,10 +91,21 @@ class GroupChatDetailFragment : Fragment() {
         }.launchIn(lifecycleScope)
 
 
-        // adapter init
-        parent.firebaseViewModel.selectedGroupRoom.observe(viewLifecycleOwner, Observer {
-            binding.groupName.text = it?.groupName
-            binding.groupSubject.text = it?.subject ?: parent.getString(R.string.no_subject)
+        binding.backButton.setOnClickListener {
+            popNavigation()
+        }
+
+        binding.groupMembersClickable.setOnClickListener {
+            setRecyclerViewVisible()
+        }
+
+        return view
+    }
+
+    private fun collectState() {
+        viewModel.state.observe(viewLifecycleOwner, Observer {
+            binding.groupName.text = it.selectedGroup?.groupName
+            binding.groupSubject.text = it.selectedGroup?.subject ?: parent.getString(R.string.no_subject)
 
             if(checkAdminStatus()){
                 binding.editIcon.visibility = View.VISIBLE
@@ -103,17 +114,18 @@ class GroupChatDetailFragment : Fragment() {
             }
 
             binding.editGroupNameClickable.setOnClickListener { button ->
-                if (it != null && checkAdminStatus()) {
-                    showEditGroupActionsheet(it)
+                if (it.selectedGroup != null && checkAdminStatus()) {
+                    showEditGroupActionsheet(it.selectedGroup)
                 }
             }
 
-            if (it != null) {
-                viewModel.determineGetParticipants(it, parent)
-                viewModel.getNonParticipants(parent)
+            if (it.selectedGroup != null) {
+//                viewModel.determineGetParticipants(it.selectedGroup, parent)
+//                viewModel.getNonParticipants(parent)
             }
-            if(it!= null){
-                participantAdapter = ParticipantsListAdapter(parent, requireContext(), this, viewModel, it, { id, user, base64 ->
+
+            if(it.selectedGroup != null){
+                participantAdapter = ParticipantsListAdapter(parent, requireContext(), this, viewModel, it.selectedGroup, { id, user, base64 ->
                     navigateToOtherProfileFragment(id, user, base64)
 
                 },{ id, user, base64 ->
@@ -138,16 +150,11 @@ class GroupChatDetailFragment : Fragment() {
             }
         })
 
-        groupId = GroupChatDetailFragmentArgs.fromBundle(requireArguments()).groupId
-
-        binding.backButton.setOnClickListener {
-            popNavigation()
-        }
-
-        parent.firebaseViewModel.selectedGroupParticipants.observe(viewLifecycleOwner, Observer {
+        viewModel.participsnts.observe(viewLifecycleOwner, Observer {
+            Log.d("CLEAN", "Participant Count: ${it.size}")
             binding.groupMembersCount.text = "(${it.size})"
-            val admins = parent.firebaseViewModel.selectedGroupRoom.value!!.admins!!.values.toList()
-            val currentUser = parent.firebaseAuth.currentUser!!.uid
+            val admins = viewModel.state.value?.selectedGroup?.admins?.values?.toList() ?: listOf()
+            val currentUser = viewModel.getCurrentUserIdUseCase()
             val sorted = UserUtils.sortUsersByNameInGroup(it, admins, currentUser)
 
             participantAdapter.submitList(sorted)
@@ -155,12 +162,6 @@ class GroupChatDetailFragment : Fragment() {
 
             toggleAddMemberVisibility()
         })
-
-        binding.groupMembersClickable.setOnClickListener {
-            setRecyclerViewVisible()
-        }
-
-        return view
     }
 
     private fun displayImage(){
@@ -172,13 +173,6 @@ class GroupChatDetailFragment : Fragment() {
     }
 
     private fun observeGroupImage(){
-//        parent.profileImageViewModel.selectedGroupImageEncoded.observe(viewLifecycleOwner, Observer {
-//            if(it != null){
-//                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
-//                binding.profileImageParent.visibility = View.VISIBLE
-//            }
-//        })
-
         parent.profileImageViewModel.selectedGroupImage.observe(viewLifecycleOwner, Observer { profileImage ->
             if(profileImage != null && profileImage.image != null){
                 ImageUtils.setProfilePic(profileImage.image!!, binding.profileImage, binding.profileImageParent, parent)
@@ -382,7 +376,6 @@ class GroupChatDetailFragment : Fragment() {
     private fun navigateToOtherProfileFragment(userId: String, user: User, base64: String?){
         try {
             val action = GroupChatDetailFragmentDirections.actionGroupChatDetailFragmentToOtherProfileFragment(userId)
-//            parent.firebaseViewModel.selectedUser.value = user
             parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
             findNavController().navigate(action)
         } catch(e: IllegalArgumentException) { }
@@ -390,9 +383,34 @@ class GroupChatDetailFragment : Fragment() {
 
     private fun editGroup(groupName: String, subject: String){
         if(groupName.isNotEmpty()){
-            parent.firebaseViewModel.editGroup("groupName", groupName, groupId, parent.mDbRef)
+            viewModel.editGroupUseCase("groupName", groupName, groupId).onEach {
+                when(it) {
+                    is Response.Success -> {
+                        viewModel.getGroupChat(groupId)
+                    }
+                    is Response.Loading -> {
+
+                    }
+                    is Response.Fail -> {
+
+                    }
+                }
+            }.launchIn(lifecycleScope)
         }
-        parent.firebaseViewModel.editGroup("subject", subject, groupId, parent.mDbRef)
+
+        viewModel.editGroupUseCase("subject", subject, groupId).onEach {
+            when(it) {
+                is Response.Success -> {
+                    viewModel.getGroupChat(groupId)
+                }
+                is Response.Loading -> {
+
+                }
+                is Response.Fail -> {
+
+                }
+            }
+        }.launchIn(lifecycleScope)
     }
 
     private fun setRecyclerViewVisible(){
@@ -412,31 +430,58 @@ class GroupChatDetailFragment : Fragment() {
     }
 
     private fun makeAdmin(userId: String){
-        parent.firebaseViewModel.makeAdmin(userId, groupId, parent.mDbRef, {
-           Toast.makeText(requireContext(), "Successful", Toast.LENGTH_LONG).show()
-        }, {
-            Toast.makeText(requireContext(), "Failure", Toast.LENGTH_LONG).show()
-        })
+        viewModel.makeAdminUseCase(userId, viewModel.state.value?.selectedGroup!!).onEach {
+            when(it) {
+                is Response.Success -> {
+                    viewModel.getGroupChat(groupId)
+                    Toast.makeText(requireContext(), "Successful", Toast.LENGTH_LONG).show()
+                }
+                is Response.Loading -> {
+
+                }
+                is Response.Fail -> {
+                    Toast.makeText(requireContext(), "Failure", Toast.LENGTH_LONG).show()
+                }
+            }
+        }.launchIn(lifecycleScope)
     }
 
     private fun removeAdmin(userId: String){
-        parent.firebaseViewModel.removeAdmin(userId, groupId, parent.firebaseAuth, parent.mDbRef, {
-            Toast.makeText(requireContext(), "Successful", Toast.LENGTH_LONG).show()
-        }, {
-            Toast.makeText(requireContext(), "Failure", Toast.LENGTH_LONG).show()
-        })
+        viewModel.removeAdminUseCase(userId, viewModel.state.value?.selectedGroup!!).onEach {
+            when(it) {
+                is Response.Success -> {
+                    viewModel.getGroupChat(groupId)
+                    Toast.makeText(requireContext(), "Successful", Toast.LENGTH_LONG).show()
+                }
+                is Response.Loading -> {
+
+                }
+                is Response.Fail -> {
+                    Toast.makeText(requireContext(), "Failure", Toast.LENGTH_LONG).show()
+                }
+            }
+        }.launchIn(lifecycleScope)
     }
 
     private fun removeFromGroup(userId: String){
-        parent.firebaseViewModel.removeFromGroup(parent.firebaseAuth, userId, groupId, parent.mDbRef, {
-            Toast.makeText(requireContext(), "Removed", Toast.LENGTH_LONG).show()
-        }, {
-            Toast.makeText(requireContext(), "Failure", Toast.LENGTH_LONG).show()
-        })
+        viewModel.removefromgroupUsecase(userId, viewModel.state.value?.selectedGroup!!).onEach {
+            when(it) {
+                is Response.Success -> {
+                    viewModel.getGroupChat(groupId)
+                    Toast.makeText(requireContext(), "Successful", Toast.LENGTH_LONG).show()
+                }
+                is Response.Loading -> {
+
+                }
+                is Response.Fail -> {
+                    Toast.makeText(requireContext(), "Failure", Toast.LENGTH_LONG).show()
+                }
+            }
+        }.launchIn(lifecycleScope)
     }
 
     private fun isAdmin(userId: String): Boolean{
-        for (i in parent.firebaseViewModel.selectedGroupRoom.value!!.admins!!.values){
+        for (i in viewModel.state.value?.selectedGroup?.admins?.values ?: listOf()){
             if(i == userId){
                 return true
             }
@@ -469,8 +514,8 @@ class GroupChatDetailFragment : Fragment() {
     *   Returns true if the current user is an admin
     * */
     private fun checkAdminStatus(): Boolean{
-        for(i in parent.firebaseViewModel.selectedGroupRoom.value?.admins?.values!!){
-            if(i == parent.firebaseAuth.currentUser?.uid){
+        for(i in viewModel.state.value?.selectedGroup?.admins?.values!!){
+            if(i == viewModel.getCurrentUserIdUseCase()){
                 return true
             }
         }
@@ -492,9 +537,9 @@ class GroupChatDetailFragment : Fragment() {
     }
 
     private fun setUserActionButtonVisibilities(binding: ActionSheetParticipantActionsBinding, dialog: BottomSheetDialog){
-        val currentUserId = parent.firebaseAuth.currentUser!!.uid
-        parent.firebaseViewModel.selectedGroupRoom.observe(viewLifecycleOwner, Observer {
-            if(it?.admins?.containsValue(currentUserId) == true){
+        val currentUserId = viewModel.getCurrentUserIdUseCase()
+        viewModel.state.observe(viewLifecycleOwner, Observer {
+            if(it.selectedGroup?.admins?.containsValue(currentUserId) == true){
                 binding.makeAdminBtn.visibility = View.VISIBLE
                 binding.removeAdminBtn.visibility = View.VISIBLE
                 binding.removeBtn.visibility = View.VISIBLE
@@ -561,11 +606,20 @@ class GroupChatDetailFragment : Fragment() {
     }
 
     private fun exitGroup(){
-        parent.firebaseViewModel.leaveGroup(groupId, parent.mDbRef, parent.firebaseAuth, {
-            navigateToHome()
-        }, {
-            Toast.makeText(context, "Exit denied", Toast.LENGTH_LONG).show()
-        })
+        viewModel.exitgroupUsecase(viewModel.state.value?.selectedGroup!!).onEach {
+            when(it) {
+                is Response.Success -> {
+                    navigateToHome()
+                    Toast.makeText(requireContext(), "Successful", Toast.LENGTH_LONG).show()
+                }
+                is Response.Loading -> {
+
+                }
+                is Response.Fail -> {
+                    Toast.makeText(requireContext(), "Failure", Toast.LENGTH_LONG).show()
+                }
+            }
+        }.launchIn(lifecycleScope)
     }
 
     private fun navigateToHome(){

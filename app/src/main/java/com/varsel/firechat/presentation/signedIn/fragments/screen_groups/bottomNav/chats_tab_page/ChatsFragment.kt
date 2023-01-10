@@ -36,6 +36,7 @@ class ChatsFragment : Fragment() {
         parent.changeStatusBarColor(R.color.light_blue, false)
 
         chatsViewModel = ViewModelProvider(this).get(ChatsViewModel::class.java)
+        parent.hideKeyboard()
 
         adapter = ChatsViewPagerAdapter(childFragmentManager, lifecycle)
         binding.chatsViewPager.adapter = adapter

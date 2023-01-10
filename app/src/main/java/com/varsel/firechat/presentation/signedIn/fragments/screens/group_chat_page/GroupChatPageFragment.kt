@@ -308,7 +308,6 @@ class GroupChatPageFragment : Fragment() {
         recyclerView?.adapter = adapter
 
         getlistofusers(userIds).onEach {
-            Log.d("CLEAN", it.size.toString())
             adapter.friends = it as MutableList<User>
             adapter.notifyDataSetChanged()
         }.launchIn(lifecycleScope)

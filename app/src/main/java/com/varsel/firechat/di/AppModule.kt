@@ -10,10 +10,7 @@ import com.varsel.firechat.domain.use_case._util.animation.Rotate90UseCase
 import com.varsel.firechat.domain.use_case._util.message.GenerateUid_UseCase
 import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
 import com.varsel.firechat.domain.use_case.current_user.*
-import com.varsel.firechat.domain.use_case.group_chat.GetGroupChatRecurrentUseCase
-import com.varsel.firechat.domain.use_case.group_chat.GetGroupParticipantsUseCase
-import com.varsel.firechat.domain.use_case.group_chat.InterpolateGroupParticipantsUseCase
-import com.varsel.firechat.domain.use_case.group_chat.SendGroupMessage_UseCase
+import com.varsel.firechat.domain.use_case.group_chat.*
 import com.varsel.firechat.domain.use_case.message.*
 import com.varsel.firechat.domain.use_case.other_user.*
 import com.varsel.firechat.domain.use_case.profile_image.*
@@ -288,4 +285,34 @@ object AppModule {
         return GetListOfUsers_UseCase(otherUserRepository, firebaseRepository)
     }
 
+    @Provides
+    @Singleton
+    fun provideExitGroup(messageRepository: MessageRepository): ExitGroup_UseCase {
+        return ExitGroup_UseCase(messageRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMakeAdmin(messageRepository: MessageRepository): MakeAdminUseCase {
+        return MakeAdminUseCase(messageRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRemoveAdmin(messageRepository: MessageRepository): RemoveAdminUseCase {
+        return RemoveAdminUseCase(messageRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRemoveFromGroup(messageRepository: MessageRepository): RemoveFromGroup_UseCase {
+        return RemoveFromGroup_UseCase(messageRepository)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideEditGroup(messageRepository: MessageRepository): EditGroupUseCase {
+        return EditGroupUseCase(messageRepository)
+    }
 }

@@ -1,13 +1,11 @@
 package com.varsel.firechat.data.repository
 
-import android.util.Log
 import com.google.firebase.database.ValueEventListener
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.Message.Message
-import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.domain.repository.CurrentUserRepository
 import com.varsel.firechat.domain.repository.MessageRepository
@@ -190,8 +188,8 @@ class MessageRepositoryImpl @Inject constructor(
         awaitClose {  }
     }
 
-    override fun makeAdmin(user: User, group: GroupRoom): Flow<Response> = callbackFlow {
-        firebase.makeAdmin(user.userUID, group.roomUID, {
+    override fun makeAdmin(userId: String, group: GroupRoom): Flow<Response> = callbackFlow {
+        firebase.makeAdmin(userId, group.roomUID, {
             trySend(Response.Success())
         }, {
             trySend(Response.Fail())
@@ -200,8 +198,8 @@ class MessageRepositoryImpl @Inject constructor(
         awaitClose {  }
     }
 
-    override fun removeAdmin(user: User, group: GroupRoom): Flow<Response> = callbackFlow {
-        firebase.removeAdmin(user.userUID, group, {
+    override fun removeAdmin(userId: String, group: GroupRoom): Flow<Response> = callbackFlow {
+        firebase.removeAdmin(userId, group, {
             trySend(Response.Success())
         }, {
             trySend(Response.Fail())
@@ -210,8 +208,8 @@ class MessageRepositoryImpl @Inject constructor(
         awaitClose {  }
     }
 
-    override fun removeFromGroup(user: User, group: GroupRoom): Flow<Response> = callbackFlow {
-        firebase.removeFromGroup(user.userUID, group.roomUID, {
+    override fun removeFromGroup(userId: String, group: GroupRoom): Flow<Response> = callbackFlow {
+        firebase.removeFromGroup(userId, group.roomUID, {
             trySend(Response.Success())
         }, {
             trySend(Response.Fail())

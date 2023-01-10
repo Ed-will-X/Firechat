@@ -26,9 +26,9 @@ interface MessageRepository {
     fun getGroupRoomsRecurrent(): MutableStateFlow<Resource<List<GroupRoom>>>
     fun getGroupRoomRecurrent(id: String) : Flow<Resource<GroupRoom>>
     fun sendGroupMessage(message: Message, roomID: String) : Flow<Response>
-    fun makeAdmin(user: User, group: GroupRoom) : Flow<Response>
-    fun removeAdmin(user: User, group: GroupRoom) : Flow<Response>
-    fun removeFromGroup(user: User, group: GroupRoom) : Flow<Response>
+    fun makeAdmin(user: String, group: GroupRoom) : Flow<Response>
+    fun removeAdmin(user: String, group: GroupRoom) : Flow<Response>
+    fun removeFromGroup(user: String, group: GroupRoom) : Flow<Response>
     fun addGroupMembers(users: List<String>, group: GroupRoom) : Flow<Response>
     fun leaveGroup(chatRoom: GroupRoom) : Flow<Response>
 

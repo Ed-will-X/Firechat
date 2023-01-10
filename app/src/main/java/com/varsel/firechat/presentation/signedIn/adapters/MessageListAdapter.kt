@@ -2,7 +2,6 @@ package com.varsel.firechat.presentation.signedIn.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,9 +27,7 @@ import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
-import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.chats_tab_page.ChatsViewModel
 import com.varsel.firechat.presentation.signedIn.fragments.screens.chat_page.ChatPageViewModel
-import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -52,7 +49,7 @@ class MessageListAdapter(
     val viewModel: ChatPageViewModel,
     val pageType: Int,
     val imgClickListener: (message: Message, image: Image)-> Unit,
-    val onLongClickListener: (message: Message, messageType: Int, messageStatus: Int)-> Unit,
+    val onClickListener: (message: Message, messageType: Int, messageStatus: Int)-> Unit,
     val profileImgClickListener: (profileImage: ProfileImage, user: User) -> Unit
     )
     : ListAdapter<Message, RecyclerView.ViewHolder>(MessagesCallback()) {
@@ -159,9 +156,8 @@ class MessageListAdapter(
                 viewHolder.systemText.text = it
             }
 
-            viewHolder.systemMessageParent.setOnLongClickListener {
-                onLongClickListener(item, MessageType.TEXT, MessageStatus.SYSTEM)
-                true
+            viewHolder.systemMessageParent.setOnClickListener {
+                onClickListener(item, MessageType.TEXT, MessageStatus.SYSTEM)
             }
 
         }else {
