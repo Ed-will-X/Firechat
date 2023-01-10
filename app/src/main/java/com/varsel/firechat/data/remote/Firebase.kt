@@ -986,16 +986,27 @@ class Firebase(
         // TODO: Implement success and failure callbacks
     }
 
-    fun editGroup(key: String, value: String, groupId: String){
+    fun editGroup(key: String, value: String, groupId: String, successCallback: () -> Unit, failureCallback: () -> Unit){
         val databaseRef = mDbRef.child("groupRooms").child(groupId)
 
         if(value.isEmpty()){
-            databaseRef.child(key).setValue(null)
-            DebugUtils.log_firebase("edit group ${key} successful")
+            databaseRef.child(key).setValue(null).addOnCompleteListener {
+                if(it.isSuccessful) {
+                    successCallback()
+                    DebugUtils.log_firebase("edit group ${key} successful")
+                } else {
+                    failureCallback()
+                }
+            }
         } else {
-            databaseRef.child(key).setValue(value)
-            DebugUtils.log_firebase("edit group ${key} successful")
-
+            databaseRef.child(key).setValue(value).addOnCompleteListener {
+                if(it.isSuccessful) {
+                    successCallback()
+                    DebugUtils.log_firebase("edit group ${key} successful")
+                } else {
+                    failureCallback()
+                }
+            }
         }
     }
 

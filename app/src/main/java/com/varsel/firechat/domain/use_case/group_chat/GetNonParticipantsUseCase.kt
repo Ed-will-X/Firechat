@@ -1,4 +1,4 @@
-package com.varsel.firechat.domain.use_case.group_room
+package com.varsel.firechat.domain.use_case.group_chat
 
 import javax.inject.Inject
 

@@ -51,7 +51,6 @@ class MessageListAdapter(
     val lifecycleOwner: LifecycleOwner,
     val viewModel: ChatPageViewModel,
     val pageType: Int,
-    val firebaseViewModel: FirebaseViewModel,
     val imgClickListener: (message: Message, image: Image)-> Unit,
     val onLongClickListener: (message: Message, messageType: Int, messageStatus: Int)-> Unit,
     val profileImgClickListener: (profileImage: ProfileImage, user: User) -> Unit

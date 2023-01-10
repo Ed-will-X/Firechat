@@ -1,12 +1,12 @@
 package com.varsel.firechat.data.repository
 
-import android.os.Message
 import android.util.Log
 import com.google.firebase.database.ValueEventListener
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.domain.repository.CurrentUserRepository
@@ -24,16 +24,34 @@ class MessageRepositoryImpl @Inject constructor(
     private val chatRoomsFlow = MutableStateFlow<Resource<MutableList<ChatRoom>>>(Resource.Loading())
     private val groupRoomsFlow = MutableStateFlow<Resource<MutableList<GroupRoom>>>(Resource.Loading())
 
-    override fun sendMessage(message: Message, chatRoomId: String): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun sendMessage(message: Message, chatRoomId: String): Flow<Response> = callbackFlow {
+        firebase.sendMessage(message, chatRoomId, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
-    override fun appendParticipants(chatRoom: ChatRoom): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun appendParticipants(chatRoom: ChatRoom): Flow<Response> = callbackFlow {
+        firebase.appendParticipants(chatRoom, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
-    override fun appendChatroomToUser(chatRoom: ChatRoom, otherUser: User): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun appendChatroomToUser(roomId: String, otherUser: String): Flow<Response> = callbackFlow {
+        firebase.appendGroupRoomsToUser(roomId, otherUser, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
     override fun getChatRoomsRecurrent(): MutableStateFlow<Resource<List<ChatRoom>>> {
@@ -56,8 +74,6 @@ class MessageRepositoryImpl @Inject constructor(
                         val g = groupIterator.next()
                         if(g.roomUID == chatRoom.roomUID){
                             groupIterator.remove()
-
-                            // TODO: Remove listener here
                         }
                     }
                 }
@@ -153,59 +169,146 @@ class MessageRepositoryImpl @Inject constructor(
         return groupRoomsFlow as MutableStateFlow<Resource<List<GroupRoom>>>
     }
 
-    override fun getGroupRoomRecurrent(id: String): MutableStateFlow<Resource<GroupRoom>> {
-        TODO("Not yet implemented")
+    override fun getGroupRoomRecurrent(id: String): Flow<Resource<GroupRoom>> = callbackFlow {
+        trySend(Resource.Loading())
+        groupRoomsFlow.value.data?.map {
+            if(it.roomUID == id) {
+                trySend(Resource.Success(it))
+            }
+        }
+
+        awaitClose {  }
     }
 
-    override fun sendGroupMessage(message: Message, group: GroupRoom): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun sendGroupMessage(message: Message, roomId: String): Flow<Response> = callbackFlow {
+        firebase.sendGroupMessage(message, roomId, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
-    override fun makeAdmin(user: User, group: GroupRoom): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun makeAdmin(user: User, group: GroupRoom): Flow<Response> = callbackFlow {
+        firebase.makeAdmin(user.userUID, group.roomUID, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
-    override fun removeAdmin(user: User, group: GroupRoom): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun removeAdmin(user: User, group: GroupRoom): Flow<Response> = callbackFlow {
+        firebase.removeAdmin(user.userUID, group, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
-    override fun removeFromGroup(user: User, group: GroupRoom): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun removeFromGroup(user: User, group: GroupRoom): Flow<Response> = callbackFlow {
+        firebase.removeFromGroup(user.userUID, group.roomUID, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
-    override fun addGroupMembers(user: User, group: GroupRoom): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun addGroupMembers(users: List<String>, group: GroupRoom): Flow<Response> = callbackFlow {
+        firebase.addGroupMembers(users, group.roomUID, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        }, {
+
+        })
+
+        awaitClose {  }
     }
 
-    override fun leaveGroup(chatRoom: GroupRoom): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun leaveGroup(chatRoom: GroupRoom): Flow<Response> = callbackFlow {
+        firebase.leaveGroup(chatRoom, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
-    override fun sendGroupAddMessage(users: List<String>, group: GroupRoom): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun sendGroupAddMessage(users: List<String>, group: GroupRoom): Flow<Response> = callbackFlow {
+        firebase.groupAddMessage(users, group.roomUID, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
-    override fun sendGroupExitMessage(group: GroupRoom): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun sendGroupExitMessage(group: GroupRoom): Flow<Response> = callbackFlow {
+        firebase.groupExitMessage(group.roomUID, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
-    override fun sendGroupRemoveMessage(user: String, group: GroupRoom): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun sendGroupRemoveMessage(user: String, group: GroupRoom): Flow<Response> = callbackFlow {
+        firebase.groupRemoveMessage(user, group.roomUID, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
-    override fun sendGroupNowAdminMessage(user: String, group: GroupRoom): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun sendGroupNowAdminMessage(user: String, group: GroupRoom): Flow<Response> = callbackFlow {
+        firebase.groupNowAdminMessage(user, group.roomUID, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
-    override fun sendGroupNotAdminMessage(user: String, group: GroupRoom): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun sendGroupNotAdminMessage(user: String, group: GroupRoom): Flow<Response> = callbackFlow {
+        firebase.groupNotAdminMessage(user, group.roomUID, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
-    override fun groupCreateMessage(group: GroupRoom): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun groupCreateMessage(group: GroupRoom): Flow<Response> = callbackFlow {
+        firebase.groupCreateMessage(group.roomUID, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 
-    override fun editGroup(key: String, value: String, groupId: String): Flow<Response> {
-        TODO("Not yet implemented")
+    override fun editGroup(key: String, value: String, groupId: String): Flow<Response> = callbackFlow {
+        firebase.editGroup(key, value, groupId, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
     }
 }

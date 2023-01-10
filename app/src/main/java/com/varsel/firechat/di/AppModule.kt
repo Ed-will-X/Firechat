@@ -1,19 +1,21 @@
 package com.varsel.firechat.di
 
-import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.data.remote.Firebase
+import com.varsel.firechat.data.repository.FirebaseRepositoryImpl
 import com.varsel.firechat.data.repository.OtherUserRepositoryImpl
 import com.varsel.firechat.domain.repository.*
 import com.varsel.firechat.domain.use_case._util.animation.ChangeDialogDimAmountUseCase
 import com.varsel.firechat.domain.use_case._util.animation.ChangeIconColorUseCase
 import com.varsel.firechat.domain.use_case._util.animation.Rotate90UseCase
+import com.varsel.firechat.domain.use_case._util.message.GenerateUid_UseCase
 import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
 import com.varsel.firechat.domain.use_case.current_user.*
+import com.varsel.firechat.domain.use_case.group_chat.GetGroupChatRecurrentUseCase
+import com.varsel.firechat.domain.use_case.group_chat.GetGroupParticipantsUseCase
+import com.varsel.firechat.domain.use_case.group_chat.InterpolateGroupParticipantsUseCase
+import com.varsel.firechat.domain.use_case.group_chat.SendGroupMessage_UseCase
 import com.varsel.firechat.domain.use_case.message.*
-import com.varsel.firechat.domain.use_case.other_user.GetOtherUserRecurrent
-import com.varsel.firechat.domain.use_case.other_user.RevokeFriendRequestUseCase
-import com.varsel.firechat.domain.use_case.other_user.SendFriendRequestUseCase
-import com.varsel.firechat.domain.use_case.other_user.UnfriendUserUseCase
-import com.varsel.firechat.domain.use_case.other_user.SearchUsersUseCase
+import com.varsel.firechat.domain.use_case.other_user.*
 import com.varsel.firechat.domain.use_case.profile_image.*
 import com.varsel.firechat.domain.use_case.public_post.DoesPostExistUseCase
 import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
@@ -243,4 +245,47 @@ object AppModule {
     fun provideRotate90UseCase(): Rotate90UseCase {
         return Rotate90UseCase()
     }
+
+    @Provides
+    @Singleton
+    fun provideGetGroup(repository: MessageRepository): GetGroupChatRecurrentUseCase {
+        return GetGroupChatRecurrentUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseRepo(firebase: Firebase): FirebaseRepository {
+        return FirebaseRepositoryImpl(firebase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetGroupParticipants(messageRepository: MessageRepository, firebaseRepository: FirebaseRepository): GetGroupParticipantsUseCase {
+        return GetGroupParticipantsUseCase(messageRepository, firebaseRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInterpolateGroupParticipants(currentUserRepository: CurrentUserRepository): InterpolateGroupParticipantsUseCase {
+        return InterpolateGroupParticipantsUseCase(currentUserRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGenerateUid(): GenerateUid_UseCase {
+        return GenerateUid_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSendGroupMessage(messageRepository: MessageRepository, currentUserRepository: CurrentUserRepository): SendGroupMessage_UseCase {
+        return SendGroupMessage_UseCase(messageRepository, currentUserRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetListOfUsers(otherUserRepository: OtherUserRepository, firebaseRepository: FirebaseRepository): GetListOfUsers_UseCase {
+        return GetListOfUsers_UseCase(otherUserRepository, firebaseRepository)
+    }
+
 }

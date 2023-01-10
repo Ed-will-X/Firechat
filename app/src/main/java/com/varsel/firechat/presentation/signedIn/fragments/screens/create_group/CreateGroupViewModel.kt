@@ -8,6 +8,7 @@ import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
+import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserIdUseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
 import com.varsel.firechat.domain.use_case.current_user.GetFriendsUseCase
@@ -30,8 +31,8 @@ class CreateGroupViewModel @Inject constructor(
     val getCurrentUserId: GetCurrentUserIdUseCase,
     val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase,
     val setProfilePicUseCase: SetProfilePicUseCase,
-    val setupSearchBarUseCase: SetupSearchBarUseCase
-
+    val setupSearchBarUseCase: SetupSearchBarUseCase,
+    val checkServerConnectionUseCase: CheckServerConnectionUseCase
 ) : ViewModel() {
     val hasBtnBeenClicked = MutableLiveData<Boolean>(false)
     private val _state = MutableStateFlow(CreateGroupState())

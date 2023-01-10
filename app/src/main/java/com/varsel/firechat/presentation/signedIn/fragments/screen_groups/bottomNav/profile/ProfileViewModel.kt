@@ -38,10 +38,8 @@ class ProfileViewModel @Inject constructor(
     fun checkConnection() {
         checkServerConnection().onEach {
             if(it){
-                Log.d("CLEAN", "Connected to server")
                 _state.value = _state.value.copy(isConnectedToServer = true)
             } else {
-                Log.d("CLEAN", "Not connected to server")
                 _state.value = _state.value.copy(isConnectedToServer = false)
             }
         }.launchIn(viewModelScope)

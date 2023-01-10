@@ -120,7 +120,7 @@ class ChatPageFragment : Fragment() {
         val fragment = this
         lifecycleScope.launch(Dispatchers.Main) {
             delay(300)
-            messagesListAdapter = MessageListAdapter(existingChatRoomId ?: newChatRoomId, parent, fragment, requireContext(), this@ChatPageFragment, chatPageViewModel, ChatPageType.INDIVIDUAL, parent.firebaseViewModel,
+            messagesListAdapter = MessageListAdapter(existingChatRoomId ?: newChatRoomId, parent, fragment, requireContext(), this@ChatPageFragment, chatPageViewModel, ChatPageType.INDIVIDUAL,
                 { message, image ->
                     ImageUtils.displayImageMessage(image, message, parent)
                 }, { _, _, _ ->
@@ -301,6 +301,7 @@ class ChatPageFragment : Fragment() {
     }
 
     private fun sendMessage(message: Message, success: ()-> Unit){
+        // Checks if there is an existing chat room
         if(existingChatRoomId != null){
             // Existing chat room
             parent.firebaseViewModel.sendMessage(message, existingChatRoomId!!, parent.mDbRef, {

@@ -136,7 +136,6 @@ class ProfileFragment: Fragment() {
     }
 
     private fun handleInternetConnectivity(isConnected: Boolean) {
-        Log.d("CLEAN", "${isConnected}")
         binding.friendRequestsClickable.isEnabled = isConnected
     }
 

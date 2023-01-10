@@ -2,19 +2,19 @@ package com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_p
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
+import com.varsel.firechat.common.Response
 import com.varsel.firechat.databinding.FragmentGroupChatPageBinding
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Message.Message
@@ -23,10 +23,12 @@ import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.ReadReceipt.ReadReceipt
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
-import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.MessageUtils
-import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
+import com.varsel.firechat.domain.use_case.group_chat.InterpolateGroupParticipantsUseCase
+import com.varsel.firechat.domain.use_case.group_chat.SendGroupMessage_UseCase
+import com.varsel.firechat.domain.use_case.other_user.GetListOfUsers_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
@@ -36,11 +38,8 @@ import com.varsel.firechat.presentation.signedIn.fragments.screens.chat_page.Cha
 import com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_detail.GroupChatDetailViewModel
 import com.varsel.firechat.presentation.viewModel.FriendListFragmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
@@ -53,6 +52,7 @@ class GroupChatPageFragment : Fragment() {
     private lateinit var messageAdapter: MessageListAdapter
     private val groupPageViewModel: GroupChatDetailViewModel by activityViewModels()
     private val chatPageViewModel: ChatPageViewModel by activityViewModels()
+    private lateinit var viewModel: GroupChatPageViewModel
     private lateinit var friendsViewModel: FriendListFragmentViewModel
 
     @Inject
@@ -60,6 +60,15 @@ class GroupChatPageFragment : Fragment() {
 
     @Inject
     lateinit var checkServerConnection: CheckServerConnectionUseCase
+
+    @Inject
+    lateinit var interpolateParticipants: InterpolateGroupParticipantsUseCase
+
+    @Inject
+    lateinit var sendMessageUseCase: SendGroupMessage_UseCase
+
+    @Inject
+    lateinit var getlistofusers: GetListOfUsers_UseCase
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -77,12 +86,11 @@ class GroupChatPageFragment : Fragment() {
         roomId = GroupChatPageFragmentArgs.fromBundle(requireArguments()).groupRoomId
 
         friendsViewModel = ViewModelProvider(this).get(FriendListFragmentViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(GroupChatPageViewModel::class.java)
 
-//        LifecycleUtils.observeInternetStatus(parent, this, {
-//            binding.sendMessageBtn.isEnabled = true
-//        }, {
-//            binding.sendMessageBtn.isEnabled = false
-//        })
+//        viewModel.getGroupChat(roomId)
+        initialiseAdapter()
+        collectState(roomId)
 
         checkServerConnection().onEach {
             if(it) {
@@ -95,29 +103,8 @@ class GroupChatPageFragment : Fragment() {
         observeGroupImage()
 
 //        getGroupChatRoom()
-        getGroupRoomFromMemory()
-        observeParticipants()
-
-
-        val fragment = this
-        lifecycleScope.launch(Dispatchers.Main) {
-            delay(300)
-            messageAdapter = MessageListAdapter(roomId, parent,fragment, requireContext(), this@GroupChatPageFragment, chatPageViewModel, ChatPageType.GROUP, parent.firebaseViewModel,
-                { message, image ->
-                    ImageUtils.displayImageMessage_group(image, message, parent)
-                }, { message, messageType, messageStatus ->
-                    if(messageType == MessageType.TEXT && messageStatus == MessageStatus.SYSTEM){
-                        val users = splitUsersString(message.message)
-                        showSystemMessageActionsheet(users)
-                    }
-                }, { profileImage, user ->
-                    displayProfileImage(profileImage, user, parent)
-                })
-
-            binding.messagesRecyclerView.adapter = messageAdapter
-
-            getMessages()
-        }
+//        getGroupRoomFromMemory()
+//        getParticipants()
 
 
 
@@ -131,10 +118,12 @@ class GroupChatPageFragment : Fragment() {
 
 
         binding.sendMessageBtn.setOnClickListener {
-            sendMessage {
-                updateReadReceipt()
+            if(binding.messageEditText.text.isNotEmpty()) {
+                sendMessage()
+
+            } else {
+                // TODO: Show empty text input infobar
             }
-            clearEditText()
         }
 
         binding.chatBackButton.setOnClickListener {
@@ -155,13 +144,44 @@ class GroupChatPageFragment : Fragment() {
 
         binding.profileImage.setOnClickListener {
             val selectedGroupImage = parent.profileImageViewModel.selectedGroupImage.value
-            val selectedGroupRoom = parent.firebaseViewModel.selectedGroupRoom.value
+            val selectedGroupRoom = viewModel.state.value?.selectedRoom
             if(selectedGroupImage != null && selectedGroupRoom != null){
                 ImageUtils.displayGroupImage(selectedGroupImage, selectedGroupRoom, parent)
             }
         }
 
         return view
+    }
+
+    private fun collectState(roomId: String) {
+
+        viewModel.state.observe(viewLifecycleOwner, Observer {
+            viewModel.getGroupChat(roomId)
+
+            if(it.selectedRoom != null) {
+                getMessages(it.selectedRoom)
+            }
+        })
+
+        viewModel.participsnts.observe(viewLifecycleOwner, Observer {
+            interpolateParticipants(it, binding.participantsText)
+        })
+    }
+
+    private fun initialiseAdapter() {
+        messageAdapter = MessageListAdapter(roomId, parent, this, requireContext(), this, chatPageViewModel, ChatPageType.GROUP,
+            { message, image ->
+                ImageUtils.displayImageMessage_group(image, message, parent)
+            }, { message, messageType, messageStatus ->
+                if(messageType == MessageType.TEXT && messageStatus == MessageStatus.SYSTEM){
+                    val users = splitUsersString(message.message)
+                    showSystemMessageActionsheet(users)
+                }
+            }, { profileImage, user ->
+                displayProfileImage(profileImage, user, parent)
+            })
+
+        binding.messagesRecyclerView.adapter = messageAdapter
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -179,7 +199,7 @@ class GroupChatPageFragment : Fragment() {
     }
 
     private fun updateReadReceipt(){
-        val receipt = ReadReceipt("${roomId}:${parent.firebaseAuth.currentUser!!.uid}", System.currentTimeMillis())
+        val receipt = ReadReceipt("${roomId}:${viewModel.getCurrentUserId()}", System.currentTimeMillis())
         parent.readReceiptViewModel.storeReceipt(receipt)
     }
 
@@ -212,24 +232,16 @@ class GroupChatPageFragment : Fragment() {
         view?.findNavController()?.navigate(action)
     }
 
-    private fun observeParticipants(){
-        parent.firebaseViewModel.selectedGroupParticipants.observe(viewLifecycleOwner, Observer {
-            interpolateUserParticipants(it)
-        })
-    }
+    private fun getMessages(groupRoom: GroupRoom){
+        if(groupRoom.roomUID == roomId){
+            setShimmerVisibility(groupRoom)
 
-    private fun getMessages(){
-        parent.firebaseViewModel.selectedGroupRoom.observe(viewLifecycleOwner, Observer {
-            if(it?.roomUID == roomId){
-                setShimmerVisibility(it)
+            val sorted = MessageUtils.sortMessages(groupRoom)
+            binding.groupNameText.text = groupRoom.groupName
 
-                val sorted = MessageUtils.sortMessages(it)
-                binding.groupNameText.text = it?.groupName
-
-                messageAdapter.submitList(sorted)
-                messageAdapter.notifyDataSetChanged()
-            }
-        })
+            messageAdapter.submitList(sorted)
+            messageAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun sendImgMessage(message: Message, success: ()-> Unit){
@@ -238,12 +250,28 @@ class GroupChatPageFragment : Fragment() {
         }, {})
     }
 
-    private fun sendMessage(success: () -> Unit){
-        val messageText = binding.messageEditText.text.toString().trim()
-        val message = Message(MessageUtils.generateUID(30), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
-        parent.firebaseViewModel.sendGroupMessage(message, roomId, parent.mDbRef, {
-            success()
-        }, {})
+    // TODO: Remove
+//    private fun sendMessage(success: () -> Unit){
+//        val messageText = binding.messageEditText.text.toString().trim()
+//        val message = Message(MessageUtils.generateUID(30), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
+//        parent.firebaseViewModel.sendGroupMessage(message, roomId, parent.mDbRef, {
+//            success()
+//        }, {})
+//    }
+
+    private fun sendMessage(){
+        sendMessageUseCase(roomId, binding.messageEditText).onEach {
+            when(it) {
+                is Response.Success -> {
+                    updateReadReceipt()
+                }
+                is Response.Fail -> {
+                    // TODO: Show failure infobar in failure check
+
+                }
+            }
+        }.launchIn(lifecycleScope)
+        clearEditText()
     }
 
     private fun clearEditText(){
@@ -254,25 +282,16 @@ class GroupChatPageFragment : Fragment() {
         findNavController().navigateUp()
     }
 
-    private fun getGroupChatRoom(){
-        parent.firebaseViewModel.getGroupChatRoomRecurrent(roomId, parent.mDbRef, {
-            parent.firebaseViewModel.selectedGroupRoom.value = it
-
-            if (it != null) {
-                groupPageViewModel.determineGetParticipants(it, parent)
-            }
-        }, {})
-    }
-
-    private fun getGroupRoomFromMemory(){
-        parent.firebaseViewModel.groupRooms.observe(viewLifecycleOwner, Observer {
-            MessageUtils.findGroupRoom(it, roomId) {
-                parent.firebaseViewModel.selectedGroupRoom.value = it
-
-                groupPageViewModel.determineGetParticipants(it, parent)
-            }
-        })
-    }
+    // TODO: Remove
+//    private fun getGroupRoomFromMemory(){
+//        parent.firebaseViewModel.groupRooms.observe(viewLifecycleOwner, Observer {
+//            MessageUtils.findGroupRoom(it, roomId) {
+//                parent.firebaseViewModel.selectedGroupRoom.value = it
+//
+//                groupPageViewModel.determineGetParticipants(it, parent)
+//            }
+//        })
+//    }
 
     private fun showSystemMessageActionsheet(userIds: List<String>){
         val dialog = BottomSheetDialog(requireContext())
@@ -288,10 +307,16 @@ class GroupChatPageFragment : Fragment() {
 
         recyclerView?.adapter = adapter
 
-        getUsers(userIds) {
+        getlistofusers(userIds).onEach {
+            Log.d("CLEAN", it.size.toString())
             adapter.friends = it as MutableList<User>
             adapter.notifyDataSetChanged()
-        }
+        }.launchIn(lifecycleScope)
+
+//        getUsers(userIds) {
+//            adapter.friends = it as MutableList<User>
+//            adapter.notifyDataSetChanged()
+//        }
 
         dialog.show()
     }
@@ -301,7 +326,6 @@ class GroupChatPageFragment : Fragment() {
             val action = GroupChatPageFragmentDirections.actionGroupChatPageFragmentToOtherProfileFragment(id)
             binding.root.findNavController().navigate(action)
 
-//            parent.firebaseViewModel.selectedUser.value = user
             parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
         } catch (e: IllegalArgumentException){ }
     }
@@ -320,40 +344,20 @@ class GroupChatPageFragment : Fragment() {
         return returnedUsers
     }
 
-    private fun getUsers(userIds: List<String>, afterCallback: (List<User>)-> Unit){
-        val users = mutableListOf<User>()
-
-        for(i in userIds){
-            parent.firebaseViewModel.getUserSingle(i, parent.mDbRef, {
-                if(it != null){
-                    users.add(it)
-                }
-            }, {
-                afterCallback(users)
-            })
-        }
-    }
-
-    // Top bar participant list
-    private fun interpolateUserParticipants(users: List<User>){
-        val firstnames = mutableListOf<String>()
-        val currentUser = parent.firebaseAuth.currentUser!!.uid
-
-        if(users != null){
-            for((i, v) in users.withIndex()){
-                if(currentUser == v.userUID){
-                    continue
-                }
-                firstnames.add(v.name ?: "")
-            }
-        }
-
-        val usersInString = firstnames?.joinToString(
-            separator = ", "
-        )
-
-        binding.participantsText.text = UserUtils.truncate(usersInString, 40)
-    }
+    // TODO: Remove
+//    private fun getUsers(userIds: List<String>, afterCallback: (List<User>)-> Unit){
+//        val users = mutableListOf<User>()
+//
+//        for(i in userIds){
+//            parent.firebaseViewModel.getUserSingle(i, parent.mDbRef, {
+//                if(it != null){
+//                    users.add(it)
+//                }
+//            }, {
+//                afterCallback(users)
+//            })
+//        }
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

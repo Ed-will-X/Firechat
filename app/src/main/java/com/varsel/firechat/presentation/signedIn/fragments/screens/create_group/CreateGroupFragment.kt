@@ -38,7 +38,6 @@ class CreateGroupFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
     private lateinit var adapter: CreateGroupAdapter
-    private val createGroupViewModel: CreateGroupViewModel by activityViewModels()
     private lateinit var viewModel: CreateGroupViewModel
 
     @Inject
@@ -59,10 +58,10 @@ class CreateGroupFragment : Fragment() {
 
         viewModel = ViewModelProvider(this).get(CreateGroupViewModel::class.java)
 
+        initialiseAdapter(viewModel.getFriends().value.data ?: listOf())
         observeInternetStatus()
         collectState()
         setupSearchBar()
-        initialiseAdapter(viewModel.getFriends().value.data ?: listOf())
         setClickListeners()
 
         return view
@@ -117,7 +116,6 @@ class CreateGroupFragment : Fragment() {
         binding.friendsRecyclerView.adapter = adapter
 
         // set selected group image to null
-//        parent.profileImageViewModel.selectedGroupImageEncoded.value = null
         parent.profileImageViewModel.selectedGroupImage.value = null
 
         submitListToAdapter(friends)
@@ -160,7 +158,7 @@ class CreateGroupFragment : Fragment() {
     }
 
     private fun toggleBtnEnable(){
-        if(parent.firebaseViewModel.isConnectedToDatabase.value == true){
+        if(viewModel.checkServerConnectionUseCase().value == true){
             if(adapter.selected.count() > 0){
                 binding.createGroupBtn.isEnabled = true
                 binding.doneClickable.visibility = View.VISIBLE
@@ -191,7 +189,7 @@ class CreateGroupFragment : Fragment() {
         }.launchIn(lifecycleScope)
 
         dialogBinding.groupName.doAfterTextChanged {
-            if(createGroupViewModel.hasBtnBeenClicked.value == false){
+            if(viewModel.hasBtnBeenClicked.value == false){
                 dialogBinding.btnCreateGroup.isEnabled = !dialogBinding.groupName.text.isEmpty()
             } else {
                 dialogBinding.btnCreateGroup.isEnabled = false
@@ -200,7 +198,7 @@ class CreateGroupFragment : Fragment() {
 
         dialogBinding.btnCreateGroup.setOnClickListener {
             dialogBinding.btnCreateGroup.isEnabled = false
-            createGroupViewModel.hasBtnBeenClicked.value = true
+            viewModel.hasBtnBeenClicked.value = true
 
             val newRoomId = MessageUtils.generateUID(30)
             val participants = addParticipants()
@@ -211,12 +209,12 @@ class CreateGroupFragment : Fragment() {
                 viewModel.createGroup(group, {
                     navigateToGroupPage(newRoomId)
                     dialogBinding.btnCreateGroup.isEnabled = true
-                    createGroupViewModel.hasBtnBeenClicked.value = false
+                    viewModel.hasBtnBeenClicked.value = false
 
                     dialog.dismiss()
                 }, {
                     dialogBinding.btnCreateGroup.isEnabled = true
-                    createGroupViewModel.hasBtnBeenClicked.value = false
+                    viewModel.hasBtnBeenClicked.value = false
                 })
             }
         }
