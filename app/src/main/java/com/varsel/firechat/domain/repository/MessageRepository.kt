@@ -29,7 +29,7 @@ interface MessageRepository {
     fun makeAdmin(user: String, group: GroupRoom) : Flow<Response>
     fun removeAdmin(user: String, group: GroupRoom) : Flow<Response>
     fun removeFromGroup(user: String, group: GroupRoom) : Flow<Response>
-    fun addGroupMembers(users: List<String>, group: GroupRoom) : Flow<Response>
+    fun addGroupMembers(users: List<String>, groupID: String) : Flow<Response>
     fun leaveGroup(chatRoom: GroupRoom) : Flow<Response>
 
 

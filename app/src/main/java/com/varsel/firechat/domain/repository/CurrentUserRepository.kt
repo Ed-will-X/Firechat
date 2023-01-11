@@ -23,7 +23,7 @@ interface CurrentUserRepository {
     fun addToRecentSearch(userId: String) : Flow<Response>
     fun deleteRecentSearchHistory() : Flow<Response>
 
-    fun signOut(after: ()-> Unit)
+    fun signOut()
 
     fun addGroupToFavorites(groupId: String) : Flow<Response>
     fun removeGroupFromFavorites(groupId: String) : Flow<Response>

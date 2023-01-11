@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavDirections
 import androidx.navigation.findNavController
@@ -14,7 +13,6 @@ import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentFriendsBinding
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
-import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.FriendsAdapter
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.chats_tab_page.ChatsFragmentDirections

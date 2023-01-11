@@ -1,12 +1,10 @@
 package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.group
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.varsel.firechat.R
@@ -14,7 +12,6 @@ import com.varsel.firechat.databinding.FragmentGroupBinding
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.domain.use_case._util.animation.ChangeIconColorUseCase
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -23,7 +20,6 @@ import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomN
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class GroupFragment : Fragment() {

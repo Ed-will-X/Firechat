@@ -28,7 +28,7 @@ class AddGroupMembersAdapter(
     val profileImageListener: (profileImage: ProfileImage, user: User)-> Unit
 ): RecyclerView.Adapter<AddGroupMembersAdapter.AddMemberViewHolder>() {
 
-    var users: ArrayList<User?> = arrayListOf()
+    var users = mutableListOf<User>()
     val selected: ArrayList<String> = arrayListOf()
 
     class AddMemberViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -46,43 +46,55 @@ class AddGroupMembersAdapter(
     override fun onBindViewHolder(holder: AddMemberViewHolder, position: Int) {
         val item = users[position]
 
-        if(item != null){
-            holder.checkbox.text = item.name
+        holder.checkbox.text = item.name
 
-            lifecycleOwner.lifecycleScope.launch {
-                viewModel.getOtherUserProfileImageUseCase(item).onEach {
-                    if(it?.image != null){
-                        viewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
-                        holder.profileImage.setOnClickListener { it2 ->
-                            profileImageListener(it, item)
-                        }
-                    } else {
-                        holder.profileImageParent.visibility = View.GONE
+        lifecycleOwner.lifecycleScope.launch {
+            viewModel.getOtherUserProfileImageUseCase(item).onEach {
+                if(it?.image != null){
+                    viewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
+                    holder.profileImage.setOnClickListener { it2 ->
+                        profileImageListener(it, item)
                     }
-                }.launchIn(this)
-            }
-//            ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) {
-//                if(it != null){
-//                    holder.profileImage.setOnClickListener { it2 ->
-//                        profileImageListener(it, item)
-//                    }
-//                }
-//            }
-
-            holder.checkbox.setOnCheckedChangeListener { buttonView, isChecked ->
-                if(isChecked){
-                    select(item.userUID)
                 } else {
-                    unselect(item.userUID)
+                    holder.profileImageParent.visibility = View.GONE
                 }
-                checkChanged()
+            }.launchIn(this)
+        }
+
+        /*
+    *   Checks if the user has been previously selected,
+    *   if so, it checks it
+    *   else, unchecks it
+    * */
+        if(isSelected(item.userUID)){
+            holder.checkbox.isChecked = true
+        } else {
+            holder.checkbox.isChecked = false
+        }
+
+        holder.checkbox.setOnClickListener {
+            if(holder.checkbox.isChecked){
+                select(item.userUID)
+            } else {
+                unselect(item.userUID)
             }
+            checkChanged()
 
-            // TODO: Set parent click listener
-            holder.parent.setOnClickListener {
+        }
 
+        // TODO: Set parent click listener
+        holder.parent.setOnClickListener {
+
+        }
+    }
+
+    private fun isSelected(userId: String): Boolean{
+        for (i in selected){
+            if (i == userId){
+                return true
             }
         }
+        return false
     }
 
     private fun select(uid: String){

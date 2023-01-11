@@ -87,7 +87,7 @@ class MessageRepositoryImpl @Inject constructor(
         awaitClose {
             for (i in listeners) {
                 // TODO: Remove value event listeners
-//                firebase.mDbRef.removeEventListener(i)
+                firebase.chat_room_ref.removeEventListener(i)
             }
         }
     }
@@ -126,7 +126,7 @@ class MessageRepositoryImpl @Inject constructor(
         awaitClose {
             for (i in listeners) {
                 // TODO: Remove value event listeners
-                firebase.mDbRef.removeEventListener(i)
+                firebase.group_room_ref.removeEventListener(i)
             }
         }
     }
@@ -218,8 +218,8 @@ class MessageRepositoryImpl @Inject constructor(
         awaitClose {  }
     }
 
-    override fun addGroupMembers(users: List<String>, group: GroupRoom): Flow<Response> = callbackFlow {
-        firebase.addGroupMembers(users, group.roomUID, {
+    override fun addGroupMembers(users: List<String>, groupID: String): Flow<Response> = callbackFlow {
+        firebase.addGroupMembers(users, groupID, {
             trySend(Response.Success())
         }, {
             trySend(Response.Fail())

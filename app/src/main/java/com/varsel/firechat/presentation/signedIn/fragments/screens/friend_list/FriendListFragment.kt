@@ -19,9 +19,6 @@ import com.varsel.firechat.databinding.FragmentFriendListBinding
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.hideKeyboard
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.showKeyboard
-import com.varsel.firechat.utils.ImageUtils
-import com.varsel.firechat.utils.LifecycleUtils
-import com.varsel.firechat.utils.SearchUtils
 import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage

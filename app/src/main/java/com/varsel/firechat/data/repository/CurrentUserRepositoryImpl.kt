@@ -43,6 +43,7 @@ class CurrentUserRepositoryImpl @Inject constructor(
             if(it != null) {
                 currentUser.value = Resource.Success(it)
 //                user_single = it
+
                 trySend(Response.Success())
             } else {
                 currentUser.value = Resource.Error("")
@@ -50,10 +51,13 @@ class CurrentUserRepositoryImpl @Inject constructor(
             }
         },{},{})
 
-        awaitClose { firebase.mDbRef.removeEventListener(listener) }
+        awaitClose {
+            firebase.users_ref.removeEventListener(listener)
+        }
     }
 
     override fun getCurrentUserRecurrent(): MutableStateFlow<Resource<User>> {
+
         return currentUser
     }
 
@@ -144,8 +148,8 @@ class CurrentUserRepositoryImpl @Inject constructor(
         awaitClose {  }
     }
 
-    override fun signOut(after: ()-> Unit) {
-        after()
+    override fun signOut() {
+        firebase.signOut()
     }
 
     override fun addGroupToFavorites(groupId: String): Flow<Response> = callbackFlow {

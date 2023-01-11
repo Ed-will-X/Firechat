@@ -93,11 +93,9 @@ class GroupChatPageFragment : Fragment() {
         collectState(roomId)
 
         checkServerConnection().onEach {
-            if(it) {
-                binding.sendMessageBtn.isEnabled = true
-            } else {
-                binding.sendMessageBtn.isEnabled = false
-            }
+            try {
+                binding.sendMessageBtn.isEnabled = it
+            } catch (e: Exception) {  }
         }.launchIn(lifecycleScope)
 
         observeGroupImage()

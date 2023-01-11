@@ -21,14 +21,15 @@ import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.DebugUtils
 import com.varsel.firechat.utils.ImageUtils
-import kotlinx.coroutines.flow.MutableStateFlow
-import java.util.concurrent.Flow
 
 class Firebase(
     val mDbRef: DatabaseReference,
     val mAuth: FirebaseAuth,
     val firebaseStorage: FirebaseStorage
 ) {
+    val users_ref = mDbRef.child("Users")
+    val chat_room_ref = mDbRef.child("chatRooms")
+    val group_room_ref = mDbRef.child("groupRooms")
 
     fun signUp(
         email: String,
@@ -101,7 +102,8 @@ class Firebase(
     }
 
     fun getCurrentUserRecurrent(successCallback: (user: User?) -> Unit, beforeCallback: () -> Unit = {}, afterCallback: () -> Unit = {}) : ValueEventListener{
-        val listener = mDbRef.child("Users").orderByChild("userUID").equalTo(mAuth?.currentUser?.uid.toString()).addValueEventListener(object :
+
+        val listener = users_ref.orderByChild("userUID").equalTo(mAuth.currentUser?.uid.toString()).addValueEventListener(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 beforeCallback()
@@ -199,7 +201,7 @@ class Firebase(
 
     // TODO: Fix potential concurrency bug in pertinence to cancellation
     fun getUserRecurrent(UID: String, loopCallback: (user: User) -> Unit, afterCallback: () -> Unit, cancelCallback: ()-> Unit = {}): ValueEventListener{
-        val listener = mDbRef.child("Users").orderByChild("userUID").equalTo(UID).addValueEventListener(object :
+        val listener = users_ref.orderByChild("userUID").equalTo(UID).addValueEventListener(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (i in snapshot.children){
@@ -477,8 +479,8 @@ class Firebase(
     }
 
     fun getChatRoomRecurrent(chatRoomUID: String, loopCallback: (chatRoom: ChatRoom) -> Unit, afterCallback: () -> Unit): ValueEventListener{
-        val listener = mDbRef
-            .child("chatRooms")
+
+        val listener = chat_room_ref
             .orderByChild("roomUID")
             .equalTo(chatRoomUID)
             .addValueEventListener(object : ValueEventListener {
@@ -603,8 +605,7 @@ class Firebase(
     }
 
     fun getGroupChatRoomRecurrent(chatRoomUID: String, loopCallback: (groupRoom: GroupRoom) -> Unit, afterCallback: () -> Unit): ValueEventListener{
-        val listener = mDbRef
-            .child("groupRooms")
+        val listener = group_room_ref
             .orderByChild("roomUID")
             .equalTo(chatRoomUID)
             .addValueEventListener(object : ValueEventListener {
@@ -736,7 +737,7 @@ class Firebase(
 
     fun addGroupMembers(users: List<String>, groupId: String, successCallback: (userId: String) -> Unit, failureCallback: (userId: String) -> Unit, afterCallback: () -> Unit){
         val groupReference = mDbRef.child("groupRooms").child(groupId)
-
+        val currentTime = System.currentTimeMillis()
         groupAddMessage(users, groupId, {
             for((i, v) in users.withIndex()){
                 groupReference
@@ -752,7 +753,7 @@ class Firebase(
                                 .child(v)
                                 .child("groupRooms")
                                 .child(groupId)
-                                .setValue(groupId)
+                                .setValue(currentTime)
                                 .addOnCompleteListener {
                                     if(it.isSuccessful){
                                         successCallback(v)

@@ -38,8 +38,10 @@ import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ParticipantsListAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
@@ -64,6 +66,7 @@ class GroupChatDetailFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
         recyclerViewVisible = false
     }
 
@@ -77,6 +80,7 @@ class GroupChatDetailFragment : Fragment() {
         groupId = GroupChatDetailFragmentArgs.fromBundle(requireArguments()).groupId
 
         viewModel = ViewModelProvider(this).get(GroupChatDetailViewModel::class.java)
+        // TODO: Fix bug where recycler view isn't repopulated after participant add
         viewModel.getGroupChat(groupId)
         collectState()
 
@@ -151,7 +155,6 @@ class GroupChatDetailFragment : Fragment() {
         })
 
         viewModel.participsnts.observe(viewLifecycleOwner, Observer {
-            Log.d("CLEAN", "Participant Count: ${it.size}")
             binding.groupMembersCount.text = "(${it.size})"
             val admins = viewModel.state.value?.selectedGroup?.admins?.values?.toList() ?: listOf()
             val currentUser = viewModel.getCurrentUserIdUseCase()

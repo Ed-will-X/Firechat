@@ -9,14 +9,21 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.varsel.firechat.common.Response
 import com.varsel.firechat.databinding.ActionSheetSigninBinding
 import com.varsel.firechat.databinding.ActionSheetSignupBinding
 import com.varsel.firechat.databinding.FragmentAuthRootBinding
+import com.varsel.firechat.domain.use_case.current_user.SignIn_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedOut.SignedoutActivity
 import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
 import com.varsel.firechat.presentation.signedOut.SignedoutViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
 
 class AuthType {
     companion object {
@@ -27,6 +34,7 @@ class AuthType {
     }
 }
 
+@AndroidEntryPoint
 class AuthRootFragment : Fragment() {
     private var _binding: FragmentAuthRootBinding? = null
     private lateinit var parent: SignedoutActivity
@@ -39,6 +47,9 @@ class AuthRootFragment : Fragment() {
 
     private var email_login = ""
     private var password_login = ""
+
+    @Inject
+    lateinit var signin: SignIn_UseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,17 +65,33 @@ class AuthRootFragment : Fragment() {
                 signedOutViewModel.hasBeenClicked_signin.value = true
                 dialogBinding.signInBtnActionsheet.isEnabled = false
 
-                firebaseViewModel.signin(email_login, password_login, parent.mAuth, {
-                    navigate(AuthType.SIGN_IN) {
+                signin(email_login, password_login).onEach {
+                    when(it) {
+                        is Response.Success -> {
+                            navigate(AuthType.SIGN_IN) {
 
+                            }
+                            dialogBinding.signInBtnActionsheet.isEnabled = true
+                            signedOutViewModel.hasBeenClicked_signin.value = false
+                        }
+                        is Response.Fail -> {
+                            Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_LONG).show()
+                            dialogBinding.signInBtnActionsheet.isEnabled = true
+                            signedOutViewModel.hasBeenClicked_signin.value = false
+                        }
                     }
-                    dialogBinding.signInBtnActionsheet.isEnabled = true
-                    signedOutViewModel.hasBeenClicked_signin.value = false
-                }, {
-                    Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_LONG).show()
-                    dialogBinding.signInBtnActionsheet.isEnabled = true
-                    signedOutViewModel.hasBeenClicked_signin.value = false
-                })
+                }.launchIn(lifecycleScope)
+//                firebaseViewModel.signin(email_login, password_login, parent.mAuth, {
+//                    navigate(AuthType.SIGN_IN) {
+//
+//                    }
+//                    dialogBinding.signInBtnActionsheet.isEnabled = true
+//                    signedOutViewModel.hasBeenClicked_signin.value = false
+//                }, {
+//                    Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_LONG).show()
+//                    dialogBinding.signInBtnActionsheet.isEnabled = true
+//                    signedOutViewModel.hasBeenClicked_signin.value = false
+//                })
             }
         }
         binding.signUp.setOnClickListener {

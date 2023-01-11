@@ -8,8 +8,11 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.preferencesKey
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
+import com.varsel.firechat.domain.use_case.current_user.SignoutUseCase
 import com.varsel.firechat.presentation.signedOut.SignedoutActivity
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
+import javax.inject.Inject
 
 class DatastoreKeys {
     companion object {
@@ -18,7 +21,10 @@ class DatastoreKeys {
     }
 }
 
-class SettingsViewModel: ViewModel() {
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
+    val signoutUseCase: SignoutUseCase
+): ViewModel() {
 
     suspend fun writeUseOsTheme(value: Boolean, datastore: DataStore<Preferences>){
         datastore.edit {
@@ -64,10 +70,10 @@ class SettingsViewModel: ViewModel() {
 
     }
 
-    fun logout(activity: FragmentActivity, context: Context?, callback: ()-> Unit){
+    fun logout(activity: FragmentActivity, context: Context?){
         val intent = Intent(context, SignedoutActivity::class.java)
-        callback()
 
+        signoutUseCase()
         activity.startActivity(intent)
         activity.finish()
 

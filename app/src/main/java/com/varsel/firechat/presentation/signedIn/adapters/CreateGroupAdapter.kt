@@ -61,13 +61,6 @@ class CreateGroupAdapter(
                     }
                 }.launchIn(this)
             }
-//            ImageUtils.setProfilePicOtherUser_fullObject(item, holder.profileImage, holder.profileImageParent, activity) { image: ProfileImage? ->
-//                if(image != null){
-//                    holder.profileImage.setOnClickListener {
-//                        imageClickListener(image, item)
-//                    }
-//                }
-//            }
 
             /*
             *   Checks if the user has been previously selected,

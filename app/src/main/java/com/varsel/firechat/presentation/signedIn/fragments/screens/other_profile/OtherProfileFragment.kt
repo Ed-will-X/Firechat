@@ -6,7 +6,6 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -17,8 +16,6 @@ import com.varsel.firechat.databinding.ActionsheetOtherUserPublicPostsBinding
 import com.varsel.firechat.databinding.FragmentOtherProfileBinding
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
-import com.varsel.firechat.utils.LifecycleUtils
-import com.varsel.firechat.utils.PostUtils
 import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
@@ -29,7 +26,6 @@ import com.varsel.firechat.domain.use_case.public_post.SortPublicPostReversedUse
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapterShapes
-import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.profile.ProfileViewModel
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers

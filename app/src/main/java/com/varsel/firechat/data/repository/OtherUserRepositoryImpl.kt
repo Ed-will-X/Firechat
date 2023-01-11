@@ -35,7 +35,7 @@ class OtherUserRepositoryImpl @Inject constructor(
         }, {  },{  })
 
         awaitClose {
-            databaseReference.removeEventListener(listener)
+            firebase.users_ref.removeEventListener(listener)
         }
     }
 

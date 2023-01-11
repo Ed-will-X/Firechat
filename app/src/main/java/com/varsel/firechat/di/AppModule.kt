@@ -315,4 +315,18 @@ object AppModule {
     fun provideEditGroup(messageRepository: MessageRepository): EditGroupUseCase {
         return EditGroupUseCase(messageRepository)
     }
+
+    @Provides
+    @Singleton
+    fun provideAddGroupMembers(firebaseRepository: FirebaseRepository): AddGroupMembers_UseCase {
+        return AddGroupMembers_UseCase(firebaseRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSignOut(currentUserRepository: CurrentUserRepository): SignoutUseCase {
+        return SignoutUseCase(currentUserRepository)
+    }
+
+
 }

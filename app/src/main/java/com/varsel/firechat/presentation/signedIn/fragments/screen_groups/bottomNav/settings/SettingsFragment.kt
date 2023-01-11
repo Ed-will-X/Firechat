@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -14,6 +16,7 @@ import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentSettingsBinding
 import com.varsel.firechat.data.local.Setting.Setting
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
+import com.varsel.firechat.domain.use_case.current_user.SignoutUseCase
 import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.viewModel.*
@@ -27,11 +30,14 @@ import javax.inject.Inject
 class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
-    private val settingsViewModel: SettingsViewModel by activityViewModels()
+    private lateinit var settingsViewModel: SettingsViewModel
     private lateinit var parent: SignedinActivity
 
     @Inject
     lateinit var checkServerConnection: CheckServerConnectionUseCase
+
+    @Inject
+    lateinit var signoutUseCase: SignoutUseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,6 +46,7 @@ class SettingsFragment : Fragment() {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
         parent = activity as SignedinActivity
+        settingsViewModel = ViewModelProvider(this).get(SettingsViewModel::class.java)
         changeStatusBarColor()
 
         val view = binding.root
@@ -63,11 +70,7 @@ class SettingsFragment : Fragment() {
         })
 
         binding.logout.setOnClickListener {
-            showLogoutConfirmationDialog {
-                lifecycleScope.launch {
-                    parent.firebaseViewModel.signOut((parent as SignedinActivity).firebaseAuth)
-                }
-            }
+            showLogoutConfirmationDialog()
         }
 
         return view
@@ -117,7 +120,7 @@ class SettingsFragment : Fragment() {
         findNavController().navigate(action)
     }
 
-    private fun showLogoutConfirmationDialog(callback: ()-> Unit){
+    private fun showLogoutConfirmationDialog(){
         context?.let {
             MaterialAlertDialogBuilder(it)
                 .setTitle(getString(R.string.logout_dialog_title))
@@ -127,7 +130,7 @@ class SettingsFragment : Fragment() {
 
                 }
                 .setPositiveButton(getString(R.string.logout_dialog_yes)){ _, _ ->
-                    activity?.let { it1 -> settingsViewModel.logout(it1, context, callback) }
+                    activity?.let { it1 -> settingsViewModel.logout(it1, context) }
                 }
                 .show()
         }

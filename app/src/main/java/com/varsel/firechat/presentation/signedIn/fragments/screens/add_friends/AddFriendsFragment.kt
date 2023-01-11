@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -17,8 +16,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.varsel.firechat.databinding.FragmentAddFriendsBinding
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.showKeyboard
-import com.varsel.firechat.utils.ImageUtils
-import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.AddFriendsSearchAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.RecentSearchAdapter

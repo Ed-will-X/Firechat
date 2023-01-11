@@ -45,8 +45,6 @@ class ProfileViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-
-
     fun getProfileImage() {
         viewModelScope.launch {
             getCurrentUserProfileImageUseCase().onEach {
