@@ -5,12 +5,50 @@ import android.content.Context
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.R
+import com.varsel.firechat.common.Resource
 import com.varsel.firechat.databinding.FragmentAboutUserBinding
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case._util.animation.Direction
+import com.varsel.firechat.domain.use_case._util.animation.Rotate90UseCase
+import com.varsel.firechat.domain.use_case.other_user.GetOtherUserSingle
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
 
-class AboutUserViewModel: ViewModel() {
+@HiltViewModel
+class AboutUserViewModel @Inject constructor(
+    val rotate90UseCase: Rotate90UseCase,
+    val getOtherUserSingle: GetOtherUserSingle
+): ViewModel() {
     private var userDetailsVisible = MutableLiveData<Boolean>(false)
+
+    private val _state = MutableStateFlow(AboutUserState())
+    val state: StateFlow<AboutUserState> = _state
+
+    init {
+
+    }
+
+    fun getUser(id: String) {
+        getOtherUserSingle(id).onEach {
+            when(it) {
+                is Resource.Success -> {
+                    _state.value = _state.value.copy(selectedUser = it.data)
+                }
+                is Resource.Loading -> {
+                    _state.value = _state.value.copy(selectedUser = null)
+                }
+                is Resource.Error -> {
+                    _state.value = _state.value.copy(selectedUser = null)
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
 
     fun setRecyclerViewVisible(binding: FragmentAboutUserBinding){
         userDetailsVisible.value = !userDetailsVisible.value!!
@@ -20,31 +58,10 @@ class AboutUserViewModel: ViewModel() {
     private fun toggleUserDetailsVisibility(binding: FragmentAboutUserBinding){
         if(userDetailsVisible.value == true){
             binding.userDetailsHideable.visibility = View.VISIBLE
-            rotateIcon(binding.userDetailsIconAnimatable)
+            rotate90UseCase(binding.userDetailsIconAnimatable, Direction.Forward())
         } else {
             binding.userDetailsHideable.visibility = View.GONE
-            rotateBack(binding.userDetailsIconAnimatable)
+            rotate90UseCase(binding.userDetailsIconAnimatable, Direction.Reverse())
         }
-    }
-
-    fun setBindings(binding: FragmentAboutUserBinding, user: User, context: Context){
-        binding.userName.text = user.name
-        binding.occupation.text = user.occupation ?: context.getString(R.string.no_occupation)
-    }
-
-    private fun setGender(binding: FragmentAboutUserBinding){
-
-    }
-
-    private fun rotateIcon(view: View){
-        val animator = ObjectAnimator.ofFloat(view, View.ROTATION, 90f)
-        animator.duration = 300
-        animator.start()
-    }
-
-    private fun rotateBack(view: View){
-        val animator = ObjectAnimator.ofFloat(view, View.ROTATION, 0f)
-        animator.duration = 300
-        animator.start()
     }
 }

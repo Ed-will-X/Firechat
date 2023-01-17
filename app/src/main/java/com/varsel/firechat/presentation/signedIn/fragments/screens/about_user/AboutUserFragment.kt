@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.R
@@ -14,14 +16,16 @@ import com.varsel.firechat.databinding.FragmentAboutUserBinding
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
+import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AboutUserFragment : Fragment() {
     private var _binding: FragmentAboutUserBinding? = null
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
-    private val viewModel: AboutUserViewModel by activityViewModels()
+    private lateinit var viewModel: AboutUserViewModel
     private lateinit var userId: String
-    private lateinit var user: User
     private var userImg: String? = null
 
     override fun onCreateView(
@@ -33,18 +37,26 @@ class AboutUserFragment : Fragment() {
         parent = activity as SignedinActivity
         userId = AboutUserFragmentArgs.fromBundle(requireArguments()).userId
 
+        viewModel = ViewModelProvider(this).get(AboutUserViewModel::class.java)
+        viewModel.getUser(userId)
+        collectState()
+
         binding.userDetailsClickable.setOnClickListener {
             viewModel.setRecyclerViewVisible(binding)
         }
 
-        parent.firebaseViewModel.selectedChatRoom.observe(viewLifecycleOwner, Observer {
-
-        })
-
-        observeUserProps()
         setBindings()
 
         return view
+    }
+
+    private fun collectState() {
+        collectLatestLifecycleFlow(viewModel.state) {
+            if(it.selectedUser != null) {
+                observeUserProps(it.selectedUser)
+            }
+
+        }
     }
 
     private fun setBindings(){
@@ -60,7 +72,6 @@ class AboutUserFragment : Fragment() {
     private fun navigateToUserPage(view: View, userId: String){
         val action = AboutUserFragmentDirections.actionAboutUserFragmentToOtherProfileFragment(userId)
         parent.profileImageViewModel.selectedOtherUserProfilePic.value = userImg
-//        parent.firebaseViewModel.selectedUser.value = user
 
         view.findNavController().navigate(action)
     }
@@ -69,7 +80,7 @@ class AboutUserFragment : Fragment() {
         findNavController().navigateUp()
     }
 
-    private fun observeUserProps(){
+    private fun observeUserProps(user: User){
         parent.profileImageViewModel.selectedOtherUserProfilePicChat.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent, parent)
@@ -77,15 +88,9 @@ class AboutUserFragment : Fragment() {
             }
         })
 
-        parent.firebaseViewModel.selectedChatRoomUser.observe(viewLifecycleOwner, Observer {
-            if(it != null){
-                binding.userName.text = it.name
-                binding.occupation.text = it.occupation ?: context?.getString(R.string.no_occupation)
-                bindUserDetailProps(it)
-
-                user = it
-            }
-        })
+        binding.userName.text = user.name
+        binding.occupation.text = user.occupation ?: context?.getString(R.string.no_occupation)
+        bindUserDetailProps(user)
     }
 
     private fun bindUserDetailProps(user: User){
@@ -118,7 +123,7 @@ class AboutUserFragment : Fragment() {
         }
 
         if(user.occupation?.isNotEmpty() == true){
-            binding.occupation.visibility = View.VISIBLE
+            binding.occupationChecked.visibility = View.VISIBLE
             binding.detailOccupation.text = user.occupation
         } else {
             binding.occupation.visibility = View.GONE
