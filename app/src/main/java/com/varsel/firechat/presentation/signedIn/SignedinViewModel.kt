@@ -163,11 +163,10 @@ class SignedinViewModel @Inject constructor(
         return contains
     }
 
-    fun findChatRoom(userId: String, chatRooms: MutableList<ChatRoom?>?): ChatRoom?{
+    fun findChatRoom(userId: String, chatRooms: List<ChatRoom>): ChatRoom? {
         // TODO: Fix potential null pointer exception
-        val chatRooms = chatRooms!!
         for(i in chatRooms){
-            if(i!!.participants!!.contains(userId)){
+            if(i.participants.contains(userId)){
                 currentChatRoomId.value = i.roomUID.toString()
                 return i
             }

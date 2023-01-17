@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -20,10 +19,8 @@ import com.varsel.firechat.R
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
-import com.varsel.firechat.utils.AnimationUtils
-import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
-import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.group.GroupFragment
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.group.GroupViewModel

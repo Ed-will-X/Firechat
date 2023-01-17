@@ -9,6 +9,10 @@ import com.varsel.firechat.domain.use_case._util.animation.ChangeIconColorUseCas
 import com.varsel.firechat.domain.use_case._util.animation.Rotate90UseCase
 import com.varsel.firechat.domain.use_case._util.message.GenerateUid_UseCase
 import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
+import com.varsel.firechat.domain.use_case.auth.SignUp_UseCase
+import com.varsel.firechat.domain.use_case.chat_room.AppendChatRoom_UseCase
+import com.varsel.firechat.domain.use_case.chat_room.AppendParticipants_UseCase
+import com.varsel.firechat.domain.use_case.chat_room.SendMessage_UseCase
 import com.varsel.firechat.domain.use_case.current_user.*
 import com.varsel.firechat.domain.use_case.group_chat.*
 import com.varsel.firechat.domain.use_case.message.*
@@ -327,6 +331,38 @@ object AppModule {
     fun provideSignOut(currentUserRepository: CurrentUserRepository): SignoutUseCase {
         return SignoutUseCase(currentUserRepository)
     }
+
+    @Provides
+    @Singleton
+    fun provideGetOtherUserFromParticipants(currentUserRepository: CurrentUserRepository): GetOtherUserFromParticipants_UseCase {
+        return GetOtherUserFromParticipants_UseCase(currentUserRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppendChatroom(messageRepository: MessageRepository): AppendChatRoom_UseCase {
+        return AppendChatRoom_UseCase(messageRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppendParticipants(messageRepository: MessageRepository): AppendParticipants_UseCase {
+        return AppendParticipants_UseCase(messageRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSendMessage(messageRepository: MessageRepository): SendMessage_UseCase {
+        return SendMessage_UseCase(messageRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSignUp(currentUserRepository: CurrentUserRepository): SignUp_UseCase {
+        return SignUp_UseCase(currentUserRepository)
+    }
+
+
 
 
 }

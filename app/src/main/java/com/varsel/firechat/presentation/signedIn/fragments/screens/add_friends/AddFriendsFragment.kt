@@ -20,7 +20,7 @@ import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.AddFriendsSearchAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.RecentSearchAdapter
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
-import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import dagger.hilt.android.AndroidEntryPoint

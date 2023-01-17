@@ -1,5 +1,6 @@
 package com.varsel.firechat.data.repository
 
+import android.util.Log
 import com.google.firebase.database.ValueEventListener
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
@@ -43,7 +44,7 @@ class MessageRepositoryImpl @Inject constructor(
     }
 
     override fun appendChatroomToUser(roomId: String, otherUser: String): Flow<Response> = callbackFlow {
-        firebase.appendGroupRoomsToUser(roomId, otherUser, {
+        firebase.appendChatRoom(roomId, otherUser, {
             trySend(Response.Success())
         }, {
             trySend(Response.Fail())
@@ -57,10 +58,9 @@ class MessageRepositoryImpl @Inject constructor(
     }
 
     override fun initialiseGetChatRoomsRecurrentStream(): Flow<Response> = callbackFlow {
-        chatRoomsFlow.value = Resource.Loading()
         trySend(Response.Loading())
 
-        val chatRoomsUID = currentUserRepository.getCurrentUserRecurrent().value.data?.chatRooms?.keys
+        val chatRoomsUID = currentUserRepository.getCurrentUserRecurrent().value.data?.chatRooms?.keys  // TODO: Change to a dynamic value
         val chatRooms = mutableListOf<ChatRoom>()
         val listeners = mutableListOf<ValueEventListener>()
 
@@ -85,15 +85,15 @@ class MessageRepositoryImpl @Inject constructor(
         }
 
         awaitClose {
+            chatRoomsFlow.value = Resource.Loading()
+
             for (i in listeners) {
-                // TODO: Remove value event listeners
                 firebase.chat_room_ref.removeEventListener(i)
             }
         }
     }
 
     override fun initialiseGetGroupRoomsRecurrentStream(): Flow<Response> = callbackFlow {
-        groupRoomsFlow.value = Resource.Loading()
         trySend(Response.Loading())
 
         val groupRoomIDs = currentUserRepository.getCurrentUserRecurrent().value.data?.groupRooms?.keys
@@ -124,8 +124,8 @@ class MessageRepositoryImpl @Inject constructor(
         }
 
         awaitClose {
+            groupRoomsFlow.value = Resource.Loading()
             for (i in listeners) {
-                // TODO: Remove value event listeners
                 firebase.group_room_ref.removeEventListener(i)
             }
         }

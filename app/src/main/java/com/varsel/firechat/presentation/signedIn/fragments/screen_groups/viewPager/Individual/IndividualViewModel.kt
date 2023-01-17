@@ -21,7 +21,7 @@ class IndividualViewModel @Inject constructor(
     val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase,
     val setProfilePicUseCase: SetProfilePicUseCase
 ): ViewModel() {
-    private val _state = MutableStateFlow<IndividualFragmentState>(IndividualFragmentState())
+    private val _state = MutableStateFlow(IndividualFragmentState())
     val state = _state
 
     init {
@@ -30,9 +30,13 @@ class IndividualViewModel @Inject constructor(
     }
 
     private fun getChatRooms() {
+        _state.value = _state.value.copy(isLoading = true, chatRooms = listOf())
+
         getChatRoomsRecurrentUseCase().onEach {
             when(it) {
                 is Resource.Success -> {
+                    Log.d("CLEAN", "Count in viewModel: ${it.data?.size}")
+
                     _state.value = _state.value.copy(isLoading = false, chatRooms = it.data ?: listOf())
                 }
                 is Resource.Loading -> {

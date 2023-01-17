@@ -1,8 +1,6 @@
 package com.varsel.firechat.utils
 
-import android.util.Log
 import com.varsel.firechat.R
-import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.Message.Message

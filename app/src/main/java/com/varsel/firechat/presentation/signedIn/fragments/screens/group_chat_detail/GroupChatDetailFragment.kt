@@ -3,7 +3,6 @@ package com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_d
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +21,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.databinding.ActionSheetParticipantActionsBinding
 import com.varsel.firechat.databinding.ActionSheetProfileImageBinding
 import com.varsel.firechat.databinding.FragmentGroupChatDetailBinding
@@ -38,10 +37,8 @@ import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ParticipantsListAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
 

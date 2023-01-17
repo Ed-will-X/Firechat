@@ -21,11 +21,14 @@ class OtherUserRepositoryImpl @Inject constructor(
     val firebase: Firebase,
     val databaseReference: DatabaseReference
 ): OtherUserRepository {
-    override fun getUserById(id: String): Flow<User> = callbackFlow {
+    override fun getUserById(id: String): Flow<Resource<User>> = callbackFlow {
+        trySend(Resource.Loading())
         firebase.getUserById(id, {}, {
-            trySend(it)
+            trySend(Resource.Success(it))
 
         }, {},{ cancel() })
+
+        awaitClose {  }
     }
 
     override fun getUserRecurrent(id: String): Flow<Resource<User>> = callbackFlow {

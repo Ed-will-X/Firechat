@@ -1,9 +1,8 @@
 package com.varsel.firechat.data.repository
 
-import android.util.Log
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.domain.repository.CurrentUserRepository
@@ -149,6 +148,9 @@ class CurrentUserRepositoryImpl @Inject constructor(
     }
 
     override fun signOut() {
+        currentUser.value = Resource.Loading()
+        friends.value = Resource.Loading()
+
         firebase.signOut()
     }
 

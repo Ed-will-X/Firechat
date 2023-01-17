@@ -16,7 +16,7 @@ import com.varsel.firechat.databinding.ActionsheetOtherUserPublicPostsBinding
 import com.varsel.firechat.databinding.FragmentOtherProfileBinding
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.ImageUtils
-import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage

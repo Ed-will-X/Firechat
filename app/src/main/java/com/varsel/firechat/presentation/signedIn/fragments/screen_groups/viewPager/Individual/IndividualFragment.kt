@@ -2,6 +2,7 @@ package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPa
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -59,6 +60,8 @@ class IndividualFragment : Fragment() {
 
     private fun collectState() {
         collectLatestLifecycleFlow(viewModel.state) {
+            Log.d("CLEAN", "Count in fragment: ${it.chatRooms.size}")
+
             val sorted = MessageUtils.sortChats(it.chatRooms)
 
             toggleRecyclerViewVisibility(it.chatRooms)

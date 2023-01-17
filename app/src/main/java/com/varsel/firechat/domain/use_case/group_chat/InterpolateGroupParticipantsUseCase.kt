@@ -1,7 +1,7 @@
 package com.varsel.firechat.domain.use_case.group_chat
 
 import android.widget.TextView
-import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.repository.CurrentUserRepository
 import javax.inject.Inject

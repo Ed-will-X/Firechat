@@ -1,4 +1,4 @@
-package com.varsel.firechat.common._utils
+package com.varsel.firechat.utils
 
 import androidx.fragment.app.Fragment
 import com.varsel.firechat.R

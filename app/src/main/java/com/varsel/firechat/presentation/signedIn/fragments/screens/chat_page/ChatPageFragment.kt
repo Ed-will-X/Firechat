@@ -7,8 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.databinding.FragmentChatPageBinding
@@ -19,7 +19,6 @@ import com.varsel.firechat.data.local.ReadReceipt.ReadReceipt
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.ImageUtils
-import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
@@ -45,7 +44,7 @@ class ChatPageFragment : Fragment() {
     var firstMessageSent: Boolean? = null
     lateinit var newChatRoom: ChatRoom
     lateinit var messagesListAdapter: MessageListAdapter
-    val chatPageViewModel: ChatPageViewModel by activityViewModels()
+    private lateinit var viewModel: ChatPageViewModel
 
     @Inject
     lateinit var displayProfileImage: DisplayProfileImage
@@ -67,27 +66,26 @@ class ChatPageFragment : Fragment() {
         _binding = FragmentChatPageBinding.inflate(inflater, container, false)
         val view = binding.root
         parent = activity as SignedinActivity
+        viewModel = ViewModelProvider(this).get(ChatPageViewModel::class.java)
 
-//        LifecycleUtils.observeInternetStatus(parent, this, {
-//            binding.sendMessageBtn.isEnabled = true
-//        }, {
-//            binding.sendMessageBtn.isEnabled = false
-//        })
+        existingChatRoomId = ChatPageFragmentArgs.fromBundle(requireArguments()).chatRoom
+        userUID = ChatPageFragmentArgs.fromBundle(requireArguments()).userUid
+
+        viewModel.getOtherUser(userUID)
+        setupAdapter()
 
         checkServerConnection().onEach {
             binding.sendMessageBtn.isEnabled = it
         }.launchIn(lifecycleScope)
 
-        chatPageViewModel.actionBarVisibility.value = false
+        viewModel.actionBarVisibility.value = false
 
         firstMessageSent = false
 
-        existingChatRoomId = ChatPageFragmentArgs.fromBundle(requireArguments()).chatRoom
-        userUID = ChatPageFragmentArgs.fromBundle(requireArguments()).userUid
 
 //        getChatRoom()
-        getChatRoomFromMemory()
-        observeUserProps()
+//        getChatRoomFromMemory()
+//        observeUserProps()
 
         KeyboardVisibilityEvent.setEventListener(
             parent,
@@ -98,14 +96,7 @@ class ChatPageFragment : Fragment() {
             }
         )
 
-        parent.firebaseViewModel.chatRooms.observe(viewLifecycleOwner, Observer {
-            // Listen for first message from the other user
-            if(existingChatRoomId == null){
-//                listenForSimultaneousFirstInitialisation(it)
-            }
-        })
-
-        chatPageViewModel.actionBarVisibility.observe(viewLifecycleOwner, Observer {
+        viewModel.actionBarVisibility.observe(viewLifecycleOwner, Observer {
             if(it){
                 binding.messageActionBar.visibility = View.VISIBLE
             } else {
@@ -115,36 +106,11 @@ class ChatPageFragment : Fragment() {
 
         // Chatroom initialisation
         newChatRoomId = MessageUtils.generateUID(30)
-        newChatRoom = ChatRoom(newChatRoomId, hashMapOf<String, String>(userUID to userUID, parent.firebaseAuth.uid.toString() to parent.firebaseAuth.uid.toString()))
-
-        val fragment = this
-        lifecycleScope.launch(Dispatchers.Main) {
-            delay(300)
-            messagesListAdapter = MessageListAdapter(existingChatRoomId ?: newChatRoomId, parent, fragment, requireContext(), this@ChatPageFragment, chatPageViewModel, ChatPageType.INDIVIDUAL,
-                { message, image ->
-                    ImageUtils.displayImageMessage(image, message, parent)
-                }, { _, _, _ ->
-
-                }, { profileImage, user ->
-                    displayProfileImage(profileImage, user, parent)
-                })
-            binding.messagesRecyclerView.adapter = messagesListAdapter
-
-            parent.firebaseViewModel.selectedChatRoom.observe(viewLifecycleOwner, Observer {
-//                Log.d("LLL", "Selected chat room ID: ${it.roomUID}")
-
-//                val otherUser = UserUtils.getOtherUserId(it.participants, parent)
-//                UserUtils.getUser(otherUser, parent) {
-//                    Log.d("LLL", "Current chat room user: ${it.name}")
-//                }
-                getMessages(it)
-            })
-        }
+        newChatRoom = ChatRoom(newChatRoomId, hashMapOf<String, String>(userUID to userUID, viewModel.getCurrentUserId() to viewModel.getCurrentUserId()))
 
         if(existingChatRoomId == null) {
             binding.shimmerMessages.visibility = View.GONE
         }
-
 
         binding.chatBackButton.setOnClickListener {
             popNavigation()
@@ -155,7 +121,7 @@ class ChatPageFragment : Fragment() {
         }
 
         binding.actionBarSwitch.setOnClickListener {
-            chatPageViewModel.toggleActionbarVisibility()
+            viewModel.toggleActionbarVisibility()
         }
 
         // send button
@@ -163,18 +129,21 @@ class ChatPageFragment : Fragment() {
             val messageText = binding.messageEditText.text.toString().trim()
 
             // TODO: Amend to accommodate other message types
-            val message = Message(MessageUtils.generateUID(30), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
+            val message = Message(MessageUtils.generateUID(30), messageText, System.currentTimeMillis(), viewModel.getCurrentUserId(), MessageType.TEXT)
 
             if(binding.messageEditText.text.toString() != ""){
-                sendMessage(message) {
+//                sendMessage(message) {
+//                    updateReadReceipt()
+//                }
+                viewModel.handleSendMessage(message, existingChatRoomId, newChatRoom) {
                     updateReadReceipt()
                 }
             }
 
             clearEditText()
 
-            if(parent.firebaseViewModel.selectedChatRoom.value?.messages != null){
-                binding.messagesRecyclerView.scrollToPosition(parent.firebaseViewModel.selectedChatRoom.value?.messages!!.size -1)
+            if(viewModel.state.value?.selectedChatRoom?.messages != null){
+                binding.messagesRecyclerView.scrollToPosition(viewModel.state.value?.selectedChatRoom?.messages!!.size -1)
             }
         }
 
@@ -185,15 +154,60 @@ class ChatPageFragment : Fragment() {
         return view
     }
 
+    private fun collectState() {
+        viewModel.state.observe(viewLifecycleOwner, Observer {
+            if(existingChatRoomId != null) {
+                viewModel.getChatRoom(existingChatRoomId!!)
+            }
+
+            if(it.selectedChatRoom != null) {
+                getMessages(it.selectedChatRoom)
+            }
+        })
+
+        viewModel.user.observe(viewLifecycleOwner, Observer {
+            binding.nameText.text = it?.name
+        })
+
+        viewModel.state.observe(viewLifecycleOwner, Observer {
+
+            if(existingChatRoomId == null){
+                listenForSimultaneousFirstInitialisation(it.chatRooms)
+            }
+        })
+
+    }
+
+    private fun setupAdapter() {
+        val fragment = this
+        lifecycleScope.launch(Dispatchers.Main) {
+            delay(300)
+            messagesListAdapter = MessageListAdapter(existingChatRoomId ?: newChatRoomId, parent, fragment, requireContext(), this@ChatPageFragment, viewModel, ChatPageType.INDIVIDUAL,
+                { message, image ->
+                    ImageUtils.displayImageMessage(image, message, parent)
+                }, { _, _, _ ->
+
+                }, { profileImage, user ->
+                    displayProfileImage(profileImage, user, parent)
+                })
+            binding.messagesRecyclerView.adapter = messagesListAdapter
+
+            collectState()
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         ImageUtils.handleOnActivityResult(requireContext(), requestCode, resultCode, data, {
             ImageUtils.uploadChatImage(it, existingChatRoomId ?: newChatRoomId, parent) { message, image ->
                 parent.imageViewModel.storeImage(image) {
-                    sendMessage(message) {
+                    viewModel.handleSendMessage(message, existingChatRoomId, newChatRoom) {
                         updateReadReceipt()
                     }
+//                    sendMessage(message) {
+//                        updateReadReceipt()
+//                    }
                 }
             }
         },{})
@@ -201,11 +215,11 @@ class ChatPageFragment : Fragment() {
 
     private fun updateReadReceipt(){
         if(existingChatRoomId != null){
-            val receipt = ReadReceipt("${existingChatRoomId}:${parent.firebaseAuth.currentUser!!.uid}", System.currentTimeMillis())
+            val receipt = ReadReceipt("${existingChatRoomId}:${viewModel.getCurrentUserId()}", System.currentTimeMillis())
             parent.readReceiptViewModel.storeReceipt(receipt)
         } else {
             if(firstMessageSent == true){
-                val receipt = ReadReceipt("${newChatRoomId}:${parent.firebaseAuth.currentUser!!.uid}", System.currentTimeMillis())
+                val receipt = ReadReceipt("${newChatRoomId}:${viewModel.getCurrentUserId()}", System.currentTimeMillis())
                 parent.readReceiptViewModel.storeReceipt(receipt)
             }
         }
@@ -217,19 +231,8 @@ class ChatPageFragment : Fragment() {
 
 
     private fun popNavigation(){
-        chatPageViewModel.actionBarVisibility.value = false
+        viewModel.actionBarVisibility.value = false
         findNavController().navigateUp()
-    }
-    private fun observeUserProps(){
-//        parent.profileImageViewModel.selectedOtherUserProfilePicChat.observe(viewLifecycleOwner, Observer {
-//            if(it != null){
-//                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
-//            }
-//        })
-
-        parent.firebaseViewModel.selectedChatRoomUser.observe(viewLifecycleOwner, Observer {
-            binding.nameText.text = it?.name
-        })
     }
 
     private fun getMessages(it: ChatRoom?){
@@ -262,27 +265,6 @@ class ChatPageFragment : Fragment() {
         }
     }
 
-    private fun getChatRoom(){
-        if(existingChatRoomId != null){
-            parent.firebaseViewModel.getChatRoomRecurrent(existingChatRoomId!!, parent.mDbRef, {
-                Log.d("LLL", "Existing chat room id: ${existingChatRoomId}")
-                parent.firebaseViewModel.selectedChatRoom.value = it
-            },{})
-        }
-    }
-
-    fun getChatRoomFromMemory(){
-        parent.firebaseViewModel.chatRooms.observe(viewLifecycleOwner, Observer {
-            MessageUtils.findChatRoom(it, existingChatRoomId ?: newChatRoomId) {
-                parent.firebaseViewModel.selectedChatRoom.value = it
-            }
-
-            if(existingChatRoomId == null){
-                listenForSimultaneousFirstInitialisation(it)
-            }
-        })
-    }
-
     private fun navigateToDetail(){
         if(existingChatRoomId != null){
             val action = ChatPageFragmentDirections.actionChatPageFragmentToAboutUserFragment(existingChatRoomId!!, userUID)
@@ -293,53 +275,53 @@ class ChatPageFragment : Fragment() {
         }
     }
 
-    private fun getChatRoomFirst(){
-        // Gets the chat room based on the generated id
-        parent.firebaseViewModel.getChatRoomRecurrent(newChatRoomId, parent.mDbRef, {
-            parent.firebaseViewModel.selectedChatRoom.value = it
-        },{})
-    }
-
-    private fun sendMessage(message: Message, success: ()-> Unit){
-        // Checks if there is an existing chat room
-        if(existingChatRoomId != null){
-            // Existing chat room
-            parent.firebaseViewModel.sendMessage(message, existingChatRoomId!!, parent.mDbRef, {
-                success()
-            },{})
-
-        } else {
-            // create chat room in both users
-            parent.firebaseViewModel.appendChatRoom(newChatRoomId, userUID, parent.firebaseAuth, parent.mDbRef, {
-                if(firstMessageSent == false){
-                    parent.firebaseViewModel.appendParticipants(newChatRoom, parent.mDbRef, {
-                        parent.firebaseViewModel.sendMessage(message, newChatRoomId, parent.mDbRef, {
-                            success()
-                            firstMessageSent = true
-                            getChatRoomFirst()
-                        }, {})
-                    }, {})
-                } else {
-                    parent.firebaseViewModel.sendMessage(message, newChatRoomId, parent.mDbRef, {
-                        success()
-                    }, {})
-                }
-            },{})
-            // append to that chat room in the chats repo
-
-        }
-    }
+    // TODO: Delete
+//    private fun getChatRoomFirst(){
+//        // Gets the chat room based on the generated id
+//        parent.firebaseViewModel.getChatRoomRecurrent(newChatRoomId, parent.mDbRef, {
+//            parent.firebaseViewModel.selectedChatRoom.value = it
+//        },{})
+//    }
+//
+//    private fun sendMessage(message: Message, success: ()-> Unit){
+//        // Checks if there is an existing chat room
+//        if(existingChatRoomId != null){
+//            // Existing chat room
+//            parent.firebaseViewModel.sendMessage(message, existingChatRoomId!!, parent.mDbRef, {
+//                success()
+//            },{})
+//
+//        } else {
+//            // create chat room in both users
+//            parent.firebaseViewModel.appendChatRoom(newChatRoomId, userUID, parent.firebaseAuth, parent.mDbRef, {
+//                if(firstMessageSent == false){
+//                    parent.firebaseViewModel.appendParticipants(newChatRoom, parent.mDbRef, {
+//                        parent.firebaseViewModel.sendMessage(message, newChatRoomId, parent.mDbRef, {
+//                            success()
+//                            firstMessageSent = true
+//                            getChatRoomFirst()
+//                        }, {})
+//                    }, {})
+//                } else {
+//                    parent.firebaseViewModel.sendMessage(message, newChatRoomId, parent.mDbRef, {
+//                        success()
+//                    }, {})
+//                }
+//            },{})
+//            // append to that chat room in the chats repo
+//
+//        }
+//    }
 
     // This function listens for messages from the other end if the chat page is open without messages
     // only fires up when there is a change to the current user
-    private fun listenForSimultaneousFirstInitialisation(chatRooms: List<ChatRoom?>){
+    private fun listenForSimultaneousFirstInitialisation(chatRooms: List<ChatRoom>){
         Log.d("LLL", "Listen for simultaneous init ran")
         // check chatrooms which have both the current user
-        val chatRoom = parent.signedinViewModel.findChatRoom(userUID, chatRooms as MutableList<ChatRoom?>)
+        val chatRoom = parent.signedinViewModel.findChatRoom(userUID, chatRooms)
         if(chatRoom != null){
             // if found, set the existingChatRoomId to that chatroom
             existingChatRoomId = chatRoom.roomUID
-//            getChatRoom()
         }
     }
 
