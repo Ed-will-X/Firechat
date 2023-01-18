@@ -152,14 +152,6 @@ class FriendListFragment : Fragment() {
                         }
                     }
                 }.launchIn(lifecycleScope)
-//                LifecycleUtils.observeInternetStatus(parent, this@FriendListFragment, {
-//                    if(direction == ItemTouchHelper.LEFT){
-//                        if(adapter != null){
-//                            viewModel.unfriendUser(adapter!!.friends[viewHolder.adapterPosition])
-//                            removeFromAdapter(adapter!!, viewHolder)
-//                        }
-//                    }
-//                }, {})
             }
         }
 

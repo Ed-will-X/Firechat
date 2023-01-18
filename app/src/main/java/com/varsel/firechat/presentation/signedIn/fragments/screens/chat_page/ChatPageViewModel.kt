@@ -13,6 +13,10 @@ import com.varsel.firechat.domain.use_case.chat_room.AppendChatRoom_UseCase
 import com.varsel.firechat.domain.use_case.chat_room.AppendParticipants_UseCase
 import com.varsel.firechat.domain.use_case.chat_room.SendMessage_UseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserIdUseCase
+import com.varsel.firechat.domain.use_case.chat_image.CheckChatImageInDb
+import com.varsel.firechat.domain.use_case.chat_image.GetChatImageUseCase
+import com.varsel.firechat.domain.use_case.chat_image.SetChatImageUseCase
+import com.varsel.firechat.domain.use_case.chat_image.StoreChatImageUseCase
 import com.varsel.firechat.domain.use_case.message.GetChatRoomsRecurrentUseCase
 import com.varsel.firechat.domain.use_case.other_user.GetOtherUserFromParticipants_UseCase
 import com.varsel.firechat.domain.use_case.other_user.GetOtherUserSingle
@@ -34,7 +38,11 @@ class ChatPageViewModel @Inject constructor(
     val sendmessageUsecase: SendMessage_UseCase,
     val appendparticipantsUsecase: AppendParticipants_UseCase,
     val appendchatroomUsecase: AppendChatRoom_UseCase,
-    val getCurrentUserId: GetCurrentUserIdUseCase
+    val getCurrentUserId: GetCurrentUserIdUseCase,
+    val checkChatImageInDb: CheckChatImageInDb,
+    val getChatImageUseCase: GetChatImageUseCase,
+    val storeChatImageUseCase: StoreChatImageUseCase,
+    val setChatImageUseCase: SetChatImageUseCase
 ): ViewModel() {
     val actionBarVisibility = MutableLiveData<Boolean>(false)
 
@@ -51,6 +59,7 @@ class ChatPageViewModel @Inject constructor(
     private val _first_message_sent = MutableLiveData(false)
 
     init {
+        // TODO: Move to the chat page, for performance optimisations, because another fragment is using the entire viewModel for the use cases
         getChatRooms()
     }
 

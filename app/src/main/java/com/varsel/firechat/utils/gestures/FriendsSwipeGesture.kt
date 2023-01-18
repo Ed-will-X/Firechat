@@ -17,7 +17,8 @@ abstract class FriendsSwipeGesture(val activity: SignedinActivity): ItemTouchHel
 
         RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             .addSwipeLeftBackgroundColor(activity.resources.getColor(R.color.red_accent))
-            .addSwipeLeftActionIcon(R.drawable.ic_trash)
+            .addSwipeLeftActionIcon(R.drawable.ic_trash_white)
+            .setSwipeLeftLabelColor(activity.resources.getColor(R.color.white))
             .addSwipeLeftLabel(activity.getString(R.string.unfriend))
             .create()
             .decorate()

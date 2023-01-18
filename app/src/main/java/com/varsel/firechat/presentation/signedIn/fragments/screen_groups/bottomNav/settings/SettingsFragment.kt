@@ -17,7 +17,6 @@ import com.varsel.firechat.databinding.FragmentSettingsBinding
 import com.varsel.firechat.data.local.Setting.Setting
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.current_user.SignoutUseCase
-import com.varsel.firechat.utils.LifecycleUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.viewModel.*
 import dagger.hilt.android.AndroidEntryPoint

@@ -17,13 +17,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.R
+import com.varsel.firechat.common.Resource
 import com.varsel.firechat.data.local.Image.Image
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageStatus
 import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -221,13 +221,6 @@ class MessageListAdapter(
                                 }
                             }.launchIn(this)
                         }
-//                        ImageUtils.setProfilePicOtherUser_fullObject(user, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
-//                            holder.profileImage.setOnClickListener {
-//                                if (profileImage != null){
-//                                    profileImgClickListener(profileImage, user)
-//                                }
-//                            }
-//                        }
                     }
                     viewHolder.profilePicContainer.visibility = View.VISIBLE
                     viewHolder.emptyPadding.visibility = View.GONE
@@ -247,13 +240,6 @@ class MessageListAdapter(
                             }
                         }.launchIn(this)
                     }
-//                    ImageUtils.setProfilePicOtherUser_fullObject(user, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
-//                        holder.profileImage.setOnClickListener {
-//                            if (profileImage != null){
-//                                profileImgClickListener(profileImage, user)
-//                            }
-//                        }
-//                    }
                 }
                 viewHolder.profilePicContainer.visibility = View.VISIBLE
                 viewHolder.emptyPadding.visibility = View.GONE
@@ -267,7 +253,7 @@ class MessageListAdapter(
             return MessageStatus.SENT
         } else if(item.sender == "SYSTEM"){
             return MessageStatus.SYSTEM
-        }else {
+        } else {
             return MessageStatus.RECEIVED
         }
     }
@@ -283,35 +269,89 @@ class MessageListAdapter(
         imageViewParent.visibility = View.VISIBLE
         image_view_parent_to_hide.visibility = View.GONE
 
-        // check if the img is present in the database
-        ImageUtils.check_if_chat_image_in_db(item, activity) {
-            if(it != null){
-                // if: bind it directly (the same way it was before)
-                ImageUtils.setChatImage(it.image, imageView, imageViewParent, activity)
-                imageView.setOnClickListener { it2 ->
-                    imgClickListener(item, it)
-                }
-
-            } else {
-                // else set the parent click listener
-                imageViewParent.setOnClickListener {
-                    if(!has_been_clicked){
-                        ImageUtils.getAndSetChatImage_fullObject(item, chatRoomId, imageView, imageViewParent, activity) { image ->
-                            imageView.setOnClickListener {
-                                imgClickListener(item, image)
+        lifecycleOwner.lifecycleScope.launch {
+            // check if the img is present in the database
+            viewModel.checkChatImageInDb(item.message).onEach {
+                when(it) {
+                    is Resource.Success -> {
+                        // TODO: Refactor entire success, loading and error clauses into different functions
+                        if(it.data?.image != null) {
+                            // if: bind it directly (the same way it was before)
+                            viewModel.setChatImageUseCase(it.data.image!!, imageView, imageViewParent, activity)
+                            imageView.setOnClickListener { it2 ->
+                                imgClickListener(item, it.data)
                             }
                         }
+                    }
+                    is Resource.Loading -> {
+                        // TODO: Show loading indicator
+                    }
+                    is Resource.Error -> {
+                        imageViewParent.setOnClickListener {
+                            if(!has_been_clicked){
+                                lifecycleOwner.lifecycleScope.launch {
+                                    viewModel.getChatImageUseCase(item.message, chatRoomId).onEach {
+                                        when(it) {
+                                            is Resource.Success -> {
+                                                if(it.data != null) {
+                                                    viewModel.setChatImageUseCase(it.data.image!!, imageView, imageViewParent, activity)
+                                                    imageView.setOnClickListener { it2 ->
+                                                        imgClickListener(item, it.data)
+                                                    }
+                                                }
+                                            }
+                                            is Resource.Loading -> {
+                                                // TODO: Show loading indicator
+                                            }
+                                            is Resource.Error -> {
+                                                // TODO: Show Error blah blah blah
+                                            }
+                                        }
+                                    }.launchIn(this)
+                                }
 
-                        // Disable btn
-                        imageViewParent.isEnabled = false
-                        // set has been clicked to true
-                        has_been_clicked = true
-                    } else {
-                        imageViewParent.isEnabled = false
+                                // Disable btn
+                                imageViewParent.isEnabled = false
+                                // set has been clicked to true
+                                has_been_clicked = true
+                            } else {
+                                imageViewParent.isEnabled = false
+                            }
+                        }
                     }
                 }
-            }
+            }.launchIn(this)
         }
+//
+//        // check if the img is present in the database
+//        ImageUtils.check_if_chat_image_in_db(item, activity) {
+//            if(it != null){
+//                // if: bind it directly (the same way it was before)
+//                ImageUtils.setChatImage(it.image, imageView, imageViewParent, activity)
+//                imageView.setOnClickListener { it2 ->
+//                    imgClickListener(item, it)
+//                }
+//
+//            } else {
+//                // else set the parent click listener
+//                imageViewParent.setOnClickListener {
+//                    if(!has_been_clicked){
+//                        ImageUtils.getAndSetChatImage_fullObject(item, chatRoomId, imageView, imageViewParent, activity) { image ->
+//                            imageView.setOnClickListener {
+//                                imgClickListener(item, image)
+//                            }
+//                        }
+//
+//                        // Disable btn
+//                        imageViewParent.isEnabled = false
+//                        // set has been clicked to true
+//                        has_been_clicked = true
+//                    } else {
+//                        imageViewParent.isEnabled = false
+//                    }
+//                }
+//            }
+//        }
 
     }
 

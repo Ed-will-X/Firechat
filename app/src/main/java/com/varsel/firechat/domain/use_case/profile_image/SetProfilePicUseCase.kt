@@ -4,8 +4,8 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.varsel.firechat.common._utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
-import com.varsel.firechat.utils.ImageUtils
 
 class SetProfilePicUseCase {
     operator fun invoke(base64: String, view: ImageView, viewParent: FrameLayout, activity: SignedinActivity){

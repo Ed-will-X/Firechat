@@ -22,14 +22,20 @@ import com.varsel.firechat.data.local.Message.MessageStatus
 import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.ReadReceipt.ReadReceipt
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.domain.use_case.chat_image.DisplayGroupImage_UseCase
+import com.varsel.firechat.domain.use_case.chat_image.DisplayImageMessageGroup_UseCase
+import com.varsel.firechat.domain.use_case.chat_image.UploadChatImage_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.group_chat.InterpolateGroupParticipantsUseCase
 import com.varsel.firechat.domain.use_case.group_chat.SendGroupMessage_UseCase
+import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_UseCase
+import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.other_user.GetListOfUsers_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
+import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
+import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
 import com.varsel.firechat.presentation.signedIn.adapters.FriendListAdapter
@@ -69,6 +75,24 @@ class GroupChatPageFragment : Fragment() {
 
     @Inject
     lateinit var getlistofusers: GetListOfUsers_UseCase
+
+    @Inject
+    lateinit var openImagePicker: OpenImagePicker_UseCase
+
+    @Inject
+    lateinit var handleOnActivityResult: HandleOnActivityResult_UseCase
+
+    @Inject
+    lateinit var uploadChatImage: UploadChatImage_UseCase
+
+    @Inject
+    lateinit var displayGroupImage: DisplayGroupImage_UseCase
+
+    @Inject
+    lateinit var displayImageMessage: DisplayImageMessageGroup_UseCase
+
+    @Inject
+    lateinit var setProfilePic: SetProfilePicUseCase
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -137,14 +161,14 @@ class GroupChatPageFragment : Fragment() {
         }
 
         binding.gallery.setOnClickListener {
-            ImageUtils.openImagePicker(this)
+            openImagePicker(this)
         }
 
         binding.profileImage.setOnClickListener {
             val selectedGroupImage = parent.profileImageViewModel.selectedGroupImage.value
             val selectedGroupRoom = viewModel.state.value?.selectedRoom
             if(selectedGroupImage != null && selectedGroupRoom != null){
-                ImageUtils.displayGroupImage(selectedGroupImage, selectedGroupRoom, parent)
+                displayGroupImage(selectedGroupImage, selectedGroupRoom, parent)
             }
         }
 
@@ -169,7 +193,7 @@ class GroupChatPageFragment : Fragment() {
     private fun initialiseAdapter() {
         messageAdapter = MessageListAdapter(roomId, parent, this, requireContext(), this, chatPageViewModel, ChatPageType.GROUP,
             { message, image ->
-                ImageUtils.displayImageMessage_group(image, message, parent)
+                displayImageMessage(image, message, parent)
             }, { message, messageType, messageStatus ->
                 if(messageType == MessageType.TEXT && messageStatus == MessageStatus.SYSTEM){
                     val users = splitUsersString(message.message)
@@ -185,8 +209,8 @@ class GroupChatPageFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        ImageUtils.handleOnActivityResult(requireContext(), requestCode, resultCode, data, {
-            ImageUtils.uploadChatImage(it, roomId, parent) { message, image ->
+        handleOnActivityResult(requestCode, resultCode, data, {
+            uploadChatImage(it, roomId, parent) { message, image ->
                 parent.imageViewModel.storeImage(image) {
                     sendImgMessage(message) {
                         updateReadReceipt()
@@ -202,16 +226,9 @@ class GroupChatPageFragment : Fragment() {
     }
 
     private fun observeGroupImage(){
-//        parent.profileImageViewModel.selectedGroupImageEncoded.observe(viewLifecycleOwner, Observer {
-//            if(it != null){
-//                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent)
-//                binding.profileImageParent.visibility = View.VISIBLE
-//            }
-//        })
-
         parent.profileImageViewModel.selectedGroupImage.observe(viewLifecycleOwner, Observer { groupImage ->
             if(groupImage != null && groupImage.image != null){
-                ImageUtils.setProfilePic(groupImage.image!!, binding.profileImage, binding.profileImageParent, parent)
+                setProfilePic(groupImage.image!!, binding.profileImage, binding.profileImageParent, parent)
                 binding.profileImageParent.visibility = View.VISIBLE
             }
         })

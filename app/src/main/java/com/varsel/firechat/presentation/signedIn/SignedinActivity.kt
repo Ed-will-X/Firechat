@@ -26,6 +26,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.varsel.firechat.R
+import com.varsel.firechat.common._utils.ImageUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.databinding.ActivitySignedinBinding
 import com.varsel.firechat.data.local.Chat.ChatRoom
@@ -41,6 +42,7 @@ import com.varsel.firechat.data.local.ReadReceipt.ReadReceiptViewModel
 import com.varsel.firechat.data.local.Setting.Setting
 import com.varsel.firechat.data.local.Setting.SettingViewModel
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case._util.InfobarColors
 import com.varsel.firechat.domain.use_case._util.InfobarControllerUseCase
 import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
@@ -590,36 +592,36 @@ class SignedinActivity : AppCompatActivity() {
     }
 
 
-    fun fetchChatImage(imageId: String, chatRoomId: String, afterCallback: (image: String?)-> Unit){
-        Log.d("IMAGE_FETCH", "Get image called for ${imageId}")
+//    fun fetchChatImage(imageId: String, chatRoomId: String, afterCallback: (image: String?)-> Unit){
+//        Log.d("IMAGE_FETCH", "Get image called for ${imageId}")
+//
+//        firebaseViewModel.getChatImage(imageId, chatRoomId, mDbRef, firebaseStorage, {
+//            if(it != null){
+//                imageViewModel.storeImage(it)
+//                afterCallback(it.image)
+//            } else {
+//                afterCallback(null)
+//            }
+//        }, {
+//            afterCallback(null)
+//        })
+//    }
 
-        firebaseViewModel.getChatImage(imageId, chatRoomId, mDbRef, firebaseStorage, {
-            if(it != null){
-                imageViewModel.storeImage(it)
-                afterCallback(it.image)
-            } else {
-                afterCallback(null)
-            }
-        }, {
-            afterCallback(null)
-        })
-    }
-
-    fun determineMessageImgFetchMethod(message: Message, chatRoomId: String, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
-        val imageLiveData = imageViewModel.checkForImgInRoom(message.message)
-
-        imageLiveData.observeOnce(this, Observer {
-            if(it != null){
-                Log.d("IMAGE_CHECK", "Chat image gotten from database")
-                dbCallback(it.image)
-            } else {
-                Log.d("IMAGE_CHECK", "CHAT IMAGE GOTTEN FROM FIREBASE")
-                fetchChatImage(message.message, chatRoomId) {
-                    fetchCallback(it)
-                }
-            }
-        })
-    }
+//    fun determineMessageImgFetchMethod(message: Message, chatRoomId: String, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
+//        val imageLiveData = imageViewModel.checkForImgInRoom(message.message)
+//
+//        imageLiveData.observeOnce(this, Observer {
+//            if(it != null){
+//                Log.d("IMAGE_CHECK", "Chat image gotten from database")
+//                dbCallback(it.image)
+//            } else {
+//                Log.d("IMAGE_CHECK", "CHAT IMAGE GOTTEN FROM FIREBASE")
+//                fetchChatImage(message.message, chatRoomId) {
+//                    fetchCallback(it)
+//                }
+//            }
+//        })
+//    }
 
     /*
         Fetches chat image from firebase,

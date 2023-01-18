@@ -9,11 +9,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
+import com.varsel.firechat.common._utils.ImageUtils
 import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.domain.use_case.public_post.DoesPostExistUseCase
 import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
-import com.varsel.firechat.utils.ImageUtils
-import com.varsel.firechat.utils.PostUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.profile.ProfileViewModel
 import kotlinx.coroutines.flow.launchIn

@@ -17,7 +17,6 @@ import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.fragments.screens.friend_list.FriendListFragment
 import com.varsel.firechat.presentation.signedIn.fragments.screens.friend_list.FriendListState
-import com.varsel.firechat.utils.SearchUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn

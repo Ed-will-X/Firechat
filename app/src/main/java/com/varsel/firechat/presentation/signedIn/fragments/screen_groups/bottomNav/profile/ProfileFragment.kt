@@ -24,7 +24,12 @@ import com.varsel.firechat.databinding.FragmentProfileBinding
 import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.data.local.PublicPost.PublicPostType
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case._util.InfobarColors
+import com.varsel.firechat.domain.use_case.image.EncodeUri_UseCase
+import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_UseCase
+import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
+import com.varsel.firechat.domain.use_case.public_post.DisplayPublicPostImage_UseCase
 import com.varsel.firechat.domain.use_case.public_post.DoesPostExistUseCase
 import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
 import com.varsel.firechat.domain.use_case.public_post.SortPublicPostReversedUseCase
@@ -67,6 +72,18 @@ class ProfileFragment: Fragment() {
 
     @Inject
     lateinit var sortPublicPosts: SortPublicPostReversedUseCase
+
+    @Inject
+    lateinit var openImagePicker: OpenImagePicker_UseCase
+
+    @Inject
+    lateinit var handleOnActivityResult: HandleOnActivityResult_UseCase
+
+    @Inject
+    lateinit var encodeUri: EncodeUri_UseCase
+
+    @Inject
+    lateinit var displayPublicPostImage: DisplayPublicPostImage_UseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -140,10 +157,12 @@ class ProfileFragment: Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        ImageUtils.handleOnActivityResult(requireContext(), requestCode, resultCode, data, {
+        handleOnActivityResult(requestCode, resultCode, data, {
                 // TODO: Show caption actionsheet before image upload
             uploadPublicPost_image(it, null)
         }, {})
+
+
 
     }
 
@@ -153,7 +172,7 @@ class ProfileFragment: Fragment() {
     *   The public post type is located at the end of the ID prefixed with a ":"
     * */
     private fun uploadPublicPost_image(uri: Uri, caption: String?){
-        val encoded = ImageUtils.encodeUri(uri, parent)
+        val encoded = encodeUri(uri, parent)
         if(encoded != null){
             val uid = ":${System.currentTimeMillis()}-${MessageUtils.generateUID(15)}:${PublicPostType.IMAGE}"
             val timestamp = System.currentTimeMillis()
@@ -213,7 +232,8 @@ class ProfileFragment: Fragment() {
 
         dialogBinding.openGalleryClickable.setOnClickListener {
             dialog.dismiss()
-            ImageUtils.openImagePicker(this)
+//            ImageUtils.openImagePicker(this)
+            openImagePicker(this)
         }
 
 
@@ -223,7 +243,8 @@ class ProfileFragment: Fragment() {
     private fun displayPublicPostImage(post: PublicPost){
         val currentUser = viewModel.getCurrentUserRecurrentUseCase().value.data
         if(currentUser != null){
-            ImageUtils.displayPublicPostImage(post, currentUser, parent)
+//            ImageUtils.displayPublicPostImage(post, currentUser, parent)
+            displayPublicPostImage(post, currentUser, parent)
         }
     }
 

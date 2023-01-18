@@ -15,5 +15,8 @@ interface ImageDao {
     suspend fun delete(image: Image)
 
     @Query("SELECT * FROM image_table WHERE imageId = :imageId")
-    fun get(imageId: String): LiveData<Image>
+    fun get_liveData(imageId: String): LiveData<Image>
+
+    @Query("SELECT * FROM image_table WHERE imageId = :imageId")
+    suspend fun get(imageId: String): Image?
 }

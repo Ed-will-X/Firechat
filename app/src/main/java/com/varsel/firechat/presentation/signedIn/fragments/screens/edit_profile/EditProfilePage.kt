@@ -3,6 +3,7 @@ package com.varsel.firechat.presentation.signedIn.fragments.screens.edit_profile
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,10 +18,13 @@ import com.varsel.firechat.databinding.ActionSheetProfileImageBinding
 import com.varsel.firechat.databinding.FragmentEditProfilePageBinding
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case.camera.OpenCamera_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.current_user.EditUserFields
+import com.varsel.firechat.domain.use_case.image.EncodeUri_UseCase
+import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_UseCase
+import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
-import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,6 +44,18 @@ class EditProfilePage : Fragment() {
 
     @Inject
     lateinit var checkServerConnection: CheckServerConnectionUseCase
+
+    @Inject
+    lateinit var openCamera: OpenCamera_UseCase
+
+    @Inject
+    lateinit var openImagePicker: OpenImagePicker_UseCase
+
+    @Inject
+    lateinit var handleOnActivityResult: HandleOnActivityResult_UseCase
+
+    @Inject
+    lateinit var encodeUri: EncodeUri_UseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -115,7 +131,7 @@ class EditProfilePage : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        ImageUtils.handleOnActivityResult(requireContext(), requestCode, resultCode, data, {
+        handleOnActivityResult(requestCode, resultCode, data, {
             uploadImage(it) {
 
             }
@@ -134,7 +150,7 @@ class EditProfilePage : Fragment() {
 
     // gallery
     private fun uploadImage(uri: Uri, successCallback: (profileImage: ProfileImage)-> Unit){
-        val base64: String? = ImageUtils.encodeUri(uri, parent)
+        val base64: String? = encodeUri(uri, parent)
         if(base64 != null){
             val currentUser = parent.firebaseAuth.currentUser!!.uid
             val timestamp = System.currentTimeMillis()
@@ -246,16 +262,6 @@ class EditProfilePage : Fragment() {
 
         dialog.setContentView(view)
 
-//        LifecycleUtils.observeInternetStatus(parent, this, {
-//            dialogBinding.pickImage.isEnabled = true
-//            dialogBinding.openCamera.isEnabled = true
-//            dialogBinding.removeImage.isEnabled = true
-//        }, {
-//            dialogBinding.pickImage.isEnabled = false
-//            dialogBinding.openCamera.isEnabled = false
-//            dialogBinding.removeImage.isEnabled = false
-//        })
-
         checkServerConnection().onEach {
             if(it) {
                 dialogBinding.pickImage.isEnabled = true
@@ -270,19 +276,22 @@ class EditProfilePage : Fragment() {
 
         dialogBinding.expand.setOnClickListener {
             val image = parent.profileImageViewModel.profileImage_currentUser.value
-            if(currentUser != null && image != null){
+            Log.d("CLEAN", "Expand clicked")
+            if(image != null){
                 displayProfileImage(image, currentUser, parent)
                 dialog.dismiss()
             }
         }
 
         dialogBinding.pickImage.setOnClickListener {
-            ImageUtils.openImagePicker(this)
+//            ImageUtils.openImagePicker(this)
+            openImagePicker(this)
             dialog.dismiss()
         }
 
         dialogBinding.openCamera.setOnClickListener {
-            ImageUtils.openCamera(requireContext(), this, parent)
+//            ImageUtils.openCamera(requireContext(), this, parent)
+            openCamera(requireContext(), this, parent)
             dialog.dismiss()
         }
 

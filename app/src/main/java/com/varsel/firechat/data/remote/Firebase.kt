@@ -9,6 +9,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.varsel.firechat.common._utils.ImageUtils
 import com.varsel.firechat.data.local.BugReport.BugReport
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
@@ -20,7 +21,6 @@ import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.DebugUtils
-import com.varsel.firechat.utils.ImageUtils
 
 class Firebase(
     val mDbRef: DatabaseReference,

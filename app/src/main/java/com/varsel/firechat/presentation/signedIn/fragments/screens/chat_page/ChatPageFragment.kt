@@ -16,9 +16,12 @@ import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.ReadReceipt.ReadReceipt
+import com.varsel.firechat.domain.use_case.chat_image.DisplayChatImage_UseCase
+import com.varsel.firechat.domain.use_case.chat_image.UploadChatImage_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
+import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_UseCase
+import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
-import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
@@ -51,6 +54,18 @@ class ChatPageFragment : Fragment() {
 
     @Inject
     lateinit var checkServerConnection: CheckServerConnectionUseCase
+
+    @Inject
+    lateinit var displayChatImage: DisplayChatImage_UseCase
+
+    @Inject
+    lateinit var openImagePicker: OpenImagePicker_UseCase
+
+    @Inject
+    lateinit var handleOnActivityResult: HandleOnActivityResult_UseCase
+
+    @Inject
+    lateinit var uploadChatImage: UploadChatImage_UseCase
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -148,7 +163,8 @@ class ChatPageFragment : Fragment() {
         }
 
         binding.gallery.setOnClickListener {
-            ImageUtils.openImagePicker(this)
+//            ImageUtils.openImagePicker(this)
+            openImagePicker(this)
         }
 
         return view
@@ -184,7 +200,8 @@ class ChatPageFragment : Fragment() {
             delay(300)
             messagesListAdapter = MessageListAdapter(existingChatRoomId ?: newChatRoomId, parent, fragment, requireContext(), this@ChatPageFragment, viewModel, ChatPageType.INDIVIDUAL,
                 { message, image ->
-                    ImageUtils.displayImageMessage(image, message, parent)
+//                    ImageUtils.displayImageMessage(image, message, parent)
+                    displayChatImage(image, message, parent)
                 }, { _, _, _ ->
 
                 }, { profileImage, user ->
@@ -199,8 +216,8 @@ class ChatPageFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        ImageUtils.handleOnActivityResult(requireContext(), requestCode, resultCode, data, {
-            ImageUtils.uploadChatImage(it, existingChatRoomId ?: newChatRoomId, parent) { message, image ->
+        handleOnActivityResult(requestCode, resultCode, data, {
+            uploadChatImage(it, existingChatRoomId ?: newChatRoomId, parent) { message, image ->
                 parent.imageViewModel.storeImage(image) {
                     viewModel.handleSendMessage(message, existingChatRoomId, newChatRoom) {
                         updateReadReceipt()

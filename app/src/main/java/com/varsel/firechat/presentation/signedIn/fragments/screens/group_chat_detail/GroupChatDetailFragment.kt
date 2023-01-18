@@ -3,6 +3,7 @@ package com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_d
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,10 +29,18 @@ import com.varsel.firechat.databinding.FragmentGroupChatDetailBinding
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case._util.InfobarColors
 import com.varsel.firechat.domain.use_case._util.animation.Direction
 import com.varsel.firechat.domain.use_case._util.animation.Rotate90UseCase
+import com.varsel.firechat.domain.use_case.camera.OpenCamera_UseCase
+import com.varsel.firechat.domain.use_case.chat_image.DisplayGroupImage_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
+import com.varsel.firechat.domain.use_case.image.EncodeUri_UseCase
+import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_UseCase
+import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
+import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
+import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
 import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -60,6 +69,24 @@ class GroupChatDetailFragment : Fragment() {
 
     @Inject
     lateinit var rotate90UseCase: Rotate90UseCase
+
+    @Inject
+    lateinit var openCamera: OpenCamera_UseCase
+
+    @Inject
+    lateinit var openImagePicker: OpenImagePicker_UseCase
+
+    @Inject
+    lateinit var handleOnActivityResult: HandleOnActivityResult_UseCase
+
+    @Inject
+    lateinit var encodeUri: EncodeUri_UseCase
+
+    @Inject
+    lateinit var displayGroupImage: DisplayGroupImage_UseCase
+
+    @Inject
+    lateinit var setProfilePic: SetProfilePicUseCase
 
     override fun onResume() {
         super.onResume()
@@ -166,16 +193,16 @@ class GroupChatDetailFragment : Fragment() {
 
     private fun displayImage(){
         val selectedGroupImage = parent.profileImageViewModel.selectedGroupImage.value
-        val selectedGroupRoom = parent.firebaseViewModel.selectedGroupRoom.value
+        val selectedGroupRoom = viewModel.state.value?.selectedGroup
         if(selectedGroupImage != null && selectedGroupRoom != null){
-            ImageUtils.displayGroupImage(selectedGroupImage, selectedGroupRoom, parent)
+            displayGroupImage(selectedGroupImage, selectedGroupRoom, parent)
         }
     }
 
     private fun observeGroupImage(){
         parent.profileImageViewModel.selectedGroupImage.observe(viewLifecycleOwner, Observer { profileImage ->
             if(profileImage != null && profileImage.image != null){
-                ImageUtils.setProfilePic(profileImage.image!!, binding.profileImage, binding.profileImageParent, parent)
+                setProfilePic(profileImage.image!!, binding.profileImage, binding.profileImageParent, parent)
                 binding.profileImageParent.visibility = View.VISIBLE
             }
         })
@@ -184,7 +211,7 @@ class GroupChatDetailFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        ImageUtils.handleOnActivityResult(requireContext(), requestCode, resultCode, data, {
+        handleOnActivityResult(requestCode, resultCode, data, {
             uploadImage(it, {})
         }, {
             if(it != null){
@@ -195,7 +222,7 @@ class GroupChatDetailFragment : Fragment() {
 
     // gallery
     private fun uploadImage(uri: Uri, successCallback: ()-> Unit){
-        val base64: String? = ImageUtils.encodeUri(uri, parent)
+        val base64: String? = encodeUri(uri, parent)
         if(base64 != null){
             val timestamp = System.currentTimeMillis()
             val profileImage = ProfileImage(groupId, timestamp)
@@ -305,17 +332,20 @@ class GroupChatDetailFragment : Fragment() {
 //        })
 
         dialogBinding.expand.setOnClickListener {
+            Log.d("CLEAN", "Display Clicked")
             displayImage()
             dialog.dismiss()
         }
 
         dialogBinding.pickImage.setOnClickListener {
-            ImageUtils.openImagePicker(this)
+//            ImageUtils.openImagePicker(this)
+            openImagePicker(this)
             dialog.dismiss()
         }
 
         dialogBinding.openCamera.setOnClickListener {
-            ImageUtils.openCamera(requireContext(), this, parent)
+//            ImageUtils.openCamera(requireContext(), this, parent)
+            openCamera(requireContext(), this, parent)
             dialog.dismiss()
         }
 

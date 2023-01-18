@@ -14,7 +14,6 @@ import com.varsel.firechat.common.Response
 import com.varsel.firechat.databinding.FragmentAddGroupMembersBinding
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
-import com.varsel.firechat.utils.SearchUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.AddGroupMembersAdapter
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow

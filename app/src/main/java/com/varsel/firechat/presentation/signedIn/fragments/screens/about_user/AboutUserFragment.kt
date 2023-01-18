@@ -14,10 +14,12 @@ import androidx.navigation.fragment.findNavController
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentAboutUserBinding
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
+import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AboutUserFragment : Fragment() {
@@ -27,6 +29,9 @@ class AboutUserFragment : Fragment() {
     private lateinit var viewModel: AboutUserViewModel
     private lateinit var userId: String
     private var userImg: String? = null
+
+    @Inject
+    lateinit var setProfilePic: SetProfilePicUseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -83,7 +88,7 @@ class AboutUserFragment : Fragment() {
     private fun observeUserProps(user: User){
         parent.profileImageViewModel.selectedOtherUserProfilePicChat.observe(viewLifecycleOwner, Observer {
             if(it != null){
-                ImageUtils.setProfilePic(it, binding.profileImage, binding.profileImageParent, parent)
+                setProfilePic(it, binding.profileImage, binding.profileImageParent, parent)
                 userImg = it
             }
         })

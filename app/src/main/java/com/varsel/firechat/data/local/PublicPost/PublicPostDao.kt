@@ -19,5 +19,5 @@ interface PublicPostDao {
     fun get_liveData(postId: String): LiveData<PublicPost>
 
     @Query("SELECT * FROM public_post_table WHERE postId = :postId")
-    fun get(postId: String): PublicPost?
+    suspend fun get(postId: String): PublicPost?
 }

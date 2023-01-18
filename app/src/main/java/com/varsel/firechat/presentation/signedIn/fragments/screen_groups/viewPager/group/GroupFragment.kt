@@ -12,7 +12,7 @@ import com.varsel.firechat.databinding.FragmentGroupBinding
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.utils.ImageUtils
+import com.varsel.firechat.domain.use_case.chat_image.DisplayGroupImage_UseCase
 import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.GroupChatsListAdapter
@@ -20,6 +20,7 @@ import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomN
 import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class GroupFragment : Fragment() {
@@ -28,6 +29,9 @@ class GroupFragment : Fragment() {
     private lateinit var parent: SignedinActivity
     private lateinit var adapter: GroupChatsListAdapter
     lateinit var viewModel: GroupViewModel
+
+    @Inject
+    lateinit var displayGroupImage: DisplayGroupImage_UseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,7 +50,7 @@ class GroupFragment : Fragment() {
             navigateToGroupChatPage(id, image)
 
         }, { groupImage, group ->
-            ImageUtils.displayGroupImage(groupImage, group, parent)
+            displayGroupImage(groupImage, group, parent)
         })
 
         binding.groupChatsRecyclerView.adapter = adapter

@@ -11,28 +11,28 @@ import com.google.android.material.transition.MaterialSharedAxis
 import java.time.Duration
 
 // TODO: Delete class
-class AnimationUtils {
-    companion object {
-        fun changeColor(vector: ImageView, color: Int, context: Context){
-            vector.setColorFilter(context.resources.getColor(color), android.graphics.PorterDuff.Mode.MULTIPLY)
-        }
-
-        fun rotate90(icon: ImageView){
-            val animator = ObjectAnimator.ofFloat(icon, View.ROTATION, 90f)
-            animator.duration = 300
-            animator.start()
-        }
-
-        fun rotate90_back(icon: ImageView){
-            val animator = ObjectAnimator.ofFloat(icon, View.ROTATION, 0f)
-            animator.duration = 300
-            animator.start()
-        }
-
-        fun changeDialogDimAmount(dialog: BottomSheetDialog, amount: Float){
-            if(dialog.window != null){
-                dialog.window!!.setDimAmount(amount)
-            }
-        }
-    }
-}
+//class AnimationUtils {
+//    companion object {
+//        fun changeColor(vector: ImageView, color: Int, context: Context){
+//            vector.setColorFilter(context.resources.getColor(color), android.graphics.PorterDuff.Mode.MULTIPLY)
+//        }
+//
+//        fun rotate90(icon: ImageView){
+//            val animator = ObjectAnimator.ofFloat(icon, View.ROTATION, 90f)
+//            animator.duration = 300
+//            animator.start()
+//        }
+//
+//        fun rotate90_back(icon: ImageView){
+//            val animator = ObjectAnimator.ofFloat(icon, View.ROTATION, 0f)
+//            animator.duration = 300
+//            animator.start()
+//        }
+//
+//        fun changeDialogDimAmount(dialog: BottomSheetDialog, amount: Float){
+//            if(dialog.window != null){
+//                dialog.window!!.setDimAmount(amount)
+//            }
+//        }
+//    }
+//}

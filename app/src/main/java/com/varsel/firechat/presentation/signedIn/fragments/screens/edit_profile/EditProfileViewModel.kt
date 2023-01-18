@@ -7,6 +7,7 @@ import com.varsel.firechat.R
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.domain.use_case._util.InfobarColors
 import com.varsel.firechat.domain.use_case._util.animation.ChangeDialogDimAmountUseCase
 import com.varsel.firechat.domain.use_case.current_user.EditUserUseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
@@ -15,7 +16,6 @@ import com.varsel.firechat.domain.use_case.profile_image.RemoveProfileImageUseCa
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import com.varsel.firechat.domain.use_case.profile_image.UploadProfileImageUseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
-import com.varsel.firechat.utils.InfobarColors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn

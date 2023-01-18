@@ -13,7 +13,6 @@ import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.viewModel.FriendListFragmentViewModel
 import kotlinx.coroutines.flow.launchIn

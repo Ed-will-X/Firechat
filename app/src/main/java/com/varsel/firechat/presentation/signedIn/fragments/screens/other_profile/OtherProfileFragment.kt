@@ -15,11 +15,11 @@ import com.varsel.firechat.databinding.ActionSheetUnfriendBinding
 import com.varsel.firechat.databinding.ActionsheetOtherUserPublicPostsBinding
 import com.varsel.firechat.databinding.FragmentOtherProfileBinding
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.utils.ImageUtils
 import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
+import com.varsel.firechat.domain.use_case.public_post.DisplayPublicPostImage_UseCase
 import com.varsel.firechat.domain.use_case.public_post.DoesPostExistUseCase
 import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
 import com.varsel.firechat.domain.use_case.public_post.SortPublicPostReversedUseCase
@@ -58,6 +58,10 @@ class OtherProfileFragment : Fragment() {
 
     @Inject
     lateinit var checkServerConnection: CheckServerConnectionUseCase
+
+    @Inject
+    lateinit var displayPublicPostImage: DisplayPublicPostImage_UseCase
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -165,7 +169,8 @@ class OtherProfileFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.Main) {
             delay(300)
             postAdapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANGLE_SMALL, this@OtherProfileFragment, doesPostExist, getPublicPostUseCase) {
-                ImageUtils.displayPublicPostImage(it, otherUser, parent)
+//                ImageUtils.displayPublicPostImage(it, otherUser, parent)
+                displayPublicPostImage(it, otherUser, parent)
             }
 
 
@@ -244,7 +249,8 @@ class OtherProfileFragment : Fragment() {
 
             val adapter = PublicPostAdapter(parent, PublicPostAdapterShapes.RECTANCLE, this@OtherProfileFragment, doesPostExist, getPublicPostUseCase) {
                 dialog.dismiss()
-                ImageUtils.displayPublicPostImage(it, selectedUser, parent)
+//                ImageUtils.displayPublicPostImage(it, selectedUser, parent)
+                displayPublicPostImage(it, selectedUser, parent)
             }
             dialogBinding.otherUserPublicPostsRecyclerViewFull.adapter = adapter
 

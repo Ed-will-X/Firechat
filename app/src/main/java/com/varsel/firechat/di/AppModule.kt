@@ -1,27 +1,33 @@
 package com.varsel.firechat.di
 
+import com.varsel.firechat.data.local.Image.ImageDao
 import com.varsel.firechat.data.remote.Firebase
+import com.varsel.firechat.data.repository.ChatImageRepositoryImpl
 import com.varsel.firechat.data.repository.FirebaseRepositoryImpl
 import com.varsel.firechat.data.repository.OtherUserRepositoryImpl
 import com.varsel.firechat.domain.repository.*
 import com.varsel.firechat.domain.use_case._util.animation.ChangeDialogDimAmountUseCase
 import com.varsel.firechat.domain.use_case._util.animation.ChangeIconColorUseCase
 import com.varsel.firechat.domain.use_case._util.animation.Rotate90UseCase
+import com.varsel.firechat.domain.use_case._util.image.SetOverlayBindings_UseCase
 import com.varsel.firechat.domain.use_case._util.message.GenerateUid_UseCase
 import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
 import com.varsel.firechat.domain.use_case.auth.SignUp_UseCase
+import com.varsel.firechat.domain.use_case.camera.CheckIfCameraPermissionGranted_UseCase
+import com.varsel.firechat.domain.use_case.camera.OpenCamera_UseCase
+import com.varsel.firechat.domain.use_case.camera.RequestCameraPermission_UseCase
+import com.varsel.firechat.domain.use_case.chat_image.*
 import com.varsel.firechat.domain.use_case.chat_room.AppendChatRoom_UseCase
 import com.varsel.firechat.domain.use_case.chat_room.AppendParticipants_UseCase
 import com.varsel.firechat.domain.use_case.chat_room.SendMessage_UseCase
+import com.varsel.firechat.domain.use_case.chat_image.UploadChatImage_UseCase
 import com.varsel.firechat.domain.use_case.current_user.*
 import com.varsel.firechat.domain.use_case.group_chat.*
+import com.varsel.firechat.domain.use_case.image.*
 import com.varsel.firechat.domain.use_case.message.*
 import com.varsel.firechat.domain.use_case.other_user.*
 import com.varsel.firechat.domain.use_case.profile_image.*
-import com.varsel.firechat.domain.use_case.public_post.DoesPostExistUseCase
-import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
-import com.varsel.firechat.domain.use_case.public_post.SortPublicPostReversedUseCase
-import com.varsel.firechat.domain.use_case.public_post.UploadPublicPostImageUseCase
+import com.varsel.firechat.domain.use_case.public_post.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,6 +37,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideChatImageRepository(firebase: Firebase, imageDao: ImageDao): ChatImageRepository {
+        return ChatImageRepositoryImpl(firebase, imageDao)
+    }
 
     @Provides
     @Singleton
@@ -196,8 +208,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDisplayProfileImage(repository: CurrentUserRepository): DisplayProfileImage {
-        return DisplayProfileImage(repository)
+    fun provideDisplayProfileImage(repository: CurrentUserRepository, setoverlaybindingsUsecase: SetOverlayBindings_UseCase): DisplayProfileImage {
+        return DisplayProfileImage(repository, setoverlaybindingsUsecase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDisplayChatImage(repository: CurrentUserRepository, setoverlaybindingsUsecase: SetOverlayBindings_UseCase): DisplayChatImage_UseCase {
+        return DisplayChatImage_UseCase(repository, setoverlaybindingsUsecase)
     }
 
     @Provides
@@ -362,6 +380,119 @@ object AppModule {
         return SignUp_UseCase(currentUserRepository)
     }
 
+
+
+    @Provides
+    @Singleton
+    fun provideStoreChatImage(chatImageRepository: ChatImageRepository): StoreChatImageUseCase {
+        return StoreChatImageUseCase(chatImageRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetChatImage(chatImageRepository: ChatImageRepository): GetChatImageUseCase {
+        return GetChatImageUseCase(chatImageRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCheckChatImageInDb(chatImageRepository: ChatImageRepository): CheckChatImageInDb {
+        return CheckChatImageInDb(chatImageRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSetChatImage(): SetChatImageUseCase {
+        return SetChatImageUseCase()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideSetOverlayBindings(): SetOverlayBindings_UseCase {
+        return SetOverlayBindings_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideOpenImagePicker(): OpenImagePicker_UseCase {
+        return OpenImagePicker_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCheckCameraPermission(): CheckIfCameraPermissionGranted_UseCase {
+        return CheckIfCameraPermissionGranted_UseCase()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideRequestCameraPermission(): RequestCameraPermission_UseCase {
+        return RequestCameraPermission_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideOpenCamera(
+        checkifcamerapermissiongrantedUsecase: CheckIfCameraPermissionGranted_UseCase,
+        requestcamerapermissionUsecase: RequestCameraPermission_UseCase
+    ): OpenCamera_UseCase {
+        return OpenCamera_UseCase(checkifcamerapermissiongrantedUsecase, requestcamerapermissionUsecase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideHandleOnActivityResult(encodeimageUsecase: EncodeImage_UseCase): HandleOnActivityResult_UseCase {
+        return HandleOnActivityResult_UseCase(encodeimageUsecase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCheckImageDimensions(): CheckImageDimensions_UseCase {
+        return CheckImageDimensions_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideEncodeImageUseCase(): EncodeImage_UseCase {
+        return EncodeImage_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideResizeImage(): ResizeImageUseCase {
+        return ResizeImageUseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideuploadChatImage(encodeuriUsecase: EncodeUri_UseCase, generateuidUsecase: GenerateUid_UseCase): UploadChatImage_UseCase {
+        return UploadChatImage_UseCase(encodeuriUsecase, generateuidUsecase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDisplayGroupImage(setoverlaybindingsUsecase: SetOverlayBindings_UseCase): DisplayGroupImage_UseCase {
+        return DisplayGroupImage_UseCase(setoverlaybindingsUsecase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDisplayImageMessage(
+        currentUserRepository: CurrentUserRepository,
+        setoverlaybindingsUsecase: SetOverlayBindings_UseCase
+    ): DisplayImageMessageGroup_UseCase {
+        return DisplayImageMessageGroup_UseCase(currentUserRepository, setoverlaybindingsUsecase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDisplayPublicPostImage(
+        setoverlaybindingsUsecase: SetOverlayBindings_UseCase
+    ): DisplayPublicPostImage_UseCase {
+        return DisplayPublicPostImage_UseCase(setoverlaybindingsUsecase)
+    }
 
 
 
