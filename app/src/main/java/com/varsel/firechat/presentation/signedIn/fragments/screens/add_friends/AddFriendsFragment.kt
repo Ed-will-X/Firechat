@@ -15,12 +15,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.varsel.firechat.databinding.FragmentAddFriendsBinding
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.utils.ExtensionFunctions.Companion.showKeyboard
+import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.showKeyboard
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.AddFriendsSearchAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.RecentSearchAdapter
-import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
-import com.varsel.firechat.utils.UserUtils
+import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.domain.use_case._util.user.SortByTimestamp_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,6 +44,9 @@ class AddFriendsFragment : Fragment() {
 
     @Inject
     lateinit var checkServerConnection: CheckServerConnectionUseCase
+
+    @Inject
+    lateinit var sortByTimestamp: SortByTimestamp_UseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -169,7 +172,7 @@ class AddFriendsFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun submitToRecentSearch(searches: HashMap<String, Long>){
         val positioned = searches.toSortedMap()
-        val sorted = UserUtils.sortByTimestamp(positioned)
+        val sorted = sortByTimestamp(positioned)
 
         recentSearchAdapter.recentSearches = sorted.keys.toList().reversed()
         recentSearchAdapter.notifyDataSetChanged()

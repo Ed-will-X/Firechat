@@ -9,11 +9,14 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.utils.UserUtils
-import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.domain.use_case._util.user.SearchListOfUsers_UseCase
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
 
-class SetupSearchBarUseCase {
+class SetupSearchBarUseCase @Inject constructor(
+    val searchListOfUsers: SearchListOfUsers_UseCase
+) {
     operator fun invoke (
         cancelButton: ImageView,
         searchBox: EditText,
@@ -91,7 +94,7 @@ class SetupSearchBarUseCase {
             submitListToAdapter(friends)
         } else {
             val term = searchBox.text.toString()
-            val results = UserUtils.searchListOfUsers(term, friends as List<User>)
+            val results = searchListOfUsers(term, friends)
 
             if(results.isNotEmpty()){
                 // There are matches

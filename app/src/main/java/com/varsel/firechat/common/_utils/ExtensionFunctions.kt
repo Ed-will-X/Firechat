@@ -1,4 +1,4 @@
-package com.varsel.firechat.utils
+package com.varsel.firechat.common._utils
 
 import android.app.Activity
 import android.content.Context

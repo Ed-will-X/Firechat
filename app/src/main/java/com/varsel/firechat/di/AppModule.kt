@@ -12,6 +12,8 @@ import com.varsel.firechat.domain.use_case._util.animation.Rotate90UseCase
 import com.varsel.firechat.domain.use_case._util.image.SetOverlayBindings_UseCase
 import com.varsel.firechat.domain.use_case._util.message.GenerateUid_UseCase
 import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
+import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
+import com.varsel.firechat.domain.use_case._util.user.*
 import com.varsel.firechat.domain.use_case.auth.SignUp_UseCase
 import com.varsel.firechat.domain.use_case.camera.CheckIfCameraPermissionGranted_UseCase
 import com.varsel.firechat.domain.use_case.camera.OpenCamera_UseCase
@@ -106,8 +108,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSetupSearchbarUseCase(): SetupSearchBarUseCase {
-        return SetupSearchBarUseCase()
+    fun provideSetupSearchbarUseCase(searchlistofusersUsecase: SearchListOfUsers_UseCase): SetupSearchBarUseCase {
+        return SetupSearchBarUseCase(searchlistofusersUsecase)
     }
 
     @Provides
@@ -285,8 +287,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideInterpolateGroupParticipants(currentUserRepository: CurrentUserRepository): InterpolateGroupParticipantsUseCase {
-        return InterpolateGroupParticipantsUseCase(currentUserRepository)
+    fun provideInterpolateGroupParticipants(currentUserRepository: CurrentUserRepository, truncateUsecase: Truncate_UseCase): InterpolateGroupParticipantsUseCase {
+        return InterpolateGroupParticipantsUseCase(currentUserRepository, truncateUsecase)
     }
 
     @Provides
@@ -494,6 +496,56 @@ object AppModule {
         return DisplayPublicPostImage_UseCase(setoverlaybindingsUsecase)
     }
 
+
+    @Provides
+    @Singleton
+    fun provideSortByTimestamp(): SortByTimestamp_UseCase {
+        return SortByTimestamp_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetFirstName(): GetFirstName_UseCase {
+        return GetFirstName_UseCase()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideSortUsersByName(): SortUsersByName_UseCase {
+        return SortUsersByName_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSortUsersByNameInGroup(): SortUsersByNameInGroup_UseCase {
+        return SortUsersByNameInGroup_UseCase()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideSearchListOfUsers(): SearchListOfUsers_UseCase {
+        return SearchListOfUsers_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSearchListOfUsersAndGroups(): SearchListOfUsersAndGroups_UseCase {
+        return SearchListOfUsersAndGroups_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTruncate(): Truncate_UseCase {
+        return Truncate_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetOtherUserId(getCurrentUserIdUseCase: GetCurrentUserIdUseCase): GetOtherUserId_UseCase {
+        return GetOtherUserId_UseCase(getCurrentUserIdUseCase)
+    }
 
 
 }

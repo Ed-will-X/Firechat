@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
-import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.databinding.ActionSheetPublicPostBinding
 import com.varsel.firechat.databinding.FragmentProfileBinding
@@ -40,7 +39,9 @@ import com.varsel.firechat.presentation.signedIn.adapters.FriendRequestsAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapterShapes
 import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
-import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -56,7 +57,6 @@ class ProfileFragment: Fragment() {
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
     private val firebaseViewModel: FirebaseViewModel by activityViewModels()
-    private lateinit var userUtils: UserUtils
     private lateinit var friendRequestsAdapter: FriendRequestsAdapter
     private lateinit var publicPostAdapter: PublicPostAdapter
     private lateinit var viewModel: ProfileViewModel
@@ -85,6 +85,9 @@ class ProfileFragment: Fragment() {
     @Inject
     lateinit var displayPublicPostImage: DisplayPublicPostImage_UseCase
 
+    @Inject
+    lateinit var truncate: Truncate_UseCase
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -95,16 +98,9 @@ class ProfileFragment: Fragment() {
         parent = activity as SignedinActivity
         parent.changeStatusBarColor(R.color.light_blue, false)
 
-        userUtils = UserUtils(this)
         viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
         viewModel.getProfileImage()
         collectState()
-
-//        LifecycleUtils.observeInternetStatus(parent, this, {
-//            binding.friendRequestsClickable.isEnabled = true
-//        }, {
-//            binding.friendRequestsClickable.isEnabled = false
-//        })
 
         lifecycleScope.launch(Dispatchers.Main){
             delay(300)
@@ -249,11 +245,9 @@ class ProfileFragment: Fragment() {
     }
 
     private fun setUser(user: User){
-        if(user.name != null){
-            binding.name.text = user?.name
-        }
+        binding.name.text = user?.name
         if(user.about != null){
-            binding.aboutTextBody.text = UserUtils.truncate(user?.about!!, 150)
+            binding.aboutTextBody.text = truncate(user.about!!, 150)
         }
 
         if(user.public_posts != null){
@@ -262,20 +256,20 @@ class ProfileFragment: Fragment() {
             binding.postCount.text = getString(R.string.zero)
         }
 
-        if(user.friends != null){
-            binding.friendCount.text = user?.friends?.count().toString()
+        if(user.friends.isNotEmpty()){
+            binding.friendCount.text = user.friends.count().toString()
         } else {
             binding.friendCount.text = getString(R.string.zero)
         }
 
-        if(user.friendRequests != null){
-            binding.friendRequestsCount.text = getString(R.string.friend_request_count, user?.friendRequests?.count().toString())
+        if(user.friendRequests.isNotEmpty()){
+            binding.friendRequestsCount.text = getString(R.string.friend_request_count, user.friendRequests.count().toString())
         } else {
             binding.friendRequestsCount.text = getString(R.string.zero_in_brackets)
         }
 
-        if(user?.occupation != null){
-            binding.occupation.text = user?.occupation
+        if(user.occupation != null){
+            binding.occupation.text = user.occupation
             binding.nameWithoutOccupation.visibility = View.GONE
             binding.userProps.visibility = View.VISIBLE
         } else {

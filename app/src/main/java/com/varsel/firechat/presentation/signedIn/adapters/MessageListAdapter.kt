@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.R
 import com.varsel.firechat.common.Resource
+import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.data.local.Image.Image
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageStatus
@@ -25,7 +26,6 @@ import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.utils.MessageUtils
-import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.fragments.screens.chat_page.ChatPageViewModel
 import kotlinx.coroutines.flow.launchIn

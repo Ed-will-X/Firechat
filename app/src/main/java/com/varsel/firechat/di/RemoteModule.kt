@@ -9,6 +9,7 @@ import com.varsel.firechat.data.local.PublicPost.PublicPostDao
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.data.repository.*
 import com.varsel.firechat.domain.repository.*
+import com.varsel.firechat.domain.use_case._util.user.SortByTimestamp_UseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,8 +46,8 @@ object RemoteModule {
 
     @Provides
     @Singleton
-    fun provideCurrentUserRepository(firebase: Firebase): CurrentUserRepository {
-        return CurrentUserRepositoryImpl(firebase)
+    fun provideCurrentUserRepository(firebase: Firebase, sortbytimestampUsecase: SortByTimestamp_UseCase): CurrentUserRepository {
+        return CurrentUserRepositoryImpl(firebase, sortbytimestampUsecase)
     }
 
     @Provides

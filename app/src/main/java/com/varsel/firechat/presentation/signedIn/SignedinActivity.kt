@@ -26,8 +26,8 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.varsel.firechat.R
+import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common._utils.ImageUtils
-import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.databinding.ActivitySignedinBinding
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
@@ -45,13 +45,21 @@ import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.use_case._util.InfobarColors
 import com.varsel.firechat.domain.use_case._util.InfobarControllerUseCase
 import com.varsel.firechat.utils.*
-import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
+import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.presentation.signedOut.SignedoutActivity
 import com.varsel.firechat.presentation.signedOut.fragments.AuthType
 import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
-import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
+import com.varsel.firechat.domain.use_case._util.user.GetOtherUserId_UseCase
+import com.varsel.firechat.domain.use_case._util.user.SortByTimestamp_UseCase
+import com.varsel.firechat.domain.use_case.other_user.GetOtherUserSingle
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.HashMap
 import kotlin.concurrent.fixedRateTimer
 
@@ -71,6 +79,15 @@ class SignedinActivity : AppCompatActivity() {
     val publicPostViewModel: PublicPostViewModel by viewModels()
     val readReceiptViewModel: ReadReceiptViewModel by viewModels()
     lateinit var infobarController: InfobarControllerUseCase
+
+    @Inject
+    lateinit var sortByTimestamp: SortByTimestamp_UseCase
+
+    @Inject
+    lateinit var truncate: Truncate_UseCase
+
+    @Inject
+    lateinit var getOtherUserId: GetOtherUserId_UseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -189,7 +206,7 @@ class SignedinActivity : AppCompatActivity() {
                     *   Shows the info bar if the selected chatRoom user is not the one who just sent the message
                     * */
                     if(it.userUID != selectedChatRoomUser?.userUID || navController.currentDestination?.id != R.id.chatPageFragment){
-                        infobarController.showBottomInfobar(this.getString(R.string.new_message_from, UserUtils.truncate(it.name, 15)), InfobarColors.NEW_MESSAGE)
+                        infobarController.showBottomInfobar(this.getString(R.string.new_message_from, truncate(it.name, 15)), InfobarColors.NEW_MESSAGE)
                     }
                 }
             }
@@ -207,14 +224,14 @@ class SignedinActivity : AppCompatActivity() {
 
             if((lastMessage?.time ?: 0L) > lastRunTimestamp && lastMessage?.sender != currentUserId){
                 if(i.roomUID != selectedGroupRoom.value?.roomUID || navController.currentDestination?.id != R.id.groupChatPageFragment){
-                    infobarController.showBottomInfobar(this.getString(R.string.new_message_in, UserUtils.truncate(i.groupName, 15)), InfobarColors.NEW_MESSAGE)
+                    infobarController.showBottomInfobar(this.getString(R.string.new_message_in, truncate(i.groupName, 15)), InfobarColors.NEW_MESSAGE)
                 }
             }
         }
     }
 
     private fun getOtherUser(chatRoom: ChatRoom, userCallback: (user: User)-> Unit){
-        val otherUserId = UserUtils.getOtherUserId(chatRoom.participants, this)
+        val otherUserId = getOtherUserId(chatRoom.participants)
         UserUtils.getUser(otherUserId, this) {
             userCallback(it)
         }
@@ -222,11 +239,11 @@ class SignedinActivity : AppCompatActivity() {
 
     var prevFriendRequests = -1
     fun determineShowRequesBottomInfobar(user: User){
-        val sorted = UserUtils.sortByTimestamp(user.friendRequests.toSortedMap())
+        val sorted = sortByTimestamp(user.friendRequests.toSortedMap())
 
         if (prevFriendRequests < user.friendRequests.count() && prevFriendRequests != -1){
             UserUtils.getUser(sorted.keys.last(), this) {
-                infobarController.showBottomInfobar(this.getString(R.string.friend_request_From, UserUtils.truncate(it.name, 15)), InfobarColors.NEW_FRIEND_REQUEST)
+                infobarController.showBottomInfobar(this.getString(R.string.friend_request_From, truncate(it.name, 15)), InfobarColors.NEW_FRIEND_REQUEST)
 
             }
         }
@@ -235,11 +252,11 @@ class SignedinActivity : AppCompatActivity() {
 
     var prevFriends = -1
     fun determineNewFriendBottomInfobar(user: User){
-        val sorted = UserUtils.sortByTimestamp(user.friends.toSortedMap())
+        val sorted = sortByTimestamp(user.friends.toSortedMap())
 
         if(prevFriends < user.friends.count() && prevFriends != -1){
             UserUtils.getUser(sorted.keys.last(), this) {
-                infobarController.showBottomInfobar(this.getString(R.string.is_now_your_friend, UserUtils.truncate(it.name, 15)), InfobarColors.NEW_FRIEND)
+                infobarController.showBottomInfobar(this.getString(R.string.is_now_your_friend, truncate(it.name, 15)), InfobarColors.NEW_FRIEND)
             }
         }
         prevFriends = user.friends.count()
@@ -247,12 +264,12 @@ class SignedinActivity : AppCompatActivity() {
 
     var prevGroups = -1
     fun determineShowGroupAddBottomInfobar(user: User){
-        val sorted = UserUtils.sortByTimestamp(user.groupRooms.toSortedMap())
+        val sorted = sortByTimestamp(user.groupRooms.toSortedMap())
 
         if(prevGroups < user.groupRooms.count() && prevGroups != -1){
             firebaseViewModel.getGroupChatRoomSingle(sorted.keys.last(), mDbRef, {
                 if(it?.admins?.contains(firebaseAuth.currentUser!!.uid) == false){
-                    infobarController.showBottomInfobar(this.getString(R.string.you_have_been_added_to, UserUtils.truncate(it.groupName, 10)), InfobarColors.GROUP_ADD)
+                    infobarController.showBottomInfobar(this.getString(R.string.you_have_been_added_to, truncate(it.groupName, 10)), InfobarColors.GROUP_ADD)
                 }
             }, {})
         }
@@ -792,7 +809,7 @@ class SignedinActivity : AppCompatActivity() {
 
     private fun getFriendRequests(requests: HashMap<String, Long>){
         val users = mutableListOf<User>()
-        val sortedMap = UserUtils.sortByTimestamp(requests.toSortedMap())
+        val sortedMap = sortByTimestamp(requests.toSortedMap())
 
         for(i in sortedMap.keys){
             firebaseViewModel.getUserSingle(i, mDbRef, {
@@ -806,7 +823,7 @@ class SignedinActivity : AppCompatActivity() {
     }
 
     private fun getAllFriends(friends: HashMap<String, Long>){
-        val sortedMap = UserUtils.sortByTimestamp(friends.toSortedMap())
+        val sortedMap = sortByTimestamp(friends.toSortedMap())
 
         val users = mutableListOf<User>()
         for(i in sortedMap.keys){

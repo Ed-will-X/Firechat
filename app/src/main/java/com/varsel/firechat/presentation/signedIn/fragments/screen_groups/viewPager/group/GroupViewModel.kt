@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.domain.use_case._util.animation.ChangeIconColorUseCase
+import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
 import com.varsel.firechat.domain.use_case.message.GetGroupRoomsRecurrentUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetGroupImageUseCase
@@ -22,7 +23,8 @@ class GroupViewModel @Inject constructor(
     val getCurrentUserRecurrentUseCase: GetCurrentUserRecurrentUseCase,
     val getGroupImageUseCase: GetGroupImageUseCase,
     val setProfilePicUseCase: SetProfilePicUseCase,
-    val changeIconColor: ChangeIconColorUseCase
+    val changeIconColor: ChangeIconColorUseCase,
+    val truncate: Truncate_UseCase
 ): ViewModel() {
     private val _state = MutableStateFlow(GroupFragmentState())
     val state = _state

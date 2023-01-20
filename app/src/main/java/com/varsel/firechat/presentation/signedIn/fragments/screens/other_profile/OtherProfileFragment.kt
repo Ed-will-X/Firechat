@@ -15,7 +15,6 @@ import com.varsel.firechat.databinding.ActionSheetUnfriendBinding
 import com.varsel.firechat.databinding.ActionsheetOtherUserPublicPostsBinding
 import com.varsel.firechat.databinding.FragmentOtherProfileBinding
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
@@ -26,7 +25,9 @@ import com.varsel.firechat.domain.use_case.public_post.SortPublicPostReversedUse
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapterShapes
-import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
+import com.varsel.firechat.domain.use_case._util.user.GetFirstName_UseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -41,7 +42,6 @@ class OtherProfileFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
     private lateinit var viewModel: OtherProfileViewModel
-    private lateinit var userUtils: UserUtils
     private lateinit var postAdapter: PublicPostAdapter
 
     @Inject
@@ -62,6 +62,11 @@ class OtherProfileFragment : Fragment() {
     @Inject
     lateinit var displayPublicPostImage: DisplayPublicPostImage_UseCase
 
+    @Inject
+    lateinit var getFirstName: GetFirstName_UseCase
+
+    @Inject
+    lateinit var truncate: Truncate_UseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -100,9 +105,6 @@ class OtherProfileFragment : Fragment() {
         val uid = OtherProfileFragmentArgs.fromBundle(requireArguments()).userId
         viewModel.getOtherUser(uid)
         collectState()
-
-
-        userUtils = UserUtils(this)
 
         binding.backIcon.setOnClickListener {
             findNavController().navigateUp()
@@ -199,7 +201,7 @@ class OtherProfileFragment : Fragment() {
     }
 
     fun setBindings(user: User){
-        binding.aboutTextHeader.text = userUtils.getFirstName(user.name)
+        binding.aboutTextHeader.text = getFirstName(user.name, this)
 
         if(user.occupation != null){
             binding.firstName.setText(user.name)
@@ -213,16 +215,16 @@ class OtherProfileFragment : Fragment() {
         }
 
         if (user.about != null){
-            binding.aboutTextBody.setText(UserUtils.truncate(user.about!!, 150))
+            binding.aboutTextBody.setText(truncate(user.about!!, 150))
             binding.moreAboutClickable.setOnClickListener { it2 ->
-                showAboutActionSheet(userUtils.getFirstName(user.name), user.about, user)
+                showAboutActionSheet(getFirstName(user.name, this), user.about, user)
             }
             binding.aboutTextBody.visibility = View.VISIBLE
         } else {
             binding.aboutTextBody.visibility = View.GONE
 
             binding.moreAboutClickable.setOnClickListener {
-                showAboutActionSheet(userUtils.getFirstName(user?.name ?: ""), null, user)
+                showAboutActionSheet(getFirstName(user.name, this), null, user)
             }
 
             // TODO: Show no about ux thingy

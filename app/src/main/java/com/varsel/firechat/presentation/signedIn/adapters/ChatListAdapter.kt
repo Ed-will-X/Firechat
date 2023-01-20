@@ -23,7 +23,6 @@ import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.utils.MessageUtils
-import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.Individual.IndividualViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -94,14 +93,14 @@ class ChatListAdapter(
             })
         }
 
-        val id = UserUtils.getOtherUserId(item.participants!!, activity)
+        val id = viewModel.getOtherUserId(item.participants)
         if(MessageUtils.getLastMessageObject(item)?.type == MessageType.TEXT){
-            holder.lastMessage.text = UserUtils.truncate(MessageUtils.getLastMessage(item), 38)
+            holder.lastMessage.text = viewModel.truncate(MessageUtils.getLastMessage(item), 38)
         } else if(MessageUtils.getLastMessageObject(item)?.type == MessageType.IMAGE){
             holder.lastMessage.text = activity.getString(R.string.image_with_emoji)
         }
 
-        getUser(UserUtils.getOtherUserId(item.participants, activity)){ user ->
+        getUser(viewModel.getOtherUserId(item.participants)){ user ->
             holder.parent.setOnClickListener { _ ->
                 parentClickListener(id, item.roomUID, user, null)
             }

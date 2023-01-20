@@ -17,9 +17,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentFriendListBinding
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.utils.ExtensionFunctions.Companion.hideKeyboard
-import com.varsel.firechat.utils.ExtensionFunctions.Companion.showKeyboard
-import com.varsel.firechat.utils.UserUtils
+import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.hideKeyboard
+import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.showKeyboard
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.utils.gestures.FriendsSwipeGesture
@@ -27,7 +26,9 @@ import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.FriendListAdapter
 import com.varsel.firechat.presentation.viewModel.FriendListFragmentViewModel
 import com.varsel.firechat.presentation.viewModel.SortTypes
-import com.varsel.firechat.utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.domain.use_case._util.user.SearchListOfUsers_UseCase
+import com.varsel.firechat.domain.use_case._util.user.SortUsersByName_UseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -47,6 +48,12 @@ class FriendListFragment : Fragment() {
 
     @Inject
     lateinit var checkServerConnection: CheckServerConnectionUseCase
+
+    @Inject
+    lateinit var sortUsersByName: SortUsersByName_UseCase
+
+    @Inject
+    lateinit var searchListOfUsers: SearchListOfUsers_UseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -202,14 +209,14 @@ class FriendListFragment : Fragment() {
             setFriendCount(friends)
 
             if(sortType == SortTypes.ASCENDING){
-                val sorted = UserUtils.sortUsersByName(friends)
+                val sorted = sortUsersByName(friends)
 
                 if(adapter != null){
                     adapter!!.friends = sorted.toList()
                     adapter!!.notifyDataSetChanged()
                 }
             } else if(sortType == SortTypes.DESCENDING){
-                val sorted = UserUtils.sortUsersByName(friends).reversed()
+                val sorted = sortUsersByName(friends).reversed()
 
                 if(adapter != null){
                     adapter!!.friends = sorted
@@ -334,7 +341,7 @@ class FriendListFragment : Fragment() {
             submitListToAdapter(friends)
         } else {
             val term = binding.searchBox.text.toString()
-            val results = UserUtils.searchListOfUsers(term, friends)
+            val results = searchListOfUsers(term, friends)
 
             if(results.isNotEmpty()){
                 // There are matches

@@ -20,7 +20,6 @@ import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.utils.MessageUtils
-import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.group.GroupFragment
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.group.GroupViewModel
@@ -106,7 +105,7 @@ class GroupChatsListAdapter(
                 groupItemListener(item.roomUID, null)
             }
 
-            viewHolder.groupName.text = item.groupName?.let { UserUtils.truncate(it, 15) }
+            viewHolder.groupName.text = item.groupName?.let { viewModel.truncate(it, 15) }
 
             if(isFavorite(item.roomUID)){
                 viewModel.changeIconColor(holder.favoriteIcon, R.color.yellow, context)

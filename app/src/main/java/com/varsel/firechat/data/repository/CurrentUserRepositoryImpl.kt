@@ -2,17 +2,18 @@ package com.varsel.firechat.data.repository
 
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.domain.repository.CurrentUserRepository
+import com.varsel.firechat.domain.use_case._util.user.SortByTimestamp_UseCase
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 class CurrentUserRepositoryImpl @Inject constructor(
-    val firebase: Firebase
+    val firebase: Firebase,
+    val sortByTimestamp: SortByTimestamp_UseCase
 ) : CurrentUserRepository {
     // TODO: Remove Experimental Code
     private var currentUser: MutableStateFlow<Resource<User>> = MutableStateFlow(Resource.Loading())
@@ -64,7 +65,7 @@ class CurrentUserRepositoryImpl @Inject constructor(
         trySend(Response.Loading())
         friends.value = Resource.Loading()
 
-        val sortedMap = UserUtils.sortByTimestamp(friendsMap.toSortedMap())
+        val sortedMap = sortByTimestamp(friendsMap.toSortedMap())
         val users = mutableListOf<User>()
 
         if(friendsMap.isNotEmpty()) {

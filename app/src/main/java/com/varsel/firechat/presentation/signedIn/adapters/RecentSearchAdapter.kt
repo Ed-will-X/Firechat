@@ -2,9 +2,9 @@ package com.varsel.firechat.presentation.signedIn.adapters
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.databinding.RecentSearchItemBinding
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.fragments.screens.add_friends.AddFriendsFragment
 

@@ -22,7 +22,6 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.utils.UserUtils
 import com.varsel.firechat.databinding.ActionSheetParticipantActionsBinding
 import com.varsel.firechat.databinding.ActionSheetProfileImageBinding
 import com.varsel.firechat.databinding.FragmentGroupChatDetailBinding
@@ -40,9 +39,8 @@ import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_UseCase
 import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
-import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
-import com.varsel.firechat.utils.*
-import com.varsel.firechat.utils.ExtensionFunctions.Companion.observeOnce
+import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.observeOnce
+import com.varsel.firechat.domain.use_case._util.user.SortUsersByNameInGroup_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ParticipantsListAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -87,6 +85,9 @@ class GroupChatDetailFragment : Fragment() {
 
     @Inject
     lateinit var setProfilePic: SetProfilePicUseCase
+
+    @Inject
+    lateinit var sortUsersByNameInGroup: SortUsersByNameInGroup_UseCase
 
     override fun onResume() {
         super.onResume()
@@ -182,7 +183,7 @@ class GroupChatDetailFragment : Fragment() {
             binding.groupMembersCount.text = "(${it.size})"
             val admins = viewModel.state.value?.selectedGroup?.admins?.values?.toList() ?: listOf()
             val currentUser = viewModel.getCurrentUserIdUseCase()
-            val sorted = UserUtils.sortUsersByNameInGroup(it, admins, currentUser)
+            val sorted = sortUsersByNameInGroup(it, admins, currentUser)
 
             participantAdapter.submitList(sorted)
             participantAdapter.notifyDataSetChanged()
