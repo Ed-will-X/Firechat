@@ -10,7 +10,7 @@ import com.varsel.firechat.domain.use_case._util.animation.ChangeDialogDimAmount
 import com.varsel.firechat.domain.use_case._util.animation.ChangeIconColorUseCase
 import com.varsel.firechat.domain.use_case._util.animation.Rotate90UseCase
 import com.varsel.firechat.domain.use_case._util.image.SetOverlayBindings_UseCase
-import com.varsel.firechat.domain.use_case._util.message.GenerateUid_UseCase
+import com.varsel.firechat.domain.use_case._util.message.*
 import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
 import com.varsel.firechat.domain.use_case._util.user.*
@@ -411,8 +411,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSetOverlayBindings(): SetOverlayBindings_UseCase {
-        return SetOverlayBindings_UseCase()
+    fun provideSetOverlayBindings(formatstampmessageUsecase: FormatStampMessage_UseCase): SetOverlayBindings_UseCase {
+        return SetOverlayBindings_UseCase(formatstampmessageUsecase)
     }
 
     @Provides
@@ -546,6 +546,57 @@ object AppModule {
     fun provideGetOtherUserId(getCurrentUserIdUseCase: GetCurrentUserIdUseCase): GetOtherUserId_UseCase {
         return GetOtherUserId_UseCase(getCurrentUserIdUseCase)
     }
+
+
+    @Provides
+    @Singleton
+    fun provideFormatStampMessage(): FormatStampMessage_UseCase {
+        return FormatStampMessage_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFormatTimestampChatsPage(): FormatTimestampChatsPage_UseCase {
+        return FormatTimestampChatsPage_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSortChats(sortmessagesUsecase: SortMessages_UseCase): SortChats_UseCase {
+        return SortChats_UseCase(sortmessagesUsecase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCalculateTimestampDifferenceLess(): CalculateTimestampDifferenceLess_UseCase {
+        return CalculateTimestampDifferenceLess_UseCase()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideGetLastMessage(sortmessagesUsecase: SortMessages_UseCase): GetLastMessage_UseCase {
+        return GetLastMessage_UseCase(sortmessagesUsecase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFormatPerson(): FormatPerson_UseCase {
+        return FormatPerson_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFormatSystemMessage(formatpersonUsecase: FormatPerson_UseCase, formatStampChatsPage_UseCase: FormatTimestampChatsPage_UseCase): FormatSystemMessage_UseCase {
+        return FormatSystemMessage_UseCase(formatpersonUsecase, formatStampChatsPage_UseCase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSortMessages(): SortMessages_UseCase {
+        return SortMessages_UseCase()
+    }
+
 
 
 }

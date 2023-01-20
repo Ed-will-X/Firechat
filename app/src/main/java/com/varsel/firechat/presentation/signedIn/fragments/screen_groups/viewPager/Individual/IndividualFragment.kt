@@ -13,12 +13,12 @@ import com.varsel.firechat.databinding.FragmentIndividualBinding
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
-import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatListAdapter
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.chats_tab_page.ChatsFragment
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.chats_tab_page.ChatsFragmentDirections
 import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.domain.use_case._util.message.SortChats_UseCase
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
@@ -39,6 +39,9 @@ class IndividualFragment : Fragment() {
 
     @Inject
     lateinit var displayProfileImage: DisplayProfileImage
+
+    @Inject
+    lateinit var sortChats: SortChats_UseCase
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -62,7 +65,7 @@ class IndividualFragment : Fragment() {
         collectLatestLifecycleFlow(viewModel.state) {
             Log.d("CLEAN", "Count in fragment: ${it.chatRooms.size}")
 
-            val sorted = MessageUtils.sortChats(it.chatRooms)
+            val sorted = sortChats(it.chatRooms)
 
             toggleRecyclerViewVisibility(it.chatRooms)
             chatListAdapter.submitList(sorted)

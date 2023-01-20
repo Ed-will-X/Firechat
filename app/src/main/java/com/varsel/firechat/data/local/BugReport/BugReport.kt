@@ -1,6 +1,6 @@
 package com.varsel.firechat.data.local.BugReport
 
-import com.varsel.firechat.utils.MessageUtils
+import com.varsel.firechat.common._utils.MessageUtils
 
 class BugReport {
     lateinit var title: String
@@ -12,7 +12,7 @@ class BugReport {
         this.title = title
         this.message = message
         this.image = image
-        this.reportId = MessageUtils.generateUID(20)
+        this.reportId = MessageUtils.generateUID()
     }
 
     constructor()

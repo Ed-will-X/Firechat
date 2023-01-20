@@ -32,7 +32,6 @@ import com.varsel.firechat.domain.use_case.public_post.DisplayPublicPostImage_Us
 import com.varsel.firechat.domain.use_case.public_post.DoesPostExistUseCase
 import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
 import com.varsel.firechat.domain.use_case.public_post.SortPublicPostReversedUseCase
-import com.varsel.firechat.utils.*
 import com.varsel.firechat.utils.gestures.FriendRequestSwipeGesture
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.FriendRequestsAdapter
@@ -40,7 +39,7 @@ import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapterShapes
 import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
 import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
-import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.common._utils.MessageUtils
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -170,7 +169,7 @@ class ProfileFragment: Fragment() {
     private fun uploadPublicPost_image(uri: Uri, caption: String?){
         val encoded = encodeUri(uri, parent)
         if(encoded != null){
-            val uid = ":${System.currentTimeMillis()}-${MessageUtils.generateUID(15)}:${PublicPostType.IMAGE}"
+            val uid = ":${System.currentTimeMillis()}-${MessageUtils.generateUID()}:${PublicPostType.IMAGE}"
             val timestamp = System.currentTimeMillis()
             val currentUserId = parent.firebaseAuth.currentUser!!.uid
             val publicPost = PublicPost(currentUserId, uid, PublicPostType.IMAGE, caption, timestamp)

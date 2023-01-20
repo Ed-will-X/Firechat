@@ -22,7 +22,6 @@ import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
-import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.Individual.IndividualViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -59,7 +58,7 @@ class ChatListAdapter(
     override fun onBindViewHolder(holder: ChatItemViewHolder, position: Int) {
         val item: ChatRoom = getItem(position)
 
-        val lastMessageObject = MessageUtils.getLastMessageObject(item)
+        val lastMessageObject = viewModel.getLastMessage(item)
         if(lastMessageObject != null){
             determineReceipts(item, lastMessageObject, {
                 // Receipt Callback
@@ -94,9 +93,9 @@ class ChatListAdapter(
         }
 
         val id = viewModel.getOtherUserId(item.participants)
-        if(MessageUtils.getLastMessageObject(item)?.type == MessageType.TEXT){
-            holder.lastMessage.text = viewModel.truncate(MessageUtils.getLastMessage(item), 38)
-        } else if(MessageUtils.getLastMessageObject(item)?.type == MessageType.IMAGE){
+        if(viewModel.getLastMessage(item)?.type == MessageType.TEXT){
+            holder.lastMessage.text = viewModel.truncate(viewModel.getLastMessage(item)?.message ?: "", 38)
+        } else if(viewModel.getLastMessage(item)?.type == MessageType.IMAGE){
             holder.lastMessage.text = activity.getString(R.string.image_with_emoji)
         }
 
@@ -138,7 +137,7 @@ class ChatListAdapter(
         }
 
         if(item.messages != null){
-            holder.timestamp.text = MessageUtils.formatStampChatsPage(MessageUtils.getLastMessageTimestamp(item))
+            holder.timestamp.text = viewModel.formatStampChatsPage(viewModel.getLastMessage(item)?.time.toString())
         }
 
     }

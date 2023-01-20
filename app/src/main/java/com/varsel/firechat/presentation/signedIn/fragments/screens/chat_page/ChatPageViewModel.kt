@@ -9,6 +9,10 @@ import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case._util.message.CalculateTimestampDifferenceLess_UseCase
+import com.varsel.firechat.domain.use_case._util.message.FormatStampMessage_UseCase
+import com.varsel.firechat.domain.use_case._util.message.FormatSystemMessage_UseCase
+import com.varsel.firechat.domain.use_case._util.message.GetLastMessage_UseCase
 import com.varsel.firechat.domain.use_case.chat_room.AppendChatRoom_UseCase
 import com.varsel.firechat.domain.use_case.chat_room.AppendParticipants_UseCase
 import com.varsel.firechat.domain.use_case.chat_room.SendMessage_UseCase
@@ -22,7 +26,6 @@ import com.varsel.firechat.domain.use_case.other_user.GetOtherUserFromParticipan
 import com.varsel.firechat.domain.use_case.other_user.GetOtherUserSingle
 import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
-import com.varsel.firechat.utils.MessageUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -42,7 +45,11 @@ class ChatPageViewModel @Inject constructor(
     val checkChatImageInDb: CheckChatImageInDb,
     val getChatImageUseCase: GetChatImageUseCase,
     val storeChatImageUseCase: StoreChatImageUseCase,
-    val setChatImageUseCase: SetChatImageUseCase
+    val setChatImageUseCase: SetChatImageUseCase,
+    val formatStampMessage: FormatStampMessage_UseCase,
+    val calculateTimestampDifferenceLess: CalculateTimestampDifferenceLess_UseCase,
+    val getLastMessage: GetLastMessage_UseCase,
+    val formatSystemMessage: FormatSystemMessage_UseCase
 ): ViewModel() {
     val actionBarVisibility = MutableLiveData<Boolean>(false)
 
@@ -98,11 +105,11 @@ class ChatPageViewModel @Inject constructor(
 
     fun getChatRoom(id: String) {
         for (i in state.value?.chatRooms ?: listOf()) {
-            if(i.roomUID == id && MessageUtils.getLastMessageTimestamp(i).toLong() > _lastFetchTimestamp.value!!) {
+            if(i.roomUID == id && (getLastMessage(i)?.time ?: 0L) > _lastFetchTimestamp.value!!) {
                 // Sets the selected room value
                 _state.value = _state.value?.copy(selectedChatRoom = i)
 
-                _lastFetchTimestamp.value = MessageUtils.getLastMessageTimestamp(i).toLong()
+                _lastFetchTimestamp.value = getLastMessage(i)?.time
                 break
             }
         }

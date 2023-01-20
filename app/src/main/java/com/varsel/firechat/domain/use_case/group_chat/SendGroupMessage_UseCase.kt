@@ -6,7 +6,7 @@ import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.domain.repository.CurrentUserRepository
 import com.varsel.firechat.domain.repository.MessageRepository
-import com.varsel.firechat.utils.MessageUtils
+import com.varsel.firechat.common._utils.MessageUtils
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -18,7 +18,7 @@ class SendGroupMessage_UseCase @Inject constructor(
         val messageText = messageEditText.text.toString().trim()
         val currentUser = currentUserRepository.getCurrentUserId()
 
-        val message = Message(MessageUtils.generateUID(30), messageText, System.currentTimeMillis(), currentUser, MessageType.TEXT)
+        val message = Message(MessageUtils.generateUID(), messageText, System.currentTimeMillis(), currentUser, MessageType.TEXT)
         return messageRepository.sendGroupMessage(message, roomId)
     }
 

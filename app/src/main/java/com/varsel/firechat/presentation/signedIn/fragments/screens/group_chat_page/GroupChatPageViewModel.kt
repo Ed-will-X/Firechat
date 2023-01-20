@@ -1,17 +1,16 @@
 package com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_page
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case._util.message.GetLastMessage_UseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserIdUseCase
 import com.varsel.firechat.domain.use_case.group_chat.GetGroupChatRecurrentUseCase
 import com.varsel.firechat.domain.use_case.group_chat.GetGroupParticipantsUseCase
 import com.varsel.firechat.domain.use_case.message.GetGroupRoomsRecurrentUseCase
-import com.varsel.firechat.utils.MessageUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -22,7 +21,8 @@ class GroupChatPageViewModel @Inject constructor(
     private val getGroup: GetGroupChatRecurrentUseCase,
     private val getAllGroups: GetGroupRoomsRecurrentUseCase,
     private val getGroupParticipantsUseCase: GetGroupParticipantsUseCase,
-    val getCurrentUserId: GetCurrentUserIdUseCase
+    val getCurrentUserId: GetCurrentUserIdUseCase,
+    private val getLastMessage: GetLastMessage_UseCase
 ) : ViewModel() {
 
     private val _state = MutableLiveData(GroupChatPageState())
@@ -56,7 +56,7 @@ class GroupChatPageViewModel @Inject constructor(
 
     fun getGroupChat(id: String) {
         for (i in state.value?.groupRooms ?: listOf()) {
-            if(i.roomUID == id && MessageUtils.getLastMessageTimestamp(i).toLong() > _lastFetchTimestamp.value!!) {
+            if(i.roomUID == id && (getLastMessage(i)?.time ?: 0L) > _lastFetchTimestamp.value!!) {
                 // Sets the selected room value
                 _state.value = _state.value?.copy(selectedRoom = i)
 
@@ -66,7 +66,7 @@ class GroupChatPageViewModel @Inject constructor(
                     _lastParticipantCount.value = i.participants.size
                 }
 
-                _lastFetchTimestamp.value = MessageUtils.getLastMessageTimestamp(i).toLong()
+                _lastFetchTimestamp.value = getLastMessage(i)?.time
                 break
             }
         }

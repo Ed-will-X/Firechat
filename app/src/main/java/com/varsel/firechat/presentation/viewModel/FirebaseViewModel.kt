@@ -19,7 +19,7 @@ import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.Message.SystemMessageType
 import com.varsel.firechat.data.local.PublicPost.PublicPost
-import com.varsel.firechat.utils.DebugUtils
+import com.varsel.firechat.common._utils.DebugUtils
 
 class FirebaseViewModel: ViewModel() {
     val usersLiveData = MutableLiveData<List<User>>()

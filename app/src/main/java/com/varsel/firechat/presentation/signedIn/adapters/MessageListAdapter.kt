@@ -25,7 +25,6 @@ import com.varsel.firechat.data.local.Message.MessageStatus
 import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.fragments.screens.chat_page.ChatPageViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -115,7 +114,7 @@ class MessageListAdapter(
 
             try {
                 val prev: Message? = getItem(position - 1)
-                if(prev?.sender.equals(item.sender) && MessageUtils.calculateTimestampDifferenceLess(item.time!!, prev?.time!!)){
+                if(prev?.sender.equals(item.sender) && viewModel.calculateTimestampDifferenceLess(item.time!!, prev?.time!!)){
                     viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat_second) }
                     if(item.type == MessageType.IMAGE){
                         handleDownloadOnClick(item, viewHolder.sentImageSecond, holder.imageViewParentSecond, holder.imageViewParent)
@@ -137,22 +136,22 @@ class MessageListAdapter(
 
             try {
                 val next: Message? = getItem(position + 1)
-                if(next?.sender == item.sender && MessageUtils.calculateTimestampDifferenceLess(next?.time!!, item.time!!)){
+                if(next?.sender == item.sender && viewModel.calculateTimestampDifferenceLess(next?.time!!, item.time!!)){
                     viewHolder.timestamp.visibility = View.GONE
                 } else {
                     viewHolder.timestamp.visibility = View.VISIBLE
-                    viewHolder.timestamp.text = MessageUtils.formatStampMessage(item.time.toString())
+                    viewHolder.timestamp.text = viewModel.formatStampMessage(item.time.toString())
                 }
             } catch(e: Exception) {
                 viewHolder.timestamp.visibility = View.VISIBLE
-                viewHolder.timestamp.text = MessageUtils.formatStampMessage(item.time.toString())
+                viewHolder.timestamp.text = viewModel.formatStampMessage(item.time.toString())
             }
 
         } else if(holder.javaClass == SystemViewHolder::class.java){
             // system message
             val viewHolder = holder as SystemViewHolder
 
-            MessageUtils.formatSystemMessage(item, activity) {
+            viewModel.formatSystemMessage(item, activity) {
                 viewHolder.systemText.text = it
             }
 
@@ -357,10 +356,10 @@ class MessageListAdapter(
 
     private fun setOtherUserTimestamp(viewHolder: ReceivedViewHolder, item: Message){
         if(pageType == ChatPageType.INDIVIDUAL){
-            viewHolder.timestamp.text = MessageUtils.formatStampMessage(item.time.toString())
+            viewHolder.timestamp.text = viewModel.formatStampMessage(item.time.toString())
         } else {
             UserUtils.getUser(item.sender, activity) {
-                viewHolder.timestamp.text = "${MessageUtils.formatStampMessage(item.time.toString())} · ${it.name}"
+                viewHolder.timestamp.text = "${viewModel.formatStampMessage(item.time.toString())} · ${it.name}"
             }
 
         }

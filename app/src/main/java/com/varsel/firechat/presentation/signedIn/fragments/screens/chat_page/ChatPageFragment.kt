@@ -22,7 +22,7 @@ import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUse
 import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_UseCase
 import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
-import com.varsel.firechat.utils.MessageUtils
+import com.varsel.firechat.common._utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
 import com.varsel.firechat.presentation.signedIn.adapters.MessageListAdapter
@@ -120,7 +120,7 @@ class ChatPageFragment : Fragment() {
         })
 
         // Chatroom initialisation
-        newChatRoomId = MessageUtils.generateUID(30)
+        newChatRoomId = MessageUtils.generateUID()
         newChatRoom = ChatRoom(newChatRoomId, hashMapOf<String, String>(userUID to userUID, viewModel.getCurrentUserId() to viewModel.getCurrentUserId()))
 
         if(existingChatRoomId == null) {
@@ -144,7 +144,7 @@ class ChatPageFragment : Fragment() {
             val messageText = binding.messageEditText.text.toString().trim()
 
             // TODO: Amend to accommodate other message types
-            val message = Message(MessageUtils.generateUID(30), messageText, System.currentTimeMillis(), viewModel.getCurrentUserId(), MessageType.TEXT)
+            val message = Message(MessageUtils.generateUID(), messageText, System.currentTimeMillis(), viewModel.getCurrentUserId(), MessageType.TEXT)
 
             if(binding.messageEditText.text.toString() != ""){
 //                sendMessage(message) {

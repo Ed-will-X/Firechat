@@ -13,11 +13,11 @@ import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.use_case.chat_image.DisplayGroupImage_UseCase
-import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.GroupChatsListAdapter
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.chats_tab_page.ChatsFragmentDirections
 import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.domain.use_case._util.message.SortChats_UseCase
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
@@ -32,6 +32,9 @@ class GroupFragment : Fragment() {
 
     @Inject
     lateinit var displayGroupImage: DisplayGroupImage_UseCase
+
+    @Inject
+    lateinit var sortChats: SortChats_UseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -100,7 +103,7 @@ class GroupFragment : Fragment() {
             list.addAll(groups)
         }
 
-        val sorted = MessageUtils.sortChats(list)
+        val sorted = sortChats(list)
         sorted?.add(0, GroupRoom("ADD_NEW_GROUP_CHAT", hashMapOf(), "", hashMapOf()))
         adapter.submitList(sorted as MutableList<GroupRoom>?)
         adapter.notifyDataSetChanged()

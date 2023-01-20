@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.common.Resource
+import com.varsel.firechat.domain.use_case._util.message.FormatTimestampChatsPage_UseCase
+import com.varsel.firechat.domain.use_case._util.message.GetLastMessage_UseCase
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
 import com.varsel.firechat.domain.use_case._util.user.GetOtherUserId_UseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
@@ -23,7 +25,9 @@ class IndividualViewModel @Inject constructor(
     val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase,
     val setProfilePicUseCase: SetProfilePicUseCase,
     val truncate: Truncate_UseCase,
-    val getOtherUserId: GetOtherUserId_UseCase
+    val getOtherUserId: GetOtherUserId_UseCase,
+    val formatStampChatsPage: FormatTimestampChatsPage_UseCase,
+    val getLastMessage: GetLastMessage_UseCase
 ): ViewModel() {
     private val _state = MutableStateFlow(IndividualFragmentState())
     val state = _state

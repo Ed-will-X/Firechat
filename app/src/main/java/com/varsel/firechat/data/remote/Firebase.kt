@@ -20,7 +20,7 @@ import com.varsel.firechat.data.local.Message.SystemMessageType
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.utils.DebugUtils
+import com.varsel.firechat.common._utils.DebugUtils
 
 class Firebase(
     val mDbRef: DatabaseReference,

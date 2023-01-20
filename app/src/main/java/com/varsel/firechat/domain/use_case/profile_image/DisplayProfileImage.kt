@@ -1,13 +1,11 @@
 package com.varsel.firechat.domain.use_case.profile_image
 
-import android.view.View
 import com.varsel.firechat.R
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.repository.CurrentUserRepository
 import com.varsel.firechat.domain.use_case._util.image.SetOverlayBindings_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
-import com.varsel.firechat.utils.MessageUtils
 import javax.inject.Inject
 
 class DisplayProfileImage @Inject constructor(

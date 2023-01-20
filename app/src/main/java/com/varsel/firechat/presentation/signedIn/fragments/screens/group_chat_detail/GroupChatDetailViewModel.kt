@@ -3,7 +3,6 @@ package com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_d
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.varsel.firechat.common.Resource
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.use_case._util.animation.ChangeDialogDimAmountUseCase
@@ -13,10 +12,7 @@ import com.varsel.firechat.domain.use_case.message.GetGroupRoomsRecurrentUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
-import com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_page.GroupChatPageState
-import com.varsel.firechat.utils.MessageUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject

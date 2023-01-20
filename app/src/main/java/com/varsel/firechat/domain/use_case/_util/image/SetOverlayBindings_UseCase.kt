@@ -6,15 +6,18 @@ import com.varsel.firechat.data.local.Image.Image
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.PublicPost.PublicPost
+import com.varsel.firechat.domain.use_case._util.message.FormatStampMessage_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
-import com.varsel.firechat.utils.MessageUtils
+import javax.inject.Inject
 
-class SetOverlayBindings_UseCase {
+class SetOverlayBindings_UseCase @Inject constructor(
+    val formatStampMessage: FormatStampMessage_UseCase
+) {
     operator fun invoke(profileImage: ProfileImage, name: String, type: String, activity: SignedinActivity){
         activity.binding.imgOverlayParent.visibility = View.VISIBLE
         activity.binding.imgOverlayName.setText(name)
         activity.binding.imgOverlayType.setText(type)
-        activity.binding.imgOverlayTimestamp.setText(MessageUtils.formatStampMessage(profileImage.imgChangeTimestamp.toString()))
+        activity.binding.imgOverlayTimestamp.setText(formatStampMessage(profileImage.imgChangeTimestamp.toString()))
 
         if(profileImage.image != null) {
             activity.binding.imgOverlayImage.setImageBitmap(ImageUtils.base64ToBitmap(profileImage.image!!))
@@ -35,7 +38,7 @@ class SetOverlayBindings_UseCase {
         activity.binding.imgOverlayParent.visibility = View.VISIBLE
         activity.binding.imgOverlayName.setText(name)
         activity.binding.imgOverlayType.setText(type)
-        activity.binding.imgOverlayTimestamp.setText(MessageUtils.formatStampMessage(message.time.toString()))
+        activity.binding.imgOverlayTimestamp.setText(formatStampMessage(message.time.toString()))
 
         if(chatImage.image != null) {
             activity.binding.imgOverlayImage.setImageBitmap(ImageUtils.base64ToBitmap(chatImage.image!!))
@@ -56,7 +59,7 @@ class SetOverlayBindings_UseCase {
         activity.binding.imgOverlayParent.visibility = View.VISIBLE
         activity.binding.imgOverlayName.setText(name)
         activity.binding.imgOverlayType.setText(type)
-        activity.binding.imgOverlayTimestamp.setText(MessageUtils.formatStampMessage(publicPost.postTimestamp.toString()))
+        activity.binding.imgOverlayTimestamp.setText(formatStampMessage(publicPost.postTimestamp.toString()))
 
         if(publicPost.image != null) {
             activity.binding.imgOverlayImage.setImageBitmap(ImageUtils.base64ToBitmap(publicPost.image!!))

@@ -1,4 +1,4 @@
-package com.varsel.firechat.utils
+package com.varsel.firechat.common._utils
 
 import android.util.Log
 import com.varsel.firechat.data.local.User.User

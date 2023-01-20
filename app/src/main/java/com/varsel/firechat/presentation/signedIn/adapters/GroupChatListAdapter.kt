@@ -19,7 +19,6 @@ import com.varsel.firechat.R
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
-import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.group.GroupFragment
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.group.GroupViewModel
@@ -88,7 +87,7 @@ class GroupChatsListAdapter(
             val viewHolder = holder as GroupChatViewHolder
             val participants = filterOutCurrentUser(item.participants!!.values.toList())
 
-            val lastMessage = MessageUtils.getLastMessageObject(item)
+            val lastMessage = viewModel.getLastMessage(item)
             if(lastMessage != null){
                 determineReceipts(item, lastMessage, {
                     holder.parent.strokeWidth = activity.getResources().getDimensionPixelSize(R.dimen.unread_group_stroke_width)

@@ -2,7 +2,6 @@ package com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_p
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -22,8 +21,8 @@ import com.varsel.firechat.data.local.Message.MessageStatus
 import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.ReadReceipt.ReadReceipt
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.utils.MessageUtils
 import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.domain.use_case._util.message.SortMessages_UseCase
 import com.varsel.firechat.domain.use_case.chat_image.DisplayGroupImage_UseCase
 import com.varsel.firechat.domain.use_case.chat_image.DisplayImageMessageGroup_UseCase
 import com.varsel.firechat.domain.use_case.chat_image.UploadChatImage_UseCase
@@ -35,7 +34,6 @@ import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.other_user.GetListOfUsers_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
-import com.varsel.firechat.domain.use_case.public_post.GetPublicPostUseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
 import com.varsel.firechat.presentation.signedIn.adapters.FriendListAdapter
@@ -93,6 +91,9 @@ class GroupChatPageFragment : Fragment() {
 
     @Inject
     lateinit var setProfilePic: SetProfilePicUseCase
+
+    @Inject
+    lateinit var sortMessages: SortMessages_UseCase
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -251,7 +252,7 @@ class GroupChatPageFragment : Fragment() {
         if(groupRoom.roomUID == roomId){
             setShimmerVisibility(groupRoom)
 
-            val sorted = MessageUtils.sortMessages(groupRoom)
+            val sorted = sortMessages(groupRoom)
             binding.groupNameText.text = groupRoom.groupName
 
             messageAdapter.submitList(sorted)

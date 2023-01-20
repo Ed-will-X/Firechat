@@ -18,7 +18,7 @@ import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
-import com.varsel.firechat.utils.MessageUtils
+import com.varsel.firechat.common._utils.MessageUtils
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.CreateGroupAdapter
 import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
@@ -195,7 +195,7 @@ class CreateGroupFragment : Fragment() {
             dialogBinding.btnCreateGroup.isEnabled = false
             viewModel.hasBtnBeenClicked.value = true
 
-            val newRoomId = MessageUtils.generateUID(30)
+            val newRoomId = MessageUtils.generateUID()
             val participants = addParticipants()
             val groupNameText = dialogBinding.groupName.text.toString().trim()
             val group = GroupRoom(newRoomId, participants, groupNameText, makeCurrentUserAdmin())

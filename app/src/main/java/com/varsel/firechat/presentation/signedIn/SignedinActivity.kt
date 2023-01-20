@@ -51,6 +51,9 @@ import com.varsel.firechat.presentation.signedOut.fragments.AuthType
 import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
 import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import com.varsel.firechat.common._utils.UserUtils
+import com.varsel.firechat.domain.use_case._util.message.FormatStampMessage_UseCase
+import com.varsel.firechat.domain.use_case._util.message.GetLastMessage_UseCase
+import com.varsel.firechat.domain.use_case._util.message.SortChats_UseCase
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
 import com.varsel.firechat.domain.use_case._util.user.GetOtherUserId_UseCase
 import com.varsel.firechat.domain.use_case._util.user.SortByTimestamp_UseCase
@@ -88,6 +91,15 @@ class SignedinActivity : AppCompatActivity() {
 
     @Inject
     lateinit var getOtherUserId: GetOtherUserId_UseCase
+
+    @Inject
+    lateinit var formatStampMessage: FormatStampMessage_UseCase
+
+    @Inject
+    lateinit var sortChats: SortChats_UseCase
+
+    @Inject
+    lateinit var getLastMessage: GetLastMessage_UseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -132,7 +144,7 @@ class SignedinActivity : AppCompatActivity() {
         }
 
         firebaseViewModel.chatRooms.observe(this, Observer {
-            val sorted = MessageUtils.sortChats(it as MutableList<ChatRoom>)
+            val sorted = sortChats(it as MutableList<ChatRoom>)
 
             // TODO: Collect receipts that came after getUserSingle was re-run
             getNewMessage(it, navController)
@@ -192,7 +204,7 @@ class SignedinActivity : AppCompatActivity() {
         val currentUserId = firebaseAuth.currentUser!!.uid
 
         for(i in chatRooms){
-            val lastMessage = MessageUtils.getLastMessageObject(i)
+            val lastMessage = getLastMessage(i)
             val selectedChatRoomUser = firebaseViewModel.selectedChatRoomUser.value
 
             /*
@@ -220,7 +232,7 @@ class SignedinActivity : AppCompatActivity() {
         val selectedGroupRoom = firebaseViewModel.selectedGroupRoom
 
         for (i in groupRooms){
-            val lastMessage = MessageUtils.getLastMessageObject(i)
+            val lastMessage = getLastMessage(i)
 
             if((lastMessage?.time ?: 0L) > lastRunTimestamp && lastMessage?.sender != currentUserId){
                 if(i.roomUID != selectedGroupRoom.value?.roomUID || navController.currentDestination?.id != R.id.groupChatPageFragment){
@@ -282,7 +294,7 @@ class SignedinActivity : AppCompatActivity() {
                 binding.imgOverlayParent.visibility = View.VISIBLE
                 binding.imgOverlayName.setText(imageViewModel.username.value.toString())
                 binding.imgOverlayType.setText(imageViewModel.type.value.toString())
-                binding.imgOverlayTimestamp.setText(MessageUtils.formatStampMessage(imageViewModel.timestamp.value.toString()))
+                binding.imgOverlayTimestamp.setText(formatStampMessage(imageViewModel.timestamp.value.toString()))
                 if(imageViewModel.image != null){
                     binding.imgOverlayImage.setImageBitmap(ImageUtils.base64ToBitmap(imageViewModel.image.value!!))
                 }
