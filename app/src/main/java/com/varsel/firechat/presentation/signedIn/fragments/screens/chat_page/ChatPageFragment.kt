@@ -23,6 +23,9 @@ import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_UseCase
 import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.common._utils.MessageUtils
+import com.varsel.firechat.domain.use_case.chat_image.StoreChatImageUseCase
+import com.varsel.firechat.domain.use_case.read_receipt.FetchReceipt_UseCase
+import com.varsel.firechat.domain.use_case.read_receipt.StoreReceipt_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
 import com.varsel.firechat.presentation.signedIn.adapters.MessageListAdapter
@@ -66,6 +69,12 @@ class ChatPageFragment : Fragment() {
 
     @Inject
     lateinit var uploadChatImage: UploadChatImage_UseCase
+
+    @Inject
+    lateinit var storeImage_UseCase: StoreChatImageUseCase
+
+    @Inject
+    lateinit var storeReceipt: StoreReceipt_UseCase
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -218,13 +227,16 @@ class ChatPageFragment : Fragment() {
 
         handleOnActivityResult(requestCode, resultCode, data, {
             uploadChatImage(it, existingChatRoomId ?: newChatRoomId, parent) { message, image ->
-                parent.imageViewModel.storeImage(image) {
+//                parent.imageViewModel.storeImage(image) {
+//                    viewModel.handleSendMessage(message, existingChatRoomId, newChatRoom) {
+//                        updateReadReceipt()
+//                    }
+//                }
+                lifecycleScope.launch {
+                    storeImage_UseCase(image)
                     viewModel.handleSendMessage(message, existingChatRoomId, newChatRoom) {
                         updateReadReceipt()
                     }
-//                    sendMessage(message) {
-//                        updateReadReceipt()
-//                    }
                 }
             }
         },{})
@@ -233,11 +245,15 @@ class ChatPageFragment : Fragment() {
     private fun updateReadReceipt(){
         if(existingChatRoomId != null){
             val receipt = ReadReceipt("${existingChatRoomId}:${viewModel.getCurrentUserId()}", System.currentTimeMillis())
-            parent.readReceiptViewModel.storeReceipt(receipt)
+            lifecycleScope.launch {
+                storeReceipt(receipt)
+            }
         } else {
             if(firstMessageSent == true){
                 val receipt = ReadReceipt("${newChatRoomId}:${viewModel.getCurrentUserId()}", System.currentTimeMillis())
-                parent.readReceiptViewModel.storeReceipt(receipt)
+                lifecycleScope.launch {
+                    storeReceipt(receipt)
+                }
             }
         }
     }

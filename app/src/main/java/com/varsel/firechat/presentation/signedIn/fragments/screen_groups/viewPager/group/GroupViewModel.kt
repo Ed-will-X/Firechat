@@ -12,6 +12,7 @@ import com.varsel.firechat.domain.use_case.message.GetGroupRoomsRecurrentUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetGroupImageUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
+import com.varsel.firechat.domain.use_case.read_receipt.FetchReceipt_UseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -26,7 +27,8 @@ class GroupViewModel @Inject constructor(
     val setProfilePicUseCase: SetProfilePicUseCase,
     val changeIconColor: ChangeIconColorUseCase,
     val truncate: Truncate_UseCase,
-    val getLastMessage: GetLastMessage_UseCase
+    val getLastMessage: GetLastMessage_UseCase,
+    val fetchReceipt: FetchReceipt_UseCase
 ): ViewModel() {
     private val _state = MutableStateFlow(GroupFragmentState())
     val state = _state

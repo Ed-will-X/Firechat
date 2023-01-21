@@ -158,19 +158,30 @@ class GroupChatsListAdapter(
     }
 
     private fun determineReceipts(item: GroupRoom, lastMessage: Message, receiptCallback: ()-> Unit, noReceiptCallback: ()-> Unit){
-        val receipt = activity.readReceiptViewModel.fetchReceipt("${item.roomUID}:${activity.firebaseAuth.currentUser!!.uid}")
+        val id = "${item.roomUID}:${activity.firebaseAuth.currentUser!!.uid}"
 
+        lifecycleOwner.lifecycleScope.launch {
+            val receipt = viewModel.fetchReceipt(id)
 
-        receipt.observe(activity, Observer {
-
-            if(it == null || it.timestamp < lastMessage.time){
+            if(receipt == null || receipt.timestamp < lastMessage.time){
                 unreadGroups.put(item.roomUID, item)
                 receiptCallback()
             } else {
                 unreadGroups.remove(item.roomUID)
                 noReceiptCallback()
             }
-        })
+        }
+
+//        receipt.observe(activity, Observer {
+//
+//            if(it == null || it.timestamp < lastMessage.time){
+//                unreadGroups.put(item.roomUID, item)
+//                receiptCallback()
+//            } else {
+//                unreadGroups.remove(item.roomUID)
+//                noReceiptCallback()
+//            }
+//        })
     }
 
 

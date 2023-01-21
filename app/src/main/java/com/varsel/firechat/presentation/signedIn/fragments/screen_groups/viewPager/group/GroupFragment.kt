@@ -92,7 +92,6 @@ class GroupFragment : Fragment() {
         try {
             val action = ChatsFragmentDirections.actionChatsFragmentToGroupChatPageFragment(groupId)
             view?.findNavController()?.navigate(action)
-            parent.profileImageViewModel.selectedGroupImage.value = image
         } catch (e: IllegalArgumentException){ }
     }
 

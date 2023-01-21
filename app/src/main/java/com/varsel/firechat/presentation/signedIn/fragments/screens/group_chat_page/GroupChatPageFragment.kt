@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.common.Response
+import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import com.varsel.firechat.databinding.FragmentGroupChatPageBinding
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Message.Message
@@ -22,9 +23,11 @@ import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.ReadReceipt.ReadReceipt
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.domain.use_case._util.message.SortMessages_UseCase
 import com.varsel.firechat.domain.use_case.chat_image.DisplayGroupImage_UseCase
 import com.varsel.firechat.domain.use_case.chat_image.DisplayImageMessageGroup_UseCase
+import com.varsel.firechat.domain.use_case.chat_image.StoreChatImageUseCase
 import com.varsel.firechat.domain.use_case.chat_image.UploadChatImage_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.group_chat.InterpolateGroupParticipantsUseCase
@@ -34,6 +37,7 @@ import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.other_user.GetListOfUsers_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
+import com.varsel.firechat.domain.use_case.read_receipt.StoreReceipt_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
 import com.varsel.firechat.presentation.signedIn.adapters.FriendListAdapter
@@ -44,6 +48,7 @@ import com.varsel.firechat.presentation.viewModel.FriendListFragmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
@@ -95,6 +100,12 @@ class GroupChatPageFragment : Fragment() {
     @Inject
     lateinit var sortMessages: SortMessages_UseCase
 
+    @Inject
+    lateinit var storeImage_UseCase: StoreChatImageUseCase
+
+    @Inject
+    lateinit var storeReceipt: StoreReceipt_UseCase
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -122,14 +133,6 @@ class GroupChatPageFragment : Fragment() {
                 binding.sendMessageBtn.isEnabled = it
             } catch (e: Exception) {  }
         }.launchIn(lifecycleScope)
-
-        observeGroupImage()
-
-//        getGroupChatRoom()
-//        getGroupRoomFromMemory()
-//        getParticipants()
-
-
 
         chatPageViewModel.actionBarVisibility.observe(viewLifecycleOwner, Observer {
             if(it){
@@ -166,10 +169,12 @@ class GroupChatPageFragment : Fragment() {
         }
 
         binding.profileImage.setOnClickListener {
-            val selectedGroupImage = parent.profileImageViewModel.selectedGroupImage.value
-            val selectedGroupRoom = viewModel.state.value?.selectedRoom
-            if(selectedGroupImage != null && selectedGroupRoom != null){
-                displayGroupImage(selectedGroupImage, selectedGroupRoom, parent)
+            if(viewModel.state.value?.selectedRoom != null) {
+                val selectedGroupImage = viewModel.state.value?.groupImage
+                val selectedGroupRoom = viewModel.state.value?.selectedRoom
+                if(selectedGroupImage != null && selectedGroupRoom != null){
+                    displayGroupImage(selectedGroupImage, selectedGroupRoom, parent)
+                }
             }
         }
 
@@ -183,13 +188,24 @@ class GroupChatPageFragment : Fragment() {
 
             if(it.selectedRoom != null) {
                 getMessages(it.selectedRoom)
+
+                if(viewModel._hasRun.value == false) {
+                    viewModel.getGroupImage(it.selectedRoom)
+
+                    viewModel._hasRun.value = true
+                }
             }
+
+            // TODO: Observe in realtime. When current user removes group, it should take effect on this page also
+            observeGroupImage(it.groupImage)
         })
 
         viewModel.participsnts.observe(viewLifecycleOwner, Observer {
             interpolateParticipants(it, binding.participantsText)
         })
     }
+
+
 
     private fun initialiseAdapter() {
         messageAdapter = MessageListAdapter(roomId, parent, this, requireContext(), this, chatPageViewModel, ChatPageType.GROUP,
@@ -212,7 +228,9 @@ class GroupChatPageFragment : Fragment() {
 
         handleOnActivityResult(requestCode, resultCode, data, {
             uploadChatImage(it, roomId, parent) { message, image ->
-                parent.imageViewModel.storeImage(image) {
+
+                lifecycleScope.launch {
+                    storeImage_UseCase(image)
                     sendImgMessage(message) {
                         updateReadReceipt()
                     }
@@ -223,16 +241,18 @@ class GroupChatPageFragment : Fragment() {
 
     private fun updateReadReceipt(){
         val receipt = ReadReceipt("${roomId}:${viewModel.getCurrentUserId()}", System.currentTimeMillis())
-        parent.readReceiptViewModel.storeReceipt(receipt)
+        lifecycleScope.launch {
+            storeReceipt(receipt)
+        }
     }
 
-    private fun observeGroupImage(){
-        parent.profileImageViewModel.selectedGroupImage.observe(viewLifecycleOwner, Observer { groupImage ->
-            if(groupImage != null && groupImage.image != null){
-                setProfilePic(groupImage.image!!, binding.profileImage, binding.profileImageParent, parent)
-                binding.profileImageParent.visibility = View.VISIBLE
-            }
-        })
+    private fun observeGroupImage(profileImage: ProfileImage?){
+        if(profileImage?.image != null){
+            setProfilePic(profileImage.image!!, binding.profileImage, binding.profileImageParent, parent)
+            binding.profileImageParent.visibility = View.VISIBLE
+        } else {
+            binding.profileImageParent.visibility = View.GONE
+        }
     }
 
     private fun setShimmerVisibility(chatRoom: ChatRoom?){
@@ -266,15 +286,6 @@ class GroupChatPageFragment : Fragment() {
         }, {})
     }
 
-    // TODO: Remove
-//    private fun sendMessage(success: () -> Unit){
-//        val messageText = binding.messageEditText.text.toString().trim()
-//        val message = Message(MessageUtils.generateUID(30), messageText, System.currentTimeMillis(), parent.firebaseAuth.currentUser!!.uid, MessageType.TEXT)
-//        parent.firebaseViewModel.sendGroupMessage(message, roomId, parent.mDbRef, {
-//            success()
-//        }, {})
-//    }
-
     private fun sendMessage(){
         sendMessageUseCase(roomId, binding.messageEditText).onEach {
             when(it) {
@@ -298,16 +309,6 @@ class GroupChatPageFragment : Fragment() {
         findNavController().navigateUp()
     }
 
-    // TODO: Remove
-//    private fun getGroupRoomFromMemory(){
-//        parent.firebaseViewModel.groupRooms.observe(viewLifecycleOwner, Observer {
-//            MessageUtils.findGroupRoom(it, roomId) {
-//                parent.firebaseViewModel.selectedGroupRoom.value = it
-//
-//                groupPageViewModel.determineGetParticipants(it, parent)
-//            }
-//        })
-//    }
 
     private fun showSystemMessageActionsheet(userIds: List<String>){
         val dialog = BottomSheetDialog(requireContext())
@@ -341,7 +342,6 @@ class GroupChatPageFragment : Fragment() {
             val action = GroupChatPageFragmentDirections.actionGroupChatPageFragmentToOtherProfileFragment(id)
             binding.root.findNavController().navigate(action)
 
-            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
         } catch (e: IllegalArgumentException){ }
     }
 

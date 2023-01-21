@@ -1,10 +1,12 @@
 package com.varsel.firechat.di
 
 import com.varsel.firechat.data.local.Image.ImageDao
+import com.varsel.firechat.data.local.ReadReceipt.ReadReceiptDao
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.data.repository.ChatImageRepositoryImpl
 import com.varsel.firechat.data.repository.FirebaseRepositoryImpl
 import com.varsel.firechat.data.repository.OtherUserRepositoryImpl
+import com.varsel.firechat.data.repository.ReadReceiptRepositoryImpl
 import com.varsel.firechat.domain.repository.*
 import com.varsel.firechat.domain.use_case._util.animation.ChangeDialogDimAmountUseCase
 import com.varsel.firechat.domain.use_case._util.animation.ChangeIconColorUseCase
@@ -30,6 +32,8 @@ import com.varsel.firechat.domain.use_case.message.*
 import com.varsel.firechat.domain.use_case.other_user.*
 import com.varsel.firechat.domain.use_case.profile_image.*
 import com.varsel.firechat.domain.use_case.public_post.*
+import com.varsel.firechat.domain.use_case.read_receipt.FetchReceipt_UseCase
+import com.varsel.firechat.domain.use_case.read_receipt.StoreReceipt_UseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -469,8 +473,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideuploadChatImage(encodeuriUsecase: EncodeUri_UseCase, generateuidUsecase: GenerateUid_UseCase): UploadChatImage_UseCase {
-        return UploadChatImage_UseCase(encodeuriUsecase, generateuidUsecase)
+    fun provideuploadChatImage(encodeuriUsecase: EncodeUri_UseCase, generateuidUsecase: GenerateUid_UseCase, firebaseRepository: FirebaseRepository): UploadChatImage_UseCase {
+        return UploadChatImage_UseCase(encodeuriUsecase, generateuidUsecase, firebaseRepository)
     }
 
     @Provides
@@ -597,6 +601,27 @@ object AppModule {
         return SortMessages_UseCase()
     }
 
+    @Provides
+    @Singleton
+    fun provideRemodeGroupImage(repository: ProfileImageRepository): RemoveGroupImage_UseCase {
+        return RemoveGroupImage_UseCase(repository)
+    }
 
+    @Provides
+    @Singleton
+    fun provideReadReceiptRepository(dao: ReadReceiptDao): ReadReceiptRepository {
+        return ReadReceiptRepositoryImpl(dao)
+    }
 
+    @Provides
+    @Singleton
+    fun provideFetchReceipt(repository: ReadReceiptRepository): FetchReceipt_UseCase {
+        return FetchReceipt_UseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStoreReceipt(repository: ReadReceiptRepository): StoreReceipt_UseCase {
+        return StoreReceipt_UseCase(repository)
+    }
 }

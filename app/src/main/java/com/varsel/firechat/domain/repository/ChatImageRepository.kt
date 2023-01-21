@@ -9,5 +9,5 @@ interface ChatImageRepository {
     suspend fun uploadChatImage(image: Image, chatRoomID: String, base64: String) : Flow<Response>
     suspend fun getChatImage(imageId: String, chatRoomID: String) : Flow<Resource<Image>>
     suspend fun checkIfImageInDb(imageId: String): Flow<Resource<Image?>>
-
+    suspend fun storeImage(image: Image)
 }

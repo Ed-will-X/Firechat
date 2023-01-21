@@ -110,9 +110,6 @@ class CreateGroupFragment : Fragment() {
         })
         binding.friendsRecyclerView.adapter = adapter
 
-        // set selected group image to null
-        parent.profileImageViewModel.selectedGroupImage.value = null
-
         submitListToAdapter(friends)
     }
 

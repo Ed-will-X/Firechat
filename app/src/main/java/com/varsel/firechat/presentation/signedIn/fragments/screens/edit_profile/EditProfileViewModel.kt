@@ -102,6 +102,8 @@ class EditProfileViewModel @Inject constructor(
 
     fun removeImage(activity: SignedinActivity) {
         viewModelScope.launch {
+            activity.infobarController.showBottomInfobar(activity.getString(R.string.removing_profile_image), InfobarColors.UPLOADING)
+
             removeProfileImageUseCase().onEach {
                 when(it) {
                     is Response.Success -> {

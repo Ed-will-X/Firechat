@@ -32,13 +32,9 @@ import com.varsel.firechat.databinding.ActivitySignedinBinding
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.Image.Image
-import com.varsel.firechat.data.local.Image.ImageViewModel
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
-import com.varsel.firechat.data.local.ProfileImage.ProfileImageViewModel
 import com.varsel.firechat.data.local.PublicPost.PublicPost
-import com.varsel.firechat.data.local.PublicPost.PublicPostViewModel
-import com.varsel.firechat.data.local.ReadReceipt.ReadReceiptViewModel
 import com.varsel.firechat.data.local.Setting.Setting
 import com.varsel.firechat.data.local.Setting.SettingViewModel
 import com.varsel.firechat.data.local.User.User
@@ -75,12 +71,8 @@ class SignedinActivity : AppCompatActivity() {
     lateinit var firebaseStorage: FirebaseStorage
     lateinit var firebaseViewModel: FirebaseViewModel
     lateinit var signedinViewModel: SignedinViewModel
-    val imageViewModel: ImageViewModel by viewModels()
 //    var timer: CountDownTimer? = null
     val settingViewModel: SettingViewModel by viewModels()
-    val profileImageViewModel: ProfileImageViewModel by viewModels()
-    val publicPostViewModel: PublicPostViewModel by viewModels()
-    val readReceiptViewModel: ReadReceiptViewModel by viewModels()
     lateinit var infobarController: InfobarControllerUseCase
 
     @Inject
@@ -123,7 +115,6 @@ class SignedinActivity : AppCompatActivity() {
         determineAuthType(intent)
 
         // get current user recurrent
-        getCurrentUserRecurrent()
 
         // get current user single
         signedinViewModel.getCurrentUserSingle(this)
@@ -154,11 +145,11 @@ class SignedinActivity : AppCompatActivity() {
             getNewGroupMessage(it, navController)
         })
 
-        firebaseViewModel.currentUser.observeOnce(this, Observer {
-            if(it != null){
-                determineCurrentUserImgFetchMethod(it)
-            }
-        })
+//        firebaseViewModel.currentUser.observeOnce(this, Observer {
+//            if(it != null){
+//                determineCurrentUserImgFetchMethod(it)
+//            }
+//        })
 
         binding.bottomNavView.setupWithNavController(navController)
         setBottomNavVisibility(navController)
@@ -166,7 +157,6 @@ class SignedinActivity : AppCompatActivity() {
         // Makes the chat fragment the default destination
         binding.bottomNavView.menu.findItem(R.id.chatsFragment).setChecked(true)
 
-        setOverlayBindings()
 
 //        profileImageViewModel.setClearBlacklistCountdown()
     }
@@ -288,35 +278,35 @@ class SignedinActivity : AppCompatActivity() {
         prevGroups = user.groupRooms.count()
     }
 
-    fun setOverlayBindings(){
-        imageViewModel.showProfileImage.observe(this, Observer {
-            if(it){
-                binding.imgOverlayParent.visibility = View.VISIBLE
-                binding.imgOverlayName.setText(imageViewModel.username.value.toString())
-                binding.imgOverlayType.setText(imageViewModel.type.value.toString())
-                binding.imgOverlayTimestamp.setText(formatStampMessage(imageViewModel.timestamp.value.toString()))
-                if(imageViewModel.image != null){
-                    binding.imgOverlayImage.setImageBitmap(ImageUtils.base64ToBitmap(imageViewModel.image.value!!))
-                }
-
-                // TODO: Hide status bar
-                hideStatusBar()
-            } else {
-                binding.imgOverlayParent.visibility = View.GONE
-                imageViewModel.clearOverlayProps()
-                // TODO: Unhide status bar
-                showStatusBar()
-            }
-        })
-
-        binding.imgOverlayBack.setOnClickListener {
-            handleImgBackPress()
-        }
-
-        binding.imgOverlayParent.setOnClickListener {
-            handleImgBackPress()
-        }
-    }
+//    fun setOverlayBindings(){
+//        imageViewModel.showProfileImage.observe(this, Observer {
+//            if(it){
+//                binding.imgOverlayParent.visibility = View.VISIBLE
+//                binding.imgOverlayName.setText(imageViewModel.username.value.toString())
+//                binding.imgOverlayType.setText(imageViewModel.type.value.toString())
+//                binding.imgOverlayTimestamp.setText(formatStampMessage(imageViewModel.timestamp.value.toString()))
+//                if(imageViewModel.image != null){
+//                    binding.imgOverlayImage.setImageBitmap(ImageUtils.base64ToBitmap(imageViewModel.image.value!!))
+//                }
+//
+//                // TODO: Hide status bar
+//                hideStatusBar()
+//            } else {
+//                binding.imgOverlayParent.visibility = View.GONE
+//                imageViewModel.clearOverlayProps()
+//                // TODO: Unhide status bar
+//                showStatusBar()
+//            }
+//        })
+//
+//        binding.imgOverlayBack.setOnClickListener {
+//            handleImgBackPress()
+//        }
+//
+//        binding.imgOverlayParent.setOnClickListener {
+//            handleImgBackPress()
+//        }
+//    }
 
     fun hideStatusBar(){
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
@@ -385,9 +375,9 @@ class SignedinActivity : AppCompatActivity() {
 //        }
     }
 
-    fun handleImgBackPress(){
-        imageViewModel.showProfileImage.value = false
-    }
+//    fun handleImgBackPress(){
+//        imageViewModel.showProfileImage.value = false
+//    }
 
     fun determineAuthType(intent: Intent?){
         val authType = intent?.extras?.getString("AUTH_TYPE").toString()
@@ -444,181 +434,181 @@ class SignedinActivity : AppCompatActivity() {
         })
     }
 
-    private fun fetchCurrentUserProfileImage(){
-        Log.d("IMAGE_FETCH", "Get image called for CURRENT USER")
-        firebaseViewModel.getProfileImage(firebaseAuth.currentUser!!.uid, firebaseStorage, mDbRef, {
-            if(it != null){
-                profileImageViewModel.storeImage(it)
-                profileImageViewModel.profileImage_currentUser.value = it
-            }
-        }, {
+//    private fun fetchCurrentUserProfileImage(){
+//        Log.d("IMAGE_FETCH", "Get image called for CURRENT USER")
+//        firebaseViewModel.getProfileImage(firebaseAuth.currentUser!!.uid, firebaseStorage, mDbRef, {
+//            if(it != null){
+//                profileImageViewModel.storeImage(it)
+//                profileImageViewModel.profileImage_currentUser.value = it
+//            }
+//        }, {
+//
+//        }, { exists ->
+//            if(!exists){
+//                val currentUser = firebaseAuth.currentUser!!.uid
+//                profileImageViewModel.nullifyImageInRoom(currentUser)
+//            }
+//        })
+//    }
 
-        }, { exists ->
-            if(!exists){
-                val currentUser = firebaseAuth.currentUser!!.uid
-                profileImageViewModel.nullifyImageInRoom(currentUser)
-            }
-        })
-    }
+//    private fun determineCurrentUserImgFetchMethod(user: User){
+//
+//        val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
+//
+//        imageLiveData?.observeOnce(this, Observer {
+//            if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
+//                Log.d("IMAGE_CHECK", "current user display image gotten from database")
+//                if(it.image != null){
+//                    profileImageViewModel.profileImage_currentUser.value = it
+//                }
+//            } else if(it != null && it.imgChangeTimestamp == 0L){
+//                // Runs if the img change timestamp was empty the first time
+//                Log.d("IMAGE_CHECK", "current user display image NULL from database")
+//            } else {
+//                Log.d("IMAGE_CHECK", "CURRENT USER DISPLAY IMAGE GOTTEN FROM FIREBASE")
+//                fetchCurrentUserProfileImage()
+//            }
+//        })
+//    }
 
-    private fun determineCurrentUserImgFetchMethod(user: User){
+//    private fun fetchProfileImage(userId: String, afterCallback: (image: String?)-> Unit){
+//        Log.d("IMAGE_FETCH", "Get image called for ${userId}")
+//
+//        firebaseViewModel.getProfileImage(userId, firebaseStorage, mDbRef, {
+//            if(it != null){
+//                profileImageViewModel.storeImage(it)
+//                afterCallback(it.image)
+//            } else {
+//                afterCallback(null)
+//            }
+//            // TODO: Remove image from DB if it is null
+//        }, {
+//            afterCallback(null)
+//        }, { exists ->
+//            if(!exists){
+//                profileImageViewModel.nullifyImageInRoom(userId)
+//            }
+//        })
+//    }
 
-        val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
+//    private fun fetchProfileImage_fullObject(userId: String, afterCallback: (image: ProfileImage?)-> Unit){
+//        Log.d("IMAGE_FETCH", "Get image called for ${userId}")
+//
+//        firebaseViewModel.getProfileImage(userId, firebaseStorage, mDbRef, {
+//            if(it != null){
+//                profileImageViewModel.storeImage(it)
+//                afterCallback(it)
+//            } else {
+//                afterCallback(null)
+//            }
+//        }, {
+//            afterCallback(null)
+//        }, { exists ->
+//            if(!exists){
+//                profileImageViewModel.nullifyImageInRoom(userId)
+//            }
+//        })
+//    }
 
-        imageLiveData?.observeOnce(this, Observer {
-            if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
-                Log.d("IMAGE_CHECK", "current user display image gotten from database")
-                if(it.image != null){
-                    profileImageViewModel.profileImage_currentUser.value = it
-                }
-            } else if(it != null && it.imgChangeTimestamp == 0L){
-                // Runs if the img change timestamp was empty the first time
-                Log.d("IMAGE_CHECK", "current user display image NULL from database")
-            } else {
-                Log.d("IMAGE_CHECK", "CURRENT USER DISPLAY IMAGE GOTTEN FROM FIREBASE")
-                fetchCurrentUserProfileImage()
-            }
-        })
-    }
+//    fun determineOtherImgFetchMethod(user: User, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
+//        val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
+//
+//        imageLiveData?.observeOnce(this, Observer {
+//            if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
+//                Log.d("IMAGE_CHECK", "other user display image gotten from database")
+//                if(it.image != null){
+//                    dbCallback(it.image)
+//                }
+//            } else if(it != null && it.imgChangeTimestamp == 0L){
+//                Log.d("IMAGE_CHECK", "other user display NULL from database")
+//            } else {
+//                profileImageViewModel.isNotUserInBlacklist(user,{
+//                    profileImageViewModel.addUserToBlacklist(user)
+//                    Log.d("IMAGE_CHECK", "OTHER USER DISPLAY IMAGE GOTTEN FROM FIREBASE")
+//                    fetchProfileImage(user.userUID) {
+//                        fetchCallback(it)
+//                    }
+//                }, {
+//                    fetchCallback(null)
+//                })
+//            }
+//        })
+//    }
 
-    private fun fetchProfileImage(userId: String, afterCallback: (image: String?)-> Unit){
-        Log.d("IMAGE_FETCH", "Get image called for ${userId}")
+//    fun determineOtherImgFetchMethod_fullObject(user: User, fetchCallback: (image: ProfileImage?)-> Unit, dbCallback: (image: ProfileImage?)-> Unit){
+//        val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
+//
+//        imageLiveData?.observeOnce(this, Observer {
+//            if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
+//                Log.d("IMAGE_CHECK", "other user display image gotten from database")
+//                if(it.image != null){
+//                    dbCallback(it)
+//                } else {
+//                    dbCallback(null)
+//                }
+//            } else if(it != null && it.imgChangeTimestamp == 0L){
+//                Log.d("IMAGE_CHECK", "other user display NULL from database")
+//            } else {
+//                profileImageViewModel.isNotUserInBlacklist(user,{
+//                    profileImageViewModel.addUserToBlacklist(user)
+//                    Log.d("IMAGE_CHECK", "OTHER USER DISPLAY IMAGE GOTTEN FROM FIREBASE")
+//                    fetchProfileImage_fullObject(user.userUID) {
+//                        fetchCallback(it)
+//                    }
+//                }, {
+//                    fetchCallback(null)
+//                })
+//            }
+//        })
+//    }
 
-        firebaseViewModel.getProfileImage(userId, firebaseStorage, mDbRef, {
-            if(it != null){
-                profileImageViewModel.storeImage(it)
-                afterCallback(it.image)
-            } else {
-                afterCallback(null)
-            }
-            // TODO: Remove image from DB if it is null
-        }, {
-            afterCallback(null)
-        }, { exists ->
-            if(!exists){
-                profileImageViewModel.nullifyImageInRoom(userId)
-            }
-        })
-    }
+//    fun determineGroupFetchMethod(group: GroupRoom, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
+//        val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(group.roomUID)
+//
+//        imageLiveData?.observeOnce(this, Observer {
+//            if(it != null && group.imgChangeTimestamp == it.imgChangeTimestamp){
+//                Log.d("IMAGE_CHECK", "Group display image gotten from database")
+//                if(it.image != null){
+//                    dbCallback(it.image)
+//                }
+//            } else if(it != null && it.imgChangeTimestamp == 0L){
+//                Log.d("IMAGE_CHECK", "Group display NULL from database")
+//            }else {
+//                profileImageViewModel.isNotGroupInBlacklist(group,{
+//                    profileImageViewModel.addGroupToBlacklist(group)
+//                    Log.d("IMAGE_CHECK", "GROUP DISPLAY IMAGE GOTTEN FROM FIREBASE")
+//                    fetchProfileImage(group.roomUID) {
+//                        fetchCallback(it)
+//                    }
+//                }, {
+//                    fetchCallback(null)
+//                })
+//            }
+//        })
+//    }
 
-    private fun fetchProfileImage_fullObject(userId: String, afterCallback: (image: ProfileImage?)-> Unit){
-        Log.d("IMAGE_FETCH", "Get image called for ${userId}")
-
-        firebaseViewModel.getProfileImage(userId, firebaseStorage, mDbRef, {
-            if(it != null){
-                profileImageViewModel.storeImage(it)
-                afterCallback(it)
-            } else {
-                afterCallback(null)
-            }
-        }, {
-            afterCallback(null)
-        }, { exists ->
-            if(!exists){
-                profileImageViewModel.nullifyImageInRoom(userId)
-            }
-        })
-    }
-
-    fun determineOtherImgFetchMethod(user: User, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
-        val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
-
-        imageLiveData?.observeOnce(this, Observer {
-            if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
-                Log.d("IMAGE_CHECK", "other user display image gotten from database")
-                if(it.image != null){
-                    dbCallback(it.image)
-                }
-            } else if(it != null && it.imgChangeTimestamp == 0L){
-                Log.d("IMAGE_CHECK", "other user display NULL from database")
-            } else {
-                profileImageViewModel.isNotUserInBlacklist(user,{
-                    profileImageViewModel.addUserToBlacklist(user)
-                    Log.d("IMAGE_CHECK", "OTHER USER DISPLAY IMAGE GOTTEN FROM FIREBASE")
-                    fetchProfileImage(user.userUID) {
-                        fetchCallback(it)
-                    }
-                }, {
-                    fetchCallback(null)
-                })
-            }
-        })
-    }
-
-    fun determineOtherImgFetchMethod_fullObject(user: User, fetchCallback: (image: ProfileImage?)-> Unit, dbCallback: (image: ProfileImage?)-> Unit){
-        val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(user.userUID)
-
-        imageLiveData?.observeOnce(this, Observer {
-            if(it != null && user.imgChangeTimestamp == it.imgChangeTimestamp){
-                Log.d("IMAGE_CHECK", "other user display image gotten from database")
-                if(it.image != null){
-                    dbCallback(it)
-                } else {
-                    dbCallback(null)
-                }
-            } else if(it != null && it.imgChangeTimestamp == 0L){
-                Log.d("IMAGE_CHECK", "other user display NULL from database")
-            } else {
-                profileImageViewModel.isNotUserInBlacklist(user,{
-                    profileImageViewModel.addUserToBlacklist(user)
-                    Log.d("IMAGE_CHECK", "OTHER USER DISPLAY IMAGE GOTTEN FROM FIREBASE")
-                    fetchProfileImage_fullObject(user.userUID) {
-                        fetchCallback(it)
-                    }
-                }, {
-                    fetchCallback(null)
-                })
-            }
-        })
-    }
-
-    fun determineGroupFetchMethod(group: GroupRoom, fetchCallback: (image: String?)-> Unit, dbCallback: (image: String?)-> Unit){
-        val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(group.roomUID)
-
-        imageLiveData?.observeOnce(this, Observer {
-            if(it != null && group.imgChangeTimestamp == it.imgChangeTimestamp){
-                Log.d("IMAGE_CHECK", "Group display image gotten from database")
-                if(it.image != null){
-                    dbCallback(it.image)
-                }
-            } else if(it != null && it.imgChangeTimestamp == 0L){
-                Log.d("IMAGE_CHECK", "Group display NULL from database")
-            }else {
-                profileImageViewModel.isNotGroupInBlacklist(group,{
-                    profileImageViewModel.addGroupToBlacklist(group)
-                    Log.d("IMAGE_CHECK", "GROUP DISPLAY IMAGE GOTTEN FROM FIREBASE")
-                    fetchProfileImage(group.roomUID) {
-                        fetchCallback(it)
-                    }
-                }, {
-                    fetchCallback(null)
-                })
-            }
-        })
-    }
-
-    fun determineGroupFetchMethod_fullObject(group: GroupRoom, fetchCallback: (image: ProfileImage?)-> Unit, dbCallback: (image: ProfileImage?)-> Unit){
-        val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(group.roomUID)
-
-        imageLiveData?.observeOnce(this, Observer {
-            if(it != null && group.imgChangeTimestamp == it.imgChangeTimestamp){
-                Log.d("IMAGE_CHECK", "Group display image gotten from database")
-                dbCallback(it)
-            } else if(it != null && it.imgChangeTimestamp == 0L){
-                Log.d("IMAGE_CHECK", "Group display NULL from database")
-            }else {
-                profileImageViewModel.isNotGroupInBlacklist(group,{
-                    profileImageViewModel.addGroupToBlacklist(group)
-                    Log.d("IMAGE_CHECK", "GROUP DISPLAY IMAGE GOTTEN FROM FIREBASE")
-                    fetchProfileImage_fullObject(group.roomUID) {
-                        fetchCallback(it)
-                    }
-                }, {
-                    fetchCallback(null)
-                })
-            }
-        })
-    }
+//    fun determineGroupFetchMethod_fullObject(group: GroupRoom, fetchCallback: (image: ProfileImage?)-> Unit, dbCallback: (image: ProfileImage?)-> Unit){
+//        val imageLiveData = profileImageViewModel.checkForProfileImageInRoom(group.roomUID)
+//
+//        imageLiveData?.observeOnce(this, Observer {
+//            if(it != null && group.imgChangeTimestamp == it.imgChangeTimestamp){
+//                Log.d("IMAGE_CHECK", "Group display image gotten from database")
+//                dbCallback(it)
+//            } else if(it != null && it.imgChangeTimestamp == 0L){
+//                Log.d("IMAGE_CHECK", "Group display NULL from database")
+//            }else {
+//                profileImageViewModel.isNotGroupInBlacklist(group,{
+//                    profileImageViewModel.addGroupToBlacklist(group)
+//                    Log.d("IMAGE_CHECK", "GROUP DISPLAY IMAGE GOTTEN FROM FIREBASE")
+//                    fetchProfileImage_fullObject(group.roomUID) {
+//                        fetchCallback(it)
+//                    }
+//                }, {
+//                    fetchCallback(null)
+//                })
+//            }
+//        })
+//    }
 
 
 //    fun fetchChatImage(imageId: String, chatRoomId: String, afterCallback: (image: String?)-> Unit){
@@ -657,112 +647,112 @@ class SignedinActivity : AppCompatActivity() {
         If it exists, it stores the image in room and provides it in a callback,
         else, it returns null in that callback
     */
-    fun fetchChatImage_fullObject(imageId: String, chatRoomId: String, afterCallback: (image: Image?)-> Unit){
-        Log.d("IMAGE_FETCH", "Get image from firebase called for ${imageId}")
-
-        firebaseViewModel.getChatImage(imageId, chatRoomId, mDbRef, firebaseStorage, {
-            if(it != null){
-                // TODO: store image
-                imageViewModel.storeImage(it)
-                afterCallback(it)
-            } else {
-                afterCallback(null)
-            }
-        }, {
-            afterCallback(null)
-        })
-    }
-
-    fun determineMessageImgFetchMethod_fullObject(message: Message, chatRoomId: String, imgCallback: (image: Image?)-> Unit){
-        val imageLiveData = imageViewModel.checkForImgInRoom(message.message)
-
-        imageLiveData.observeOnce(this, Observer {
-            if(it != null){
-                Log.d("IMAGE_CHECK", "Chat image gotten from database")
-                imgCallback(it)
-            } else {
-                Log.d("IMAGE_CHECK", "CHAT IMAGE GOTTEN FROM FIREBASE")
-                fetchChatImage_fullObject(message.message, chatRoomId) {
-                    imgCallback(it)
-                }
-            }
-        })
-    }
+//    fun fetchChatImage_fullObject(imageId: String, chatRoomId: String, afterCallback: (image: Image?)-> Unit){
+//        Log.d("IMAGE_FETCH", "Get image from firebase called for ${imageId}")
+//
+//        firebaseViewModel.getChatImage(imageId, chatRoomId, mDbRef, firebaseStorage, {
+//            if(it != null){
+//                // TODO: store image
+//                imageViewModel.storeImage(it)
+//                afterCallback(it)
+//            } else {
+//                afterCallback(null)
+//            }
+//        }, {
+//            afterCallback(null)
+//        })
+//    }
+//
+//    fun determineMessageImgFetchMethod_fullObject(message: Message, chatRoomId: String, imgCallback: (image: Image?)-> Unit){
+//        val imageLiveData = imageViewModel.checkForImgInRoom(message.message)
+//
+//        imageLiveData.observeOnce(this, Observer {
+//            if(it != null){
+//                Log.d("IMAGE_CHECK", "Chat image gotten from database")
+//                imgCallback(it)
+//            } else {
+//                Log.d("IMAGE_CHECK", "CHAT IMAGE GOTTEN FROM FIREBASE")
+//                fetchChatImage_fullObject(message.message, chatRoomId) {
+//                    imgCallback(it)
+//                }
+//            }
+//        })
+//    }
 
     /*
         Fetches PUBLIC POST from firebase,
         If it exists, it stores the PUBLIC POST in room and provides it in a callback,
         else, it returns null in that callback
     */
-    fun fetchPublicPost_fullObject(postId: String, afterCallback: (publicPost: PublicPost?)-> Unit){
-        Log.d("POST_FETCH", "Get public post from firebase called for ${postId}")
-
-        firebaseViewModel.getPublicPost(postId, firebaseStorage,mDbRef, {
-            if(it != null){
-                // TODO: store image
-                publicPostViewModel.storePost(it)
-                afterCallback(it)
-            } else {
-                afterCallback(null)
-            }
-        }, {
-            afterCallback(null)
-        })
-    }
+//    fun fetchPublicPost_fullObject(postId: String, afterCallback: (publicPost: PublicPost?)-> Unit){
+//        Log.d("POST_FETCH", "Get public post from firebase called for ${postId}")
+//
+//        firebaseViewModel.getPublicPost(postId, firebaseStorage,mDbRef, {
+//            if(it != null){
+//                // TODO: store image
+//                publicPostViewModel.storePost(it)
+//                afterCallback(it)
+//            } else {
+//                afterCallback(null)
+//            }
+//        }, {
+//            afterCallback(null)
+//        })
+//    }
 
     /*
         Checks if the public post is in room,
         if: returns the post from room in a callback
         else: fetches from firebase and returns it in a callback
     */
-    fun determinePublicPostFetchMethod_fullObject(postId: String, postCallback: (publicPost: PublicPost?)-> Unit){
-        val postLiveData = publicPostViewModel.checkIfPostInRoom(postId)
-
-        postLiveData.observeOnce(this, Observer {
-            if(it != null){
-                Log.d("POST_CHECK", "Public post gotten from database")
-                postCallback(it)
-            } else {
-                Log.d("POST_CHECK", "PUBLIC POST GOTTEN FROM FIREBASE")
-                fetchPublicPost_fullObject(postId) {
-                    postCallback(it)
-                }
-            }
-        })
-    }
+//    fun determinePublicPostFetchMethod_fullObject(postId: String, postCallback: (publicPost: PublicPost?)-> Unit){
+//        val postLiveData = publicPostViewModel.checkIfPostInRoom(postId)
+//
+//        postLiveData.observeOnce(this, Observer {
+//            if(it != null){
+//                Log.d("POST_CHECK", "Public post gotten from database")
+//                postCallback(it)
+//            } else {
+//                Log.d("POST_CHECK", "PUBLIC POST GOTTEN FROM FIREBASE")
+//                fetchPublicPost_fullObject(postId) {
+//                    postCallback(it)
+//                }
+//            }
+//        })
+//    }
 
 
     /*
         Just checks if the image is in the database,
         It does not fetch
     */
-    fun checkIfImgMessageInDb(message: Message, image: (image: Image?)-> Unit){
-        val imageLiveData = imageViewModel.checkForImgInRoom(message.message)
+//    fun checkIfImgMessageInDb(message: Message, image: (image: Image?)-> Unit){
+//        val imageLiveData = imageViewModel.checkForImgInRoom(message.message)
+//
+//        imageLiveData.observeOnce(this, Observer {
+//            if(it != null){
+//                Log.d("IMAGE_CHECK", "Chat exists database")
+//                image(it)
+//            } else {
+//                Log.d("IMAGE_CHECK", "CHAT IMAGE DOES NOT EXIST IN DATABASE")
+//                image(null)
+//            }
+//        })
+//    }
 
-        imageLiveData.observeOnce(this, Observer {
-            if(it != null){
-                Log.d("IMAGE_CHECK", "Chat exists database")
-                image(it)
-            } else {
-                Log.d("IMAGE_CHECK", "CHAT IMAGE DOES NOT EXIST IN DATABASE")
-                image(null)
-            }
-        })
-    }
-
-    fun checkIfPostInDb(ID: String, post: (post: PublicPost?)-> Unit){
-        val postLiveData = publicPostViewModel.checkIfPostInRoom(ID)
-
-        postLiveData.observeOnce(this, Observer {
-            if(it != null){
-                Log.d("POST_CHECK", "Post exists database")
-                post(it)
-            } else {
-                Log.d("POST_CHECK", "POST DOES NOT EXIST IN DATABASE")
-                post(null)
-            }
-        })
-    }
+//    fun checkIfPostInDb(ID: String, post: (post: PublicPost?)-> Unit){
+//        val postLiveData = publicPostViewModel.checkIfPostInRoom(ID)
+//
+//        postLiveData.observeOnce(this, Observer {
+//            if(it != null){
+//                Log.d("POST_CHECK", "Post exists database")
+//                post(it)
+//            } else {
+//                Log.d("POST_CHECK", "POST DOES NOT EXIST IN DATABASE")
+//                post(null)
+//            }
+//        })
+//    }
 
     var offlineInfobarTimer: Timer? = null
     private fun checkConnectivity(){
@@ -809,15 +799,10 @@ class SignedinActivity : AppCompatActivity() {
 //        }
 //    }
 
-    private fun dismissNetworkErrorOverlay(){
-        binding.networkErrorOverlay.visibility = View.GONE
-    }
+//    private fun dismissNetworkErrorOverlay(){
+//        binding.networkErrorOverlay.visibility = View.GONE
+//    }
 
-    private fun getCurrentUserRecurrent(){
-        firebaseViewModel.getCurrentUserRecurrent(firebaseAuth, mDbRef, {  }, {
-
-        })
-    }
 
     private fun getFriendRequests(requests: HashMap<String, Long>){
         val users = mutableListOf<User>()

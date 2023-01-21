@@ -76,10 +76,15 @@ class PublicPostAdapter(
         // check if item-to-load is not the full image
         if(shape != PublicPostAdapterShapes.RECTANCLE){
             // if: Call the determine code directly
-            activity.determinePublicPostFetchMethod_fullObject(item) {
-                if(it != null){
+//            activity.determinePublicPostFetchMethod_fullObject(item) {
+//                if(it != null){
+//                    setImage(it, image, parent)
+//                }
+//            }
+            lifecycleOwner.lifecycleScope.launch {
+                getPublicPostUseCase(item).onEach {
                     setImage(it, image, parent)
-                }
+                }.launchIn(this)
             }
         } else {
             // else: Check if it is in DB, then call the determine code on item press
@@ -105,35 +110,6 @@ class PublicPostAdapter(
                     }
                 }.launchIn(this)
             }
-
-
-//            // else: Check if it is in DB, then call the determine code on item press
-//            PostUtils.check_if_post_in_room(item, activity) {
-//                // check if in room
-//                if(it != null && parent != null){
-//                    // if: Bind it directly
-//                    setImage(it, image, parent)
-//                } else {
-//                    // else: Set on click listener that downloads it from firebase
-//                    parent?.setOnClickListener {
-//                        if(!hasBeenClicked){
-//                            hasBeenClicked = true
-//
-//                            // TODO: Get and set image
-//                            activity.fetchPublicPost_fullObject(item) {
-//                                if(it != null){
-//                                    setImage(it, image, parent)
-//                                }
-//                            }
-//
-//                        }
-//                    }
-//
-//                }
-//            }
-
-
-
         }
     }
 

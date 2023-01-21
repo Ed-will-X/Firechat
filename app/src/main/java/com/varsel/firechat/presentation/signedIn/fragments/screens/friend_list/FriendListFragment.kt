@@ -196,7 +196,6 @@ class FriendListFragment : Fragment() {
             view?.findNavController()?.navigate(action)
 
 //            parent.firebaseViewModel.selectedUser.value = user
-            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
         } catch (e: IllegalArgumentException) { }
     }
 

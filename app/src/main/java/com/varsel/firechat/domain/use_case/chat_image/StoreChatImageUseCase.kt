@@ -9,7 +9,7 @@ import javax.inject.Inject
 class StoreChatImageUseCase @Inject constructor(
     val repository: ChatImageRepository
 ) {
-    suspend operator fun invoke(image: Image, chatRoomId: String, base64: String): Flow<Response> {
-        return repository.uploadChatImage(image, chatRoomId, base64)
+    suspend operator fun invoke(image: Image) {
+        return repository.storeImage(image)
     }
 }

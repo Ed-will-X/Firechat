@@ -118,7 +118,6 @@ class AddFriendsFragment : Fragment() {
             val action = AddFriendsFragmentDirections.actionAddFriendsToOtherProfileFragment(user.userUID)
 
             parent.firebaseViewModel.addToRecentSearch(user.userUID, parent.firebaseAuth, parent.mDbRef)
-            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
 
             parent.hideKeyboard()
             view?.findNavController()?.navigate(action)

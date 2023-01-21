@@ -67,7 +67,6 @@ class FriendsFragment : Fragment() {
         friendsAdapter = FriendsAdapter(parent, viewModel, this, { user, base64 ->
             navigateToProfile(user.userUID, user, base64)
         },{ user, base64 ->
-            parent.profileImageViewModel.selectedOtherUserProfilePicChat.value = base64
             parent.firebaseViewModel.selectedChatRoomUser.value = user
             navigateToChats(user.userUID)
         }, { profileImage, user ->
@@ -96,8 +95,6 @@ class FriendsFragment : Fragment() {
             val action = ChatsFragmentDirections.actionChatsFragmentToOtherProfileFragment(id)
             binding.root.findNavController().navigate(action)
 
-//            parent.firebaseViewModel.selectedUser.value = user
-            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
         } catch (e: IllegalArgumentException) {}
     }
 

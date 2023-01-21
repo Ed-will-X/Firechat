@@ -1,16 +1,14 @@
 package com.varsel.firechat.domain.use_case.profile_image
 
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.domain.repository.ProfileImageRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class RemoveGroupImageUseCase @Inject constructor(
+class RemoveGroupImage_UseCase @Inject constructor(
     val repository: ProfileImageRepository
 ) {
-
-    suspend operator fun invoke(groupId: String): Flow<Response> {
-        return repository.removeGroupImage(groupId)
+    suspend operator fun invoke(roomUID: String): Flow<Response> {
+        return repository.removeGroupImage(roomUID)
     }
 }

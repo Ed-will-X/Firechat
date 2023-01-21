@@ -12,6 +12,7 @@ import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentU
 import com.varsel.firechat.domain.use_case.message.GetChatRoomsRecurrentUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
+import com.varsel.firechat.domain.use_case.read_receipt.FetchReceipt_UseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -27,7 +28,8 @@ class IndividualViewModel @Inject constructor(
     val truncate: Truncate_UseCase,
     val getOtherUserId: GetOtherUserId_UseCase,
     val formatStampChatsPage: FormatTimestampChatsPage_UseCase,
-    val getLastMessage: GetLastMessage_UseCase
+    val getLastMessage: GetLastMessage_UseCase,
+    val fetchReceipt: FetchReceipt_UseCase
 ): ViewModel() {
     private val _state = MutableStateFlow(IndividualFragmentState())
     val state = _state

@@ -10,7 +10,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -144,17 +143,28 @@ class ChatListAdapter(
 
     // TODO: Modularise
     private fun determineReceipts(item: ChatRoom, lastMessage: Message, receiptCallback: ()-> Unit, noReceiptCallback: ()-> Unit){
-        val receipt = activity.readReceiptViewModel.fetchReceipt("${item.roomUID}:${activity.firebaseAuth.currentUser!!.uid}")
+        val id = "${item.roomUID}:${activity.firebaseAuth.currentUser!!.uid}"
+        lifecycleOwner.lifecycleScope.launch {
+            val receipt = viewModel.fetchReceipt(id)
 
-        receipt.observe(activity, Observer {
-            if(it == null || it.timestamp < lastMessage.time){
+            if(receipt == null || receipt.timestamp < lastMessage.time){
                 unreadChatRooms.put(item.roomUID, item)
                 receiptCallback()
             } else {
                 unreadChatRooms.remove(item.roomUID)
                 noReceiptCallback()
             }
-        })
+        }
+
+//        receipt.observe(activity, Observer {
+//            if(it == null || it.timestamp < lastMessage.time){
+//                unreadChatRooms.put(item.roomUID, item)
+//                receiptCallback()
+//            } else {
+//                unreadChatRooms.remove(item.roomUID)
+//                noReceiptCallback()
+//            }
+//        })
     }
 
     // TODO: Show shimmer if the adapter can't account for every username

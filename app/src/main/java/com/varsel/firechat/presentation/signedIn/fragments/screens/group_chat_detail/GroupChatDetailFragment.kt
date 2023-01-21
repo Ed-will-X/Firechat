@@ -22,6 +22,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.common.Response
+import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import com.varsel.firechat.databinding.ActionSheetParticipantActionsBinding
 import com.varsel.firechat.databinding.ActionSheetProfileImageBinding
 import com.varsel.firechat.databinding.FragmentGroupChatDetailBinding
@@ -46,6 +47,7 @@ import com.varsel.firechat.presentation.signedIn.adapters.ParticipantsListAdapte
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
@@ -109,7 +111,6 @@ class GroupChatDetailFragment : Fragment() {
         viewModel.getGroupChat(groupId)
         collectState()
 
-        observeGroupImage()
 
         checkServerConnection().onEach {
             if(it) {
@@ -133,8 +134,18 @@ class GroupChatDetailFragment : Fragment() {
 
     private fun collectState() {
         viewModel.state.observe(viewLifecycleOwner, Observer {
+            if(it.selectedGroup != null) {
+
+                if(viewModel._hasRun.value == false) {
+                    viewModel.getGroupImage(it.selectedGroup)
+
+                    viewModel._hasRun.value = true
+                }
+            }
+
             binding.groupName.text = it.selectedGroup?.groupName
             binding.groupSubject.text = it.selectedGroup?.subject ?: parent.getString(R.string.no_subject)
+            observeGroupImage(it.groupImage)
 
             if(checkAdminStatus()){
                 binding.editIcon.visibility = View.VISIBLE
@@ -160,7 +171,6 @@ class GroupChatDetailFragment : Fragment() {
                 },{ id, user, base64 ->
                     showParticipantOptionsActonsheet(id)
                     parent.firebaseViewModel.selectedChatRoomUser.value = user
-                    parent.profileImageViewModel.selectedOtherUserProfilePicChat.value = base64
                 }, { image, user ->
                     displayProfileImage(image, user, parent)
                 })
@@ -193,20 +203,23 @@ class GroupChatDetailFragment : Fragment() {
     }
 
     private fun displayImage(){
-        val selectedGroupImage = parent.profileImageViewModel.selectedGroupImage.value
-        val selectedGroupRoom = viewModel.state.value?.selectedGroup
-        if(selectedGroupImage != null && selectedGroupRoom != null){
-            displayGroupImage(selectedGroupImage, selectedGroupRoom, parent)
+        if(viewModel.state.value?.selectedGroup != null) {
+            val selectedGroupImage = viewModel.state.value?.groupImage
+            val selectedGroupRoom = viewModel.state.value?.selectedGroup
+            if(selectedGroupImage != null && selectedGroupRoom != null){
+                displayGroupImage(selectedGroupImage, selectedGroupRoom, parent)
+            }
         }
+
     }
 
-    private fun observeGroupImage(){
-        parent.profileImageViewModel.selectedGroupImage.observe(viewLifecycleOwner, Observer { profileImage ->
-            if(profileImage != null && profileImage.image != null){
-                setProfilePic(profileImage.image!!, binding.profileImage, binding.profileImageParent, parent)
-                binding.profileImageParent.visibility = View.VISIBLE
-            }
-        })
+    private fun observeGroupImage(profileImage: ProfileImage?){
+        if(profileImage?.image != null){
+            setProfilePic(profileImage.image!!, binding.profileImage, binding.profileImageParent, parent)
+            binding.profileImageParent.visibility = View.VISIBLE
+        } else {
+            binding.profileImageParent.visibility = View.GONE
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -228,25 +241,27 @@ class GroupChatDetailFragment : Fragment() {
             val timestamp = System.currentTimeMillis()
             val profileImage = ProfileImage(groupId, timestamp)
 
-            parent.infobarController.showBottomInfobar(parent.getString(R.string.uploading_group_image), InfobarColors.UPLOADING)
+            viewModel.uploadGroupImage(groupId, profileImage, base64, parent)
 
-            parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, groupId, {
-                parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
-                    val profileImage_withBase64 = ProfileImage(profileImage, base64)
-
-                    parent.profileImageViewModel.storeImage(profileImage_withBase64)
-//                    parent.profileImageViewModel.selectedGroupImageEncoded.value = profileImage.image
-                    parent.profileImageViewModel.selectedGroupImage.value = profileImage_withBase64
-
-                    parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_successful), InfobarColors.SUCCESS)
-
-                    successCallback()
-                }, {
-                    parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
-                })
-            }, {
-                parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
-            })
+//            parent.infobarController.showBottomInfobar(parent.getString(R.string.uploading_group_image), InfobarColors.UPLOADING)
+//
+//            parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, groupId, {
+//                parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
+//                    val profileImage_withBase64 = ProfileImage(profileImage, base64)
+//
+//                    parent.profileImageViewModel.storeImage(profileImage_withBase64)
+////                    parent.profileImageViewModel.selectedGroupImageEncoded.value = profileImage.image
+//                    parent.profileImageViewModel.selectedGroupImage.value = profileImage_withBase64
+//
+//                    parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_successful), InfobarColors.SUCCESS)
+//
+//                    successCallback()
+//                }, {
+//                    parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
+//                })
+//            }, {
+//                parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
+//            })
         }
     }
 
@@ -256,52 +271,56 @@ class GroupChatDetailFragment : Fragment() {
         val profileImage =
             ProfileImage( groupId, timestamp)
 
-        parent.infobarController.showBottomInfobar(parent.getString(R.string.uploading_group_image), InfobarColors.UPLOADING)
+        viewModel.uploadGroupImage(groupId, profileImage, base64, parent)
 
-        parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, groupId, {
-            parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
-                val profileImage_withBase64 = ProfileImage(profileImage, base64)
-
-                parent.profileImageViewModel.storeImage(profileImage_withBase64)
-                parent.profileImageViewModel.selectedGroupImage.value = profileImage_withBase64
-
-                parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_successful), InfobarColors.SUCCESS)
-
-                successCallback()
-            }, {
-                parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
-            })
-        }, {
-            parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
-        })
+//        parent.infobarController.showBottomInfobar(parent.getString(R.string.uploading_group_image), InfobarColors.UPLOADING)
+//
+//        parent.firebaseViewModel.uploadProfileImage(profileImage, base64, parent.firebaseStorage, parent.mDbRef, groupId, {
+//            parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
+//                val profileImage_withBase64 = ProfileImage(profileImage, base64)
+//
+//                parent.profileImageViewModel.storeImage(profileImage_withBase64)
+//                parent.profileImageViewModel.selectedGroupImage.value = profileImage_withBase64
+//
+//                parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_successful), InfobarColors.SUCCESS)
+//
+//                successCallback()
+//            }, {
+//                parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
+//            })
+//        }, {
+//            parent.infobarController.showBottomInfobar(parent.getString(R.string.group_image_upload_error), InfobarColors.FAILURE)
+//        })
     }
 
     private fun removeImage(successCallback: () -> Unit){
         val timestamp = System.currentTimeMillis()
 
-        parent.infobarController.showBottomInfobar(parent.getString(R.string.removing_group_image), InfobarColors.UPLOADING)
+        viewModel.removeGroupImage(groupId, parent)
 
-        parent.firebaseViewModel.removeProfileImage(parent.mDbRef, groupId, parent.firebaseStorage, {
-            parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
-                val image = parent.profileImageViewModel.getImageById(groupId)
-
-                parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_group_image_successful), InfobarColors.SUCCESS)
-
-                image.observeOnce(viewLifecycleOwner, Observer {
-                    if(it != null){
-                        parent.profileImageViewModel.nullifyImageInRoom(groupId)
-
-//                        parent.profileImageViewModel.selectedGroupImageEncoded.value = null
-                        parent.profileImageViewModel.selectedGroupImage.value = null
-                    }
-                })
-                successCallback()
-            }, {
-                parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_group_image_error), InfobarColors.FAILURE)
-            })
-        }, {
-            parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_group_image_error), InfobarColors.FAILURE)
-        })
+//        parent.infobarController.showBottomInfobar(parent.getString(R.string.removing_group_image), InfobarColors.UPLOADING)
+//
+//        parent.firebaseViewModel.removeProfileImage(parent.mDbRef, groupId, parent.firebaseStorage, {
+//            parent.firebaseViewModel.appendGroupImageTimestamp(groupId, parent.mDbRef, timestamp, {
+//                val image = parent.profileImageViewModel.getImageById(groupId)
+//
+//                parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_group_image_successful), InfobarColors.SUCCESS)
+//
+//                image.observeOnce(viewLifecycleOwner, Observer {
+//                    if(it != null){
+//                        parent.profileImageViewModel.nullifyImageInRoom(groupId)
+//
+////                        parent.profileImageViewModel.selectedGroupImageEncoded.value = null
+//                        parent.profileImageViewModel.selectedGroupImage.value = null
+//                    }
+//                })
+//                successCallback()
+//            }, {
+//                parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_group_image_error), InfobarColors.FAILURE)
+//            })
+//        }, {
+//            parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_group_image_error), InfobarColors.FAILURE)
+//        })
     }
 
     private fun showImageOptionsActionsheet(){
@@ -407,7 +426,6 @@ class GroupChatDetailFragment : Fragment() {
     private fun navigateToOtherProfileFragment(userId: String, user: User, base64: String?){
         try {
             val action = GroupChatDetailFragmentDirections.actionGroupChatDetailFragmentToOtherProfileFragment(userId)
-            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
             findNavController().navigate(action)
         } catch(e: IllegalArgumentException) { }
     }

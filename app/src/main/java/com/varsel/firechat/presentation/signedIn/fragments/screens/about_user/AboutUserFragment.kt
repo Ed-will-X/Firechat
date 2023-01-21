@@ -25,7 +25,6 @@ class AboutUserFragment : Fragment() {
     private lateinit var parent: SignedinActivity
     private lateinit var viewModel: AboutUserViewModel
     private lateinit var userId: String
-    private var userImg: String? = null
 
     @Inject
     lateinit var setProfilePic: SetProfilePicUseCase
@@ -55,7 +54,7 @@ class AboutUserFragment : Fragment() {
     private fun collectState() {
         collectLatestLifecycleFlow(viewModel.state) {
             if(it.selectedUser != null) {
-                observeUserProps(it.selectedUser)
+                observeUserProps(it)
             }
 
         }
@@ -73,7 +72,6 @@ class AboutUserFragment : Fragment() {
 
     private fun navigateToUserPage(view: View, userId: String){
         val action = AboutUserFragmentDirections.actionAboutUserFragmentToOtherProfileFragment(userId)
-        parent.profileImageViewModel.selectedOtherUserProfilePic.value = userImg
 
         view.findNavController().navigate(action)
     }
@@ -82,17 +80,16 @@ class AboutUserFragment : Fragment() {
         findNavController().navigateUp()
     }
 
-    private fun observeUserProps(user: User){
-        parent.profileImageViewModel.selectedOtherUserProfilePicChat.observe(viewLifecycleOwner, Observer {
-            if(it != null){
-                setProfilePic(it, binding.profileImage, binding.profileImageParent, parent)
-                userImg = it
-            }
-        })
+    private fun observeUserProps(state: AboutUserState){
+        if(state.profileImage?.image != null){
+            setProfilePic(state.profileImage.image!!, binding.profileImage, binding.profileImageParent, parent)
+        }
 
-        binding.userName.text = user.name
-        binding.occupation.text = user.occupation ?: context?.getString(R.string.no_occupation)
-        bindUserDetailProps(user)
+        if(state.selectedUser != null) {
+            binding.userName.text = state.selectedUser.name
+            binding.occupation.text = state.selectedUser.occupation ?: context?.getString(R.string.no_occupation)
+            bindUserDetailProps(state.selectedUser)
+        }
     }
 
     private fun bindUserDetailProps(user: User){

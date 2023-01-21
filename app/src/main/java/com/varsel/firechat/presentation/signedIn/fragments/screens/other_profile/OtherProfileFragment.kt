@@ -196,7 +196,6 @@ class OtherProfileFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        parent.profileImageViewModel.selectedOtherUserProfilePic.value = null
         _binding = null
     }
 

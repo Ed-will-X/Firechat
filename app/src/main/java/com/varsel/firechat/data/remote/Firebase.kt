@@ -1081,8 +1081,8 @@ class Firebase(
         }
     }
 
-    fun uploadGroupImage(groupRoom: GroupRoom, profileImage: ProfileImage, base64: String, successCallback: ()-> Unit, failureCallback: ()-> Unit){
-        val reference = mDbRef.child("ProfileImages").child(groupRoom.roomUID)
+    fun uploadGroupImage(roomId: String, profileImage: ProfileImage, base64: String, successCallback: ()-> Unit, failureCallback: ()-> Unit){
+        val reference = mDbRef.child("ProfileImages").child(roomId)
         val decoded = ImageUtils.base64ToByteArray(base64)
 
         firebaseStorage.getReference("/profileImages/${profileImage.ownerId}").putBytes(decoded).addOnCompleteListener {

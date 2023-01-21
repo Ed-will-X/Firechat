@@ -14,6 +14,9 @@ interface ReadReceiptDao {
     @Update
     suspend fun update(readReceipt: ReadReceipt)
 
-    @Query("SELECT * FROM read_receipts_table WHERE roomId = :roomId")
-    fun get(roomId: String): LiveData<ReadReceipt>
+    @Query("SELECT * FROM read_receipts_table WHERE roomId = :id")
+    fun get_liveData(id: String): LiveData<ReadReceipt>
+
+    @Query("SELECT * FROM read_receipts_table WHERE roomId = :id")
+    suspend fun get(id: String): ReadReceipt?
 }

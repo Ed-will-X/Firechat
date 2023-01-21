@@ -10,11 +10,11 @@ import javax.inject.Inject
 class UploadGroupImageUseCase @Inject constructor(
     val repository: ProfileImageRepository
 ) {
-    suspend operator fun invoke(groupRoom: GroupRoom, profileImage: ProfileImage, base64: String): Flow<Response> {
+    suspend operator fun invoke(roomId: String, profileImage: ProfileImage, base64: String): Flow<Response> {
         if(profileImage.image != null){
             val image_without_base64 = ProfileImage(profileImage.ownerId, profileImage.imgChangeTimestamp)
-            return repository.uploadGroupImage(groupRoom, image_without_base64, base64)
+            return repository.uploadGroupImage(roomId, image_without_base64, base64)
         }
-        return repository.uploadGroupImage(groupRoom, profileImage, base64)
+        return repository.uploadGroupImage(roomId, profileImage, base64)
     }
 }

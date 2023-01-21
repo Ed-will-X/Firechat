@@ -59,4 +59,8 @@ class ChatImageRepositoryImpl @Inject constructor(
         awaitClose {  }
     }
 
+    override suspend fun storeImage(image: Image) {
+        imageDao.insert(image)
+    }
+
 }

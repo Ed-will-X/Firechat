@@ -25,6 +25,8 @@ class ProfileImageRepositoryImpl @Inject constructor(
     val profileImageFetchBlacklist = MutableLiveData<HashMap<String, Long>>(hashMapOf())
 
     override suspend fun uploadProfileImage(profileImage: ProfileImage, base64: String): Flow<Response> = callbackFlow {
+        trySend(Response.Loading())
+
         firebase.uploadProfileImage(profileImage, base64, {
             firebase.appendProfileImageTimestamp(profileImage.imgChangeTimestamp, {
                 trySend(Response.Success())
@@ -40,9 +42,11 @@ class ProfileImageRepositoryImpl @Inject constructor(
         awaitClose {  }
     }
 
-    override suspend fun uploadGroupImage(groupRoom: GroupRoom, profileImage: ProfileImage, base64: String): Flow<Response> = callbackFlow {
-        firebase.uploadGroupImage(groupRoom, profileImage, base64, {
-            firebase.appendGroupImageTimestamp(groupRoom.roomUID, profileImage.imgChangeTimestamp, {
+    override suspend fun uploadGroupImage(roomId: String, profileImage: ProfileImage, base64: String): Flow<Response> = callbackFlow {
+        trySend(Response.Loading())
+
+        firebase.uploadGroupImage(roomId, profileImage, base64, {
+            firebase.appendGroupImageTimestamp(roomId, profileImage.imgChangeTimestamp, {
                 trySend(Response.Success())
 
                 val profileImage_withBase64 = ProfileImage(profileImage, base64)
@@ -57,11 +61,13 @@ class ProfileImageRepositoryImpl @Inject constructor(
         awaitClose {  }
     }
 
-    override suspend fun removeGroupImage(groupRoom: GroupRoom): Flow<Response> = callbackFlow {
-        firebase.removeProfileImage(groupRoom.roomUID, {
-            firebase.appendGroupImageTimestamp(groupRoom.roomUID, System.currentTimeMillis(), {
+    override suspend fun removeGroupImage(roomUID: String): Flow<Response> = callbackFlow {
+        trySend(Response.Loading())
+
+        firebase.removeProfileImage(roomUID, {
+            firebase.appendGroupImageTimestamp(roomUID, System.currentTimeMillis(), {
                 trySend(Response.Success())
-                runBlocking { nullifyImageInRoom(groupRoom.roomUID) }
+                runBlocking { nullifyImageInRoom(roomUID) }
             }, {
                 trySend(Response.Fail())
             })
@@ -73,6 +79,8 @@ class ProfileImageRepositoryImpl @Inject constructor(
     }
 
     override suspend fun removeProfileImage(): Flow<Response> = callbackFlow {
+        trySend(Response.Loading())
+
         firebase.removeProfileImage(firebase.mAuth.currentUser!!.uid, {
             firebase.appendProfileImageTimestamp(System.currentTimeMillis(), {
                 trySend(Response.Success())

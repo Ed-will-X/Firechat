@@ -10,8 +10,8 @@ interface ProfileImageRepository {
     suspend fun uploadProfileImage(profileImage: ProfileImage, base64: String) : Flow<Response>
     suspend fun removeProfileImage() : Flow<Response>
 
-    suspend fun uploadGroupImage(groupRoom: GroupRoom, profileImage: ProfileImage, base64: String) : Flow<Response>
-    suspend fun removeGroupImage(groupRoom: GroupRoom) : Flow<Response>
+    suspend fun uploadGroupImage(roomId: String, profileImage: ProfileImage, base64: String) : Flow<Response>
+    suspend fun removeGroupImage(roomUID: String) : Flow<Response>
 
     suspend fun getProfileImage(user: User) : Flow<ProfileImage?>
     suspend fun getGroupImage(groupRoom: GroupRoom) : Flow<ProfileImage?>

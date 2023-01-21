@@ -10,11 +10,14 @@ import com.varsel.firechat.domain.use_case._util.message.GenerateUid_UseCase
 import com.varsel.firechat.domain.use_case.image.EncodeUri_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.common._utils.MessageUtils
+import com.varsel.firechat.domain.repository.ChatImageRepository
+import com.varsel.firechat.domain.repository.FirebaseRepository
 import javax.inject.Inject
 
 class UploadChatImage_UseCase @Inject constructor(
     val encodeUri: EncodeUri_UseCase,
-    val generateUID: GenerateUid_UseCase
+    val generateUID: GenerateUid_UseCase,
+    val repository: FirebaseRepository
 ) {
     operator fun invoke(uri: Uri, chatRoomId: String, activity: SignedinActivity, success: (message: Message, image: Image)-> Unit){
         val encoded = encodeUri(uri, activity)
@@ -29,7 +32,7 @@ class UploadChatImage_UseCase @Inject constructor(
             // Shows bottom infobar
             activity.infobarController.showBottomInfobar(activity.getString(R.string.uploading_chat_image), InfobarColors.UPLOADING)
 
-            activity.firebaseViewModel.uploadChatImage(image, chatRoomId, encoded, activity.firebaseStorage, activity.mDbRef, {
+            repository.getFirebaseInstance().uploadChatImage(image, chatRoomId, encoded, {
                 activity.infobarController.showBottomInfobar(activity.getString(R.string.chat_image_upload_successful), InfobarColors.SUCCESS)
 
                 success(message, it)

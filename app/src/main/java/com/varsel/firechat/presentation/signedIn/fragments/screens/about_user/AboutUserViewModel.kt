@@ -13,17 +13,20 @@ import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.use_case._util.animation.Direction
 import com.varsel.firechat.domain.use_case._util.animation.Rotate90UseCase
 import com.varsel.firechat.domain.use_case.other_user.GetOtherUserSingle
+import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AboutUserViewModel @Inject constructor(
     val rotate90UseCase: Rotate90UseCase,
-    val getOtherUserSingle: GetOtherUserSingle
+    val getOtherUserSingle: GetOtherUserSingle,
+    val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase
 ): ViewModel() {
     private var userDetailsVisible = MutableLiveData<Boolean>(false)
 
@@ -39,6 +42,10 @@ class AboutUserViewModel @Inject constructor(
             when(it) {
                 is Resource.Success -> {
                     _state.value = _state.value.copy(selectedUser = it.data)
+
+                    viewModelScope.launch {
+                        if(it.data != null) getProfileImage(it.data)
+                    }
                 }
                 is Resource.Loading -> {
                     _state.value = _state.value.copy(selectedUser = null)
@@ -47,6 +54,12 @@ class AboutUserViewModel @Inject constructor(
                     _state.value = _state.value.copy(selectedUser = null)
                 }
             }
+        }.launchIn(viewModelScope)
+    }
+
+    suspend fun getProfileImage(user: User) {
+        getOtherUserProfileImageUseCase(user).onEach {
+            _state.value = _state.value.copy(profileImage = it)
         }.launchIn(viewModelScope)
     }
 

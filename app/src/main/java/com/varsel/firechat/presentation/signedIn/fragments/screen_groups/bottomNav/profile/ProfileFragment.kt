@@ -174,21 +174,23 @@ class ProfileFragment: Fragment() {
             val currentUserId = parent.firebaseAuth.currentUser!!.uid
             val publicPost = PublicPost(currentUserId, uid, PublicPostType.IMAGE, caption, timestamp)
 
-            // Shows bottom infobar
-            parent.infobarController.showBottomInfobar(parent.getString(R.string.uploading_public_post), InfobarColors.UPLOADING)
+            viewModel.uploadPublicPost(publicPost, encoded, parent)
 
-            parent.firebaseViewModel.uploadPublicPost(publicPost, encoded, parent.firebaseStorage, parent.mDbRef, {
-                parent.firebaseViewModel.appendPublicPostIdToUser(parent.firebaseAuth, parent.mDbRef, uid, {
+//            // Shows bottom infobar
+//            parent.infobarController.showBottomInfobar(parent.getString(R.string.uploading_public_post), InfobarColors.UPLOADING)
 
-                    parent.infobarController.showBottomInfobar(parent.getString(R.string.public_post_upload_successful), InfobarColors.SUCCESS)
-
-                    parent.publicPostViewModel.storePost(it)
-                }, {
-                    parent.infobarController.showBottomInfobar(parent.getString(R.string.chat_image_upload_error), InfobarColors.FAILURE)
-                })
-            }, {
-                parent.infobarController.showBottomInfobar(parent.getString(R.string.chat_image_upload_error), InfobarColors.FAILURE)
-            })
+//            parent.firebaseViewModel.uploadPublicPost(publicPost, encoded, parent.firebaseStorage, parent.mDbRef, {
+//                parent.firebaseViewModel.appendPublicPostIdToUser(parent.firebaseAuth, parent.mDbRef, uid, {
+//
+//                    parent.infobarController.showBottomInfobar(parent.getString(R.string.public_post_upload_successful), InfobarColors.SUCCESS)
+//
+//                    parent.publicPostViewModel.storePost(it)
+//                }, {
+//                    parent.infobarController.showBottomInfobar(parent.getString(R.string.chat_image_upload_error), InfobarColors.FAILURE)
+//                })
+//            }, {
+//                parent.infobarController.showBottomInfobar(parent.getString(R.string.chat_image_upload_error), InfobarColors.FAILURE)
+//            })
         }
     }
 
@@ -420,7 +422,6 @@ class ProfileFragment: Fragment() {
         try {
             val action = ProfileFragmentDirections.actionProfileFragmentToOtherProfileFragment(id)
 //            parent.firebaseViewModel.selectedUser.value = user
-            parent.profileImageViewModel.selectedOtherUserProfilePic.value = base64
             binding.root.findNavController().navigate(action)
         } catch (e: IllegalArgumentException) {}
     }

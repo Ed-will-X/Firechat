@@ -11,15 +11,5 @@ abstract class PublicPostDatabase: RoomDatabase() {
         @Volatile
         private var INSTANCE: PublicPostDatabase? = null
 
-//        fun getInstance(context: Context): PublicPostDatabase {
-//            synchronized(this){
-//                var instance = INSTANCE
-//                if(instance == null){
-//                    instance = Room.databaseBuilder(context.applicationContext, PublicPostDatabase:: class.java, "public_post_database").build()
-//                    INSTANCE = instance
-//                }
-//                return instance
-//            }
-//        }
     }
 }

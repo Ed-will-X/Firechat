@@ -11,15 +11,6 @@ abstract class ProfileImageDatabase: RoomDatabase() {
         @Volatile
         private var INSTANCE: ProfileImageDatabase? = null
 
-//        fun getInstance(context: Context): ProfileImageDatabase {
-//            synchronized(this){
-//                var instance = INSTANCE
-//                if(instance == null){
-//                    instance = Room.databaseBuilder(context.applicationContext, ProfileImageDatabase:: class.java, "profile_image_database").build()
-//                    INSTANCE = instance
-//                }
-//                return instance
-//            }
-//        }
+
     }
 }

@@ -27,9 +27,11 @@ import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.domain.use_case.profile_image.GetCurrentUserProfileImageUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -56,6 +58,9 @@ class EditProfilePage : Fragment() {
 
     @Inject
     lateinit var encodeUri: EncodeUri_UseCase
+
+    @Inject
+    lateinit var gdtCurrentUserImage: GetCurrentUserProfileImageUseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -275,11 +280,15 @@ class EditProfilePage : Fragment() {
         }.launchIn(lifecycleScope)
 
         dialogBinding.expand.setOnClickListener {
-            val image = parent.profileImageViewModel.profileImage_currentUser.value
-            Log.d("CLEAN", "Expand clicked")
-            if(image != null){
-                displayProfileImage(image, currentUser, parent)
-                dialog.dismiss()
+            lifecycleScope.launch {
+                collectLatestLifecycleFlow(viewModel.state) {
+                    Log.d("CLEAN", "Expand clicked")
+                    if(it.profileImage?.image != null){
+                        displayProfileImage(it.profileImage, currentUser, parent)
+                        dialog.dismiss()
+                    }
+                }
+
             }
         }
 
