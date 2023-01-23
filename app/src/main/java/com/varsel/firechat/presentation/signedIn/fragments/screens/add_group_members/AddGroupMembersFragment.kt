@@ -54,10 +54,6 @@ class AddGroupMembersFragment : Fragment() {
     }
 
     private fun collectState() {
-//        viewModel.non_participants.observe(viewLifecycleOwner, Observer {
-//            addToRecyclerView(it)
-//        })
-
         collectLatestLifecycleFlow(viewModel.non_participants) {
             addToRecyclerView(it)
         }
@@ -93,10 +89,6 @@ class AddGroupMembersFragment : Fragment() {
         adapter.users = arrayListOf()
         if(non_participants.isNotEmpty()){
             adapter.users = non_participants.toMutableList()
-
-//            binding.usersRecyclerView.visibility = View.VISIBLE
-//            binding.noMatch.visibility = View.GONE
-//            binding.noFriends.visibility = View.GONE
 
             adapter.notifyDataSetChanged()
         }

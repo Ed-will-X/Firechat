@@ -29,8 +29,6 @@ class SignedinViewModel @Inject constructor(
     val getChatRoomsRecurrentUseCase: GetChatRoomsRecurrentUseCase,
     val initialiseGroupRoomsStreamUseCase: InitialiseGroupRoomsStreamUseCase
 ): ViewModel() {
-    val currentChatRoomId = MutableLiveData<String>()
-    private val hasGetUserRecurrentRun = MutableStateFlow<Boolean>(false)
     private val lastChatRoomCount = MutableStateFlow<Int>(-1)
     private val lastGroupRoomCount = MutableStateFlow<Int>(-1)
 
@@ -81,100 +79,4 @@ class SignedinViewModel @Inject constructor(
 
     }
 
-    // TODO: Delete
-//    fun getCurrentUserSingle(activity: SignedinActivity){
-//        activity.firebaseViewModel.getCurrentUserSingle(activity.firebaseAuth, activity.mDbRef, { }, {
-//            // sets the chat rooms in the viewModel
-//            if(activity.firebaseViewModel.currentUser.value?.chatRooms != null && activity.firebaseViewModel.currentUser.value?.chatRooms?.isNotEmpty() == true){
-////                getAllChats(activity, activity.firebaseViewModel.currentUser.value!!.chatRooms!!.keys.toList())
-//            } else {
-//                // current user data is not stored in the viewModel
-////                activity.firebaseViewModel.chatRooms.value = mutableListOf()
-//            }
-//
-//            // Sets the groups in the viewModel
-//            if(activity.firebaseViewModel.currentUser.value?.groupRooms != null && activity.firebaseViewModel.currentUser.value?.groupRooms?.isNotEmpty() == true){
-////                getAllGroupChats(activity, activity.firebaseViewModel.currentUser.value!!.groupRooms!!.keys.toList())
-//            } else {
-////                activity.firebaseViewModel.groupRooms.value = mutableListOf()
-//            }
-//
-//        })
-//    }
-
-    // TODO: Delete
-//    private fun getAllChats(activity: SignedinActivity, chatRoomsUID: List<String>){
-//        val chatRooms = mutableListOf<ChatRoom>()
-//        // TODO: Fix potential memory leak
-//        for(i in chatRoomsUID){
-//            activity.firebaseViewModel.getChatRoomRecurrent(i, activity.mDbRef, { chatRoom ->
-//                if(activity.firebaseViewModel.chatRooms.value != null){
-//                    val groupIterator = activity.firebaseViewModel.chatRooms.value!!.iterator()
-//                    while (groupIterator.hasNext()){
-//                        val g = groupIterator.next()
-//                        if(g?.roomUID == chatRoom?.roomUID){
-//                            groupIterator.remove()
-//                        }
-//                    }
-//                }
-//                if(chatRoom != null){
-//                    chatRooms.add(chatRoom)
-//                }
-//            }, {
-//                activity.firebaseViewModel.chatRooms.value = chatRooms
-//            })
-//        }
-//    }
-
-    // TODO: Delete
-//    private fun getAllGroupChats(activity: SignedinActivity, groupRoomIDs: List<String>){
-//        val groupRooms = mutableListOf<GroupRoom>()
-//        // TODO: Fix potential memory leak
-//        for (i in groupRoomIDs){
-//            // TODO: Fix bug here:
-//            activity.firebaseViewModel.getGroupChatRoomRecurrent(i, activity.mDbRef, {
-//                if(activity.firebaseViewModel.groupRooms.value != null){
-//                    val groupIterator = activity.firebaseViewModel.groupRooms.value!!.iterator()
-//                    while (groupIterator.hasNext()){
-//                        val g = groupIterator.next()
-//                        if(g?.roomUID == it?.roomUID){
-//                            groupIterator.remove()
-//                        }
-//                    }
-//                }
-//                if(it != null){
-//                    groupRooms.add(it)
-//                }
-//
-//            }, {
-//                activity.firebaseViewModel.groupRooms.value = groupRooms
-//            })
-//        }
-//    }
-
-    fun determineChatroom(userId: String, chatRooms: MutableList<ChatRoom>?): Boolean{
-        // TODO: Fix potential null pointer exception
-        val chatRooms = chatRooms!!
-        var contains: Boolean = false
-        for(i in chatRooms){
-            if(i.participants!!.contains(userId)){
-                contains = true
-                currentChatRoomId.value = i.roomUID
-                break
-            }
-        }
-        return contains
-    }
-
-    fun findChatRoom(userId: String, chatRooms: List<ChatRoom>): ChatRoom? {
-        // TODO: Fix potential null pointer exception
-        for(i in chatRooms){
-            if(i.participants.contains(userId)){
-                currentChatRoomId.value = i.roomUID.toString()
-                return i
-            }
-        }
-
-        return null
-    }
 }

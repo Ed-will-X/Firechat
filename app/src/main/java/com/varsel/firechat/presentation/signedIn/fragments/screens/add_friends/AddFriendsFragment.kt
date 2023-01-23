@@ -21,6 +21,7 @@ import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.AddFriendsSearchAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.RecentSearchAdapter
 import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.domain.use_case._util.AddRecyclerViewSeparator_UseCase
 import com.varsel.firechat.domain.use_case._util.user.SortByTimestamp_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
@@ -52,6 +53,9 @@ class AddFriendsFragment : Fragment() {
 
     @Inject
     lateinit var addToRecentSearch: AddToRecentSearch_UseCase
+
+    @Inject
+    lateinit var addRecyclerViewSeparator: AddRecyclerViewSeparator_UseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -139,7 +143,7 @@ class AddFriendsFragment : Fragment() {
 
         }
 
-        addRecyclerViewSeparator()
+        addRecyclerViewSeparator(binding.recentSearchRecyclerView, this)
         if (recentSearches != null){
             submitToRecentSearch(recentSearches)
         } else {
@@ -160,15 +164,6 @@ class AddFriendsFragment : Fragment() {
         })
 
         binding.searchRecyclerView.adapter = addFriendsSearchAdapter
-    }
-
-    private fun addRecyclerViewSeparator() {
-        binding.recentSearchRecyclerView.addItemDecoration(
-            DividerItemDecoration(
-                context,
-                DividerItemDecoration.VERTICAL
-            )
-        )
     }
 
     @SuppressLint("NotifyDataSetChanged")

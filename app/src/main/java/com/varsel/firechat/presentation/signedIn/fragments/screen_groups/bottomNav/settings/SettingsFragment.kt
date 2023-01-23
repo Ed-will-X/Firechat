@@ -15,6 +15,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentSettingsBinding
 import com.varsel.firechat.data.local.Setting.Setting
+import com.varsel.firechat.domain.use_case._util.status_bar.ChangeStatusBarColor_UseCase
+import com.varsel.firechat.domain.use_case._util.system.CheckIfNightMode_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.current_user.SignoutUseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -37,6 +39,12 @@ class SettingsFragment : Fragment() {
 
     @Inject
     lateinit var signoutUseCase: SignoutUseCase
+
+    @Inject
+    lateinit var changeStatusBarColor: ChangeStatusBarColor_UseCase
+
+    @Inject
+    lateinit var isNightMode: CheckIfNightMode_UseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,10 +84,10 @@ class SettingsFragment : Fragment() {
     }
 
     private fun changeStatusBarColor(){
-        if(parent.isNightMode()){
-            parent.changeStatusBarColor(R.color.black, false)
+        if(isNightMode(parent)){
+            changeStatusBarColor(R.color.black, false, parent)
         } else {
-            parent.changeStatusBarColor(R.color.white, true)
+            changeStatusBarColor(R.color.white, true, parent)
         }
     }
 

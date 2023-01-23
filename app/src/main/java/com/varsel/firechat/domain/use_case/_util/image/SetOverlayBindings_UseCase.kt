@@ -7,11 +7,14 @@ import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.domain.use_case._util.message.FormatStampMessage_UseCase
+import com.varsel.firechat.domain.use_case._util.status_bar.SetStatusBarVisibility_UseCase
+import com.varsel.firechat.domain.use_case._util.status_bar.StatusBarVisibility
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import javax.inject.Inject
 
 class SetOverlayBindings_UseCase @Inject constructor(
-    val formatStampMessage: FormatStampMessage_UseCase
+    val formatStampMessage: FormatStampMessage_UseCase,
+    val setStatusBarVisibility: SetStatusBarVisibility_UseCase
 ) {
     operator fun invoke(profileImage: ProfileImage, name: String, type: String, activity: SignedinActivity){
         activity.binding.imgOverlayParent.visibility = View.VISIBLE
@@ -22,8 +25,7 @@ class SetOverlayBindings_UseCase @Inject constructor(
         if(profileImage.image != null) {
             activity.binding.imgOverlayImage.setImageBitmap(ImageUtils.base64ToBitmap(profileImage.image!!))
         }
-        // TODO: Hide status bar
-        activity.hideStatusBar()
+        setStatusBarVisibility(StatusBarVisibility.Hide(), activity)
 
         activity.binding.imgOverlayBack.setOnClickListener {
             handleImgBackPress(activity)
@@ -43,8 +45,7 @@ class SetOverlayBindings_UseCase @Inject constructor(
         if(chatImage.image != null) {
             activity.binding.imgOverlayImage.setImageBitmap(ImageUtils.base64ToBitmap(chatImage.image!!))
         }
-        // TODO: Hide status bar
-        activity.hideStatusBar()
+        setStatusBarVisibility(StatusBarVisibility.Hide(), activity)
 
         activity.binding.imgOverlayBack.setOnClickListener {
             handleImgBackPress(activity)
@@ -64,8 +65,8 @@ class SetOverlayBindings_UseCase @Inject constructor(
         if(publicPost.image != null) {
             activity.binding.imgOverlayImage.setImageBitmap(ImageUtils.base64ToBitmap(publicPost.image!!))
         }
-        // TODO: Hide status bar
-        activity.hideStatusBar()
+
+        setStatusBarVisibility(StatusBarVisibility.Hide(), activity)
 
         activity.binding.imgOverlayBack.setOnClickListener {
             handleImgBackPress(activity)
@@ -81,7 +82,7 @@ class SetOverlayBindings_UseCase @Inject constructor(
         activity.binding.imgOverlayName.setText("")
         activity.binding.imgOverlayType.setText("")
         activity.binding.imgOverlayTimestamp.setText("")
-        activity.showStatusBar()
+        setStatusBarVisibility(StatusBarVisibility.Show(), activity)
 
         activity.binding.imgOverlayImage.setImageBitmap(null)
     }

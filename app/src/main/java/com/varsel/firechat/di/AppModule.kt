@@ -8,23 +8,27 @@ import com.varsel.firechat.data.repository.FirebaseRepositoryImpl
 import com.varsel.firechat.data.repository.OtherUserRepositoryImpl
 import com.varsel.firechat.data.repository.ReadReceiptRepositoryImpl
 import com.varsel.firechat.domain.repository.*
+import com.varsel.firechat.domain.use_case._util.AddRecyclerViewSeparator_UseCase
 import com.varsel.firechat.domain.use_case._util.animation.ChangeDialogDimAmountUseCase
 import com.varsel.firechat.domain.use_case._util.animation.ChangeIconColorUseCase
 import com.varsel.firechat.domain.use_case._util.animation.Rotate90UseCase
 import com.varsel.firechat.domain.use_case._util.image.SetOverlayBindings_UseCase
 import com.varsel.firechat.domain.use_case._util.message.*
 import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
+import com.varsel.firechat.domain.use_case._util.status_bar.ChangeStatusBarColor_UseCase
+import com.varsel.firechat.domain.use_case._util.status_bar.SetStatusBarVisibility_UseCase
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
+import com.varsel.firechat.domain.use_case._util.system.CheckIfNightMode_UseCase
 import com.varsel.firechat.domain.use_case._util.user.*
 import com.varsel.firechat.domain.use_case.auth.SignUp_UseCase
+import com.varsel.firechat.domain.use_case.auth.ValidateSignIn_UseCase
+import com.varsel.firechat.domain.use_case.auth.ValidateSignUp_UseCase
 import com.varsel.firechat.domain.use_case.camera.CheckIfCameraPermissionGranted_UseCase
 import com.varsel.firechat.domain.use_case.camera.OpenCamera_UseCase
 import com.varsel.firechat.domain.use_case.camera.RequestCameraPermission_UseCase
 import com.varsel.firechat.domain.use_case.chat_image.*
-import com.varsel.firechat.domain.use_case.chat_room.AppendChatRoom_UseCase
-import com.varsel.firechat.domain.use_case.chat_room.AppendParticipants_UseCase
-import com.varsel.firechat.domain.use_case.chat_room.SendMessage_UseCase
 import com.varsel.firechat.domain.use_case.chat_image.UploadChatImage_UseCase
+import com.varsel.firechat.domain.use_case.chat_room.*
 import com.varsel.firechat.domain.use_case.current_user.*
 import com.varsel.firechat.domain.use_case.group_chat.*
 import com.varsel.firechat.domain.use_case.image.*
@@ -416,8 +420,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSetOverlayBindings(formatstampmessageUsecase: FormatStampMessage_UseCase): SetOverlayBindings_UseCase {
-        return SetOverlayBindings_UseCase(formatstampmessageUsecase)
+    fun provideSetOverlayBindings(formatstampmessageUsecase: FormatStampMessage_UseCase, statusbarvisibilityUsecase: SetStatusBarVisibility_UseCase): SetOverlayBindings_UseCase {
+        return SetOverlayBindings_UseCase(formatstampmessageUsecase, statusbarvisibilityUsecase)
     }
 
     @Provides
@@ -661,6 +665,57 @@ object AppModule {
     fun provideGetFreindRequestsUseCase(repository: FirebaseRepository, sort: SortByTimestamp_UseCase): GetFriendRequests_UseCase {
         return GetFriendRequests_UseCase(repository, sort)
     }
+
+    @Provides
+    @Singleton
+    fun provideValidateSignup(): ValidateSignUp_UseCase {
+        return ValidateSignUp_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideValidateSignin(): ValidateSignIn_UseCase {
+        return ValidateSignIn_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDoesChatRoomExist(): DoesChatRoomExist_UseCase {
+        return DoesChatRoomExist_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFindChatRoom(): FindChatRoom_UseCase {
+        return FindChatRoom_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideChangeStatusBarColor(): ChangeStatusBarColor_UseCase {
+        return ChangeStatusBarColor_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSetStatusBarVisibility(): SetStatusBarVisibility_UseCase {
+        return SetStatusBarVisibility_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCheckIfNightMode_UseCase(): CheckIfNightMode_UseCase {
+        return CheckIfNightMode_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAddRecyclerViewSeparator(): AddRecyclerViewSeparator_UseCase {
+        return AddRecyclerViewSeparator_UseCase()
+    }
+
+
+
 
 
 }

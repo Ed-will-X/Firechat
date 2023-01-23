@@ -17,6 +17,9 @@ import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.FriendsAdapter
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.chats_tab_page.ChatsFragmentDirections
 import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.data.local.Chat.ChatRoom
+import com.varsel.firechat.domain.use_case.chat_room.DoesChatRoomExist_UseCase
+import com.varsel.firechat.domain.use_case.chat_room.FindChatRoom_UseCase
 import com.varsel.firechat.domain.use_case.message.GetChatRoomsRecurrentUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
@@ -36,6 +39,12 @@ class FriendsFragment : Fragment() {
 
     @Inject
     lateinit var getChatRooms: GetChatRoomsRecurrentUseCase
+
+    @Inject
+    lateinit var determineChatRoom: DoesChatRoomExist_UseCase
+
+    @Inject
+    lateinit var findChatRoom: FindChatRoom_UseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -103,8 +112,9 @@ class FriendsFragment : Fragment() {
 
     private fun navigateToChats(userId: String){
         var action: NavDirections
-        if(parent.signedinViewModel.determineChatroom(userId, getChatRooms().value.data?.toMutableList())){
-            action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(parent.signedinViewModel.currentChatRoomId.value, userId)
+        if(determineChatRoom(userId, getChatRooms().value.data?.toList() ?: listOf<ChatRoom>())){
+            val chatRoom = findChatRoom(userId, getChatRooms().value.data?.toList() ?: listOf<ChatRoom>())
+            action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(chatRoom?.roomUID, userId)
         }else {
             action = ChatsFragmentDirections.actionChatsFragmentToChatPageFragment(null, userId)
         }

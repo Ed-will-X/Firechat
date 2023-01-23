@@ -8,6 +8,7 @@ import com.varsel.firechat.domain.repository.FirebaseRepository
 import com.varsel.firechat.domain.use_case._util.message.FormatTimestampChatsPage_UseCase
 import com.varsel.firechat.domain.use_case._util.message.GetLastMessage_UseCase
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
+import com.varsel.firechat.domain.use_case._util.system.CheckIfNightMode_UseCase
 import com.varsel.firechat.domain.use_case._util.user.GetOtherUserId_UseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
 import com.varsel.firechat.domain.use_case.message.GetChatRoomsRecurrentUseCase
@@ -31,7 +32,8 @@ class IndividualViewModel @Inject constructor(
     val formatStampChatsPage: FormatTimestampChatsPage_UseCase,
     val getLastMessage: GetLastMessage_UseCase,
     val fetchReceipt: FetchReceipt_UseCase,
-    val firebaseRepository: FirebaseRepository
+    val firebaseRepository: FirebaseRepository,
+    val isNightMode: CheckIfNightMode_UseCase
 ): ViewModel() {
     private val _state = MutableStateFlow(IndividualFragmentState())
     val state = _state

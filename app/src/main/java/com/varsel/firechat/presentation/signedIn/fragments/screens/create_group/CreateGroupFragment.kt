@@ -119,12 +119,7 @@ class CreateGroupFragment : Fragment() {
         if(list.isNotEmpty()){
             adapter.friends = list.toMutableList()
 
-//            binding.friendsRecyclerView.visibility = View.VISIBLE
-//            binding.noMatch.visibility = View.GONE
-//            binding.noFriends.visibility = View.GONE
-
-
-            adapter?.notifyDataSetChanged()
+            adapter.notifyDataSetChanged()
         }
     }
 
@@ -140,13 +135,6 @@ class CreateGroupFragment : Fragment() {
                 binding.createGroupBtn.isEnabled = false
             }
         }.launchIn(lifecycleScope)
-//        LifecycleUtils.observeInternetStatus(parent, this, {
-//            if(adapter.selected.count() > 0){
-//                binding.createGroupBtn.isEnabled = true
-//            }
-//        }, {
-//            binding.createGroupBtn.isEnabled = false
-//        })
     }
 
     private fun toggleBtnEnable(){
@@ -169,12 +157,6 @@ class CreateGroupFragment : Fragment() {
         val dialog = BottomSheetDialog(requireContext())
         val dialogBinding = ActionsheetCreateGroupBinding.inflate(layoutInflater, binding.root, false)
         dialog.setContentView(dialogBinding.root)
-
-//        LifecycleUtils.observeInternetStatus(parent, this, {
-//            dialogBinding.btnCreateGroup.isEnabled = true
-//        }, {
-//            dialogBinding.btnCreateGroup.isEnabled = false
-//        })
 
         checkServerConnection().onEach {
             dialogBinding.btnCreateGroup.isEnabled = it

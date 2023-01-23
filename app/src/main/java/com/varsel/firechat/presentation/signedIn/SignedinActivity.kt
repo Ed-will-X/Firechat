@@ -33,12 +33,13 @@ import com.varsel.firechat.domain.use_case._util.InfobarColors
 import com.varsel.firechat.domain.use_case._util.InfobarControllerUseCase
 import com.varsel.firechat.presentation.signedOut.SignedoutActivity
 import com.varsel.firechat.presentation.signedOut.fragments.AuthType
-import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
 import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import com.varsel.firechat.domain.repository.FirebaseRepository
 import com.varsel.firechat.domain.use_case._util.message.FormatStampMessage_UseCase
 import com.varsel.firechat.domain.use_case._util.message.GetLastMessage_UseCase
 import com.varsel.firechat.domain.use_case._util.message.SortChats_UseCase
+import com.varsel.firechat.domain.use_case._util.status_bar.SetStatusBarVisibility_UseCase
+import com.varsel.firechat.domain.use_case._util.status_bar.StatusBarVisibility
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
 import com.varsel.firechat.domain.use_case._util.user.GetOtherUserId_UseCase
 import com.varsel.firechat.domain.use_case._util.user.SortByTimestamp_UseCase
@@ -57,7 +58,6 @@ class SignedinActivity : AppCompatActivity() {
     lateinit var firebaseAuth: FirebaseAuth
     lateinit var mDbRef: DatabaseReference
     lateinit var firebaseStorage: FirebaseStorage
-    lateinit var firebaseViewModel: FirebaseViewModel
     lateinit var signedinViewModel: SignedinViewModel
 //    var timer: CountDownTimer? = null
     val settingViewModel: SettingViewModel by viewModels()
@@ -87,13 +87,15 @@ class SignedinActivity : AppCompatActivity() {
     @Inject
     lateinit var firebase: FirebaseRepository
 
+    @Inject
+    lateinit var setStatusBarVisibility: SetStatusBarVisibility_UseCase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivitySignedinBinding.inflate(layoutInflater)
         val view = binding.root
 
-        firebaseViewModel = ViewModelProvider(this).get(FirebaseViewModel::class.java)
 
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance()
@@ -124,18 +126,6 @@ class SignedinActivity : AppCompatActivity() {
             }
         }
 
-//        firebaseViewModel.chatRooms.observe(this, Observer {
-//            val sorted = sortChats(it as MutableList<ChatRoom>)
-//
-//            // TODO: Collect receipts that came after getUserSingle was re-run
-////            getNewMessage(it, navController)
-//        })
-//
-//        firebaseViewModel.groupRooms.observe(this, Observer {
-////            getNewGroupMessage(it, navController)
-//        })
-
-
         binding.bottomNavView.setupWithNavController(navController)
         setBottomNavVisibility(navController)
 
@@ -157,18 +147,6 @@ class SignedinActivity : AppCompatActivity() {
 //                    getPublicPosts_first_5(it.public_posts?.values?.toList()!!)
                 }
             }
-
-//            if(it.currentUser?.friendRequests != null && it.currentUser.friendRequests.isNotEmpty()){
-//                getFriendRequests(it.currentUser.friendRequests)
-//            } else {
-//                firebaseViewModel.friendRequests.value = mutableListOf<User>()
-//            }
-
-//            if(it.currentUser?.friends != null && it.currentUser.friends.isNotEmpty()){
-//                getAllFriends(it.currentUser.friends)
-//            } else {
-//                firebaseViewModel.setFriends(listOf())
-//            }
         }
     }
 
@@ -243,6 +221,7 @@ class SignedinActivity : AppCompatActivity() {
         prevFriends = user.friends.count()
     }
 
+    // DONT DELETE
 //    var prevGroups = -1
 //    fun determineShowGroupAddBottomInfobar(user: User){
 //        val sorted = sortByTimestamp(user.groupRooms.toSortedMap())
@@ -257,52 +236,6 @@ class SignedinActivity : AppCompatActivity() {
 //        prevGroups = user.groupRooms.count()
 //    }
 
-    fun hideStatusBar(){
-        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-    }
-
-    fun showStatusBar(){
-        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-    }
-
-    fun changeStatusBarColor(color: Int, light: Boolean){
-        if (Build.VERSION.SDK_INT >= 21) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            window.setStatusBarColor(getResources().getColor(color))
-
-            // new api
-            ViewCompat.getWindowInsetsController(window.decorView)?.apply {
-                // Light text == dark status bar
-                isAppearanceLightStatusBars = light
-            }
-            // old api (Uncomment the cole below if the status bar is buggy on older devices)
-//            val decorView = window.decorView
-//            decorView.systemUiVisibility =
-//                if (light) {
-//                    decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-//                } else {
-//                    decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-//                }
-        }
-    }
-
-    fun isNightMode(): Boolean{
-        when (this.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
-            Configuration.UI_MODE_NIGHT_YES -> {
-                return true
-            }
-            Configuration.UI_MODE_NIGHT_NO -> {
-                return false
-            }
-            Configuration.UI_MODE_NIGHT_UNDEFINED -> {
-                return false
-            }
-            else -> {
-                return false
-            }
-        }
-    }
 
     override fun onBackPressed() {
         if(binding.imgOverlayParent.visibility == View.VISIBLE) {
@@ -310,17 +243,13 @@ class SignedinActivity : AppCompatActivity() {
             binding.imgOverlayName.setText("")
             binding.imgOverlayType.setText("")
             binding.imgOverlayTimestamp.setText("")
-            showStatusBar()
+            setStatusBarVisibility(StatusBarVisibility.Show(), this)
 
             binding.imgOverlayImage.setImageBitmap(null)
         } else {
             super.onBackPressed()
         }
     }
-
-//    fun handleImgBackPress(){
-//        imageViewModel.showProfileImage.value = false
-//    }
 
     fun determineAuthType(intent: Intent?){
         val authType = intent?.extras?.getString("AUTH_TYPE").toString()
@@ -377,54 +306,7 @@ class SignedinActivity : AppCompatActivity() {
                 }
             }
         }.launchIn(lifecycleScope)
-//        firebaseViewModel.checkFirebaseConnection {
-//            if(it){
-//                firebaseViewModel.isConnectedToDatabase.value = true
-//                infobarController.showBottomInfobar(this.getString(R.string.back_online), InfobarColors.ONLINE)
-//
-//                if(offlineInfobarTimer != null){
-//                    offlineInfobarTimer?.cancel()
-//                }
-//
-//                binding.networkErrorOverlay.visibility = View.GONE
-//            } else {
-//                firebaseViewModel.isConnectedToDatabase.value = false
-//                offlineInfobarTimer = fixedRateTimer("no_connection_timer", false, 0L, 5 * 1000 + 3000) {
-//                    infobarController.showBottomInfobar(this@SignedinActivity.getString(R.string.no_connection), InfobarColors.OFFLINE)
-//                }
-//            }
-//        }
     }
-
-//    private fun getFriendRequests(requests: HashMap<String, Long>){
-//        val users = mutableListOf<User>()
-//        val sortedMap = sortByTimestamp(requests.toSortedMap())
-//
-//        for(i in sortedMap.keys){
-//            firebaseViewModel.getUserSingle(i, mDbRef, {
-//                if(it != null){
-//                    users.add(it)
-//                }
-//            }, {
-//                firebaseViewModel.friendRequests.value = users.reversed()
-//            })
-//        }
-//    }
-
-//    private fun getAllFriends(friends: HashMap<String, Long>){
-//        val sortedMap = sortByTimestamp(friends.toSortedMap())
-//
-//        val users = mutableListOf<User>()
-//        for(i in sortedMap.keys){
-//            firebaseViewModel.getUserSingle(i, mDbRef, {
-//                if(it != null){
-//                    users.add(it)
-//                }
-//            }, {
-//                firebaseViewModel.setFriends(users)
-//            })
-//        }
-//    }
 
     private fun logout(activity: FragmentActivity, context: Context?, callback: ()-> Unit){
         val intent = Intent(context, SignedoutActivity::class.java)
@@ -435,22 +317,6 @@ class SignedinActivity : AppCompatActivity() {
 
         // run firebase logout
     }
-
-    // TODO: Delete
-//    var getUserSingleTimestamp: Long = -1L
-//    private fun compareUsers(user: User){
-//        val chatRoomSize: Int = firebaseViewModel.currentUserSingle.value?.chatRooms?.size ?: 0
-//        val groupRoomSize: Int = firebaseViewModel.currentUserSingle.value?.groupRooms?.size ?: 0
-//
-//        // collect timestamp whenever this function runs
-//        getUserSingleTimestamp = System.currentTimeMillis()
-//        // if a new chat room or group room is added to the array re-run get user single
-//        if(user.chatRooms?.size != chatRoomSize){
-//            signedinViewModel.getCurrentUserSingle(this)
-//        } else if(user.groupRooms?.size != groupRoomSize){
-//            signedinViewModel.getCurrentUserSingle(this)
-//        }
-//    }
 
     fun hideKeyboard() {
         val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager

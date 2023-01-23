@@ -105,38 +105,6 @@ class FriendListFragment : Fragment() {
         }, {
             submitListToAdapter(it)
         })
-//
-//        SearchUtils.setupSearchBar(
-//            binding.clearText,
-//            binding.searchBox,
-//            this,
-//            binding.noFriends,
-//            binding.noMatch,
-//            binding.allFriendsRecyclerView,
-//            parent.firebaseViewModel.friends,
-//            {
-//                // resets the searchbar visibility
-//                viewModel.isSearchBarVisible.value = false
-//
-//                viewModel.isSearchBarVisible.observe(viewLifecycleOwner, Observer {
-//                    // Sets the visibilities of the search bar and the soft keyboard
-//                    if(it){
-//                        binding.searchBar.visibility = View.VISIBLE
-//                        binding.searchBox.requestFocus()
-//                        requireContext().showKeyboard()
-//                    } else {
-//                        binding.searchBar.visibility = View.GONE
-//                        hideKeyboard()
-//                    }
-//                })
-//
-//                binding.searchIcon.setOnClickListener {
-//                    viewModel.toggleSearchBarVisible()
-//                }
-//            }, {
-//                submitListToAdapter(it)
-//            }
-//        )
     }
 
     private fun setupFriendsAdapter() {
@@ -164,13 +132,7 @@ class FriendListFragment : Fragment() {
 
         val touchHelper = ItemTouchHelper(swipeGesture)
 
-        // Disables swipe if no internet
-//        LifecycleUtils.observeInternetStatus(parent, this, {
-//            touchHelper.attachToRecyclerView(binding.allFriendsRecyclerView)
-//        }, {
-//            touchHelper.attachToRecyclerView(null)
-//        })
-
+        // Disables swipe if there's no internet
         checkServerConnection().onEach {
             if(it) {
                 touchHelper.attachToRecyclerView(binding.allFriendsRecyclerView)
@@ -312,46 +274,6 @@ class FriendListFragment : Fragment() {
     private fun navigateToAddfriends(){
         val action = FriendListFragmentDirections.actionFriendListFragmentToAddFriends()
         findNavController().navigate(action)
-    }
-
-    private fun checkIfEmptyFriends(friends: List<User?>?){
-        if(friends?.isNotEmpty() == true){
-            binding.noFriends.visibility = View.GONE
-            binding.allFriendsRecyclerView.visibility = View.VISIBLE
-        } else {
-            binding.noFriends.visibility = View.VISIBLE
-            binding.allFriendsRecyclerView.visibility = View.GONE
-        }
-    }
-
-    private fun toggleCancelIconVisibility(){
-        binding.searchBox.doAfterTextChanged {
-            if (it.toString().isNotEmpty()){
-                binding.clearText.visibility = View.VISIBLE
-            } else {
-                binding.clearText.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun searchRecyclerView(friends: ArrayList<User>, it: Editable){
-        if(it.toString().isEmpty()){
-            // Text box is empty
-            submitListToAdapter(friends)
-        } else {
-            val term = binding.searchBox.text.toString()
-            val results = searchListOfUsers(term, friends)
-
-            if(results.isNotEmpty()){
-                // There are matches
-                submitListToAdapter(results)
-            } else {
-                // No match is found
-                submitListToAdapter(arrayListOf())
-                binding.noMatch.visibility = View.VISIBLE
-                binding.allFriendsRecyclerView.visibility = View.GONE
-            }
-        }
     }
 
     private fun setFriendCount(friends: List<User?>){

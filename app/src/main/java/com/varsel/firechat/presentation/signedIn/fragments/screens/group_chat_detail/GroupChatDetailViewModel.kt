@@ -129,26 +129,6 @@ class GroupChatDetailViewModel @Inject constructor(
         }
     }
 
-    // TODO: Delete
-//    fun getNonParticipants(parent: SignedinActivity){
-//        val participants: List<String> = parent.firebaseViewModel.selectedGroupRoom.value!!.participants?.values!!.toList()
-//        val friends: List<User>? = parent.firebaseViewModel.friends.value?.toList()
-//        val non_participants = mutableListOf<User>()
-//
-//        if(friends != null){
-//            for((i_index, i_value) in friends.withIndex()){
-//                for((j_index, j_value) in participants.withIndex()){
-//                    if(i_value.userUID == j_value){
-//                        break
-//                    } else if(j_index == participants.size -1) {
-//                        non_participants.add(i_value)
-//                    }
-//                }
-//            }
-//        }
-//
-//    }
-
 
     fun getParticipants(id: String, group: GroupRoom) {
         getGroupParticipantsUseCase(id).onEach {

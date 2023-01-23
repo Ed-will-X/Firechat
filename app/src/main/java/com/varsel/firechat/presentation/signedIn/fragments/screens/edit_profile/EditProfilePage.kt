@@ -27,6 +27,7 @@ import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.domain.use_case._util.status_bar.ChangeStatusBarColor_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetCurrentUserProfileImageUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -62,6 +63,9 @@ class EditProfilePage : Fragment() {
     @Inject
     lateinit var gdtCurrentUserImage: GetCurrentUserProfileImageUseCase
 
+    @Inject
+    lateinit var changeStatusBarColor: ChangeStatusBarColor_UseCase
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -71,22 +75,13 @@ class EditProfilePage : Fragment() {
         viewModel = ViewModelProvider(this).get(EditProfileViewModel::class.java)
 
         parent = activity as SignedinActivity
-        parent.changeStatusBarColor(R.color.light_blue, false)
+        changeStatusBarColor(R.color.light_blue, false, parent)
 
         collectState()
 
         binding.backButton.setOnClickListener {
             popNavigation()
         }
-
-//        parent.profileImageViewModel.profileImage_currentUser.observe(viewLifecycleOwner, Observer {
-//            if(it?.image != null){
-//                ImageUtils.setProfilePic(it.image!!, binding.profileImage, binding.profileImageParent, parent)
-//                binding.profileImageParent.visibility = View.VISIBLE
-//
-//            }
-//        })
-
 
         return view
     }
@@ -99,14 +94,6 @@ class EditProfilePage : Fragment() {
 
                 // TODO: Fix potential memory leak
                 if(!viewModel._hasRun.value) {
-//                    LifecycleUtils.observeInternetStatus(parent, this, {
-//                        binding.actionSheetClickable.setOnClickListener { it2 ->
-//                            openEditProfileActionsheet(it.user)
-//                        }
-//                    }, {
-//                        binding.actionSheetClickable.setOnClickListener(null)
-//                    })
-
                     checkServerConnection().onEach { isConnected ->
                         if(isConnected) {
                             binding.actionSheetClickable.setOnClickListener { it2 ->
@@ -179,30 +166,6 @@ class EditProfilePage : Fragment() {
         val timestamp = System.currentTimeMillis()
 
         viewModel.removeImage(parent)
-
-//        parent.infobarController.showBottomInfobar(parent.getString(R.string.removing_profile_image), InfobarColors.UPLOADING)
-
-//        parent.firebaseViewModel.removeProfileImage(parent.mDbRef, parent.firebaseAuth.currentUser!!.uid, parent.firebaseStorage, {
-//            parent.firebaseViewModel.appendProfileImageTimestamp(parent.firebaseAuth, parent.mDbRef, timestamp, {
-//
-//                parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_profile_image_successful), InfobarColors.SUCCESS)
-//
-//                val image = parent.profileImageViewModel.getImageById(currentUserId)
-//
-//                image.observeOnce(viewLifecycleOwner, Observer {
-//                    if(it != null){
-//                        parent.profileImageViewModel.nullifyImageInRoom(currentUserId)
-//                        parent.profileImageViewModel.profileImage_currentUser.value = null
-////                        parent.profileImageViewModel.profileImageEncodedCurrentUser.value = null
-//                    }
-//                })
-//                successCallback()
-//            }, {
-//                parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_profile_image_error), InfobarColors.FAILURE)
-//            })
-//        }, {
-//            parent.infobarController.showBottomInfobar(parent.getString(R.string.remove_profile_image_error), InfobarColors.FAILURE)
-//        })
     }
 
     private fun openEditProfileActionsheet(currentUser: User){
@@ -218,12 +181,6 @@ class EditProfilePage : Fragment() {
 
         setActionsheetBindings(dialogBinding, currentUser)
         dialog.setContentView(view)
-
-//        LifecycleUtils.observeInternetStatus(parent, this, {
-//            dialogBinding.editProfileBtn.isEnabled = true
-//        }, {
-//            dialogBinding.editProfileBtn.isEnabled = false
-//        })
 
         checkServerConnection().onEach {
             dialogBinding.editProfileBtn.isEnabled = it
@@ -293,13 +250,11 @@ class EditProfilePage : Fragment() {
         }
 
         dialogBinding.pickImage.setOnClickListener {
-//            ImageUtils.openImagePicker(this)
             openImagePicker(this)
             dialog.dismiss()
         }
 
         dialogBinding.openCamera.setOnClickListener {
-//            ImageUtils.openCamera(requireContext(), this, parent)
             openCamera(requireContext(), this, parent)
             dialog.dismiss()
         }

@@ -61,7 +61,7 @@ class ChatListAdapter(
         if(lastMessageObject != null){
             determineReceipts(item, lastMessageObject, {
                 // Receipt Callback
-                if(activity.isNightMode()){
+                if(viewModel.isNightMode(activity)){
                     // TODO: Change all color references to dynamic theme attributes
                     holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.white))
                     holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.white))
@@ -76,7 +76,7 @@ class ChatListAdapter(
 
             }, {
                 // No Receipt Callback
-                if(activity.isNightMode()){
+                if(viewModel.isNightMode(activity)){
                     holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.transparent_grey))
                     holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.transparent_grey))
                 } else {

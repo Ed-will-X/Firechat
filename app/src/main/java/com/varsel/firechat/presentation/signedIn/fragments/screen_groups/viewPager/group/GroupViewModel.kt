@@ -7,6 +7,7 @@ import com.varsel.firechat.common.Resource
 import com.varsel.firechat.domain.use_case._util.animation.ChangeIconColorUseCase
 import com.varsel.firechat.domain.use_case._util.message.GetLastMessage_UseCase
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
+import com.varsel.firechat.domain.use_case._util.system.CheckIfNightMode_UseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
 import com.varsel.firechat.domain.use_case.group_chat.AddGroupToFavorites_UseCase
 import com.varsel.firechat.domain.use_case.group_chat.RemoveGroupFromFavorites_UseCase
@@ -33,7 +34,9 @@ class GroupViewModel @Inject constructor(
     val getLastMessage: GetLastMessage_UseCase,
     val fetchReceipt: FetchReceipt_UseCase,
     val addGroupToFavorites: AddGroupToFavorites_UseCase,
-    val removeGroupFromFavorites: RemoveGroupFromFavorites_UseCase
+    val removeGroupFromFavorites: RemoveGroupFromFavorites_UseCase,
+    val isNightMode: CheckIfNightMode_UseCase
+
 ): ViewModel() {
     private val _state = MutableStateFlow(GroupFragmentState())
     val state = _state

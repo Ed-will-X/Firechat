@@ -79,16 +79,6 @@ class OtherProfileFragment : Fragment() {
 
         parent = activity as SignedinActivity
 
-//        LifecycleUtils.observeInternetStatus(parent, this, {
-//            binding.addFriendBtn.isEnabled = true
-//            binding.revokeBtn.isEnabled = true
-//            binding.unfriendBtn.isEnabled = true
-//        }, {
-//            binding.addFriendBtn.isEnabled = false
-//            binding.revokeBtn.isEnabled = false
-//            binding.unfriendBtn.isEnabled = false
-//        })
-
         checkServerConnection().onEach {
             if(it) {
                 binding.addFriendBtn.isEnabled = true
@@ -100,7 +90,6 @@ class OtherProfileFragment : Fragment() {
                 binding.unfriendBtn.isEnabled = false
             }
         }.launchIn(lifecycleScope)
-
 
         val uid = OtherProfileFragmentArgs.fromBundle(requireArguments()).userId
         viewModel.getOtherUser(uid)
@@ -175,7 +164,6 @@ class OtherProfileFragment : Fragment() {
                 displayPublicPostImage(it, otherUser, parent)
             }
 
-
             binding.miniPublicPostsRecyclerView.adapter = postAdapter
 
             val otherUserPosts = otherUser.public_posts?.keys?.toList()
@@ -231,14 +219,6 @@ class OtherProfileFragment : Fragment() {
         }
     }
 
-    // TODO: Implement show and hide spinner by switching visibilities
-    private fun showSpinner(){
-
-    }
-
-    private fun hideSpinner(){
-
-    }
 
     fun showPublicPostActionsheet(selectedUser: User){
         val dialog = BottomSheetDialog(requireContext())
@@ -373,14 +353,4 @@ class OtherProfileFragment : Fragment() {
             binding.addFriendBtn.visibility = View.VISIBLE
         }
     }
-
-    //  TODO: make status bar transparent on this page
-    private fun setTransparent(){
-
-    }
-
-    private fun removeTransparent(){
-
-    }
-
 }

@@ -110,7 +110,7 @@ class GroupChatsListAdapter(
             if(isFavorite(item.roomUID)){
                 viewModel.changeIconColor(holder.favoriteIcon, R.color.yellow, context)
             } else {
-                if(activity.isNightMode()){
+                if(viewModel.isNightMode(activity)){
                     viewModel.changeIconColor(holder.favoriteIcon, FAVORITE_ICON_DARK_MODE, context)
                 } else {
                     viewModel.changeIconColor(holder.favoriteIcon, R.color.light_grey_2, context)
@@ -201,7 +201,7 @@ class GroupChatsListAdapter(
             viewModel.removeGroupFromFavorites(groupId).onEach {
                 when(it) {
                     is Response.Success -> {
-                        if(activity.isNightMode()){
+                        if(viewModel.isNightMode(activity)){
                             viewModel.changeIconColor(icon, FAVORITE_ICON_DARK_MODE, context)
                         } else {
                             viewModel.changeIconColor(icon, R.color.light_grey_2, context)

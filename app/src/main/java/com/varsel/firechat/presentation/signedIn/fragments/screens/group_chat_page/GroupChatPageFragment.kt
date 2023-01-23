@@ -288,9 +288,6 @@ class GroupChatPageFragment : Fragment() {
                 }
             }
         }.launchIn(lifecycleScope)
-//        parent.firebaseViewModel.sendGroupMessage(message, roomId, parent.mDbRef, {
-//            success()
-//        }, {})
     }
 
     private fun sendMessage(){
@@ -336,11 +333,6 @@ class GroupChatPageFragment : Fragment() {
             adapter.notifyDataSetChanged()
         }.launchIn(lifecycleScope)
 
-//        getUsers(userIds) {
-//            adapter.friends = it as MutableList<User>
-//            adapter.notifyDataSetChanged()
-//        }
-
         dialog.show()
     }
 
@@ -352,6 +344,7 @@ class GroupChatPageFragment : Fragment() {
         } catch (e: IllegalArgumentException){ }
     }
 
+    // TODO: Modularise
     private fun splitUsersString(users: String): List<String> {
         val userList = users.split(" ").toTypedArray()
         val currentUser = parent.firebaseAuth.currentUser!!.uid
@@ -365,21 +358,6 @@ class GroupChatPageFragment : Fragment() {
 
         return returnedUsers
     }
-
-    // TODO: Remove
-//    private fun getUsers(userIds: List<String>, afterCallback: (List<User>)-> Unit){
-//        val users = mutableListOf<User>()
-//
-//        for(i in userIds){
-//            parent.firebaseViewModel.getUserSingle(i, parent.mDbRef, {
-//                if(it != null){
-//                    users.add(it)
-//                }
-//            }, {
-//                afterCallback(users)
-//            })
-//        }
-//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

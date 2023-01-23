@@ -38,9 +38,9 @@ import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.FriendRequestsAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.PublicPostAdapterShapes
-import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
 import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import com.varsel.firechat.common._utils.MessageUtils
+import com.varsel.firechat.domain.use_case._util.status_bar.ChangeStatusBarColor_UseCase
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
 import com.varsel.firechat.domain.use_case.other_user.AcceptFriendRequest_UseCase
 import com.varsel.firechat.domain.use_case.other_user.RejectFriendRequest_UseCase
@@ -58,7 +58,6 @@ class ProfileFragment: Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
     private lateinit var parent: SignedinActivity
-    private val firebaseViewModel: FirebaseViewModel by activityViewModels()
     private lateinit var friendRequestsAdapter: FriendRequestsAdapter
     private lateinit var publicPostAdapter: PublicPostAdapter
     private lateinit var viewModel: ProfileViewModel
@@ -96,6 +95,9 @@ class ProfileFragment: Fragment() {
     @Inject
     lateinit var rejectFriendRequest: RejectFriendRequest_UseCase
 
+    @Inject
+    lateinit var changeStatusBarColor: ChangeStatusBarColor_UseCase
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -104,7 +106,7 @@ class ProfileFragment: Fragment() {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val view = binding.root
         parent = activity as SignedinActivity
-        parent.changeStatusBarColor(R.color.light_blue, false)
+        changeStatusBarColor(R.color.light_blue, false, parent)
 
         viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
         viewModel.getProfileImage()
@@ -190,21 +192,6 @@ class ProfileFragment: Fragment() {
 
             viewModel.uploadPublicPost(publicPost, encoded, parent)
 
-//            // Shows bottom infobar
-//            parent.infobarController.showBottomInfobar(parent.getString(R.string.uploading_public_post), InfobarColors.UPLOADING)
-
-//            parent.firebaseViewModel.uploadPublicPost(publicPost, encoded, parent.firebaseStorage, parent.mDbRef, {
-//                parent.firebaseViewModel.appendPublicPostIdToUser(parent.firebaseAuth, parent.mDbRef, uid, {
-//
-//                    parent.infobarController.showBottomInfobar(parent.getString(R.string.public_post_upload_successful), InfobarColors.SUCCESS)
-//
-//                    parent.publicPostViewModel.storePost(it)
-//                }, {
-//                    parent.infobarController.showBottomInfobar(parent.getString(R.string.chat_image_upload_error), InfobarColors.FAILURE)
-//                })
-//            }, {
-//                parent.infobarController.showBottomInfobar(parent.getString(R.string.chat_image_upload_error), InfobarColors.FAILURE)
-//            })
         }
     }
 
@@ -254,7 +241,6 @@ class ProfileFragment: Fragment() {
     private fun displayPublicPostImage(post: PublicPost){
         val currentUser = viewModel.getCurrentUserRecurrentUseCase().value.data
         if(currentUser != null){
-//            ImageUtils.displayPublicPostImage(post, currentUser, parent)
             displayPublicPostImage(post, currentUser, parent)
         }
     }

@@ -13,9 +13,13 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.FragmentChatsBinding
+import com.varsel.firechat.domain.use_case._util.status_bar.ChangeStatusBarColor_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatsViewPagerAdapter
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ChatsFragment : Fragment() {
     private var _binding: FragmentChatsBinding? = null
     private val binding get() = _binding!!
@@ -23,6 +27,9 @@ class ChatsFragment : Fragment() {
     private lateinit var adapter: ChatsViewPagerAdapter
     private lateinit var chatsViewModel: ChatsViewModel
     private lateinit var parent: SignedinActivity
+
+    @Inject
+    lateinit var changeStatusBarColor: ChangeStatusBarColor_UseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,7 +40,7 @@ class ChatsFragment : Fragment() {
         val view = binding.root
 
         parent = activity as SignedinActivity
-        parent.changeStatusBarColor(R.color.light_blue, false)
+        changeStatusBarColor(R.color.light_blue, false, parent)
 
         chatsViewModel = ViewModelProvider(this).get(ChatsViewModel::class.java)
         parent.hideKeyboard()
@@ -85,6 +92,7 @@ class ChatsFragment : Fragment() {
         }.attach()
     }
 
+    // TODO: Modularise maybe
     fun swipeToFriends(){
         binding.chatsViewPager.apply {
             beginFakeDrag()

@@ -16,10 +16,11 @@ import com.varsel.firechat.databinding.ActionSheetSigninBinding
 import com.varsel.firechat.databinding.ActionSheetSignupBinding
 import com.varsel.firechat.databinding.FragmentAuthRootBinding
 import com.varsel.firechat.domain.use_case.auth.SignUp_UseCase
+import com.varsel.firechat.domain.use_case.auth.ValidateSignIn_UseCase
+import com.varsel.firechat.domain.use_case.auth.ValidateSignUp_UseCase
 import com.varsel.firechat.domain.use_case.current_user.SignIn_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedOut.SignedoutActivity
-import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
 import com.varsel.firechat.presentation.signedOut.SignedoutViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -41,7 +42,6 @@ class AuthRootFragment : Fragment() {
     private lateinit var parent: SignedoutActivity
     private val binding get() = _binding!!
     private val signedOutViewModel: SignedoutViewModel by activityViewModels()
-    private val firebaseViewModel: FirebaseViewModel by activityViewModels()
     private var fullnameText = ""
     private var emailText = ""
     private var passwordText = ""
@@ -55,6 +55,12 @@ class AuthRootFragment : Fragment() {
     @Inject
     lateinit var signup: SignUp_UseCase
 
+    @Inject
+    lateinit var validateSignup: ValidateSignUp_UseCase
+
+    @Inject
+    lateinit var validateSignin: ValidateSignIn_UseCase
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -66,7 +72,6 @@ class AuthRootFragment : Fragment() {
 
         binding.signIn.setOnClickListener {
             showSigninDialog { dialogBinding ->
-                signedOutViewModel.hasBeenClicked_signin.value = true
                 dialogBinding.signInBtnActionsheet.isEnabled = false
 
                 signin(email_login, password_login).onEach {
@@ -76,33 +81,18 @@ class AuthRootFragment : Fragment() {
 
                             }
                             dialogBinding.signInBtnActionsheet.isEnabled = true
-                            signedOutViewModel.hasBeenClicked_signin.value = false
                         }
                         is Response.Fail -> {
                             Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_LONG).show()
                             dialogBinding.signInBtnActionsheet.isEnabled = true
-                            signedOutViewModel.hasBeenClicked_signin.value = false
                         }
                     }
                 }.launchIn(lifecycleScope)
-//                firebaseViewModel.signin(email_login, password_login, parent.mAuth, {
-//                    navigate(AuthType.SIGN_IN) {
-//
-//                    }
-//                    dialogBinding.signInBtnActionsheet.isEnabled = true
-//                    signedOutViewModel.hasBeenClicked_signin.value = false
-//                }, {
-//                    Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_LONG).show()
-//                    dialogBinding.signInBtnActionsheet.isEnabled = true
-//                    signedOutViewModel.hasBeenClicked_signin.value = false
-//                })
             }
         }
         binding.signUp.setOnClickListener {
-
             showSignUpDialog { dialogBinding ->
                 dialogBinding.signUpBtnActionsheet.isEnabled = false
-                signedOutViewModel.hasBeenClicked_signup.value = true
 
                 signup(fullnameText, emailText, passwordText).onEach {
                     when(it) {
@@ -111,7 +101,6 @@ class AuthRootFragment : Fragment() {
 
                             }
                             dialogBinding.signUpBtnActionsheet.isEnabled = true
-                            signedOutViewModel.hasBeenClicked_signup.value = false
                         }
                         is Response.Loading -> {
 
@@ -119,37 +108,13 @@ class AuthRootFragment : Fragment() {
                         is Response.Fail -> {
                             Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_LONG).show()
                             dialogBinding.signUpBtnActionsheet.isEnabled = true
-                            signedOutViewModel.hasBeenClicked_signup.value = false
                         }
                     }
                 }.launchIn(lifecycleScope)
-                
-//                firebaseViewModel.signUp(emailText, passwordText, parent.mAuth, {
-//                    firebaseViewModel.saveUser(fullnameText, emailText, parent.mAuth.currentUser?.uid.toString() ,parent.mDbRef, {
-//                        navigate(AuthType.SIGN_UP) {
-//
-//                        }
-//                        dialogBinding.signUpBtnActionsheet.isEnabled = true
-//                        signedOutViewModel.hasBeenClicked_signup.value = false
-//                    }, {
-//                        Toast.makeText(requireContext(), "Something went wrong with DB", Toast.LENGTH_LONG).show()
-//                        dialogBinding.signUpBtnActionsheet.isEnabled = true
-//                        signedOutViewModel.hasBeenClicked_signup.value = false
-//                    })
-//                }, {
-//                    Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_LONG).show()
-//                    dialogBinding.signUpBtnActionsheet.isEnabled = true
-//                    signedOutViewModel.hasBeenClicked_signup.value = false
-//                })
             }
         }
 
         return view
-    }
-
-    // TODO: Clear database on login:
-    fun clearDatabase(){
-
     }
 
     fun showSigninDialog(callback: (dialogBinding: ActionSheetSigninBinding) -> Unit){
@@ -157,7 +122,7 @@ class AuthRootFragment : Fragment() {
         val dialogBinding = ActionSheetSigninBinding.inflate(layoutInflater, binding.root, false)
         dialog.setContentView(dialogBinding.root)
 
-        signedOutViewModel.validateSignin(dialogBinding.emailEditText, dialogBinding.passwordEditText, dialogBinding.signInBtnActionsheet)
+        validateSignin(dialogBinding.emailEditText, dialogBinding.passwordEditText, dialogBinding.signInBtnActionsheet)
 
         dialogBinding.emailEditText.doAfterTextChanged {
             email_login = it.toString()
@@ -195,7 +160,7 @@ class AuthRootFragment : Fragment() {
             passwordText = it.toString()
         }
 
-        signedOutViewModel.validateSignup(dialogBinding.nameEditText, dialogBinding.emailEditText, dialogBinding.passwordEditText, dialogBinding.confirmPasswordEditText, dialogBinding.signUpBtnActionsheet, dialogBinding.agreement)
+        validateSignup(dialogBinding.nameEditText, dialogBinding.emailEditText, dialogBinding.passwordEditText, dialogBinding.confirmPasswordEditText, dialogBinding.signUpBtnActionsheet, dialogBinding.agreement)
 
         dialogBinding.signUpBtnActionsheet.setOnClickListener {
             val sanitisedFullname = fullnameText.trim()
