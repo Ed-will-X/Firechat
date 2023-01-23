@@ -210,7 +210,7 @@ class GroupChatPageFragment : Fragment() {
     private fun initialiseAdapter() {
         messageAdapter = MessageListAdapter(roomId, parent, this, requireContext(), this, chatPageViewModel, ChatPageType.GROUP,
             { message, image ->
-                displayImageMessage(image, message, parent)
+                displayImageMessage(image, message, viewModel.participsnts.value, parent)
             }, { message, messageType, messageStatus ->
                 if(messageType == MessageType.TEXT && messageStatus == MessageStatus.SYSTEM){
                     val users = splitUsersString(message.message)
@@ -281,9 +281,16 @@ class GroupChatPageFragment : Fragment() {
     }
 
     private fun sendImgMessage(message: Message, success: ()-> Unit){
-        parent.firebaseViewModel.sendGroupMessage(message, roomId, parent.mDbRef, {
-            success()
-        }, {})
+        sendMessageUseCase(roomId, message).onEach {
+            when(it) {
+                is Response.Success -> {
+                    success()
+                }
+            }
+        }.launchIn(lifecycleScope)
+//        parent.firebaseViewModel.sendGroupMessage(message, roomId, parent.mDbRef, {
+//            success()
+//        }, {})
     }
 
     private fun sendMessage(){

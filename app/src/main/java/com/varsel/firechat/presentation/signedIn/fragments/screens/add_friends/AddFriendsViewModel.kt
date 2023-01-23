@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.common.Resource
+import com.varsel.firechat.domain.repository.FirebaseRepository
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
 import com.varsel.firechat.domain.use_case.other_user.SearchUsersUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
@@ -20,7 +21,8 @@ class AddFriendsViewModel @Inject constructor(
     val searchUsersUseCase: SearchUsersUseCase,
     val getCurrentUserRecurrentUseCase: GetCurrentUserRecurrentUseCase,
     val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase,
-    val setProfilePicUseCase: SetProfilePicUseCase
+    val setProfilePicUseCase: SetProfilePicUseCase,
+    val firebase: FirebaseRepository
 ): ViewModel() {
     val shouldRun = MutableLiveData<Boolean>(true)
 

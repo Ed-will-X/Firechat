@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.R
 import com.varsel.firechat.common.Resource
-import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.data.local.Image.Image
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageStatus
@@ -207,7 +206,7 @@ class MessageListAdapter(
                     viewHolder.profilePicContainer.visibility = View.GONE
                     viewHolder.emptyPadding.visibility = View.VISIBLE
                 } else {
-                    UserUtils.getUser(item.sender, activity){ user ->
+                    viewModel.firebase.getFirebaseInstance().getUserSingle(item.sender, { user ->
                         lifecycleOwner.lifecycleScope.launch {
                             viewModel.getOtherUserProfileImageUseCase(user).onEach {
                                 if(it?.image != null) {
@@ -220,12 +219,12 @@ class MessageListAdapter(
                                 }
                             }.launchIn(this)
                         }
-                    }
+                    })
                     viewHolder.profilePicContainer.visibility = View.VISIBLE
                     viewHolder.emptyPadding.visibility = View.GONE
                 }
             } catch (e: Exception) {
-                UserUtils.getUser(item.sender, activity){ user ->
+                viewModel.firebase.getFirebaseInstance().getUserSingle(item.sender, { user ->
 
                     lifecycleOwner.lifecycleScope.launch {
                         viewModel.getOtherUserProfileImageUseCase(user).onEach {
@@ -239,7 +238,7 @@ class MessageListAdapter(
                             }
                         }.launchIn(this)
                     }
-                }
+                })
                 viewHolder.profilePicContainer.visibility = View.VISIBLE
                 viewHolder.emptyPadding.visibility = View.GONE
             }
@@ -321,36 +320,6 @@ class MessageListAdapter(
                 }
             }.launchIn(this)
         }
-//
-//        // check if the img is present in the database
-//        ImageUtils.check_if_chat_image_in_db(item, activity) {
-//            if(it != null){
-//                // if: bind it directly (the same way it was before)
-//                ImageUtils.setChatImage(it.image, imageView, imageViewParent, activity)
-//                imageView.setOnClickListener { it2 ->
-//                    imgClickListener(item, it)
-//                }
-//
-//            } else {
-//                // else set the parent click listener
-//                imageViewParent.setOnClickListener {
-//                    if(!has_been_clicked){
-//                        ImageUtils.getAndSetChatImage_fullObject(item, chatRoomId, imageView, imageViewParent, activity) { image ->
-//                            imageView.setOnClickListener {
-//                                imgClickListener(item, image)
-//                            }
-//                        }
-//
-//                        // Disable btn
-//                        imageViewParent.isEnabled = false
-//                        // set has been clicked to true
-//                        has_been_clicked = true
-//                    } else {
-//                        imageViewParent.isEnabled = false
-//                    }
-//                }
-//            }
-//        }
 
     }
 
@@ -358,9 +327,9 @@ class MessageListAdapter(
         if(pageType == ChatPageType.INDIVIDUAL){
             viewHolder.timestamp.text = viewModel.formatStampMessage(item.time.toString())
         } else {
-            UserUtils.getUser(item.sender, activity) {
+            viewModel.firebase.getFirebaseInstance().getUserSingle(item.sender, {
                 viewHolder.timestamp.text = "${viewModel.formatStampMessage(item.time.toString())} · ${it.name}"
-            }
+            })
 
         }
     }

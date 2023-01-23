@@ -3,6 +3,7 @@ package com.varsel.firechat.domain.use_case.chat_image
 import com.varsel.firechat.R
 import com.varsel.firechat.data.local.Image.Image
 import com.varsel.firechat.data.local.Message.Message
+import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.repository.CurrentUserRepository
 import com.varsel.firechat.domain.use_case._util.image.SetOverlayBindings_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -12,8 +13,8 @@ class DisplayChatImage_UseCase @Inject constructor(
     val currentUserRepository: CurrentUserRepository,
     val setoverlaybindingsUsecase: SetOverlayBindings_UseCase
 ) {
-    operator fun invoke(image: Image, message: Message, activity: SignedinActivity){
-        val otherUser = activity.firebaseViewModel.selectedChatRoomUser.value
+    operator fun invoke(image: Image, message: Message, otherUser: User?, activity: SignedinActivity){
+//        val otherUser = activity.firebaseViewModel.selectedChatRoomUser.value
         val currentUserId = currentUserRepository.getCurrentUserId()
 
         activity.hideKeyboard()

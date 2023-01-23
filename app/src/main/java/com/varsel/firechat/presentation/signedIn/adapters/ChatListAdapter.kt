@@ -120,19 +120,6 @@ class ChatListAdapter(
                     }
                 }.launchIn(this)
             }
-
-//            ImageUtils.setProfilePicOtherUser_fullObject(user, holder.profileImage, holder.profileImageParent, activity) { profileImage ->
-//                holder.parent.setOnClickListener { _ ->
-//                    parentClickListener(id, item.roomUID, user, profileImage?.image)
-//                }
-//
-//                if(profileImage != null){
-//                    holder.profileImage.setOnClickListener {
-//                        profileImageClickListener(profileImage, user)
-//                    }
-//                }
-//            }
-
         }
 
         if(item.messages != null){
@@ -156,24 +143,13 @@ class ChatListAdapter(
             }
         }
 
-//        receipt.observe(activity, Observer {
-//            if(it == null || it.timestamp < lastMessage.time){
-//                unreadChatRooms.put(item.roomUID, item)
-//                receiptCallback()
-//            } else {
-//                unreadChatRooms.remove(item.roomUID)
-//                noReceiptCallback()
-//            }
-//        })
     }
 
     // TODO: Show shimmer if the adapter can't account for every username
     private fun getUser(id: String, afterCallback: (user: User)-> Unit) {
         lateinit var user: User
-        activity.firebaseViewModel.getUserSingle(id, activity.mDbRef, {
-            if (it != null) {
-                user = it
-            }
+        viewModel.firebaseRepository.getFirebaseInstance().getUserSingle(id, {
+            user = it
         }, {
             afterCallback(user)
         })

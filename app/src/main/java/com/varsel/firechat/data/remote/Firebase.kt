@@ -177,7 +177,7 @@ class Firebase(
 
 
     // used to fetch a user for a recycler view
-    fun getUserSingle(UID: String, loopCallback: (user: User) -> Unit, afterCallback: () -> Unit){
+    fun getUserSingle(UID: String, loopCallback: (user: User) -> Unit, afterCallback: () -> Unit = {}){
         mDbRef.child("Users").orderByChild("userUID").equalTo(UID).addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {

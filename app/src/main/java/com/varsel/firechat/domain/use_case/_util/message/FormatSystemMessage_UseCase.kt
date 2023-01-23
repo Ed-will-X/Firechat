@@ -1,33 +1,34 @@
 package com.varsel.firechat.domain.use_case._util.message
 
 import com.varsel.firechat.R
-import com.varsel.firechat.common._utils.UserUtils
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.SystemMessageType
+import com.varsel.firechat.domain.repository.FirebaseRepository
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import javax.inject.Inject
 
 class FormatSystemMessage_UseCase @Inject constructor(
     val formatPerson: FormatPerson_UseCase,
-    val formatStampChatsPage: FormatTimestampChatsPage_UseCase
+    val formatStampChatsPage: FormatTimestampChatsPage_UseCase,
+    val firebase: FirebaseRepository
 ) {
     operator fun invoke(message: Message, activity: SignedinActivity, afterCallback: (message: String)-> Unit){
         val currentUser = activity.firebaseAuth.currentUser!!.uid
         if(message.messageUID == SystemMessageType.GROUP_REMOVE){
             val messageArr: Array<String> = message.message.split(" ").toTypedArray()
 
-            UserUtils.getUser(messageArr[0], activity){ remover ->
-                UserUtils.getUser(messageArr[1], activity) { removed ->
+            firebase.getFirebaseInstance().getUserSingle(messageArr[0], { remover ->
+                firebase.getFirebaseInstance().getUserSingle(messageArr[1], { removed ->
 //                    afterCallback("${if (remover.userUID == currentUser) "You" else "${remover.name}"} removed ${if(removed.userUID == currentUser) "You" else "${removed.name}"}")
                     afterCallback(activity.getString(R.string.group_removed, if (remover.userUID == currentUser) "You" else "${remover.name}", if(removed.userUID == currentUser) "You" else "${removed.name}"))
-                }
-            }
+                }, {})
+            }, {})
             // TODO: Add lone return
         }
 
         if(message.messageUID == SystemMessageType.GROUP_ADD){
             val users: Array<String> = message.message.split(" ").toTypedArray()
-            UserUtils.getUser(users[0], activity) {
+            firebase.getFirebaseInstance().getUserSingle(users[0], {
                 if (users.size < 3) {
                     formatPerson(it.userUID, activity, {
                         afterCallback(activity.getString(R.string.group_add_second_person_singular))
@@ -57,11 +58,11 @@ class FormatSystemMessage_UseCase @Inject constructor(
                         )
                     })
                 }
-            }
+            }, {})
             // TODO: Add lone return statement
         }
 
-        UserUtils.getUser(message.message, activity) {
+        firebase.getFirebaseInstance().getUserSingle(message.message, {
             if(message.messageUID == SystemMessageType.GROUP_CREATE){
                 formatPerson(it.userUID, activity, {
                     afterCallback(
@@ -101,7 +102,7 @@ class FormatSystemMessage_UseCase @Inject constructor(
                     afterCallback(activity.getString(R.string.group_exit_third_person, it.name))
                 })
             }
-        }
+        }, {})
     }
 
 }

@@ -8,9 +8,12 @@ import com.varsel.firechat.domain.use_case._util.animation.ChangeIconColorUseCas
 import com.varsel.firechat.domain.use_case._util.message.GetLastMessage_UseCase
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
+import com.varsel.firechat.domain.use_case.group_chat.AddGroupToFavorites_UseCase
+import com.varsel.firechat.domain.use_case.group_chat.RemoveGroupFromFavorites_UseCase
 import com.varsel.firechat.domain.use_case.message.GetGroupRoomsRecurrentUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetGroupImageUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
+import com.varsel.firechat.domain.use_case.profile_image.RemoveGroupImage_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import com.varsel.firechat.domain.use_case.read_receipt.FetchReceipt_UseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +31,9 @@ class GroupViewModel @Inject constructor(
     val changeIconColor: ChangeIconColorUseCase,
     val truncate: Truncate_UseCase,
     val getLastMessage: GetLastMessage_UseCase,
-    val fetchReceipt: FetchReceipt_UseCase
+    val fetchReceipt: FetchReceipt_UseCase,
+    val addGroupToFavorites: AddGroupToFavorites_UseCase,
+    val removeGroupFromFavorites: RemoveGroupFromFavorites_UseCase
 ): ViewModel() {
     private val _state = MutableStateFlow(GroupFragmentState())
     val state = _state

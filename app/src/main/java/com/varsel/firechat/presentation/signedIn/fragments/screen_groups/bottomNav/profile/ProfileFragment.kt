@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
+import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.databinding.ActionSheetPublicPostBinding
 import com.varsel.firechat.databinding.FragmentProfileBinding
@@ -41,6 +42,8 @@ import com.varsel.firechat.presentation.viewModel.FirebaseViewModel
 import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import com.varsel.firechat.common._utils.MessageUtils
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
+import com.varsel.firechat.domain.use_case.other_user.AcceptFriendRequest_UseCase
+import com.varsel.firechat.domain.use_case.other_user.RejectFriendRequest_UseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -86,6 +89,12 @@ class ProfileFragment: Fragment() {
 
     @Inject
     lateinit var truncate: Truncate_UseCase
+
+    @Inject
+    lateinit var acceptFriendRequest: AcceptFriendRequest_UseCase
+
+    @Inject
+    lateinit var rejectFriendRequest: RejectFriendRequest_UseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -136,12 +145,20 @@ class ProfileFragment: Fragment() {
         return view
     }
 
+    var prevRequestCount = -1
     private fun collectState() {
         collectLatestLifecycleFlow(viewModel.state) {
-            if(it.currentUser != null) {
-                setUser(it.currentUser)
-                setProfileImage(it.profileImage)
-                handleInternetConnectivity(it.isConnectedToServer)
+            setProfileImage(it.profileImage)
+            handleInternetConnectivity(it.isConnectedToServer)
+        }
+
+        collectLatestLifecycleFlow(viewModel.currentUser) {
+            if(it != null) {
+                setUser(it)
+                if(prevRequestCount != it.friendRequests.count()) {
+                    prevRequestCount = it.friendRequests.count()
+                    viewModel.getFriendRequests(it.friendRequests)
+                }
             }
         }
     }
@@ -156,9 +173,6 @@ class ProfileFragment: Fragment() {
                 // TODO: Show caption actionsheet before image upload
             uploadPublicPost_image(it, null)
         }, {})
-
-
-
     }
 
     /*
@@ -338,7 +352,13 @@ class ProfileFragment: Fragment() {
             navigateToOtherProfile(id, user, base64)
 
         }, { user ->
-            firebaseViewModel.acceptFriendRequest(user, parent.mDbRef, parent.firebaseAuth)
+            acceptFriendRequest(user).onEach {
+                when(it) {
+                    is Response.Success -> { }
+                    is Response.Fail -> { }
+                    is Response.Loading -> { }
+                }
+            }.launchIn(lifecycleScope)
             refreshRecyclerView()
         }, { image, user ->
             dialog.dismiss()
@@ -346,33 +366,39 @@ class ProfileFragment: Fragment() {
         })
         recyclerView?.adapter = friendRequestsAdapter
 
+        collectLatestLifecycleFlow(viewModel.friendRequests) {
+            setFriendRequests(it)
+        }
 
         val friendRequestSwipeGesture = object : FriendRequestSwipeGesture(parent){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 viewModel.checkServerConnection().onEach {
                     if(it) {
                         if(direction == ItemTouchHelper.LEFT){
-                            firebaseViewModel.rejectFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
+                            rejectFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition]).onEach {
+                                when(it) {
+                                    is Response.Success -> {
+
+                                    }
+                                    is Response.Fail -> { }
+                                    is Response.Loading -> {}
+                                }
+                            }.launchIn(lifecycleScope)
                             removeFromAdapter(friendRequestsAdapter, viewHolder)
 
                         } else if (direction == ItemTouchHelper.RIGHT){
-                            firebaseViewModel.acceptFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
+                            acceptFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition]).onEach {
+                                when(it) {
+                                    is Response.Success -> { }
+                                    is Response.Fail -> { }
+                                    is Response.Loading -> { }
+                                }
+                            }.launchIn(lifecycleScope)
                             removeFromAdapter(friendRequestsAdapter, viewHolder)
 
                         }
                     }
                 }.launchIn(lifecycleScope)
-//                LifecycleUtils.observeInternetStatus(parent, this@ProfileFragment, {
-//                    if(direction == ItemTouchHelper.LEFT){
-//                        firebaseViewModel.rejectFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
-//                        removeFromAdapter(friendRequestsAdapter, viewHolder)
-//
-//                    } else if (direction == ItemTouchHelper.RIGHT){
-//                        firebaseViewModel.acceptFriendRequest(friendRequestsAdapter.users[viewHolder.adapterPosition], parent.mDbRef, parent.firebaseAuth)
-//                        removeFromAdapter(friendRequestsAdapter, viewHolder)
-//
-//                    }
-//                }, {})
             }
         }
 
@@ -387,11 +413,6 @@ class ProfileFragment: Fragment() {
             }
         }.launchIn(lifecycleScope)
 
-//        LifecycleUtils.observeInternetStatus(parent, this, {
-//            touchHelper.attachToRecyclerView(recyclerView)
-//        }, {
-//            touchHelper.attachToRecyclerView(null)
-//        })
 
         recyclerView?.addItemDecoration(
             DividerItemDecoration(
@@ -400,22 +421,14 @@ class ProfileFragment: Fragment() {
             )
         )
 
-        firebaseViewModel.friendRequests.observe(viewLifecycleOwner, Observer {
-            if(it != null){
-                // TODO: Fix potential bug
-                friendRequestsAdapter.run {
-                    friendRequestsAdapter.users = it.toMutableList()
-                    friendRequestsAdapter.notifyDataSetChanged()
-                }
-            } else {
-                friendRequestsAdapter.run {
-                    friendRequestsAdapter.users = mutableListOf()
-                    friendRequestsAdapter.notifyDataSetChanged()
-                }
-            }
-        })
-
         dialog.show()
+    }
+
+    private fun setFriendRequests(it: List<User>) {
+        friendRequestsAdapter.run {
+            friendRequestsAdapter.users = it.toMutableList()
+            friendRequestsAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun navigateToOtherProfile(id: String, user: User, base64: String?) {

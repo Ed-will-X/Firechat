@@ -210,7 +210,7 @@ class ChatPageFragment : Fragment() {
             messagesListAdapter = MessageListAdapter(existingChatRoomId ?: newChatRoomId, parent, fragment, requireContext(), this@ChatPageFragment, viewModel, ChatPageType.INDIVIDUAL,
                 { message, image ->
 //                    ImageUtils.displayImageMessage(image, message, parent)
-                    displayChatImage(image, message, parent)
+                    displayChatImage(image, message, viewModel.user.value, parent)
                 }, { _, _, _ ->
 
                 }, { profileImage, user ->

@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
+import com.varsel.firechat.common.Response
 import com.varsel.firechat.databinding.FragmentAddFriendsBinding
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.showKeyboard
@@ -23,6 +24,7 @@ import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLat
 import com.varsel.firechat.domain.use_case._util.user.SortByTimestamp_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
+import com.varsel.firechat.domain.use_case.recent_search.AddToRecentSearch_UseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -48,6 +50,9 @@ class AddFriendsFragment : Fragment() {
     @Inject
     lateinit var sortByTimestamp: SortByTimestamp_UseCase
 
+    @Inject
+    lateinit var addToRecentSearch: AddToRecentSearch_UseCase
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -57,12 +62,6 @@ class AddFriendsFragment : Fragment() {
         parent = activity as SignedinActivity
 
         viewModel = ViewModelProvider(this).get(AddFriendsViewModel::class.java)
-
-//        LifecycleUtils.observeInternetStatus(parent, this, {
-//            binding.addFriendsSearchBox.isEnabled = true
-//        }, {
-//            binding.addFriendsSearchBox.isEnabled = false
-//        })
 
         checkServerConnection().onEach {
             try {
@@ -117,12 +116,16 @@ class AddFriendsFragment : Fragment() {
         try {
             val action = AddFriendsFragmentDirections.actionAddFriendsToOtherProfileFragment(user.userUID)
 
-            parent.firebaseViewModel.addToRecentSearch(user.userUID, parent.firebaseAuth, parent.mDbRef)
+            addToRecentSearch(user.userUID).onEach {
+                when(it) {
+                    is Response.Success -> { }
+                    is Response.Loading -> { }
+                    is Response.Fail -> { }
+                }
+            }.launchIn(lifecycleScope)
 
             parent.hideKeyboard()
             view?.findNavController()?.navigate(action)
-
-//            parent.firebaseViewModel.selectedUser.value = user
 
         } catch (e: IllegalArgumentException){
 
@@ -131,7 +134,7 @@ class AddFriendsFragment : Fragment() {
 
     private fun setupRecentSearchAdapter() {
         val recentSearches = viewModel.getCurrentUserRecurrentUseCase().value.data?.recent_search
-        recentSearchAdapter = RecentSearchAdapter(parent, this) {
+        recentSearchAdapter = RecentSearchAdapter(parent, this, viewModel) {
             navigateToOtherProfileFragment(it, null)
 
         }

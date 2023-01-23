@@ -100,7 +100,6 @@ class IndividualFragment : Fragment() {
 
             view?.findNavController()?.navigate(action)
 
-            parent.firebaseViewModel.selectedChatRoomUser.value = user
         } catch (e: IllegalArgumentException){
 
         }

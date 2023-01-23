@@ -42,6 +42,7 @@ import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.domain.use_case._util.user.SortUsersByNameInGroup_UseCase
+import com.varsel.firechat.domain.use_case.message.GetChatRoomsRecurrentUseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ParticipantsListAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -90,6 +91,9 @@ class GroupChatDetailFragment : Fragment() {
 
     @Inject
     lateinit var sortUsersByNameInGroup: SortUsersByNameInGroup_UseCase
+
+    @Inject
+    lateinit var getChatRooms: GetChatRoomsRecurrentUseCase
 
     override fun onResume() {
         super.onResume()
@@ -170,7 +174,6 @@ class GroupChatDetailFragment : Fragment() {
 
                 },{ id, user, base64 ->
                     showParticipantOptionsActonsheet(id)
-                    parent.firebaseViewModel.selectedChatRoomUser.value = user
                 }, { image, user ->
                     displayProfileImage(image, user, parent)
                 })
@@ -645,7 +648,7 @@ class GroupChatDetailFragment : Fragment() {
 
     private fun navigateToChats(){
         var action: NavDirections
-        if(parent.signedinViewModel.determineChatroom(viewModel.actionSheetUserId.value!!, parent.firebaseViewModel.chatRooms.value)){
+        if(parent.signedinViewModel.determineChatroom(viewModel.actionSheetUserId.value!!, getChatRooms().value.data?.toMutableList())){
             action = GroupChatDetailFragmentDirections.actionGroupChatDetailFragmentToChatPageFragment(parent.signedinViewModel.currentChatRoomId.value, viewModel.actionSheetUserId.value!!)
         } else {
             action = GroupChatDetailFragmentDirections.actionGroupChatDetailFragmentToChatPageFragment(null, viewModel.actionSheetUserId.value!!)

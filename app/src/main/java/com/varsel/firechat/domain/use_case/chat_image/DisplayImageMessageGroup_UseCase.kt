@@ -15,10 +15,10 @@ class DisplayImageMessageGroup_UseCase @Inject constructor(
     val currentUserRepository: CurrentUserRepository,
     val setoverlaybindingsUsecase: SetOverlayBindings_UseCase,
 ) {
-    operator fun invoke(image: Image, message: Message, activity: SignedinActivity){
+    operator fun invoke(image: Image, message: Message, selectedGroupRoomParticipants: List<User>?, activity: SignedinActivity){
         val currentUserId = currentUserRepository.getCurrentUserId()
         // TODO: Fix bug here:
-        val selectedGroupRoomParticipants = activity.firebaseViewModel.selectedGroupParticipants.value
+//        val selectedGroupRoomParticipants = activity.firebaseViewModel.selectedGroupParticipants.value
 
         activity.hideKeyboard()
 

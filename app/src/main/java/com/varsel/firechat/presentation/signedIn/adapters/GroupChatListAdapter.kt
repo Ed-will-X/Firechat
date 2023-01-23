@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.varsel.firechat.R
+import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
@@ -187,20 +188,29 @@ class GroupChatsListAdapter(
 
     private fun setFavorite(groupId: String, icon: ImageView){
         if(!isFavorite(groupId)){
-            activity.firebaseViewModel.addGroupToFavorites(groupId, activity.firebaseAuth, activity.mDbRef, {
-                viewModel.changeIconColor(icon, R.color.yellow, context)
-            },{
-            })
-        } else {
-            activity.firebaseViewModel.removeGroupFromFavorites(groupId, activity.firebaseAuth, activity.mDbRef, {
-                if(activity.isNightMode()){
-                    viewModel.changeIconColor(icon, FAVORITE_ICON_DARK_MODE, context)
-                } else {
-                    viewModel.changeIconColor(icon, R.color.light_grey_2, context)
+            viewModel.addGroupToFavorites(groupId).onEach {
+                when(it) {
+                    is Response.Success -> {
+                        viewModel.changeIconColor(icon, R.color.yellow, context)
+                    }
+                    is Response.Fail -> { }
+                    is Response.Loading -> { }
                 }
-            },{
-
-            })
+            }.launchIn(lifecycleOwner.lifecycleScope)
+        } else {
+            viewModel.removeGroupFromFavorites(groupId).onEach {
+                when(it) {
+                    is Response.Success -> {
+                        if(activity.isNightMode()){
+                            viewModel.changeIconColor(icon, FAVORITE_ICON_DARK_MODE, context)
+                        } else {
+                            viewModel.changeIconColor(icon, R.color.light_grey_2, context)
+                        }
+                    }
+                    is Response.Loading -> { }
+                    is Response.Fail -> { }
+                }
+            }.launchIn(lifecycleOwner.lifecycleScope)
         }
     }
 

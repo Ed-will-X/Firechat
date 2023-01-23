@@ -60,16 +60,10 @@ class SettingViewModel @Inject constructor(
     }
 
     fun clearUserSearchHistory(activity: SignedinActivity){
-        activity.firebaseViewModel.deleteRecentSearchHistory(activity.firebaseAuth, activity.mDbRef) {
 
-        }
     }
 
     fun uploadBugReport(bugReportEntity: BugReport, activity: SignedinActivity, successCallback: ()-> Unit, failureCallback: ()-> Unit){
-        activity.firebaseViewModel.uploadBugReport(bugReportEntity, activity.mDbRef, activity.firebaseAuth, {
-            successCallback()
-        }, {
-            failureCallback()
-        })
+
     }
 }

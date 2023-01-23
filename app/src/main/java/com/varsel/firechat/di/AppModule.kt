@@ -34,6 +34,7 @@ import com.varsel.firechat.domain.use_case.profile_image.*
 import com.varsel.firechat.domain.use_case.public_post.*
 import com.varsel.firechat.domain.use_case.read_receipt.FetchReceipt_UseCase
 import com.varsel.firechat.domain.use_case.read_receipt.StoreReceipt_UseCase
+import com.varsel.firechat.domain.use_case.recent_search.AddToRecentSearch_UseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -591,8 +592,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFormatSystemMessage(formatpersonUsecase: FormatPerson_UseCase, formatStampChatsPage_UseCase: FormatTimestampChatsPage_UseCase): FormatSystemMessage_UseCase {
-        return FormatSystemMessage_UseCase(formatpersonUsecase, formatStampChatsPage_UseCase)
+    fun provideFormatSystemMessage(formatpersonUsecase: FormatPerson_UseCase, formatStampChatsPage_UseCase: FormatTimestampChatsPage_UseCase, firebaseRepository: FirebaseRepository): FormatSystemMessage_UseCase {
+        return FormatSystemMessage_UseCase(formatpersonUsecase, formatStampChatsPage_UseCase, firebaseRepository)
     }
 
     @Provides
@@ -624,4 +625,42 @@ object AppModule {
     fun provideStoreReceipt(repository: ReadReceiptRepository): StoreReceipt_UseCase {
         return StoreReceipt_UseCase(repository)
     }
+
+    @Provides
+    @Singleton
+    fun provideAddToRecentSearch(repository: CurrentUserRepository): AddToRecentSearch_UseCase {
+        return AddToRecentSearch_UseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAddGrouptoFavorites(repository: CurrentUserRepository): AddGroupToFavorites_UseCase {
+        return AddGroupToFavorites_UseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRemoveGroupFromFavorites(repository: CurrentUserRepository): RemoveGroupFromFavorites_UseCase {
+        return RemoveGroupFromFavorites_UseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAcceptFriendRequest(repository: OtherUserRepository): AcceptFriendRequest_UseCase {
+        return AcceptFriendRequest_UseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRejectFriendRequest(repository: OtherUserRepository): RejectFriendRequest_UseCase {
+        return RejectFriendRequest_UseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetFreindRequestsUseCase(repository: FirebaseRepository, sort: SortByTimestamp_UseCase): GetFriendRequests_UseCase {
+        return GetFriendRequests_UseCase(repository, sort)
+    }
+
+
 }

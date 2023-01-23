@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.common.Resource
+import com.varsel.firechat.domain.repository.FirebaseRepository
 import com.varsel.firechat.domain.use_case._util.message.FormatTimestampChatsPage_UseCase
 import com.varsel.firechat.domain.use_case._util.message.GetLastMessage_UseCase
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
@@ -29,7 +30,8 @@ class IndividualViewModel @Inject constructor(
     val getOtherUserId: GetOtherUserId_UseCase,
     val formatStampChatsPage: FormatTimestampChatsPage_UseCase,
     val getLastMessage: GetLastMessage_UseCase,
-    val fetchReceipt: FetchReceipt_UseCase
+    val fetchReceipt: FetchReceipt_UseCase,
+    val firebaseRepository: FirebaseRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(IndividualFragmentState())
     val state = _state

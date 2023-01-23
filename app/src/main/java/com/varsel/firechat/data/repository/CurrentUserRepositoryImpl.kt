@@ -39,6 +39,7 @@ class CurrentUserRepositoryImpl @Inject constructor(
 
     override fun initialiseGetUserRecurrentStream(): Flow<Response> = callbackFlow {
         trySend(Response.Loading())
+
         val listener = firebase.getCurrentUserRecurrent({
             if(it != null) {
                 currentUser.value = Resource.Success(it)
@@ -63,6 +64,7 @@ class CurrentUserRepositoryImpl @Inject constructor(
 
     override fun updateFriends(friendsMap: HashMap<String, Long>): Flow<Response> = callbackFlow {
         trySend(Response.Loading())
+
         friends.value = Resource.Loading()
 
         val sortedMap = sortByTimestamp(friendsMap.toSortedMap())
@@ -95,6 +97,8 @@ class CurrentUserRepositoryImpl @Inject constructor(
     }
 
     override fun signUp(name: String, email: String, password: String): Flow<Response> = callbackFlow {
+        trySend(Response.Loading())
+
         firebase.signUp(email, password, {
             firebase.saveUser(name, email, firebase.mAuth.currentUser!!.uid, {
                 trySend(Response.Success())
@@ -109,6 +113,8 @@ class CurrentUserRepositoryImpl @Inject constructor(
     }
 
     override fun signIn(email: String, password: String) : Flow<Response> = callbackFlow {
+        trySend(Response.Loading())
+
         firebase.signin(email, password, {
             trySend(Response.Success())
         }, {
@@ -119,6 +125,8 @@ class CurrentUserRepositoryImpl @Inject constructor(
     }
 
     override fun editUser(key: String, value: String) : Flow<Response> = callbackFlow {
+        trySend(Response.Loading())
+
         firebase.editUser(key, value, {
             trySend(Response.Success())
         }, {
@@ -129,6 +137,8 @@ class CurrentUserRepositoryImpl @Inject constructor(
     }
 
     override fun addToRecentSearch(userId: String): Flow<Response> = callbackFlow {
+        trySend(Response.Loading())
+
         firebase.addToRecentSearch(userId, {
             trySend(Response.Success())
         }, {
@@ -139,6 +149,8 @@ class CurrentUserRepositoryImpl @Inject constructor(
     }
 
     override fun deleteRecentSearchHistory() : Flow<Response> = callbackFlow {
+        trySend(Response.Loading())
+
         firebase.deleteRecentSearchHistory({
             trySend(Response.Success())
         }, {

@@ -9,6 +9,7 @@ import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.repository.FirebaseRepository
 import com.varsel.firechat.domain.use_case._util.message.CalculateTimestampDifferenceLess_UseCase
 import com.varsel.firechat.domain.use_case._util.message.FormatStampMessage_UseCase
 import com.varsel.firechat.domain.use_case._util.message.FormatSystemMessage_UseCase
@@ -49,7 +50,8 @@ class ChatPageViewModel @Inject constructor(
     val formatStampMessage: FormatStampMessage_UseCase,
     val calculateTimestampDifferenceLess: CalculateTimestampDifferenceLess_UseCase,
     val getLastMessage: GetLastMessage_UseCase,
-    val formatSystemMessage: FormatSystemMessage_UseCase
+    val formatSystemMessage: FormatSystemMessage_UseCase,
+    val firebase: FirebaseRepository
 ): ViewModel() {
     val actionBarVisibility = MutableLiveData<Boolean>(false)
 
