@@ -39,6 +39,7 @@ import com.varsel.firechat.domain.use_case.public_post.*
 import com.varsel.firechat.domain.use_case.read_receipt.FetchReceipt_UseCase
 import com.varsel.firechat.domain.use_case.read_receipt.StoreReceipt_UseCase
 import com.varsel.firechat.domain.use_case.recent_search.AddToRecentSearch_UseCase
+import com.varsel.firechat.domain.use_case.settings.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -714,8 +715,40 @@ object AppModule {
         return AddRecyclerViewSeparator_UseCase()
     }
 
+    @Singleton
+    @Provides
+    fun provideGetSetting_boolean(): GetSetting_Boolean_UseCase {
+        return GetSetting_Boolean_UseCase()
+    }
 
+    @Singleton
+    @Provides
+    fun provideGetSetting_string(): GetSetting_string_UseCase {
+        return GetSetting_string_UseCase()
+    }
 
+    @Singleton
+    @Provides
+    fun provideGetSetting_integer(): GetSetting_Integer_UseCase {
+        return GetSetting_Integer_UseCase()
+    }
 
+    @Singleton
+    @Provides
+    fun provideStoreSetting_integer(): StoreSetting_Integer_UseCase {
+        return StoreSetting_Integer_UseCase()
+    }
+
+    @Singleton
+    @Provides
+    fun provideStoreSetting_string(): StoreSetting_string_UseCase {
+        return StoreSetting_string_UseCase()
+    }
+
+    @Singleton
+    @Provides
+    fun provideStoreSetting_boolean(): StoreSetting_boolean_UseCase {
+        return StoreSetting_boolean_UseCase()
+    }
 
 }

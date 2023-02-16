@@ -55,13 +55,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun determineAuth(){
-        lifecycleScope.launch {
-            delay(500)
-            if (mAuth.currentUser?.uid != null){
-                navigateToSignin()
-            } else {
-                navigateToSignup()
-            }
+        if (mAuth.currentUser?.uid != null){
+            navigateToSignin()
+        } else {
+            navigateToSignup()
         }
     }
 

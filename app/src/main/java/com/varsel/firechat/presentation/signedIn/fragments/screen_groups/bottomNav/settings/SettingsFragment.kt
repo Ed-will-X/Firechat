@@ -1,14 +1,13 @@
 package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.settings
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -19,6 +18,7 @@ import com.varsel.firechat.domain.use_case._util.status_bar.ChangeStatusBarColor
 import com.varsel.firechat.domain.use_case._util.system.CheckIfNightMode_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.current_user.SignoutUseCase
+import com.varsel.firechat.domain.use_case.settings.*
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.viewModel.*
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,6 +46,24 @@ class SettingsFragment : Fragment() {
     @Inject
     lateinit var isNightMode: CheckIfNightMode_UseCase
 
+    @Inject
+    lateinit var storeBoolean: StoreSetting_boolean_UseCase
+
+    @Inject
+    lateinit var getBoolean: GetSetting_Boolean_UseCase
+
+    @Inject
+    lateinit var storeInteger: StoreSetting_Integer_UseCase
+
+    @Inject
+    lateinit var getInteger: GetSetting_Integer_UseCase
+
+    @Inject
+    lateinit var storeString: StoreSetting_string_UseCase
+
+    @Inject
+    lateinit var getString: GetSetting_string_UseCase
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,29 +76,158 @@ class SettingsFragment : Fragment() {
 
         val view = binding.root
 
-
-//        LifecycleUtils.observeInternetStatus(parent, this, {
-//            binding.logout.isEnabled = true
-//        }, {
-//            binding.logout.isEnabled = false
-//        })
-
         checkServerConnection().onEach {
             binding.logout.isEnabled = it
         }.launchIn(lifecycleScope)
 
-        parent.settingViewModel.settingConfig.observe(viewLifecycleOwner, Observer {
-            setNotificationBindings(it)
-            setDataConsumptionBindings(it)
-            setThemeBindings(it)
-            setAccountBindings(it)
-        })
+        getNotificationSettings()
+        setNotificationSettingListeners()
+        getThemeSettings()
+        setThemeSettingsListeners()
+        getDataConsumptionSettings()
+        setDataConsumptionSettingListeners()
 
         binding.logout.setOnClickListener {
             showLogoutConfirmationDialog()
         }
 
         return view
+    }
+
+    private fun getNotificationSettings() {
+        lifecycleScope.launch {
+            val show_chat = getBoolean(SettingKeys_Boolean.SHOW_CHAT_NOTIFICATIONS, parent.datastore)
+            val show_group = getBoolean(SettingKeys_Boolean.SHOW_GROUP_NOTIFICATIONS, parent.datastore)
+            val show_friend_request = getBoolean(SettingKeys_Boolean.SHOW_FRIEND_REQUEST_NOTIFICATIONS, parent.datastore)
+            val show_new_friend = getBoolean(SettingKeys_Boolean.SHOW_NEW_FRIEND_NOTIFICATIONS, parent.datastore)
+            val show_group_add = getBoolean(SettingKeys_Boolean.SHOW_GROUP_ADD_NOTIFICATIONS, parent.datastore)
+
+            binding.showChatNotifications.isChecked = show_chat == true
+            binding.showGroupNotifications.isChecked = show_group == true
+            binding.showFriendRequestNotifications.isChecked = show_friend_request == true
+            binding.showNewFriendNotifications.isChecked = show_new_friend == true
+            binding.showGroupAddNotifications.isChecked = show_group_add == true
+        }
+    }
+
+    private fun getThemeSettings() {
+        lifecycleScope.launch {
+            val darkTheme = getBoolean(SettingKeys_Boolean.DARK_THEME, parent.datastore)
+            val override_theme = getBoolean(SettingKeys_Boolean.OVERRIDE_SYSTEM_THEME, parent.datastore)
+
+            if(override_theme == true) {
+                binding.darkMode.isEnabled = false
+            }
+            binding.darkMode.isChecked = darkTheme == true
+            binding.overrideSystemTheme.isChecked = override_theme == true
+        }
+    }
+
+    private fun getDataConsumptionSettings() {
+        lifecycleScope.launch {
+            val auto_download_image_message = getBoolean(SettingKeys_Boolean.AUTO_DOWNLOAD_IMAGE_MESSAGE, parent.datastore)
+            val auto_download_video_message = getBoolean(SettingKeys_Boolean.AUTO_DOWNLOAD_VIDEO_MESSAGE, parent.datastore)
+            val auto_download_gif_message = getBoolean(SettingKeys_Boolean.AUTO_DOWNLOAD_GIF_MESSAGE, parent.datastore)
+            val auto_download_audio_message = getBoolean(SettingKeys_Boolean.AUTO_DOWNLOAD_AUDIO_MESSAGE, parent.datastore)
+            val public_post_auto_download_limit = getInteger(
+                SettingKeys_Integer.PUBLIC_POST_AUTO_DOWNLOAD_LIMIT,
+                parent.datastore
+            )
+
+            Log.d("LLL", "$public_post_auto_download_limit")
+
+            binding.autoDownloadImageMessage.isChecked = auto_download_image_message == true
+            binding.autoDownloadVideoMessage.isChecked = auto_download_video_message == true
+            binding.autoDownloadGifMessage.isChecked = auto_download_gif_message == true
+            binding.autoDownloadAudioMessage.isChecked = auto_download_audio_message == true
+            binding.publicPostDownloadCount.setText(public_post_auto_download_limit.toString())
+        }
+    }
+
+    private fun setNotificationSettingListeners() {
+        binding.showChatNotifications.setOnCheckedChangeListener { buttonView, isChecked ->
+            lifecycleScope.launch {
+                storeBoolean(SettingKeys_Boolean.SHOW_CHAT_NOTIFICATIONS, isChecked, parent.datastore)
+            }
+        }
+
+        binding.showGroupNotifications.setOnCheckedChangeListener { buttonView, isChecked ->
+            lifecycleScope.launch {
+                storeBoolean(SettingKeys_Boolean.SHOW_GROUP_NOTIFICATIONS, isChecked, parent.datastore)
+            }
+        }
+
+        binding.showFriendRequestNotifications.setOnCheckedChangeListener { buttonView, isChecked ->
+            lifecycleScope.launch {
+                storeBoolean(SettingKeys_Boolean.SHOW_FRIEND_REQUEST_NOTIFICATIONS, isChecked, parent.datastore)
+            }
+        }
+
+        binding.showNewFriendNotifications.setOnCheckedChangeListener { buttonView, isChecked ->
+            lifecycleScope.launch {
+                storeBoolean(SettingKeys_Boolean.SHOW_NEW_FRIEND_NOTIFICATIONS, isChecked, parent.datastore)
+            }
+        }
+
+        binding.showGroupAddNotifications.setOnCheckedChangeListener { buttonView, isChecked ->
+            lifecycleScope.launch {
+                storeBoolean(SettingKeys_Boolean.SHOW_GROUP_ADD_NOTIFICATIONS, isChecked, parent.datastore)
+            }
+        }
+    }
+
+    private fun setThemeSettingsListeners() {
+        binding.darkMode.setOnCheckedChangeListener { buttonView, isChecked ->
+            lifecycleScope.launch {
+                storeBoolean(SettingKeys_Boolean.DARK_THEME, isChecked, parent.datastore)
+                parent.setThemeConfiguration()
+            }
+        }
+
+        binding.overrideSystemTheme.setOnCheckedChangeListener { buttonView, isChecked ->
+            lifecycleScope.launch {
+                storeBoolean(SettingKeys_Boolean.OVERRIDE_SYSTEM_THEME, isChecked, parent.datastore)
+                binding.darkMode.isEnabled = !isChecked
+
+                parent.setThemeConfiguration()
+            }
+        }
+    }
+
+    private fun setDataConsumptionSettingListeners() {
+        binding.autoDownloadImageMessage.setOnCheckedChangeListener { buttonView, isChecked ->
+            lifecycleScope.launch {
+                storeBoolean(SettingKeys_Boolean.AUTO_DOWNLOAD_IMAGE_MESSAGE, isChecked, parent.datastore)
+            }
+        }
+
+        binding.autoDownloadVideoMessage.setOnCheckedChangeListener { buttonView, isChecked ->
+            lifecycleScope.launch {
+                storeBoolean(SettingKeys_Boolean.AUTO_DOWNLOAD_VIDEO_MESSAGE, isChecked, parent.datastore)
+            }
+        }
+
+        binding.autoDownloadGifMessage.setOnCheckedChangeListener { buttonView, isChecked ->
+            lifecycleScope.launch {
+                storeBoolean(SettingKeys_Boolean.AUTO_DOWNLOAD_GIF_MESSAGE, isChecked, parent.datastore)
+            }
+        }
+
+        binding.autoDownloadAudioMessage.setOnCheckedChangeListener { buttonView, isChecked ->
+            lifecycleScope.launch {
+                storeBoolean(SettingKeys_Boolean.AUTO_DOWNLOAD_AUDIO_MESSAGE, isChecked, parent.datastore)
+            }
+        }
+
+        binding.publicPostDownloadCount.doAfterTextChanged {
+            lifecycleScope.launch {
+                try {
+                    storeInteger(SettingKeys_String.PUBLIC_POST_AUTO_DOWNLOAD_LIMIT, binding.publicPostDownloadCount.text.toString().toInt(), parent.datastore)
+                } catch (e: Exception) {
+                    Log.d("LLL", "${e}")
+                }
+            }
+        }
     }
 
     private fun changeStatusBarColor(){

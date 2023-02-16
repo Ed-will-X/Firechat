@@ -49,8 +49,7 @@ class MessageListAdapter(
     val imgClickListener: (message: Message, image: Image)-> Unit,
     val onClickListener: (message: Message, messageType: Int, messageStatus: Int)-> Unit,
     val profileImgClickListener: (profileImage: ProfileImage, user: User) -> Unit
-    )
-    : ListAdapter<Message, RecyclerView.ViewHolder>(MessagesCallback()) {
+    ) : ListAdapter<Message, RecyclerView.ViewHolder>(MessagesCallback()) {
 
     class SentViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val textParent = itemView.findViewById<LinearLayout>(R.id.text_parent)

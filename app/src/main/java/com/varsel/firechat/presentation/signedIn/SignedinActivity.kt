@@ -11,9 +11,11 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.createDataStore
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
@@ -44,9 +46,15 @@ import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
 import com.varsel.firechat.domain.use_case._util.user.GetOtherUserId_UseCase
 import com.varsel.firechat.domain.use_case._util.user.SortByTimestamp_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
+import com.varsel.firechat.domain.use_case.settings.GetSetting_Boolean_UseCase
+import com.varsel.firechat.domain.use_case.settings.StoreSetting_boolean_UseCase
+import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.settings.SettingKeys_Boolean
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.*
 import javax.inject.Inject
 import kotlin.concurrent.fixedRateTimer
@@ -54,14 +62,13 @@ import kotlin.concurrent.fixedRateTimer
 @AndroidEntryPoint
 class SignedinActivity : AppCompatActivity() {
     lateinit var binding: ActivitySignedinBinding
-    lateinit var dataStore: DataStore<Preferences>
     lateinit var firebaseAuth: FirebaseAuth
     lateinit var mDbRef: DatabaseReference
     lateinit var firebaseStorage: FirebaseStorage
     lateinit var signedinViewModel: SignedinViewModel
-//    var timer: CountDownTimer? = null
     val settingViewModel: SettingViewModel by viewModels()
     lateinit var infobarController: InfobarControllerUseCase
+    lateinit var datastore: DataStore<Preferences>
 
     @Inject
     lateinit var sortByTimestamp: SortByTimestamp_UseCase
@@ -90,6 +97,12 @@ class SignedinActivity : AppCompatActivity() {
     @Inject
     lateinit var setStatusBarVisibility: SetStatusBarVisibility_UseCase
 
+    @Inject
+    lateinit var getBoolean: GetSetting_Boolean_UseCase
+
+    @Inject
+    lateinit var storeBoolean: StoreSetting_boolean_UseCase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -97,16 +110,17 @@ class SignedinActivity : AppCompatActivity() {
         val view = binding.root
 
 
+        datastore = createDataStore(getString(R.string.settings).toLowerCase())
+        setThemeConfiguration()
+
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance()
         mDbRef = FirebaseDatabase.getInstance().reference
         firebaseStorage = FirebaseStorage.getInstance()
         infobarController = InfobarControllerUseCase(this, this, binding.bottomInfobar, binding.bottomInfobarText)
         signedinViewModel = ViewModelProvider(this).get(SignedinViewModel::class.java)
-
         collectState()
 
-        initialiseSettingConfiguration()
 
         determineAuthType(intent)
 
@@ -275,19 +289,6 @@ class SignedinActivity : AppCompatActivity() {
     }
 
 
-    private fun initialiseSettingConfiguration(){
-        val currentUserID = firebaseAuth.currentUser!!.uid
-        val settingLiveData = settingViewModel.getSetting(currentUserID)
-
-        settingLiveData.observe(this, Observer {
-            if(it != null){
-                settingViewModel.settingConfig.value = it
-            } else {
-                val setting = Setting(currentUserID)
-                settingViewModel.storeSetting(setting)
-            }
-        })
-    }
 
     var offlineInfobarTimer: Timer? = null
     private fun checkConnectivity(){
@@ -327,5 +328,22 @@ class SignedinActivity : AppCompatActivity() {
             view = View(this)
         }
         imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    fun setThemeConfiguration() {
+        lifecycleScope.launch {
+            val dark_theme = getBoolean(SettingKeys_Boolean.DARK_THEME, datastore)
+            val override = getBoolean(SettingKeys_Boolean.OVERRIDE_SYSTEM_THEME, datastore)
+
+            if(override == true) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            } else {
+                if(dark_theme == true) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                }
+            }
+        }
     }
 }
