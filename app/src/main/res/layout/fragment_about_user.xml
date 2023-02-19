@@ -126,6 +126,7 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/black"
                             android:textSize="18sp"
+                            tools:text="Ligma Balls"
                             />
                     </LinearLayout>
 
@@ -135,6 +136,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/grey"
                         android:textSize="13sp"
+                        tools:text="Aerospace Engineer"
                         />
                 </LinearLayout>
             </LinearLayout>

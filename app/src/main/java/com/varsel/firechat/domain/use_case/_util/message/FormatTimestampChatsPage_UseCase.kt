@@ -1,5 +1,6 @@
 package com.varsel.firechat.domain.use_case._util.message
 
+import android.util.Log
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 
@@ -15,6 +16,10 @@ class FormatTimestampChatsPage_UseCase {
             return "1s ago"
         } else {
             val arr = ago.split(" ").toTypedArray()
+
+            if(arr[1] == "month") {
+                return "${arr[0]} mo ${arr[2]}"
+            }
             return "${arr[0]}${arr[1][0]} ${arr[2]}"
         }
     }

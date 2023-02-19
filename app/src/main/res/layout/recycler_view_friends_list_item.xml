@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--TODO: Implement swipe to delete recycler view-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="50dp"
     android:id="@+id/parent_clickable"
@@ -55,6 +56,7 @@
         android:textSize="15sp"
         android:textColor="?chat_title_text_color"
         android:layout_gravity="center_vertical"
+        tools:text="Balls Gulls"
         />
 
     <View

@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.varsel.firechat.databinding.FragmentIndividualBinding
@@ -62,15 +63,17 @@ class IndividualFragment : Fragment() {
     }
 
     private fun collectState() {
-        collectLatestLifecycleFlow(viewModel.state) {
-            Log.d("CLEAN", "Count in fragment: ${it.chatRooms.size}")
+        viewModel.chatRooms.observe(viewLifecycleOwner, Observer {
+            Log.d("CLEAN", "Count in fragment: ${it.size}")
 
-            val sorted = sortChats(it.chatRooms)
+            val sorted = sortChats(it)
 
-            toggleRecyclerViewVisibility(it.chatRooms)
+            toggleRecyclerViewVisibility(it)
             chatListAdapter.submitList(sorted)
             chatListAdapter.notifyDataSetChanged()
+        })
 
+        collectLatestLifecycleFlow(viewModel.state) {
             toggleShimmerVisibility(it.currentUser)
             if(it.currentUser != null){
                 binding.chatPeopleClickable.setOnClickListener {

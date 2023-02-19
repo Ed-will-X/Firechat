@@ -102,11 +102,11 @@ class SettingsFragment : Fragment() {
             val show_new_friend = getBoolean(SettingKeys_Boolean.SHOW_NEW_FRIEND_NOTIFICATIONS, parent.datastore)
             val show_group_add = getBoolean(SettingKeys_Boolean.SHOW_GROUP_ADD_NOTIFICATIONS, parent.datastore)
 
-            binding.showChatNotifications.isChecked = show_chat == true
-            binding.showGroupNotifications.isChecked = show_group == true
-            binding.showFriendRequestNotifications.isChecked = show_friend_request == true
-            binding.showNewFriendNotifications.isChecked = show_new_friend == true
-            binding.showGroupAddNotifications.isChecked = show_group_add == true
+            binding.showChatNotifications.isChecked = show_chat == true || show_chat == null
+            binding.showGroupNotifications.isChecked = show_group == true || show_group == null
+            binding.showFriendRequestNotifications.isChecked = show_friend_request == true || show_friend_request == null
+            binding.showNewFriendNotifications.isChecked = show_new_friend == true || show_new_friend == null
+            binding.showGroupAddNotifications.isChecked = show_group_add == true || show_group_add == null
         }
     }
 
@@ -136,9 +136,9 @@ class SettingsFragment : Fragment() {
 
             Log.d("LLL", "$public_post_auto_download_limit")
 
-            binding.autoDownloadImageMessage.isChecked = auto_download_image_message == true
+            binding.autoDownloadImageMessage.isChecked = auto_download_image_message == true || auto_download_image_message == null
             binding.autoDownloadVideoMessage.isChecked = auto_download_video_message == true
-            binding.autoDownloadGifMessage.isChecked = auto_download_gif_message == true
+            binding.autoDownloadGifMessage.isChecked = auto_download_gif_message == true || auto_download_gif_message == null
             binding.autoDownloadAudioMessage.isChecked = auto_download_audio_message == true
             binding.publicPostDownloadCount.setText(public_post_auto_download_limit.toString())
         }

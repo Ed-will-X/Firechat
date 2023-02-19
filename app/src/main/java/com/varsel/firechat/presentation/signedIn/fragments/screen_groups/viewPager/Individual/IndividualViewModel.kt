@@ -1,9 +1,12 @@
 package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.Individual
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.common.Resource
+import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.domain.repository.FirebaseRepository
 import com.varsel.firechat.domain.use_case._util.message.FormatTimestampChatsPage_UseCase
 import com.varsel.firechat.domain.use_case._util.message.GetLastMessage_UseCase
@@ -16,6 +19,7 @@ import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImag
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import com.varsel.firechat.domain.use_case.read_receipt.FetchReceipt_UseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -38,26 +42,32 @@ class IndividualViewModel @Inject constructor(
     private val _state = MutableStateFlow(IndividualFragmentState())
     val state = _state
 
+    private val _chatRooms = MutableLiveData(listOf<ChatRoom>())
+    val chatRooms: LiveData<List<ChatRoom>> = _chatRooms
+
     init {
         getUser()
         getChatRooms()
     }
 
     private fun getChatRooms() {
-        _state.value = _state.value.copy(isLoading = true, chatRooms = listOf())
+        _state.value = _state.value.copy(isLoading = true)
 
         getChatRoomsRecurrentUseCase().onEach {
             when(it) {
                 is Resource.Success -> {
                     Log.d("CLEAN", "Count in viewModel: ${it.data?.size}")
 
-                    _state.value = _state.value.copy(isLoading = false, chatRooms = it.data ?: listOf())
+                    _state.value = _state.value.copy(isLoading = false)
+                    _chatRooms.value = it.data ?: listOf()
                 }
                 is Resource.Loading -> {
-                    _state.value = _state.value.copy(isLoading = true, chatRooms = listOf())
+                    _state.value = _state.value.copy(isLoading = true)
+                    _chatRooms.value = listOf()
                 }
                 is Resource.Error -> {
-                    _state.value = _state.value.copy(isLoading = false, chatRooms = listOf())
+                    _state.value = _state.value.copy(isLoading = false)
+                    _chatRooms.value = listOf()
                 }
             }
         }.launchIn(viewModelScope)

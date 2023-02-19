@@ -7,6 +7,7 @@ import com.varsel.firechat.R
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.use_case._util.InfobarColors
 import com.varsel.firechat.domain.use_case._util.animation.ChangeDialogDimAmountUseCase
 import com.varsel.firechat.domain.use_case.current_user.EditUserUseCase
@@ -17,6 +18,7 @@ import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import com.varsel.firechat.domain.use_case.profile_image.UploadProfileImageUseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -33,9 +35,12 @@ class EditProfileViewModel @Inject constructor(
     val removeProfileImageUseCase: RemoveProfileImageUseCase,
     val changeDialogDimAmountUseCase: ChangeDialogDimAmountUseCase
 ) : ViewModel() {
-    private val _state = MutableStateFlow(EditProfileState(user = null, isLoading = true))
+    private val _state = MutableStateFlow(EditProfileState(isLoading = true))
     val _hasRun = MutableStateFlow(false)
     val state = _state
+
+    private val _user = MutableStateFlow<User?>(null)
+    val user: Flow<User?> = _user
 
     init {
         getCurrentUser()
@@ -58,22 +63,33 @@ class EditProfileViewModel @Inject constructor(
         getCurrentUserRecurrentUseCase().onEach {
             when(it) {
                 is Resource.Success -> {
-                    _state.value = _state.value.copy(user = it.data, isLoading = false)
+                    _state.value = _state.value.copy(isLoading = false)
+                    _user.value = it.data
                 }
                 is Resource.Loading -> {
-                    _state.value = _state.value.copy(user = null, isLoading = true)
+                    _state.value = _state.value.copy(isLoading = true)
+                    _user.value = null
                 }
                 is Resource.Error -> {
-                    _state.value = _state.value.copy(user = null, isLoading = false, errorMessage = it.message)
+                    _state.value = _state.value.copy(isLoading = false, errorMessage = it.message)
+                    _user.value = null
                 }
             }
         }.launchIn(viewModelScope)
     }
 
-    fun editUser(key: String, value: String) {
+    fun editUser(key: String, value: String, activity: SignedinActivity) {
         editUserUseCase(key, value).onEach {
-            if(it == Response.Fail()) {
-                // TODO: Show Error infobar
+            when(it) {
+                is Response.Success -> {
+                    activity.infobarController.showBottomInfobar(activity.getString(R.string.edit_user_successful), InfobarColors.SUCCESS)
+                }
+                is Response.Loading -> {
+
+                }
+                is Response.Fail -> {
+                    activity.infobarController.showBottomInfobar(activity.getString(R.string.edit_user_successful), InfobarColors.FAILURE)
+                }
             }
         }.launchIn(viewModelScope)
     }

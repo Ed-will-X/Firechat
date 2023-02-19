@@ -27,6 +27,7 @@ import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
+import com.varsel.firechat.domain.use_case._util.InfobarColors
 import com.varsel.firechat.domain.use_case._util.status_bar.ChangeStatusBarColor_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetCurrentUserProfileImageUseCase
 import dagger.hilt.android.AndroidEntryPoint
@@ -88,25 +89,21 @@ class EditProfilePage : Fragment() {
 
     private fun collectState() {
         collectLatestLifecycleFlow(viewModel.state) {
-            if(it.user != null) {
-                setBindings(it.user)
-                setProfileImage(it.profileImage)
+            setProfileImage(it.profileImage)
 
-                // TODO: Fix potential memory leak
-                if(!viewModel._hasRun.value) {
+        }
+        collectLatestLifecycleFlow(viewModel.user) {
+            if(it != null) {
+                Log.d("LLL", "Phone number: ${it.phone}")
+                setBindings(it)
+
+                binding.actionSheetClickable.setOnClickListener { it2 ->
                     checkServerConnection().onEach { isConnected ->
                         if(isConnected) {
-                            binding.actionSheetClickable.setOnClickListener { it2 ->
-                                openEditProfileActionsheet(it.user)
-                            }
-                        } else {
-                            binding.actionSheetClickable.setOnClickListener(null)
+                            openEditProfileActionsheet(it)
                         }
                     }.launchIn(lifecycleScope)
-
-                    viewModel._hasRun.value = true
                 }
-
             }
         }
     }
@@ -286,13 +283,17 @@ class EditProfilePage : Fragment() {
     }
 
     private fun editUser(dialogBinding: ActionSheetEditProfileBinding){
-        viewModel.editUser(EditUserFields.NAME, dialogBinding.nameEditText.text.toString())
-        viewModel.editUser(EditUserFields.ABOUT, dialogBinding.aboutEditText.text.toString())
-        viewModel.editUser(EditUserFields.OCCUPATION, dialogBinding.occupationEditText.text.toString())
-        viewModel.editUser(EditUserFields.LOCATION, dialogBinding.locationEditText.text.toString())
+        viewModel.editUser(EditUserFields.NAME, dialogBinding.nameEditText.text.toString(), parent)
+        viewModel.editUser(EditUserFields.ABOUT, dialogBinding.aboutEditText.text.toString(), parent)
+        viewModel.editUser(EditUserFields.OCCUPATION, dialogBinding.occupationEditText.text.toString(), parent)
+        viewModel.editUser(EditUserFields.LOCATION, dialogBinding.locationEditText.text.toString(), parent)
 
-        if(dialogBinding.phoneEditText.text.length in 9..19){
-            viewModel.editUser(EditUserFields.PHONE, dialogBinding.phoneEditText.text.toString())
+        if(dialogBinding.phoneEditText.text.length == 0) {
+            viewModel.editUser(EditUserFields.PHONE, "", parent)
+        } else if (dialogBinding.phoneEditText.text.length in 9..19){
+            viewModel.editUser(EditUserFields.PHONE, dialogBinding.phoneEditText.text.toString(), parent)
+        } else {
+            parent.infobarController.showBottomInfobar(getString(R.string.invalid_phone_number_length), InfobarColors.FAILURE)
         }
     }
 

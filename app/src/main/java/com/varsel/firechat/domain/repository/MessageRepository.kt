@@ -6,6 +6,7 @@ import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.User.User
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -14,7 +15,7 @@ interface MessageRepository {
     fun appendParticipants(chatRoom: ChatRoom) : Flow<Response>
     fun appendChatroomToUser(roomID: String, otherUser: String) : Flow<Response>
     fun getChatRoomsRecurrent(): MutableStateFlow<Resource<List<ChatRoom>>>
-    fun initialiseGetChatRoomsRecurrentStream(): Flow<Response>
+    fun initialiseGetChatRoomsRecurrentStream(scope: CoroutineScope): Flow<Response>
     fun getChatRoomRecurrent(id: String) : MutableStateFlow<Resource<ChatRoom>>
     fun getChatRoomSingle(id: String) : ChatRoom
 

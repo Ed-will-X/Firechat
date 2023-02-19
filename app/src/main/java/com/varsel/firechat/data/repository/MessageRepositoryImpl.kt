@@ -10,10 +10,9 @@ import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.remote.Firebase
 import com.varsel.firechat.domain.repository.CurrentUserRepository
 import com.varsel.firechat.domain.repository.MessageRepository
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 class MessageRepositoryImpl @Inject constructor(
@@ -57,7 +56,7 @@ class MessageRepositoryImpl @Inject constructor(
         return chatRoomsFlow as MutableStateFlow<Resource<List<ChatRoom>>>
     }
 
-    override fun initialiseGetChatRoomsRecurrentStream(): Flow<Response> = callbackFlow {
+    override fun initialiseGetChatRoomsRecurrentStream(scope: CoroutineScope): Flow<Response> = callbackFlow {
         trySend(Response.Loading())
 
         val chatRoomsUID = currentUserRepository.getCurrentUserRecurrent().value.data?.chatRooms?.keys  // TODO: Change to a dynamic value

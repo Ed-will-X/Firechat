@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
     android:id="@+id/parent_clickable"
     android:clickable="true"
@@ -55,6 +56,7 @@
         android:textSize="15sp"
         android:textColor="?colorOnSecondary"
         android:layout_gravity="center_vertical"
+        tools:text="Sugma Balls"
         />
 
     <View

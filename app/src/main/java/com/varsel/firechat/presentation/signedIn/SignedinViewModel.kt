@@ -47,8 +47,12 @@ class SignedinViewModel @Inject constructor(
                 is Resource.Success -> {
                     _signedInState.value = _signedInState.value.copy(currentUser = it.data, isLoading = false)
                     if(lastChatRoomCount.value == -1 || lastChatRoomCount.value != it.data?.chatRooms?.keys?.size){
-                        initialiseChatRoomsStreamUseCase().onEach {
-
+                        initialiseChatRoomsStreamUseCase(viewModelScope).onEach { it2 ->
+                            when(it2) {
+                                is Response.Success -> {
+                                    lastChatRoomCount.value = it.data?.chatRooms?.keys?.size ?: 0
+                                }
+                            }
                         }.launchIn(viewModelScope)
                     }
 

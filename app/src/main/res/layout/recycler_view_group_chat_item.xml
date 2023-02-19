@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginHorizontal="@dimen/gc_card_margin_2"
     android:layout_marginTop="@dimen/gc_card_margin"
     android:id="@+id/group_parent"
@@ -85,7 +86,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/group_name"
-            android:text="Friends &amp; Family"
+            tools:text="Friends &amp; Family"
             android:textColor="?chat_title_text_color"
             android:layout_gravity="center_horizontal"
             android:textSize="@dimen/gc_card_text_size"

@@ -262,6 +262,16 @@
     <string name="show_new_friend_notifications">Show new friend notifications</string>
     <string name="show_group_add_notifications">Show group add notifications</string>
 
+    <string name="downloaded_chat_image">Downloaded chat image</string>
+    <string name="downloading_chat_image">Downloading chat image</string>
+    <string name="downloading_public_post_image">Downloading public post image</string>
+    <string name="chat_image_download_failed">Chat image download failed</string>
+    <string name="public_post_image_download_failed">Public post image download failed</string>
+
+    <string name="invalid_phone_number_length">Invalid phone number length</string>
+    <string name="edit_user_successful">Edit user successful</string>
+
+
 
 
     <string name="hello_blank_fragment">Hello blank fragment</string>

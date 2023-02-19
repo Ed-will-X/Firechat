@@ -24,6 +24,7 @@ import com.varsel.firechat.data.local.Message.MessageStatus
 import com.varsel.firechat.data.local.Message.MessageType
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.domain.use_case._util.InfobarColors
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.fragments.screens.chat_page.ChatPageViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -59,7 +60,6 @@ class MessageListAdapter(
         val sentImageSecond = itemView.findViewById<ImageView>(R.id.sent_image_second)
         val imageViewParent = itemView.findViewById<FrameLayout>(R.id.image_view_parent)
         val imageViewParentSecond = itemView.findViewById<FrameLayout>(R.id.image_view_parent_second)
-
     }
 
     class ReceivedViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -291,6 +291,8 @@ class MessageListAdapter(
                                         when(it) {
                                             is Resource.Success -> {
                                                 if(it.data != null) {
+                                                    activity.infobarController.showBottomInfobar(activity.getString(R.string.downloaded_chat_image), InfobarColors.UPLOADING)
+
                                                     viewModel.setChatImageUseCase(it.data.image!!, imageView, imageViewParent, activity)
                                                     imageView.setOnClickListener { it2 ->
                                                         imgClickListener(item, it.data)
@@ -299,9 +301,13 @@ class MessageListAdapter(
                                             }
                                             is Resource.Loading -> {
                                                 // TODO: Show loading indicator
+                                                    // TODO: Hide Load
+                                                    // TODO: Show a loading spinner
+                                                activity.infobarController.showBottomInfobar(activity.getString(R.string.downloading_chat_image), InfobarColors.UPLOADING)
                                             }
                                             is Resource.Error -> {
                                                 // TODO: Show Error blah blah blah
+                                                activity.infobarController.showBottomInfobar(activity.getString(R.string.chat_image_download_failed), InfobarColors.FAILURE)
                                             }
                                         }
                                     }.launchIn(this)

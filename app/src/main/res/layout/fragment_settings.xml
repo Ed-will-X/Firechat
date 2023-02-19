@@ -8,7 +8,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".presentation.signedIn.fragments.screen_groups.bottomNav.settings.SettingsFragment">
-    
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -916,7 +916,6 @@
 
         </LinearLayout>
     </ScrollView>
-
 <!--    Logout-->
     <com.google.android.material.card.MaterialCardView
         android:clickable="true"
@@ -952,5 +951,5 @@
                 />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-    
+
 </FrameLayout>

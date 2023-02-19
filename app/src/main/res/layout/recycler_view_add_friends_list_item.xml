@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--    TODO: Remove placeholders    -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:foreground="?selectableItemBackground"
     android:orientation="horizontal"
     android:id="@+id/root"
@@ -52,7 +52,7 @@
         android:layout_marginLeft="7dp"
         android:layout_gravity="center_vertical"
         android:layout_width="wrap_content"
-        android:text="Eddie William"
+        tools:text="Eddie William"
         android:textColor="?chat_title_text_color"
         android:layout_height="wrap_content"/>
 
@@ -62,7 +62,7 @@
         android:layout_marginLeft="5dp"
         android:textColor="?subtitle_text_color"
         android:layout_gravity="center_vertical"
-        android:text="Android Developer"
+        tools:text="Android Developer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 

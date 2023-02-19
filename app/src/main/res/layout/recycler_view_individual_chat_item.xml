@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:background="?background_chats_fragment"
+<LinearLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="?background_chats_fragment"
     android:foreground="?attr/selectableItemBackground"
     android:id="@+id/parent_clickable_chats_list"
     android:clickable="true"
@@ -62,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:textColor="?chat_title_text_color"
-                android:text="Ligma Balls"
+                tools:text="Ligma Balls"
                 />
 
             <com.google.android.material.card.MaterialCardView
@@ -83,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
-            android:text="This is my last message"
+            tools:text="This is my last message"
             />
     </LinearLayout>
     <TextView
@@ -92,6 +94,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
-        android:text="18h"
+        tools:text="18h"
         />
 </LinearLayout>
