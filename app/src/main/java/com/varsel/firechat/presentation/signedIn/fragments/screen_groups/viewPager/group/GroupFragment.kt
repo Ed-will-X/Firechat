@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.varsel.firechat.R
@@ -62,9 +63,12 @@ class GroupFragment : Fragment() {
     }
 
     private fun collectState() {
+        viewModel.groupRooms.observe(viewLifecycleOwner, Observer {
+            submitListToAdapter(it)
+            toggleVisibility(it)
+        })
+
         collectLatestLifecycleFlow(viewModel.state) {
-            submitListToAdapter(it.groupRooms)
-            toggleVisibility(it.groupRooms)
             toggleShimmerVisibility(it.currentUser)
             if(it.currentUser != null){
                 binding.createGroupClickable.setOnClickListener {

@@ -46,6 +46,7 @@ class SignedinViewModel @Inject constructor(
             when(it){
                 is Resource.Success -> {
                     _signedInState.value = _signedInState.value.copy(currentUser = it.data, isLoading = false)
+
                     if(lastChatRoomCount.value == -1 || lastChatRoomCount.value != it.data?.chatRooms?.keys?.size){
                         initialiseChatRoomsStreamUseCase(viewModelScope).onEach { it2 ->
                             when(it2) {
@@ -57,8 +58,12 @@ class SignedinViewModel @Inject constructor(
                     }
 
                     if(lastGroupRoomCount.value == -1 || lastGroupRoomCount.value != it.data?.groupRooms?.keys?.size){
-                        initialiseGroupRoomsStreamUseCase().onEach {
-
+                        initialiseGroupRoomsStreamUseCase().onEach { it2 ->
+                            when(it2) {
+                                is Response.Success -> {
+                                    lastGroupRoomCount.value = it.data?.groupRooms?.keys?.size ?: 0
+                                }
+                            }
                         }.launchIn(viewModelScope)
                     }
 
