@@ -40,6 +40,7 @@ import com.varsel.firechat.domain.repository.FirebaseRepository
 import com.varsel.firechat.domain.use_case._util.message.FormatStampMessage_UseCase
 import com.varsel.firechat.domain.use_case._util.message.GetLastMessage_UseCase
 import com.varsel.firechat.domain.use_case._util.message.SortChats_UseCase
+import com.varsel.firechat.domain.use_case._util.notification.CreateNotificationMessageChannel_UseCase
 import com.varsel.firechat.domain.use_case._util.status_bar.SetStatusBarVisibility_UseCase
 import com.varsel.firechat.domain.use_case._util.status_bar.StatusBarVisibility
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
@@ -103,6 +104,9 @@ class SignedinActivity : AppCompatActivity() {
     @Inject
     lateinit var storeBoolean: StoreSetting_boolean_UseCase
 
+    @Inject
+    lateinit var createNotificationChannel_message: CreateNotificationMessageChannel_UseCase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -119,6 +123,7 @@ class SignedinActivity : AppCompatActivity() {
         firebaseStorage = FirebaseStorage.getInstance()
         infobarController = InfobarControllerUseCase(this, this, binding.bottomInfobar, binding.bottomInfobarText)
         signedinViewModel = ViewModelProvider(this).get(SignedinViewModel::class.java)
+        createNotificationChannel_message(this)
         collectState()
 
 

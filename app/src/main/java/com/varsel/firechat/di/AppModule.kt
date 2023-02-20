@@ -14,6 +14,8 @@ import com.varsel.firechat.domain.use_case._util.animation.ChangeIconColorUseCas
 import com.varsel.firechat.domain.use_case._util.animation.Rotate90UseCase
 import com.varsel.firechat.domain.use_case._util.image.SetOverlayBindings_UseCase
 import com.varsel.firechat.domain.use_case._util.message.*
+import com.varsel.firechat.domain.use_case._util.notification.CreateNotificationMessageChannel_UseCase
+import com.varsel.firechat.domain.use_case._util.notification.SendNotificationMessage_UseCase
 import com.varsel.firechat.domain.use_case._util.search.SetupSearchBarUseCase
 import com.varsel.firechat.domain.use_case._util.status_bar.ChangeStatusBarColor_UseCase
 import com.varsel.firechat.domain.use_case._util.status_bar.SetStatusBarVisibility_UseCase
@@ -751,4 +753,15 @@ object AppModule {
         return StoreSetting_boolean_UseCase()
     }
 
+    @Provides
+    @Singleton
+    fun provideCreateNotificationMessageChannel(): CreateNotificationMessageChannel_UseCase {
+        return CreateNotificationMessageChannel_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSendNotificationMessage() : SendNotificationMessage_UseCase {
+        return SendNotificationMessage_UseCase()
+    }
 }

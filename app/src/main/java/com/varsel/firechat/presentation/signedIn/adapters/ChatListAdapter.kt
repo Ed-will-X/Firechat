@@ -2,6 +2,7 @@ package com.varsel.firechat.presentation.signedIn.adapters
 
 import android.annotation.SuppressLint
 import android.graphics.Typeface
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -134,7 +135,13 @@ class ChatListAdapter(
         lifecycleOwner.lifecycleScope.launch {
             val receipt = viewModel.fetchReceipt(id)
 
-            if(receipt == null || receipt.timestamp < lastMessage.time){
+            // TODO: Fix bug here
+            if(receipt == null || receipt.timestamp < lastMessage.time || lastMessage.sender != viewModel.state.value.currentUser?.userUID){
+                Log.d("LLL", "--------------------------------------------")
+                Log.d("LLL", "Sender: ${lastMessage.sender}")
+                Log.d("LLL", "Current user id: ${viewModel.state.value.currentUser?.userUID}")
+                Log.d("LLL", "Valid: ${lastMessage.sender != viewModel.state.value.currentUser?.userUID}")
+
                 unreadChatRooms.put(item.roomUID, item)
                 receiptCallback()
             } else {

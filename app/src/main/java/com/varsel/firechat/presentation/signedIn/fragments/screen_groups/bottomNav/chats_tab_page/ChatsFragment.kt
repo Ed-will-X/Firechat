@@ -12,7 +12,11 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.varsel.firechat.R
+import com.varsel.firechat.data.local.Notification.MessageType
+import com.varsel.firechat.data.local.Notification.NotificationItem
+import com.varsel.firechat.data.local.Notification.mock_notifications
 import com.varsel.firechat.databinding.FragmentChatsBinding
+import com.varsel.firechat.domain.use_case._util.notification.SendNotificationMessage_UseCase
 import com.varsel.firechat.domain.use_case._util.status_bar.ChangeStatusBarColor_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatsViewPagerAdapter
@@ -31,6 +35,9 @@ class ChatsFragment : Fragment() {
     @Inject
     lateinit var changeStatusBarColor: ChangeStatusBarColor_UseCase
 
+    @Inject
+    lateinit var sendNotification_message: SendNotificationMessage_UseCase
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,6 +52,9 @@ class ChatsFragment : Fragment() {
         chatsViewModel = ViewModelProvider(this).get(ChatsViewModel::class.java)
         parent.hideKeyboard()
 
+        chatsViewModel.getUser()
+        chatsViewModel.getUserImage()
+
         adapter = ChatsViewPagerAdapter(childFragmentManager, lifecycle)
         binding.chatsViewPager.adapter = adapter
 
@@ -56,6 +66,9 @@ class ChatsFragment : Fragment() {
         }
 
         binding.addNewChat.setOnClickListener {
+            mock_notifications.add(NotificationItem("Elsa Addams", "Heyyyy sweetie ❤️", chatsViewModel.state.value?.currentUserImage, "28394", MessageType.Text, "14h"))
+
+            sendNotification_message(mock_notifications, parent)
             view.findNavController().navigate(R.id.action_chatsFragment_to_addFriends)
         }
 
