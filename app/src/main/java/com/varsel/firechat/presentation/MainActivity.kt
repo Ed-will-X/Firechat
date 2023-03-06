@@ -5,31 +5,46 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.createDataStore
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActivityMainBinding
+import com.varsel.firechat.domain.use_case._util.theme.SetThemeConfiguration_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedOut.SignedoutActivity
 import com.varsel.firechat.presentation.signedOut.fragments.AuthType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var mAuth: FirebaseAuth
     private lateinit var binding: ActivityMainBinding
+    lateinit var datastore: DataStore<Preferences>
+
+    @Inject
+    lateinit var setThemeConfiguration: SetThemeConfiguration_UseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
         mAuth = FirebaseAuth.getInstance()
         binding = ActivityMainBinding.inflate(layoutInflater)
+
+        datastore = createDataStore(getString(R.string.settings).toLowerCase())
+
+        setThemeConfiguration(datastore, lifecycleScope)
+
         hideStatusBar()
 
         determineAuth()
 
-        super.onCreate(savedInstanceState)
         setContentView(binding.root)
     }
 
@@ -82,4 +97,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
+
+
 }

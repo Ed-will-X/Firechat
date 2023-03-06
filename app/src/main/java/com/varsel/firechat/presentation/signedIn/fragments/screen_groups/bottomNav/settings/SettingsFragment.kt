@@ -1,21 +1,25 @@
 package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.settings
 
 import android.os.Bundle
+import android.transition.Fade
+import android.transition.Transition
+import android.transition.TransitionManager
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.varsel.firechat.R
-import com.varsel.firechat.databinding.FragmentSettingsBinding
 import com.varsel.firechat.data.local.Setting.Setting
+import com.varsel.firechat.databinding.FragmentSettingsBinding
 import com.varsel.firechat.domain.use_case._util.status_bar.ChangeStatusBarColor_UseCase
 import com.varsel.firechat.domain.use_case._util.system.CheckIfNightMode_UseCase
+import com.varsel.firechat.domain.use_case._util.theme.SetThemeConfiguration_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.current_user.SignoutUseCase
 import com.varsel.firechat.domain.use_case.settings.*
@@ -26,6 +30,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
@@ -64,6 +69,9 @@ class SettingsFragment : Fragment() {
     @Inject
     lateinit var getString: GetSetting_string_UseCase
 
+    @Inject
+    lateinit var setThemeConfiguration: SetThemeConfiguration_UseCase
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -86,12 +94,43 @@ class SettingsFragment : Fragment() {
         setThemeSettingsListeners()
         getDataConsumptionSettings()
         setDataConsumptionSettingListeners()
+        setScrollDirectionListener()
 
         binding.logout.setOnClickListener {
             showLogoutConfirmationDialog()
         }
 
         return view
+    }
+
+    private fun setScrollDirectionListener() {
+        binding.scrollViewParentSettings.setOnScrollChangeListener(object : View.OnScrollChangeListener {
+            private var lastScrollY = 0
+
+            override fun onScrollChange(view: View?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int) {
+                if (scrollY > lastScrollY) {
+                    // scrolling down
+                    parent.binding.bottomNavView.visibility = View.GONE
+//                    binding.logout.visibility = View.GONE
+                    setScrollVisibilityAnimations(false)
+                } else if (scrollY < lastScrollY) {
+                    // scrolling up
+                    parent.binding.bottomNavView.visibility = View.VISIBLE
+//                    binding.logout.visibility = View.VISIBLE
+                    setScrollVisibilityAnimations(true)
+                }
+                lastScrollY = scrollY
+            }
+        })
+    }
+
+    private fun setScrollVisibilityAnimations(show: Boolean) {
+        val transition: Transition = Fade()
+        transition.setDuration(600)
+        transition.addTarget(R.id.bottom_nav_view)
+
+        TransitionManager.beginDelayedTransition(binding.linearLayoutParentSettings, transition)
+        parent.binding.bottomNavView.setVisibility(if (show) View.VISIBLE else View.GONE)
     }
 
     private fun getNotificationSettings() {
@@ -180,7 +219,7 @@ class SettingsFragment : Fragment() {
         binding.darkMode.setOnCheckedChangeListener { buttonView, isChecked ->
             lifecycleScope.launch {
                 storeBoolean(SettingKeys_Boolean.DARK_THEME, isChecked, parent.datastore)
-                parent.setThemeConfiguration()
+                setThemeConfiguration(parent.datastore, lifecycleScope)
             }
         }
 
@@ -189,7 +228,7 @@ class SettingsFragment : Fragment() {
                 storeBoolean(SettingKeys_Boolean.OVERRIDE_SYSTEM_THEME, isChecked, parent.datastore)
                 binding.darkMode.isEnabled = !isChecked
 
-                parent.setThemeConfiguration()
+                setThemeConfiguration(parent.datastore, lifecycleScope)
             }
         }
     }

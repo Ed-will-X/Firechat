@@ -110,16 +110,6 @@ class ChatPageFragment : Fragment() {
 
         firstMessageSent = false
 
-
-        KeyboardVisibilityEvent.setEventListener(
-            parent,
-            object : KeyboardVisibilityEventListener {
-                override fun onVisibilityChanged(isOpen: Boolean) {
-
-                }
-            }
-        )
-
         viewModel.actionBarVisibility.observe(viewLifecycleOwner, Observer {
             if(it){
                 binding.messageActionBar.visibility = View.VISIBLE

@@ -13,6 +13,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
+import androidx.core.view.isVisible
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.createDataStore
@@ -44,6 +45,7 @@ import com.varsel.firechat.domain.use_case._util.notification.CreateNotification
 import com.varsel.firechat.domain.use_case._util.status_bar.SetStatusBarVisibility_UseCase
 import com.varsel.firechat.domain.use_case._util.status_bar.StatusBarVisibility
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
+import com.varsel.firechat.domain.use_case._util.theme.SetThemeConfiguration_UseCase
 import com.varsel.firechat.domain.use_case._util.user.GetOtherUserId_UseCase
 import com.varsel.firechat.domain.use_case._util.user.SortByTimestamp_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
@@ -56,6 +58,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import java.util.*
 import javax.inject.Inject
 import kotlin.concurrent.fixedRateTimer
@@ -107,6 +111,9 @@ class SignedinActivity : AppCompatActivity() {
     @Inject
     lateinit var createNotificationChannel_message: CreateNotificationMessageChannel_UseCase
 
+    @Inject
+    lateinit var setThemeConfiguration: SetThemeConfiguration_UseCase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -115,7 +122,7 @@ class SignedinActivity : AppCompatActivity() {
 
 
         datastore = createDataStore(getString(R.string.settings).toLowerCase())
-        setThemeConfiguration()
+//        setThemeConfiguration(datastore, lifecycleScope)
 
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance()
@@ -151,6 +158,15 @@ class SignedinActivity : AppCompatActivity() {
         // Makes the chat fragment the default destination
         binding.bottomNavView.menu.findItem(R.id.chatsFragment).setChecked(true)
 
+        KeyboardVisibilityEvent.setEventListener(
+            this,
+            object : KeyboardVisibilityEventListener {
+                override fun onVisibilityChanged(isOpen: Boolean) {
+                    binding.bottomNavView.isVisible = !isOpen
+                }
+            }
+        )
+
 
 //        profileImageViewModel.setClearBlacklistCountdown()
     }
@@ -167,6 +183,10 @@ class SignedinActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    fun hideBottomNav() {
+
     }
 
     // TODO: Run in a coroutine
@@ -335,20 +355,5 @@ class SignedinActivity : AppCompatActivity() {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    fun setThemeConfiguration() {
-        lifecycleScope.launch {
-            val dark_theme = getBoolean(SettingKeys_Boolean.DARK_THEME, datastore)
-            val override = getBoolean(SettingKeys_Boolean.OVERRIDE_SYSTEM_THEME, datastore)
 
-            if(override == true) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-            } else {
-                if(dark_theme == true) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                }
-            }
-        }
-    }
 }

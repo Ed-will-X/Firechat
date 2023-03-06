@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
+    android:id="@+id/settings_page_parent"
     android:background="?backgroundColor"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,11 +11,13 @@
     tools:context=".presentation.signedIn.fragments.screen_groups.bottomNav.settings.SettingsFragment">
 
     <ScrollView
+        android:id="@+id/scroll_view_parent_settings"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
 <!--        Main content-->
         <LinearLayout
+            android:id="@+id/linear_layout_parent_settings"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">

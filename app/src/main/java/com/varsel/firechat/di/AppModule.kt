@@ -21,6 +21,7 @@ import com.varsel.firechat.domain.use_case._util.status_bar.ChangeStatusBarColor
 import com.varsel.firechat.domain.use_case._util.status_bar.SetStatusBarVisibility_UseCase
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
 import com.varsel.firechat.domain.use_case._util.system.CheckIfNightMode_UseCase
+import com.varsel.firechat.domain.use_case._util.theme.SetThemeConfiguration_UseCase
 import com.varsel.firechat.domain.use_case._util.user.*
 import com.varsel.firechat.domain.use_case.auth.SignUp_UseCase
 import com.varsel.firechat.domain.use_case.auth.ValidateSignIn_UseCase
@@ -764,4 +765,11 @@ object AppModule {
     fun provideSendNotificationMessage() : SendNotificationMessage_UseCase {
         return SendNotificationMessage_UseCase()
     }
+
+    @Provides
+    @Singleton
+    fun provideSetThemeConfiguration(getsettingBooleanUsecase: GetSetting_Boolean_UseCase) : SetThemeConfiguration_UseCase {
+        return SetThemeConfiguration_UseCase(getsettingBooleanUsecase)
+    }
+
 }
