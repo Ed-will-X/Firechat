@@ -125,4 +125,7 @@ dependencies {
 
     // Gif Image View
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.17'
+
+    // Splash screen
+    implementation "androidx.core:core-splashscreen:1.0.0"
 }

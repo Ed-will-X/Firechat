@@ -94,34 +94,12 @@ class SettingsFragment : Fragment() {
         setThemeSettingsListeners()
         getDataConsumptionSettings()
         setDataConsumptionSettingListeners()
-        setScrollDirectionListener()
 
         binding.logout.setOnClickListener {
             showLogoutConfirmationDialog()
         }
 
         return view
-    }
-
-    private fun setScrollDirectionListener() {
-        binding.scrollViewParentSettings.setOnScrollChangeListener(object : View.OnScrollChangeListener {
-            private var lastScrollY = 0
-
-            override fun onScrollChange(view: View?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int) {
-                if (scrollY > lastScrollY) {
-                    // scrolling down
-                    parent.binding.bottomNavView.visibility = View.GONE
-//                    binding.logout.visibility = View.GONE
-                    setScrollVisibilityAnimations(false)
-                } else if (scrollY < lastScrollY) {
-                    // scrolling up
-                    parent.binding.bottomNavView.visibility = View.VISIBLE
-//                    binding.logout.visibility = View.VISIBLE
-                    setScrollVisibilityAnimations(true)
-                }
-                lastScrollY = scrollY
-            }
-        })
     }
 
     private fun setScrollVisibilityAnimations(show: Boolean) {

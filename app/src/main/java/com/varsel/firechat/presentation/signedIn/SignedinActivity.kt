@@ -162,7 +162,15 @@ class SignedinActivity : AppCompatActivity() {
             this,
             object : KeyboardVisibilityEventListener {
                 override fun onVisibilityChanged(isOpen: Boolean) {
-                    binding.bottomNavView.isVisible = !isOpen
+                    val destination = signedinViewModel.destinationId.value
+                    if(destination == null) {
+                        return
+                    }
+                    if(destination != R.id.chatsFragment && destination != R.id.settingsFragment && destination != R.id.profileFragment){
+                        binding.bottomNavView.isVisible = false
+                    } else {
+                        binding.bottomNavView.isVisible = !isOpen
+                    }
                 }
             }
         )
@@ -307,6 +315,8 @@ class SignedinActivity : AppCompatActivity() {
     fun setBottomNavVisibility(navController: NavController){
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.bottomNavView.visibility = View.VISIBLE
+            signedinViewModel.destinationId.value = destination.id
+
             if(destination.id != R.id.chatsFragment && destination.id != R.id.settingsFragment && destination.id != R.id.profileFragment){
                 binding.bottomNavView.visibility = View.GONE
             }

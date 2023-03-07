@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.createDataStore
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        installSplashScreen()
         mAuth = FirebaseAuth.getInstance()
         binding = ActivityMainBinding.inflate(layoutInflater)
 
@@ -45,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
         determineAuth()
 
-        setContentView(binding.root)
+//        setContentView(binding.root)
     }
 
     private fun loadGif(){

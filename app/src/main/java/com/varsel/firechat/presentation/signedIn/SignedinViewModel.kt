@@ -31,6 +31,7 @@ class SignedinViewModel @Inject constructor(
 ): ViewModel() {
     private val lastChatRoomCount = MutableStateFlow<Int>(-1)
     private val lastGroupRoomCount = MutableStateFlow<Int>(-1)
+    val destinationId = MutableLiveData<Int?>()
 
     private val _signedInState = MutableStateFlow(SignedInActivityState())
     val signedInState = _signedInState
