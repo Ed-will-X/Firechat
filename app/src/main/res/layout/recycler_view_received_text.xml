@@ -64,6 +64,7 @@
             android:background="@drawable/bg_other_user_chat_second"
             android:id="@+id/text_parent"
             android:layout_marginRight="60dp"
+            android:clickable="true"
             >
 
             <TextView

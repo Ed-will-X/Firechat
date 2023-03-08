@@ -6,7 +6,7 @@ class MessageUtils {
     companion object{
         // TODO: Remove length
         fun generateUID() : String {
-            return UUID.randomUUID().toString()
+            return "${System.currentTimeMillis()}-${UUID.randomUUID()}"
         }
     }
 }

@@ -12,6 +12,7 @@ import com.varsel.firechat.domain.use_case.group_chat.GetGroupChatRecurrentUseCa
 import com.varsel.firechat.domain.use_case.group_chat.GetGroupParticipantsUseCase
 import com.varsel.firechat.domain.use_case.message.GetGroupRoomsRecurrentUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetGroupImageUseCase
+import com.varsel.firechat.domain.use_case.read_receipt.StoreGroupReceipt_UseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -25,7 +26,8 @@ class GroupChatPageViewModel @Inject constructor(
     private val getGroupParticipantsUseCase: GetGroupParticipantsUseCase,
     val getCurrentUserId: GetCurrentUserIdUseCase,
     private val getLastMessage: GetLastMessage_UseCase,
-    val getGroupImage_UseCase: GetGroupImageUseCase
+    val getGroupImage_UseCase: GetGroupImageUseCase,
+    val storeReceipt: StoreGroupReceipt_UseCase
 ) : ViewModel() {
 
     private val _state = MutableLiveData(GroupChatPageState())

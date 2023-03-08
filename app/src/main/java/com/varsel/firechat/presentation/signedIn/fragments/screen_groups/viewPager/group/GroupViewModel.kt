@@ -1,15 +1,14 @@
 package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.group
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.common.Resource
-import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.domain.use_case._util.animation.ChangeIconColorUseCase
 import com.varsel.firechat.domain.use_case._util.message.GetLastMessage_UseCase
+import com.varsel.firechat.domain.use_case._util.message.HasBeenRead_UseCase
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
 import com.varsel.firechat.domain.use_case._util.system.CheckIfNightMode_UseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
@@ -17,10 +16,8 @@ import com.varsel.firechat.domain.use_case.group_chat.AddGroupToFavorites_UseCas
 import com.varsel.firechat.domain.use_case.group_chat.RemoveGroupFromFavorites_UseCase
 import com.varsel.firechat.domain.use_case.message.GetGroupRoomsRecurrentUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetGroupImageUseCase
-import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
-import com.varsel.firechat.domain.use_case.profile_image.RemoveGroupImage_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
-import com.varsel.firechat.domain.use_case.read_receipt.FetchReceipt_UseCase
+import com.varsel.firechat.domain.use_case.read_receipt_temp.FetchReceipt_UseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -39,7 +36,8 @@ class GroupViewModel @Inject constructor(
     val fetchReceipt: FetchReceipt_UseCase,
     val addGroupToFavorites: AddGroupToFavorites_UseCase,
     val removeGroupFromFavorites: RemoveGroupFromFavorites_UseCase,
-    val isNightMode: CheckIfNightMode_UseCase
+    val isNightMode: CheckIfNightMode_UseCase,
+    val hasBeenRead: HasBeenRead_UseCase
 
 ): ViewModel() {
     private val _state = MutableStateFlow(GroupFragmentState())

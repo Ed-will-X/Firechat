@@ -39,8 +39,10 @@ import com.varsel.firechat.domain.use_case.message.*
 import com.varsel.firechat.domain.use_case.other_user.*
 import com.varsel.firechat.domain.use_case.profile_image.*
 import com.varsel.firechat.domain.use_case.public_post.*
-import com.varsel.firechat.domain.use_case.read_receipt.FetchReceipt_UseCase
-import com.varsel.firechat.domain.use_case.read_receipt.StoreReceipt_UseCase
+import com.varsel.firechat.domain.use_case.read_receipt.StoreChatReceipt_UseCase
+import com.varsel.firechat.domain.use_case.read_receipt.StoreGroupReceipt_UseCase
+import com.varsel.firechat.domain.use_case.read_receipt_temp.FetchReceipt_UseCase
+import com.varsel.firechat.domain.use_case.read_receipt_temp.StoreReceipt_UseCase
 import com.varsel.firechat.domain.use_case.recent_search.AddToRecentSearch_UseCase
 import com.varsel.firechat.domain.use_case.settings.*
 import dagger.Module
@@ -771,5 +773,24 @@ object AppModule {
     fun provideSetThemeConfiguration(getsettingBooleanUsecase: GetSetting_Boolean_UseCase) : SetThemeConfiguration_UseCase {
         return SetThemeConfiguration_UseCase(getsettingBooleanUsecase)
     }
+
+    @Provides
+    @Singleton
+    fun provideStoreChatReceipt(repository: MessageRepository, checkifreceiptexistsUsecase: HasBeenRead_UseCase) : StoreChatReceipt_UseCase {
+        return StoreChatReceipt_UseCase(repository, checkifreceiptexistsUsecase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStoreGroupReceipt(repository: MessageRepository, checkifreceiptexistsUsecase: HasBeenRead_UseCase) : StoreGroupReceipt_UseCase {
+        return StoreGroupReceipt_UseCase(repository, checkifreceiptexistsUsecase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetCurrentUserId(getCurrentUserIdUseCase: GetCurrentUserIdUseCase) : HasBeenRead_UseCase {
+        return HasBeenRead_UseCase(getCurrentUserIdUseCase)
+    }
+
 
 }

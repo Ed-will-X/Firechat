@@ -27,6 +27,9 @@ import com.varsel.firechat.domain.use_case.other_user.GetOtherUserFromParticipan
 import com.varsel.firechat.domain.use_case.other_user.GetOtherUserSingle
 import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
+import com.varsel.firechat.domain.use_case.read_receipt.StoreChatReceipt_UseCase
+import com.varsel.firechat.domain.use_case.read_receipt.StoreGroupReceipt_UseCase
+import com.varsel.firechat.domain.use_case.read_receipt_temp.StoreReceipt_UseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -51,7 +54,9 @@ class ChatPageViewModel @Inject constructor(
     val calculateTimestampDifferenceLess: CalculateTimestampDifferenceLess_UseCase,
     val getLastMessage: GetLastMessage_UseCase,
     val formatSystemMessage: FormatSystemMessage_UseCase,
-    val firebase: FirebaseRepository
+    val firebase: FirebaseRepository,
+    val storeReceipt: StoreChatReceipt_UseCase,
+    val storeGroupReceipt: StoreGroupReceipt_UseCase
 ): ViewModel() {
     val actionBarVisibility = MutableLiveData<Boolean>(false)
 
@@ -122,6 +127,8 @@ class ChatPageViewModel @Inject constructor(
     }
 
     fun handleSendMessage(message: Message, existingRoomId: String?, newRoom: ChatRoom, after: () -> Unit) {
+//        message.readBy.put(getCurrentUserId(), System.currentTimeMillis()) // TODO: Check modification error
+
         if(user.value != null) {
             if(existingRoomId != null) {
                 if(state.value?.selectedChatRoom != null) {

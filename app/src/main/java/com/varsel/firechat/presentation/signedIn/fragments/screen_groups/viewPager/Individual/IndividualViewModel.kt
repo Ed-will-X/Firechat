@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.domain.repository.FirebaseRepository
+import com.varsel.firechat.domain.use_case._util.message.HasBeenRead_UseCase
 import com.varsel.firechat.domain.use_case._util.message.FormatTimestampChatsPage_UseCase
 import com.varsel.firechat.domain.use_case._util.message.GetLastMessage_UseCase
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
@@ -17,9 +18,9 @@ import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentU
 import com.varsel.firechat.domain.use_case.message.GetChatRoomsRecurrentUseCase
 import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
-import com.varsel.firechat.domain.use_case.read_receipt.FetchReceipt_UseCase
+import com.varsel.firechat.domain.use_case.read_receipt.StoreChatReceipt_UseCase
+import com.varsel.firechat.domain.use_case.read_receipt_temp.FetchReceipt_UseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -37,7 +38,9 @@ class IndividualViewModel @Inject constructor(
     val getLastMessage: GetLastMessage_UseCase,
     val fetchReceipt: FetchReceipt_UseCase,
     val firebaseRepository: FirebaseRepository,
-    val isNightMode: CheckIfNightMode_UseCase
+    val storeReceipt: StoreChatReceipt_UseCase,
+    val isNightMode: CheckIfNightMode_UseCase,
+    val hasBeenRead: HasBeenRead_UseCase
 ): ViewModel() {
     private val _state = MutableStateFlow(IndividualFragmentState())
     val state = _state

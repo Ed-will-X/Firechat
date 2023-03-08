@@ -2,6 +2,7 @@ package com.varsel.firechat.presentation.signedIn.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,12 +13,14 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.varsel.firechat.R
 import com.varsel.firechat.common.Resource
+import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.Image.Image
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageStatus
@@ -27,6 +30,7 @@ import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.use_case._util.InfobarColors
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.fragments.screens.chat_page.ChatPageViewModel
+import com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_page.GroupChatPageViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -45,12 +49,16 @@ class MessageListAdapter(
     val fragment: Fragment,
     val context: Context,
     val lifecycleOwner: LifecycleOwner,
-    val viewModel: ChatPageViewModel,
+    val chatsViewModel: ChatPageViewModel,
+    val groupViewModel: GroupChatPageViewModel?,
     val pageType: Int,
     val imgClickListener: (message: Message, image: Image)-> Unit,
     val onClickListener: (message: Message, messageType: Int, messageStatus: Int)-> Unit,
-    val profileImgClickListener: (profileImage: ProfileImage, user: User) -> Unit
+    val profileImgClickListener: (profileImage: ProfileImage, user: User) -> Unit,
+    val messageLongPress: (message: Message, user: User) -> Unit
     ) : ListAdapter<Message, RecyclerView.ViewHolder>(MessagesCallback()) {
+//    val groupViewModel = this.viewModel as GroupChatPageViewModel
+    val blacklisted = mutableListOf<String>()
 
     class SentViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val textParent = itemView.findViewById<LinearLayout>(R.id.text_parent)
@@ -101,6 +109,9 @@ class MessageListAdapter(
             // Sent Holder
             val viewHolder = holder as SentViewHolder
 
+
+            storeReceipt(item)
+
             if(item.type == MessageType.TEXT){
                 viewHolder.text.text = item.message
                 viewHolder.imageViewParent.visibility = View.GONE
@@ -112,7 +123,7 @@ class MessageListAdapter(
 
             try {
                 val prev: Message? = getItem(position - 1)
-                if(prev?.sender.equals(item.sender) && viewModel.calculateTimestampDifferenceLess(item.time!!, prev?.time!!)){
+                if(prev?.sender.equals(item.sender) && this.chatsViewModel.calculateTimestampDifferenceLess(item.time!!, prev?.time!!)){
                     viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat_second) }
                     if(item.type == MessageType.IMAGE){
                         handleDownloadOnClick(item, viewHolder.sentImageSecond, holder.imageViewParentSecond, holder.imageViewParent)
@@ -134,22 +145,22 @@ class MessageListAdapter(
 
             try {
                 val next: Message? = getItem(position + 1)
-                if(next?.sender == item.sender && viewModel.calculateTimestampDifferenceLess(next?.time!!, item.time!!)){
+                if(next?.sender == item.sender && this.chatsViewModel.calculateTimestampDifferenceLess(next?.time!!, item.time!!)){
                     viewHolder.timestamp.visibility = View.GONE
                 } else {
                     viewHolder.timestamp.visibility = View.VISIBLE
-                    viewHolder.timestamp.text = viewModel.formatStampMessage(item.time.toString())
+                    viewHolder.timestamp.text = this.chatsViewModel.formatStampMessage(item.time.toString())
                 }
             } catch(e: Exception) {
                 viewHolder.timestamp.visibility = View.VISIBLE
-                viewHolder.timestamp.text = viewModel.formatStampMessage(item.time.toString())
+                viewHolder.timestamp.text = this.chatsViewModel.formatStampMessage(item.time.toString())
             }
 
         } else if(holder.javaClass == SystemViewHolder::class.java){
             // system message
             val viewHolder = holder as SystemViewHolder
 
-            viewModel.formatSystemMessage(item, activity) {
+            this.chatsViewModel.formatSystemMessage(item, activity) {
                 viewHolder.systemText.text = it
             }
 
@@ -160,6 +171,8 @@ class MessageListAdapter(
         }else {
             // RECEIVED VIEW HOLDER
             val viewHolder = holder as ReceivedViewHolder
+
+            storeReceipt(item)
 
             if(item.type == MessageType.TEXT){
                 viewHolder.text.text = item.message
@@ -205,11 +218,17 @@ class MessageListAdapter(
                     viewHolder.profilePicContainer.visibility = View.GONE
                     viewHolder.emptyPadding.visibility = View.VISIBLE
                 } else {
-                    viewModel.firebase.getFirebaseInstance().getUserSingle(item.sender, { user ->
+                    this.chatsViewModel.firebase.getFirebaseInstance().getUserSingle(item.sender, { user ->
                         lifecycleOwner.lifecycleScope.launch {
-                            viewModel.getOtherUserProfileImageUseCase(user).onEach {
+                            // Long click listener
+                            holder.textParent.setOnLongClickListener {
+                                handleLongClick_Received(holder, item, user)
+                                true
+                            }
+                            // Get Other user profile image
+                            this@MessageListAdapter.chatsViewModel.getOtherUserProfileImageUseCase(user).onEach {
                                 if(it?.image != null) {
-                                    viewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
+                                    this@MessageListAdapter.chatsViewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
                                     holder.profileImage.setOnClickListener { _ ->
                                         profileImgClickListener(it, user)
                                     }
@@ -223,12 +242,18 @@ class MessageListAdapter(
                     viewHolder.emptyPadding.visibility = View.GONE
                 }
             } catch (e: Exception) {
-                viewModel.firebase.getFirebaseInstance().getUserSingle(item.sender, { user ->
-
+                this.chatsViewModel.firebase.getFirebaseInstance().getUserSingle(item.sender, { user ->
                     lifecycleOwner.lifecycleScope.launch {
-                        viewModel.getOtherUserProfileImageUseCase(user).onEach {
+                        // Long click listener
+                        holder.textParent.setOnLongClickListener {
+                            handleLongClick_Received(holder, item, user)
+                            true
+                        }
+
+                        // Get other user profile image
+                        this@MessageListAdapter.chatsViewModel.getOtherUserProfileImageUseCase(user).onEach {
                             if(it?.image != null) {
-                                viewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
+                                this@MessageListAdapter.chatsViewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
                                 holder.profileImage.setOnClickListener { _ ->
                                     profileImgClickListener(it, user)
                                 }
@@ -268,13 +293,13 @@ class MessageListAdapter(
 
         lifecycleOwner.lifecycleScope.launch {
             // check if the img is present in the database
-            viewModel.checkChatImageInDb(item.message).onEach {
+            this@MessageListAdapter.chatsViewModel.checkChatImageInDb(item.message).onEach {
                 when(it) {
                     is Resource.Success -> {
                         // TODO: Refactor entire success, loading and error clauses into different functions
                         if(it.data?.image != null) {
                             // if: bind it directly (the same way it was before)
-                            viewModel.setChatImageUseCase(it.data.image!!, imageView, imageViewParent, activity)
+                            this@MessageListAdapter.chatsViewModel.setChatImageUseCase(it.data.image!!, imageView, imageViewParent, activity)
                             imageView.setOnClickListener { it2 ->
                                 imgClickListener(item, it.data)
                             }
@@ -287,13 +312,13 @@ class MessageListAdapter(
                         imageViewParent.setOnClickListener {
                             if(!has_been_clicked){
                                 lifecycleOwner.lifecycleScope.launch {
-                                    viewModel.getChatImageUseCase(item.message, chatRoomId).onEach {
+                                    this@MessageListAdapter.chatsViewModel.getChatImageUseCase(item.message, chatRoomId).onEach {
                                         when(it) {
                                             is Resource.Success -> {
                                                 if(it.data != null) {
                                                     activity.infobarController.showBottomInfobar(activity.getString(R.string.downloaded_chat_image), InfobarColors.UPLOADING)
 
-                                                    viewModel.setChatImageUseCase(it.data.image!!, imageView, imageViewParent, activity)
+                                                    this@MessageListAdapter.chatsViewModel.setChatImageUseCase(it.data.image!!, imageView, imageViewParent, activity)
                                                     imageView.setOnClickListener { it2 ->
                                                         imgClickListener(item, it.data)
                                                     }
@@ -325,18 +350,69 @@ class MessageListAdapter(
                 }
             }.launchIn(this)
         }
-
     }
 
     private fun setOtherUserTimestamp(viewHolder: ReceivedViewHolder, item: Message){
         if(pageType == ChatPageType.INDIVIDUAL){
-            viewHolder.timestamp.text = viewModel.formatStampMessage(item.time.toString())
+            viewHolder.timestamp.text = this.chatsViewModel.formatStampMessage(item.time.toString())
         } else {
-            viewModel.firebase.getFirebaseInstance().getUserSingle(item.sender, {
-                viewHolder.timestamp.text = "${viewModel.formatStampMessage(item.time.toString())} · ${it.name}"
+            this.chatsViewModel.firebase.getFirebaseInstance().getUserSingle(item.sender, {
+                viewHolder.timestamp.text = "${this.chatsViewModel.formatStampMessage(item.time.toString())} · ${it.name}"
             })
 
         }
+    }
+
+    private fun storeReceipt(message: Message) {
+        Log.d("RECEIPT", "----------------------------------------------------------")
+        if(blacklisted.contains(message.messageUID)) {
+            return
+        }
+        Log.d("RECEIPT", "Store Receipt Ran")
+        if(pageType == ChatPageType.INDIVIDUAL) {
+            chatsViewModel.storeReceipt(message, chatsViewModel.state.value?.selectedChatRoom!!).onEach {
+                when(it) {
+                    is Response.Success -> {
+                        blacklisted.add(message.messageUID)
+                    }
+                    is Response.Loading -> {
+
+                    }
+                    is Response.Fail -> {
+                        blacklisted.add(message.messageUID)
+                    }
+                }
+                Log.d("RECEIPT", "Inside flow callback")
+            }.launchIn(fragment.lifecycleScope)
+
+        } else if(pageType == ChatPageType.GROUP) {
+            if(groupViewModel == null) {
+                return
+            }
+
+            groupViewModel.storeReceipt(message, groupViewModel.state.value?.selectedRoom!!).onEach {
+                when(it) {
+                    is Response.Success -> {
+                        blacklisted.add(message.messageUID)
+                    }
+                    is Response.Loading -> {
+
+                    }
+                    is Response.Fail -> {
+                        blacklisted.add(message.messageUID)
+                    }
+                }
+                Log.d("RECEIPT", "Inside flow callback")
+            }.launchIn(fragment.lifecycleScope)
+        }
+    }
+
+    private fun handleLongClick_Sent(holder: SentViewHolder) {
+
+    }
+
+    private fun handleLongClick_Received(holder: ReceivedViewHolder, message: Message, user: User) {
+        messageLongPress(message, user)
     }
 }
 

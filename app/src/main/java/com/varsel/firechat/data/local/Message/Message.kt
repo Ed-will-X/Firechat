@@ -2,12 +2,13 @@ package com.varsel.firechat.data.local.Message
 
 class Message {
 //    var id: Long = 0L
-    var messageUID: String? = null
+lateinit var messageUID: String
     lateinit var message: String
     var time: Long = 0L
     lateinit var sender: String
     var type: Int = MessageType.TEXT
     var deleted: HashMap<String, String>? = null
+    var readBy: HashMap<String, Long> = hashMapOf()
 
     constructor(){
 

@@ -420,7 +420,7 @@ class Firebase(
             .child("chatRooms")
             .child(chatRoomUID)
             .child("messages")
-            .push()
+            .child(message.messageUID)  // TODO: Not Tested
             .setValue(message)
             .addOnCompleteListener {
                 if(it.isSuccessful){
@@ -641,7 +641,7 @@ class Firebase(
             .child("groupRooms")
             .child(chatRoomID)
             .child("messages")
-            .push()
+            .child(message.messageUID)
             .setValue(message)
             .addOnCompleteListener {
                 if(it.isSuccessful){
@@ -1407,6 +1407,60 @@ class Firebase(
                     DebugUtils.log_firebase("upload bug report successful")
 
                     successCallback()
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun uploadReadReceipt_ChatRoom(
+        messageId: String,
+        chatRoomUID: String,
+        successCallback: () -> Unit,
+        failureCallback: () -> Unit
+    ){
+        Log.d("RECEIPT", "Upload ran")
+
+        // push the message to the chatroom
+        mDbRef
+            .child("chatRooms")
+            .child(chatRoomUID)
+            .child("messages")
+            .child(messageId)
+            .child("readBy")
+            .child(mAuth.currentUser!!.uid)
+            .setValue(System.currentTimeMillis())
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                    DebugUtils.log_firebase("send message successful")
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun uploadReadReceipt_GroupRoom(
+        messageId: String,
+        groupRoomId: String,
+        successCallback: () -> Unit,
+        failureCallback: () -> Unit
+    ){
+        Log.d("RECEIPT", "Upload ran")
+
+        // push the message to the chatroom
+        mDbRef
+            .child("groupRooms")
+            .child(groupRoomId)
+            .child("messages")
+            .child(messageId)
+            .child("readBy")
+            .child(mAuth.currentUser!!.uid)
+            .setValue(System.currentTimeMillis())
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                    DebugUtils.log_firebase("send message successful")
                 } else {
                     failureCallback()
                 }

@@ -108,14 +108,6 @@ class IndividualFragment : Fragment() {
         }
     }
 
-    private fun setUnreadIndicator(unreadRooms: MutableMap<String, ChatRoom>){
-        // TODO: Set unread indicator in Tab Layout
-
-//        for(i in unreadRooms){
-//            Log.d("LLL", "${UserUtils.getOtherUserId(i.participants!!, parent)} in unreads")
-//        }
-    }
-
     private fun toggleRecyclerViewVisibility(chats: List<ChatRoom>){
         if(chats.isNotEmpty()){
             binding.individualChatsRecyclerView.visibility = View.VISIBLE

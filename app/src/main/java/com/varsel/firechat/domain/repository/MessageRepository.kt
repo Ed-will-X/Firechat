@@ -5,7 +5,6 @@ import com.varsel.firechat.common.Response
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.Message.Message
-import com.varsel.firechat.data.local.User.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,5 +41,7 @@ interface MessageRepository {
     fun groupCreateMessage(group: GroupRoom) : Flow<Response>
     fun editGroup(key: String, value: String, groupId: String) : Flow<Response>
 
+    fun storeReceipt_chatRoom(message: Message, chatRoomId: String) : Flow<Response>
+    fun storeReceipt_groupRoom(message: Message, groupRoomId: String) : Flow<Response>
 
 }

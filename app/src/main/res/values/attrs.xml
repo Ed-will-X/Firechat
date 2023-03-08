@@ -23,4 +23,9 @@
     <attr name="message_action_bar" format="reference" />
 
     <attr name="ios_text_button_color" format="reference" />
+
+    <attr name="chat_sent_pressed" format="reference" />
+    <attr name="chat_received_pressed" format="reference" />
+
+
 </resources>

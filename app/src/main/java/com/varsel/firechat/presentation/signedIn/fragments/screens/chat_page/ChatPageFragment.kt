@@ -25,8 +25,7 @@ import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.common._utils.MessageUtils
 import com.varsel.firechat.domain.use_case.chat_image.StoreChatImageUseCase
 import com.varsel.firechat.domain.use_case.chat_room.FindChatRoom_UseCase
-import com.varsel.firechat.domain.use_case.read_receipt.FetchReceipt_UseCase
-import com.varsel.firechat.domain.use_case.read_receipt.StoreReceipt_UseCase
+import com.varsel.firechat.domain.use_case.read_receipt_temp.StoreReceipt_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
 import com.varsel.firechat.presentation.signedIn.adapters.MessageListAdapter
@@ -36,8 +35,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -193,7 +190,7 @@ class ChatPageFragment : Fragment() {
         val fragment = this
         lifecycleScope.launch(Dispatchers.Main) {
             delay(300)
-            messagesListAdapter = MessageListAdapter(existingChatRoomId ?: newChatRoomId, parent, fragment, requireContext(), this@ChatPageFragment, viewModel, ChatPageType.INDIVIDUAL,
+            messagesListAdapter = MessageListAdapter(existingChatRoomId ?: newChatRoomId, parent, fragment, requireContext(), this@ChatPageFragment, viewModel, null, ChatPageType.INDIVIDUAL,
                 { message, image ->
 //                    ImageUtils.displayImageMessage(image, message, parent)
                     displayChatImage(image, message, viewModel.user.value, parent)
@@ -201,6 +198,8 @@ class ChatPageFragment : Fragment() {
 
                 }, { profileImage, user ->
                     displayProfileImage(profileImage, user, parent)
+                }, { message, user ->
+
                 })
             binding.messagesRecyclerView.adapter = messagesListAdapter
 

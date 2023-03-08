@@ -46,5 +46,8 @@
 
 
         <item name="ios_text_button_color">@color/ios_blue</item>
+        <item name="chat_sent_pressed">@color/teal_700</item>
+        <item name="chat_received_pressed">@color/transparent_grey</item>
+
     </style>
 </resources>

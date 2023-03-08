@@ -23,6 +23,9 @@ class MessageRepositoryImpl @Inject constructor(
     private val groupRoomsFlow = MutableStateFlow<Resource<MutableList<GroupRoom>>>(Resource.Loading())
 
     override fun sendMessage(message: Message, chatRoomId: String): Flow<Response> = callbackFlow {
+
+        message.readBy.put(currentUserRepository.getCurrentUserId(), System.currentTimeMillis())
+
         firebase.sendMessage(message, chatRoomId, {
             trySend(Response.Success())
         }, {
@@ -178,6 +181,8 @@ class MessageRepositoryImpl @Inject constructor(
     }
 
     override fun sendGroupMessage(message: Message, roomId: String): Flow<Response> = callbackFlow {
+        message.readBy.put(currentUserRepository.getCurrentUserId(), System.currentTimeMillis())
+
         firebase.sendGroupMessage(message, roomId, {
             trySend(Response.Success())
         }, {
@@ -301,6 +306,26 @@ class MessageRepositoryImpl @Inject constructor(
 
     override fun editGroup(key: String, value: String, groupId: String): Flow<Response> = callbackFlow {
         firebase.editGroup(key, value, groupId, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
+    }
+
+    override fun storeReceipt_chatRoom(message: Message, chatRoomId: String): Flow<Response> = callbackFlow {
+        firebase.uploadReadReceipt_ChatRoom(message.messageUID, chatRoomId, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
+    }
+
+    override fun storeReceipt_groupRoom(message: Message, groupRoomId: String): Flow<Response> = callbackFlow {
+        firebase.uploadReadReceipt_GroupRoom(message.messageUID, groupRoomId, {
             trySend(Response.Success())
         }, {
             trySend(Response.Fail())

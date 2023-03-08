@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import com.varsel.firechat.databinding.FragmentGroupChatPageBinding
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Message.Message
@@ -37,7 +36,7 @@ import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.other_user.GetListOfUsers_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
-import com.varsel.firechat.domain.use_case.read_receipt.StoreReceipt_UseCase
+import com.varsel.firechat.domain.use_case.read_receipt_temp.StoreReceipt_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
 import com.varsel.firechat.presentation.signedIn.adapters.FriendListAdapter
@@ -208,7 +207,7 @@ class GroupChatPageFragment : Fragment() {
 
 
     private fun initialiseAdapter() {
-        messageAdapter = MessageListAdapter(roomId, parent, this, requireContext(), this, chatPageViewModel, ChatPageType.GROUP,
+        messageAdapter = MessageListAdapter(roomId, parent, this, requireContext(), this, chatPageViewModel, viewModel, ChatPageType.GROUP,
             { message, image ->
                 displayImageMessage(image, message, viewModel.participsnts.value, parent)
             }, { message, messageType, messageStatus ->
@@ -218,6 +217,8 @@ class GroupChatPageFragment : Fragment() {
                 }
             }, { profileImage, user ->
                 displayProfileImage(profileImage, user, parent)
+            }, { message, user ->  
+                
             })
 
         binding.messagesRecyclerView.adapter = messageAdapter

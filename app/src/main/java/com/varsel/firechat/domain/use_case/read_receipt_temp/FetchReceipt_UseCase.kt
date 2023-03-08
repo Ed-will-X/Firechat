@@ -1,4 +1,4 @@
-package com.varsel.firechat.domain.use_case.read_receipt
+package com.varsel.firechat.domain.use_case.read_receipt_temp
 
 import com.varsel.firechat.data.local.ReadReceipt.ReadReceipt
 import com.varsel.firechat.domain.repository.ReadReceiptRepository
