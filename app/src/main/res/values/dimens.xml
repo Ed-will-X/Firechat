@@ -49,5 +49,15 @@
     <dimen name="setting_head_text_size">18sp</dimen>
     <dimen name="setting_head_margin_top">10dp</dimen>
 
+    <dimen name="image_bubble_height">120dp</dimen>
+    <dimen name="image_bubble_width">220dp</dimen>
+
+<!--    Chat page message dialog-->
+    <dimen name="item_padding_vertical">10dp</dimen>
+    <dimen name="item_text_size">14sp</dimen>
+    <dimen name="item_icon_size">15dp</dimen>
+    <dimen name="item_padding_horizontal">20dp</dimen>
+
+    <dimen name="deleted_text_size">4.7sp</dimen>
 
 </resources>

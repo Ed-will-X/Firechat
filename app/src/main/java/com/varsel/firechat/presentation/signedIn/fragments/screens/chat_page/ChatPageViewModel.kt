@@ -1,6 +1,7 @@
 package com.varsel.firechat.presentation.signedIn.fragments.screens.chat_page
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -61,10 +62,10 @@ class ChatPageViewModel @Inject constructor(
     val actionBarVisibility = MutableLiveData<Boolean>(false)
 
     private val _state = MutableLiveData(ChatPageState())
-    val state = _state
+    val state: LiveData<ChatPageState> = _state
 
     private val _user = MutableLiveData<User?>(null)
-    val user = _user
+    val user: LiveData<User?> = _user
 
     private val _hasRun = MutableLiveData(false)
 

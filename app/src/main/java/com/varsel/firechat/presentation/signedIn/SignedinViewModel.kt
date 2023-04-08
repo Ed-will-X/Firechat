@@ -1,19 +1,22 @@
 package com.varsel.firechat.presentation.signedIn
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.data.local.Chat.ChatRoom
-import com.varsel.firechat.data.local.Chat.GroupRoom
+import com.varsel.firechat.domain.use_case._util.message.FormatStampMessageDetail_UseCase
+import com.varsel.firechat.domain.use_case._util.message.FormatStampMessage_UseCase
+import com.varsel.firechat.domain.use_case._util.message.FormatTimestampChatsPage_UseCase
 import com.varsel.firechat.domain.use_case.current_user.GetCurrentUserRecurrentUseCase
 import com.varsel.firechat.domain.use_case.current_user.OpenCurrentUserCollectionStream
 import com.varsel.firechat.domain.use_case.current_user.OpenFriendsUpdateStream
 import com.varsel.firechat.domain.use_case.message.GetChatRoomsRecurrentUseCase
 import com.varsel.firechat.domain.use_case.message.InitialiseChatRoomsStreamUseCase
 import com.varsel.firechat.domain.use_case.message.InitialiseGroupRoomsStreamUseCase
+import com.varsel.firechat.domain.use_case.other_user.GetOtherUserSingle
+import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImageUseCase
+import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -27,7 +30,11 @@ class SignedinViewModel @Inject constructor(
     val openFriendsUpdateStream: OpenFriendsUpdateStream,
     val initialiseChatRoomsStreamUseCase: InitialiseChatRoomsStreamUseCase,
     val getChatRoomsRecurrentUseCase: GetChatRoomsRecurrentUseCase,
-    val initialiseGroupRoomsStreamUseCase: InitialiseGroupRoomsStreamUseCase
+    val initialiseGroupRoomsStreamUseCase: InitialiseGroupRoomsStreamUseCase,
+    val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase,
+    val setProfilePicUseCase: SetProfilePicUseCase,
+    val getOtherUserSingle: GetOtherUserSingle,
+    val formatStampMessageDetail: FormatStampMessageDetail_UseCase
 ): ViewModel() {
     private val lastChatRoomCount = MutableStateFlow<Int>(-1)
     private val lastGroupRoomCount = MutableStateFlow<Int>(-1)

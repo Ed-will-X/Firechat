@@ -135,41 +135,97 @@
     </style>
 
 
-
-
+<!--    Message Bubble Rounded Corners-->
     <style name="rounded_corners_sent" parent="">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSizeTopLeft">20dp</item>
-        <item name="cornerSizeTopRight">20dp</item>
-        <item name="cornerSizeBottomLeft">20dp</item>
+        <item name="cornerSizeTopLeft">@dimen/chat_bubble_corner</item>
+        <item name="cornerSizeTopRight">@dimen/chat_bubble_corner</item>
+        <item name="cornerSizeBottomLeft">@dimen/chat_bubble_corner</item>
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
     <style name="rounded_corners_sent_second" parent="">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSizeTopLeft">20dp</item>
+        <item name="cornerSizeTopLeft">@dimen/chat_bubble_corner</item>
         <item name="cornerSizeTopRight">0dp</item>
-        <item name="cornerSizeBottomLeft">20dp</item>
+        <item name="cornerSizeBottomLeft">@dimen/chat_bubble_corner</item>
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
     <style name="rounded_corners_received" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">0dp</item>
-        <item name="cornerSizeTopRight">20dp</item>
+        <item name="cornerSizeTopRight">@dimen/chat_bubble_corner</item>
         <item name="cornerSizeBottomLeft">0dp</item>
-        <item name="cornerSizeBottomRight">20dp</item>
+        <item name="cornerSizeBottomRight">@dimen/chat_bubble_corner</item>
     </style>
 
     <style name="rounded_corners_received_second" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">0dp</item>
-        <item name="cornerSizeTopRight">20dp</item>
-        <item name="cornerSizeBottomLeft">20dp</item>
-        <item name="cornerSizeBottomRight">20dp</item>
+        <item name="cornerSizeTopRight">@dimen/chat_bubble_corner</item>
+        <item name="cornerSizeBottomLeft">@dimen/chat_bubble_corner</item>
+        <item name="cornerSizeBottomRight">@dimen/chat_bubble_corner</item>
     </style>
 
     <style name="rounded_corners" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">10dp</item>
+        <item name="cornerSizeTopRight">10dp</item>
+        <item name="cornerSizeBottomLeft">10dp</item>
+        <item name="cornerSizeBottomRight">10dp</item>
+    </style>
+
+    <style name="actionsheet_message_item_parent" parent="">
+        <item name="android:clickable">true</item>
+        <item name="android:foreground">?selectableItemBackground</item>
+        <item name="android:paddingTop">@dimen/item_padding_vertical</item>
+        <item name="android:paddingBottom">@dimen/item_padding_vertical</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/item_padding_horizontal</item>
+        <item name="android:paddingRight">@dimen/item_padding_horizontal</item>
+    </style>
+
+    <style name="actionsheet_message_item_icon">
+        <item name="android:layout_width">@dimen/item_icon_size</item>
+        <item name="android:layout_height">@dimen/item_icon_size</item>
+        <item name="tint">?chat_subtitle_text_color</item>
+    </style>
+
+    <style name="actionsheet_message_item_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">?chat_subtitle_text_color</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:textSize">@dimen/item_text_size</item>
+    </style>
+
+    <style name="message_detail_item_parent">
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginLeft">20dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="message_detail_item_key">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="message_detail_item_value">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">5dp</item>
+    </style>
+
+    <style name="message_detail_image" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">10dp</item>
         <item name="cornerSizeTopRight">10dp</item>

@@ -66,37 +66,6 @@ class ChatListAdapter(
             } else {
                 setUnread(holder)
             }
-
-//            determineReceipts(item, lastMessageObject, {
-//                // Receipt Callback
-//                if(viewModel.isNightMode(activity)){
-//                    // TODO: Change all color references to dynamic theme attributes
-//                    holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.white))
-//                    holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.white))
-//                } else {
-//                    holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.black))
-//                    holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.black))
-//                }
-//                holder.unreadIndicator.visibility = View.VISIBLE
-//                holder.name.setTypeface(null, Typeface.BOLD)
-//
-//                readReceiptChange(unreadChatRooms)
-//
-//            }, {
-//                // No Receipt Callback
-//                if(viewModel.isNightMode(activity)){
-//                    holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.transparent_grey))
-//                    holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.transparent_grey))
-//                } else {
-//                    holder.lastMessage.setTextColor(ContextCompat.getColor(activity, R.color.grey))
-//                    holder.timestamp.setTextColor(ContextCompat.getColor(activity, R.color.grey))
-//                }
-//
-//                holder.unreadIndicator.visibility = View.GONE
-//                holder.name.setTypeface(null, Typeface.NORMAL)
-//
-////                readReceiptChange(unreadChatRooms)
-//            })
         }
 
         val id = viewModel.getOtherUserId(item.participants)
@@ -135,29 +104,6 @@ class ChatListAdapter(
         }
 
     }
-
-//    // TODO: Modularise
-//    private fun determineReceipts(item: ChatRoom, lastMessage: Message, receiptCallback: ()-> Unit, noReceiptCallback: ()-> Unit){
-//        val id = "${item.roomUID}:${activity.firebaseAuth.currentUser!!.uid}"
-//        lifecycleOwner.lifecycleScope.launch {
-//            val receipt = viewModel.fetchReceipt(id)
-//
-//            // TODO: Fix bug here
-//            if(receipt == null || receipt.timestamp < lastMessage.time || lastMessage.sender != viewModel.state.value.currentUser?.userUID){
-//                Log.d("LLL", "--------------------------------------------")
-//                Log.d("LLL", "Sender: ${lastMessage.sender}")
-//                Log.d("LLL", "Current user id: ${viewModel.state.value.currentUser?.userUID}")
-//                Log.d("LLL", "Valid: ${lastMessage.sender != viewModel.state.value.currentUser?.userUID}")
-//
-//                unreadChatRooms.put(item.roomUID, item)
-//                receiptCallback()
-//            } else {
-//                unreadChatRooms.remove(item.roomUID)
-//                noReceiptCallback()
-//            }
-//        }
-//
-//    }
 
     // TODO: Show shimmer if the adapter can't account for every username
     private fun getUser(id: String, afterCallback: (user: User)-> Unit) {

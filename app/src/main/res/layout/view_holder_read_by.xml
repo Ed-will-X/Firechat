@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:foreground="?selectableItemBackground"
+    android:orientation="horizontal"
+    android:id="@+id/root"
+    android:clickable="true"
+    android:paddingVertical="5dp"
+    android:paddingLeft="20dp">
+
+    <FrameLayout
+        android:layout_gravity="center_vertical"
+        android:id="@+id/profile_image_silhouette"
+        android:clickable="true"
+        android:background="@drawable/bg_profile_background"
+        android:layout_width="35dp"
+        android:layout_height="35dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_baseline_person_24"
+            android:layout_height="20dp"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:visibility="gone"
+            android:id="@+id/profile_image_parent"
+            app:cardCornerRadius="360dp"
+            app:cardElevation="0dp"
+            android:elevation="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/profile_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                />
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/name"
+        android:textSize="14sp"
+        android:layout_marginLeft="7dp"
+        android:layout_gravity="center_vertical"
+        android:layout_width="wrap_content"
+        tools:text="Eddie William"
+        android:textColor="?chat_title_text_color"
+        android:layout_height="wrap_content"/>
+
+    <View
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
+
+    <TextView
+        android:layout_marginRight="20dp"
+        android:id="@+id/time"
+        android:textSize="14sp"
+        android:layout_marginLeft="5dp"
+        android:textColor="?subtitle_text_color"
+        android:layout_gravity="center_vertical"
+        tools:text="11:50"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

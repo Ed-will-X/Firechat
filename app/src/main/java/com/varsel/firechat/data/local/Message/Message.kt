@@ -7,8 +7,9 @@ lateinit var messageUID: String
     var time: Long = 0L
     lateinit var sender: String
     var type: Int = MessageType.TEXT
-    var deleted: HashMap<String, String>? = null
+    var deletedBy: HashMap<String, Long> = hashMapOf()
     var readBy: HashMap<String, Long> = hashMapOf()
+    var deletedBySender: Boolean = false
 
     constructor(){
 

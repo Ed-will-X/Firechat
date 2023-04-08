@@ -2,7 +2,9 @@ package com.varsel.firechat.presentation.signedIn.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Typeface
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.varsel.firechat.R
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
@@ -43,6 +46,8 @@ class ChatPageType {
     }
 }
 
+
+// TODO: Remove excess long click listeners
 class MessageListAdapter(
     val chatRoomId: String,
     val activity: SignedinActivity,
@@ -55,7 +60,7 @@ class MessageListAdapter(
     val imgClickListener: (message: Message, image: Image)-> Unit,
     val onClickListener: (message: Message, messageType: Int, messageStatus: Int)-> Unit,
     val profileImgClickListener: (profileImage: ProfileImage, user: User) -> Unit,
-    val messageLongPress: (message: Message, user: User) -> Unit
+    val messageLongPress: (message: Message, user: User?) -> Unit
     ) : ListAdapter<Message, RecyclerView.ViewHolder>(MessagesCallback()) {
 //    val groupViewModel = this.viewModel as GroupChatPageViewModel
     val blacklisted = mutableListOf<String>()
@@ -68,6 +73,7 @@ class MessageListAdapter(
         val sentImageSecond = itemView.findViewById<ImageView>(R.id.sent_image_second)
         val imageViewParent = itemView.findViewById<FrameLayout>(R.id.image_view_parent)
         val imageViewParentSecond = itemView.findViewById<FrameLayout>(R.id.image_view_parent_second)
+        val messageParent = itemView.findViewById<LinearLayout>(R.id.message_parent)
     }
 
     class ReceivedViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -82,6 +88,7 @@ class MessageListAdapter(
         val receivedImageSecond = itemView.findViewById<ImageView>(R.id.received_image_second)
         val imageViewParent = itemView.findViewById<FrameLayout>(R.id.image_view_parent)
         val imageViewParentSecond = itemView.findViewById<FrameLayout>(R.id.image_view_parent_second)
+        val messageParent = itemView.findViewById<LinearLayout>(R.id.message_parent)
     }
 
     class SystemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -105,18 +112,34 @@ class MessageListAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item: Message = getItem(position)
 
+
         if(holder.javaClass == SentViewHolder::class.java){
             // Sent Holder
             val viewHolder = holder as SentViewHolder
 
+            if(item.deletedBy.keys.contains(chatsViewModel.getCurrentUserId())) {
+                holder.messageParent.visibility = View.GONE
+                holder.messageParent.removeAllViews()
+            }
 
             storeReceipt(item)
 
             if(item.type == MessageType.TEXT){
-                viewHolder.text.text = item.message
-                viewHolder.imageViewParent.visibility = View.GONE
-                viewHolder.imageViewParentSecond.visibility = View.GONE
-                viewHolder.textParent.visibility = View.VISIBLE
+                // TODO: Implement delete functionality
+                if(item.deletedBySender == false) {
+                    viewHolder.text.text = item.message
+                    viewHolder.imageViewParent.visibility = View.GONE
+                    viewHolder.imageViewParentSecond.visibility = View.GONE
+                    viewHolder.textParent.visibility = View.VISIBLE
+                } else {
+                    setDeletedText(viewHolder.text, R.string.you_deleted_this_message, R.color.transparent_grey)
+                }
+
+                // Long click listener
+                holder.textParent.setOnLongClickListener {
+                    handleLongClick_Received(item, null)
+                    true
+                }
             } else if(item.type == MessageType.IMAGE){
                 viewHolder.textParent.visibility = View.GONE
             }
@@ -127,7 +150,6 @@ class MessageListAdapter(
                     viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat_second) }
                     if(item.type == MessageType.IMAGE){
                         handleDownloadOnClick(item, viewHolder.sentImageSecond, holder.imageViewParentSecond, holder.imageViewParent)
-
                     }
                 } else {
                     viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat) }
@@ -139,7 +161,6 @@ class MessageListAdapter(
                 viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat) }
                 if(item.type == MessageType.IMAGE){
                     handleDownloadOnClick(item, viewHolder.sentImage, holder.imageViewParent, holder.imageViewParentSecond)
-
                 }
             }
 
@@ -172,13 +193,30 @@ class MessageListAdapter(
             // RECEIVED VIEW HOLDER
             val viewHolder = holder as ReceivedViewHolder
 
+            if(item.deletedBy.keys.contains(chatsViewModel.getCurrentUserId())) {
+                holder.messageParent.visibility = View.GONE
+                holder.messageParent.removeAllViews()
+            }
+
             storeReceipt(item)
 
             if(item.type == MessageType.TEXT){
-                viewHolder.text.text = item.message
-                viewHolder.imageViewParent.visibility = View.GONE
-                viewHolder.imageViewParentSecond.visibility = View.GONE
-                viewHolder.textParent.visibility = View.VISIBLE
+                // TODO: Implement delete functionality
+                if(item.deletedBySender == false) {
+                    viewHolder.text.text = item.message
+                    viewHolder.imageViewParent.visibility = View.GONE
+                    viewHolder.imageViewParentSecond.visibility = View.GONE
+                    viewHolder.textParent.visibility = View.VISIBLE
+                } else {
+                    setDeletedText(viewHolder.text, R.string.this_message_was_deleted_by_user, R.color.transparent_grey)
+                }
+
+
+                // Long click listener
+                holder.textParent.setOnLongClickListener {
+                    handleLongClick_Received(item, null)
+                    true
+                }
             } else if(item.type == MessageType.IMAGE){
                 viewHolder.textParent.visibility = View.GONE
             }
@@ -220,11 +258,6 @@ class MessageListAdapter(
                 } else {
                     this.chatsViewModel.firebase.getFirebaseInstance().getUserSingle(item.sender, { user ->
                         lifecycleOwner.lifecycleScope.launch {
-                            // Long click listener
-                            holder.textParent.setOnLongClickListener {
-                                handleLongClick_Received(holder, item, user)
-                                true
-                            }
                             // Get Other user profile image
                             this@MessageListAdapter.chatsViewModel.getOtherUserProfileImageUseCase(user).onEach {
                                 if(it?.image != null) {
@@ -245,10 +278,10 @@ class MessageListAdapter(
                 this.chatsViewModel.firebase.getFirebaseInstance().getUserSingle(item.sender, { user ->
                     lifecycleOwner.lifecycleScope.launch {
                         // Long click listener
-                        holder.textParent.setOnLongClickListener {
-                            handleLongClick_Received(holder, item, user)
-                            true
-                        }
+//                        holder.textParent.setOnLongClickListener {
+//                            handleLongClick_Received(item, user)
+//                            true
+//                        }
 
                         // Get other user profile image
                         this@MessageListAdapter.chatsViewModel.getOtherUserProfileImageUseCase(user).onEach {
@@ -286,6 +319,7 @@ class MessageListAdapter(
         imageViewParent: FrameLayout,
         image_view_parent_to_hide: FrameLayout,
     ){
+        Log.d("LLL", "Handle download ran")
         var has_been_clicked = false
 
         imageViewParent.visibility = View.VISIBLE
@@ -296,6 +330,7 @@ class MessageListAdapter(
             this@MessageListAdapter.chatsViewModel.checkChatImageInDb(item.message).onEach {
                 when(it) {
                     is Resource.Success -> {
+                        Log.d("LLL", "db success")
                         // TODO: Refactor entire success, loading and error clauses into different functions
                         if(it.data?.image != null) {
                             // if: bind it directly (the same way it was before)
@@ -303,13 +338,21 @@ class MessageListAdapter(
                             imageView.setOnClickListener { it2 ->
                                 imgClickListener(item, it.data)
                             }
+
+                            imageView.setOnLongClickListener {
+                                handleLongClick_Received(item, null)
+                                true
+                            }
                         }
                     }
                     is Resource.Loading -> {
+                        Log.d("LLL", "db loading")
                         // TODO: Show loading indicator
                     }
                     is Resource.Error -> {
+                        Log.d("LLL", "db error")
                         imageViewParent.setOnClickListener {
+                            Log.d("LLL", "Image download clicked")
                             if(!has_been_clicked){
                                 lifecycleOwner.lifecycleScope.launch {
                                     this@MessageListAdapter.chatsViewModel.getChatImageUseCase(item.message, chatRoomId).onEach {
@@ -321,6 +364,11 @@ class MessageListAdapter(
                                                     this@MessageListAdapter.chatsViewModel.setChatImageUseCase(it.data.image!!, imageView, imageViewParent, activity)
                                                     imageView.setOnClickListener { it2 ->
                                                         imgClickListener(item, it.data)
+                                                    }
+
+                                                    imageView.setOnLongClickListener {
+                                                        handleLongClick_Received(item, null)
+                                                        true
                                                     }
                                                 }
                                             }
@@ -364,11 +412,10 @@ class MessageListAdapter(
     }
 
     private fun storeReceipt(message: Message) {
-        Log.d("RECEIPT", "----------------------------------------------------------")
         if(blacklisted.contains(message.messageUID)) {
             return
         }
-        Log.d("RECEIPT", "Store Receipt Ran")
+
         if(pageType == ChatPageType.INDIVIDUAL) {
             chatsViewModel.storeReceipt(message, chatsViewModel.state.value?.selectedChatRoom!!).onEach {
                 when(it) {
@@ -382,7 +429,6 @@ class MessageListAdapter(
                         blacklisted.add(message.messageUID)
                     }
                 }
-                Log.d("RECEIPT", "Inside flow callback")
             }.launchIn(fragment.lifecycleScope)
 
         } else if(pageType == ChatPageType.GROUP) {
@@ -402,17 +448,25 @@ class MessageListAdapter(
                         blacklisted.add(message.messageUID)
                     }
                 }
-                Log.d("RECEIPT", "Inside flow callback")
             }.launchIn(fragment.lifecycleScope)
         }
     }
 
-    private fun handleLongClick_Sent(holder: SentViewHolder) {
-
+    private fun handleLongClick_Received(message: Message, user: User?) {
+        messageLongPress(message, user)
     }
 
-    private fun handleLongClick_Received(holder: ReceivedViewHolder, message: Message, user: User) {
-        messageLongPress(message, user)
+    private fun setDeletedText(
+        textView: TextView,
+        stringResource: Int = R.string.this_message_was_deleted_by_user,
+        colorResource: Int = R.color.transparent_grey
+    ) {
+        textView.setTypeface(null, Typeface.ITALIC)
+        textView.setTextColor(colorResource)
+
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, activity.resources.getDimension(R.dimen.deleted_text_size))
+
+        textView.setText((activity.getString(stringResource)))
     }
 }
 

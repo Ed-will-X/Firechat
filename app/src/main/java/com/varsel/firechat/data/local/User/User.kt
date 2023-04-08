@@ -46,6 +46,8 @@ open class User{
 
     var location: String? = null
 
+    var lastOnline: Long = 0L
+
     @ColumnInfo(name = "friend_requests")
     var friendRequests: HashMap<String, Long> = hashMapOf()
 

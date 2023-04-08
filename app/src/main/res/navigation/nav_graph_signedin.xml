@@ -144,6 +144,12 @@
         <action
             android:id="@+id/action_chatPageFragment_to_profileImageFragment"
             app:destination="@id/profileImageFragment" />
+        <action
+            android:id="@+id/action_chatPageFragment_to_otherProfileFragment"
+            app:destination="@id/otherProfileFragment"
+            app:enterAnim="@anim/enter_right_to_left"
+            app:exitAnim="@anim/exit_right_to_left"
+            app:popEnterAnim="@anim/enter_left_to_right" />
     </fragment>
     <fragment
         android:id="@+id/editProfilePage"
@@ -217,6 +223,9 @@
         <action
             android:id="@+id/action_groupChatPageFragment_to_profileImageFragment"
             app:destination="@id/profileImageFragment" />
+        <action
+            android:id="@+id/action_groupChatPageFragment_to_otherProfileFragment2"
+            app:destination="@id/otherProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/groupChatDetailFragment"

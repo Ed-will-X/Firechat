@@ -47,7 +47,6 @@ class ChatImageRepositoryImpl @Inject constructor(
     }
 
     override suspend fun checkIfImageInDb(imageId: String): Flow<Resource<Image?>> = callbackFlow {
-        trySend(Resource.Loading())
         val image = imageDao.get(imageId)
 
         if(image != null) {

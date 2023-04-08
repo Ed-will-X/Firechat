@@ -1,6 +1,5 @@
 package com.varsel.firechat.data.repository
 
-import android.util.Log
 import com.google.firebase.database.ValueEventListener
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
@@ -326,6 +325,54 @@ class MessageRepositoryImpl @Inject constructor(
 
     override fun storeReceipt_groupRoom(message: Message, groupRoomId: String): Flow<Response> = callbackFlow {
         firebase.uploadReadReceipt_GroupRoom(message.messageUID, groupRoomId, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
+    }
+
+    override fun deleteMessageForAll_chatRoom(message: Message, chatRoomId: String): Flow<Response> = callbackFlow {
+        trySend(Response.Loading())
+
+        firebase.deleteMessageForAll_ChatRoom(message, chatRoomId, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Loading())
+        })
+
+        awaitClose {  }
+    }
+
+    override fun deleteMessageForAll_groupRoom(message: Message, groupRoomId: String): Flow<Response> = callbackFlow {
+        trySend(Response.Loading())
+
+        firebase.deleteMessageForAll_GroupRoom(message, groupRoomId, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Loading())
+        })
+
+        awaitClose {  }
+    }
+
+    override fun deleteMessage_chatRoom(message: Message, chatRoomId: String): Flow<Response> = callbackFlow {
+        trySend(Response.Loading())
+
+        firebase.deleteMessage_chatRoom(message, chatRoomId, {
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
+    }
+
+    override fun deleteMessage_groupRoom(message: Message, groupRoomId: String): Flow<Response> = callbackFlow {
+        trySend(Response.Loading())
+
+        firebase.deleteMessage_groupRoom(message, groupRoomId, {
             trySend(Response.Success())
         }, {
             trySend(Response.Fail())

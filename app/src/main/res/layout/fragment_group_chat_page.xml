@@ -1,397 +1,633 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".presentation.signedIn.fragments.screens.group_chat_page.GroupChatPageFragment">
+    tools:context=".presentation.signedIn.fragments.screens.group_chat_page.GroupChatPageFragment"
+    >
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:foreground="?selectableItemBackground"
-        android:clickable="true"
-        android:id="@+id/appbar"
-        android:layout_height="55dp"
-        style="@style/appbar">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/mini_app_bar_height"
-            android:layout_marginRight="20dp"
-            android:layout_marginLeft="10dp"
-            >
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/ic_arrow_back_android"
-                android:layout_gravity="center_vertical"
-                android:id="@+id/chat_back_button"
-                android:clickable="true"
-                />
-
-            <FrameLayout
-                android:id="@+id/profile_image_silhouette"
-                android:clickable="true"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/bg_profile_background"
-                android:layout_width="33dp"
-                android:layout_height="33dp">
-
-                <!--                silhouette-->
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_people"
-                    android:layout_height="20dp"
-                    app:tint="@color/white" />
-
-                <!--                actual profile pic-->
-                <com.google.android.material.card.MaterialCardView
-                    android:visibility="gone"
-                    android:id="@+id/profile_image_parent"
-                    app:cardCornerRadius="360dp"
-                    app:cardElevation="0dp"
-                    android:elevation="0dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/profile_image"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        />
-
-                </com.google.android.material.card.MaterialCardView>
-
-            </FrameLayout>
-
-
-            <LinearLayout
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_gravity="center_vertical"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/group_name_text"
-                    android:textSize="16sp"
-                    android:textColor="@color/white"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
-
-                <TextView
-                    android:id="@+id/participants_text"
-                    android:textSize="11sp"
-                    android:textColor="@color/transparent_white"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_gravity="center_vertical"
-                android:id="@+id/icon_3"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/ic_more_vert"
-                />
-        </LinearLayout>
-    </com.google.android.material.appbar.AppBarLayout>
-
+<!--    Main Content-->
     <LinearLayout
-        android:id="@+id/shimmer_messages"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <include
-            layout="@layout/shimmer_chat"
-            />
-    </LinearLayout>
-    <!--    Recycler View-->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/messages_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <!--    Keyboard section-->
-    <LinearLayout
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="10dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/action_bar_switch"
-            app:cardElevation="0dp"
-            android:layout_gravity="center_vertical"
-            app:cardBackgroundColor="?text_box_color"
-            app:cardCornerRadius="360dp"
-            android:layout_width="40dp"
-            android:layout_height="40dp">
-            <ImageView
-                android:layout_gravity="center"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_add"
-                app:tint="?attr/colorPrimary" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_gravity="center_vertical"
-            app:cardCornerRadius="60dp"
-            app:cardBackgroundColor="?text_box_color"
-            app:cardElevation="0dp"
-            android:layout_marginLeft="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <com.google.android.material.appbar.AppBarLayout
+            android:foreground="?selectableItemBackground"
+            android:clickable="true"
+            android:id="@+id/appbar"
+            android:layout_height="55dp"
+            style="@style/appbar">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:paddingLeft="15dp"
-                android:paddingRight="10dp"
-                android:orientation="horizontal">
-
-                <!--                TODO: Expand edit text based on the number of lines of the message-->
-                <EditText
-                    android:textColor="?chat_title_text_color"
-                    android:textColorHint="?subtitle_text_color"
-                    android:maxLength="50000"
-                    android:id="@+id/message_edit_text"
-                    android:background="@color/transparent"
-                    android:layout_weight="1"
-                    android:hint="@string/type_message"
-                    android:inputType="textMultiLine|textCapSentences"
-                    android:textSize="15dp"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    />
-
+                android:layout_height="@dimen/mini_app_bar_height"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="10dp"
+                >
                 <ImageView
-                    android:clickable="true"
-                    android:id="@+id/send_message_btn"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:src="@drawable/ic_send"
-                    app:tint="?attr/colorPrimary" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
-
-
-
-
-    <!--    Message Action Bar-->
-    <!--    TODO: Put in scroll view-->
-    <LinearLayout
-        android:visibility="gone"
-        android:id="@+id/message_action_bar"
-        android:orientation="horizontal"
-        android:background="?message_action_bar"
-        android:layout_width="match_parent"
-        android:layout_height="120dp">
-        <View
-            style="@style/equal_space_horizontal"
-            />
-        <LinearLayout
-            android:id="@+id/gif"
-            android:clickable="true"
-            android:orientation="vertical"
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_gravity="center_horizontal"
-                android:backgroundTint="@color/deep_yellow"
-                app:cardElevation="0dp"
-                app:cardCornerRadius="360dp"
-                android:layout_width="@dimen/action_sheet_profile_image_icon_parent_size"
-                android:layout_height="@dimen/action_sheet_profile_image_icon_parent_size">
-
-                <ImageView
-                    android:layout_gravity="center"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_gif"
-                    app:tint="@color/white" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                android:layout_marginTop="5dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/gif"
-                android:textColor="?chat_title_text_color"
-                android:textSize="@dimen/action_sheet_profile_image_text_size"
-                />
-        </LinearLayout>
-
-        <View
-            style="@style/equal_space_horizontal"
-            />
-        <LinearLayout
-            android:id="@+id/file"
-            android:clickable="true"
-            android:orientation="vertical"
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_gravity="center_horizontal"
-                android:backgroundTint="@color/hot_pink"
-                app:cardElevation="0dp"
-                app:cardCornerRadius="360dp"
-                android:layout_width="@dimen/action_sheet_profile_image_icon_parent_size"
-                android:layout_height="@dimen/action_sheet_profile_image_icon_parent_size">
-
-                <ImageView
-                    android:rotation="40"
-                    android:layout_gravity="center"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:src="@drawable/ic_attach_file"
-                    app:tint="@color/white" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                android:layout_marginTop="5dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/file"
-                android:textColor="?chat_title_text_color"
-                android:textSize="@dimen/action_sheet_profile_image_text_size"
-                />
-        </LinearLayout>
-
-        <View
-            style="@style/equal_space_horizontal"
-            />
-        <LinearLayout
-            android:id="@+id/gallery"
-            android:clickable="true"
-            android:orientation="vertical"
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_gravity="center_horizontal"
-                android:backgroundTint="@color/blue"
-                app:cardElevation="0dp"
-                app:cardCornerRadius="360dp"
-                android:layout_width="@dimen/action_sheet_profile_image_icon_parent_size"
-                android:layout_height="@dimen/action_sheet_profile_image_icon_parent_size">
-
-                <ImageView
-                    android:layout_gravity="center"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:src="@drawable/ic_camera"
-                    app:tint="@color/white" />
-            </com.google.android.material.card.MaterialCardView>
+                    android:src="@drawable/ic_arrow_back_android"
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/chat_back_button"
+                    android:clickable="true"
+                    />
 
-            <TextView
-                android:layout_marginTop="5dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/gallery"
-                android:textColor="?chat_title_text_color"
-                android:textSize="@dimen/action_sheet_profile_image_text_size"
+                <FrameLayout
+                    android:id="@+id/profile_image_silhouette"
+                    android:clickable="true"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/bg_profile_background"
+                    android:layout_width="33dp"
+                    android:layout_height="33dp">
+
+                    <!--                silhouette-->
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_people"
+                        android:layout_height="20dp"
+                        app:tint="@color/white" />
+
+                    <!--                actual profile pic-->
+                    <com.google.android.material.card.MaterialCardView
+                        android:visibility="gone"
+                        android:id="@+id/profile_image_parent"
+                        app:cardCornerRadius="360dp"
+                        app:cardElevation="0dp"
+                        android:elevation="0dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/profile_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            />
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </FrameLayout>
+
+
+                <LinearLayout
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/group_name_text"
+                        android:textSize="16sp"
+                        android:textColor="@color/white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
+
+                    <TextView
+                        android:id="@+id/participants_text"
+                        android:textSize="11sp"
+                        android:textColor="@color/transparent_white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/icon_3"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/ic_more_vert"
+                    />
+            </LinearLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <LinearLayout
+            android:id="@+id/shimmer_messages"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <include
+                layout="@layout/shimmer_chat"
                 />
         </LinearLayout>
-
-        <View
-            style="@style/equal_space_horizontal"
+        <!--    Recycler View-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/messages_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             />
+
+        <!--    Keyboard section-->
         <LinearLayout
-            android:id="@+id/location"
-            android:clickable="true"
-            android:orientation="vertical"
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <com.google.android.material.card.MaterialCardView
-                android:layout_gravity="center_horizontal"
-                android:backgroundTint="@color/purple_700"
+                android:id="@+id/action_bar_switch"
                 app:cardElevation="0dp"
+                android:layout_gravity="center_vertical"
+                app:cardBackgroundColor="?text_box_color"
                 app:cardCornerRadius="360dp"
-                android:layout_width="@dimen/action_sheet_profile_image_icon_parent_size"
-                android:layout_height="@dimen/action_sheet_profile_image_icon_parent_size">
-
+                android:layout_width="40dp"
+                android:layout_height="40dp">
                 <ImageView
                     android:layout_gravity="center"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/ic_location"
-                    app:tint="@color/white" />
+                    android:src="@drawable/ic_add"
+                    app:tint="?attr/colorPrimary" />
             </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                android:layout_marginTop="5dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/location"
-                android:textColor="?chat_title_text_color"
-                android:textSize="@dimen/action_sheet_profile_image_text_size"
-                />
-        </LinearLayout>
-        <View
-            style="@style/equal_space_horizontal"
-            />
-
-        <LinearLayout
-            android:id="@+id/audio"
-            android:clickable="true"
-            android:orientation="vertical"
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
 
             <com.google.android.material.card.MaterialCardView
-                android:layout_gravity="center_horizontal"
-                android:backgroundTint="@color/light_green"
+                android:layout_gravity="center_vertical"
+                app:cardCornerRadius="60dp"
+                app:cardBackgroundColor="?text_box_color"
                 app:cardElevation="0dp"
-                app:cardCornerRadius="360dp"
-                android:layout_width="@dimen/action_sheet_profile_image_icon_parent_size"
-                android:layout_height="@dimen/action_sheet_profile_image_icon_parent_size">
+                android:layout_marginLeft="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-                <ImageView
-                    android:layout_gravity="center"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:src="@drawable/ic_mic"
-                    app:tint="@color/white" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="10dp"
+                    android:orientation="horizontal">
+
+                    <!--                TODO: Expand edit text based on the number of lines of the message-->
+                    <EditText
+                        android:textColor="?chat_title_text_color"
+                        android:textColorHint="?subtitle_text_color"
+                        android:maxLength="50000"
+                        android:id="@+id/message_edit_text"
+                        android:background="@color/transparent"
+                        android:layout_weight="1"
+                        android:hint="@string/type_message"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:textSize="15dp"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        />
+
+                    <ImageView
+                        android:clickable="true"
+                        android:id="@+id/send_message_btn"
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_send"
+                        app:tint="?attr/colorPrimary" />
+                </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                android:layout_marginTop="5dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/audio"
-                android:textColor="?chat_title_text_color"
-                android:textSize="@dimen/action_sheet_profile_image_text_size"
-                />
         </LinearLayout>
-        <View
-            style="@style/equal_space_horizontal"
-            />
 
+
+
+
+        <!--    Message Action Bar-->
+        <!--    TODO: Put in scroll view-->
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/message_action_bar"
+            android:orientation="horizontal"
+            android:background="?message_action_bar"
+            android:layout_width="match_parent"
+            android:layout_height="120dp">
+            <View
+                style="@style/equal_space_horizontal"
+                />
+            <LinearLayout
+                android:id="@+id/gif"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_gravity="center_horizontal"
+                    android:backgroundTint="@color/deep_yellow"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="360dp"
+                    android:layout_width="@dimen/action_sheet_profile_image_icon_parent_size"
+                    android:layout_height="@dimen/action_sheet_profile_image_icon_parent_size">
+
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_gif"
+                        app:tint="@color/white" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/gif"
+                    android:textColor="?chat_title_text_color"
+                    android:textSize="@dimen/action_sheet_profile_image_text_size"
+                    />
+            </LinearLayout>
+
+            <View
+                style="@style/equal_space_horizontal"
+                />
+            <LinearLayout
+                android:id="@+id/file"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_gravity="center_horizontal"
+                    android:backgroundTint="@color/hot_pink"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="360dp"
+                    android:layout_width="@dimen/action_sheet_profile_image_icon_parent_size"
+                    android:layout_height="@dimen/action_sheet_profile_image_icon_parent_size">
+
+                    <ImageView
+                        android:rotation="40"
+                        android:layout_gravity="center"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_attach_file"
+                        app:tint="@color/white" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/file"
+                    android:textColor="?chat_title_text_color"
+                    android:textSize="@dimen/action_sheet_profile_image_text_size"
+                    />
+            </LinearLayout>
+
+            <View
+                style="@style/equal_space_horizontal"
+                />
+            <LinearLayout
+                android:id="@+id/gallery"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_gravity="center_horizontal"
+                    android:backgroundTint="@color/blue"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="360dp"
+                    android:layout_width="@dimen/action_sheet_profile_image_icon_parent_size"
+                    android:layout_height="@dimen/action_sheet_profile_image_icon_parent_size">
+
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/ic_camera"
+                        app:tint="@color/white" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/gallery"
+                    android:textColor="?chat_title_text_color"
+                    android:textSize="@dimen/action_sheet_profile_image_text_size"
+                    />
+            </LinearLayout>
+
+            <View
+                style="@style/equal_space_horizontal"
+                />
+            <LinearLayout
+                android:id="@+id/location"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_gravity="center_horizontal"
+                    android:backgroundTint="@color/purple_700"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="360dp"
+                    android:layout_width="@dimen/action_sheet_profile_image_icon_parent_size"
+                    android:layout_height="@dimen/action_sheet_profile_image_icon_parent_size">
+
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_location"
+                        app:tint="@color/white" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/location"
+                    android:textColor="?chat_title_text_color"
+                    android:textSize="@dimen/action_sheet_profile_image_text_size"
+                    />
+            </LinearLayout>
+            <View
+                style="@style/equal_space_horizontal"
+                />
+
+            <LinearLayout
+                android:id="@+id/audio"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_gravity="center_horizontal"
+                    android:backgroundTint="@color/light_green"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="360dp"
+                    android:layout_width="@dimen/action_sheet_profile_image_icon_parent_size"
+                    android:layout_height="@dimen/action_sheet_profile_image_icon_parent_size">
+
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_mic"
+                        app:tint="@color/white" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/audio"
+                    android:textColor="?chat_title_text_color"
+                    android:textSize="@dimen/action_sheet_profile_image_text_size"
+                    />
+            </LinearLayout>
+            <View
+                style="@style/equal_space_horizontal"
+                />
+
+
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+    <!--    Dark Overlay-->
+    <LinearLayout
+        android:id="@+id/dark_overlay"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:background="@color/dark_overlay_3"
+        android:orientation="horizontal" />
+
+    <!--    Message Detail-->
+    <com.google.android.material.card.MaterialCardView
+        app:rippleColor="@android:color/transparent"
+        android:clickable="true"
+        android:visibility="gone"
+        android:id="@+id/message_detail_parent"
+        android:layout_width="300dp"
+        android:layout_height="400dp"
+        android:background="@color/white"
+        android:layout_gravity="center"
+        app:cardCornerRadius="10dp"
+        >
+        <LinearLayout
+            android:paddingTop="20dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                style="@style/message_detail_item_parent"
+                android:layout_marginTop="0dp"
+                >
+
+                <TextView
+                    style="@style/message_detail_item_key"
+                    android:text="@string/by_colon"
+                    />
+
+                <TextView
+                    android:id="@+id/overlay_detail_name"
+                    tools:text="Ligma Balls"
+                    style="@style/message_detail_item_value"
+                    />
+            </LinearLayout>
+
+            <View
+                style="@style/horizontal_rule"
+                android:layout_marginTop="20dp"
+                />
+
+            <LinearLayout
+                style="@style/message_detail_item_parent"
+                >
+
+                <TextView
+                    android:text="@string/time_sent_colon"
+                    style="@style/message_detail_item_key"
+                    />
+
+                <TextView
+                    android:id="@+id/overlay_detail_time"
+                    tools:text="11:59"
+                    style="@style/message_detail_item_value"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/overlay_detail_message_type_parent"
+                style="@style/message_detail_item_parent"
+                >
+
+                <TextView
+                    android:text="@string/message_type_colon"
+                    style="@style/message_detail_item_key"
+                    />
+
+                <TextView
+                    android:id="@+id/overlay_detail_message_type"
+                    tools:text="Text"
+                    style="@style/message_detail_item_value"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/message_detail_item_parent"
+                >
+
+                <TextView
+                    android:text="@string/message_id_colon"
+                    style="@style/message_detail_item_key"
+                    android:layout_gravity="top"
+                    />
+
+                <TextView
+                    android:id="@+id/overlay_detail_message_id"
+                    tools:text="494nf3mfj2m"
+                    style="@style/message_detail_item_value"
+                    />
+            </LinearLayout>
+
+
+            <LinearLayout
+                style="@style/message_detail_item_parent"
+                android:id="@+id/overlay_detail_message_parent"
+                >
+
+                <TextView
+                    android:text="@string/message_colon"
+                    style="@style/message_detail_item_key"
+                    android:layout_gravity="top"
+                    />
+
+                <TextView
+                    android:id="@+id/overlay_detail_message"
+                    tools:text="Lorem ipsum dolor sit amet consectetur adipisicing elit elit elit..."
+                    style="@style/message_detail_item_value"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/message_detail_item_parent"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:id="@+id/overlay_detail_message_image_parent"
+                >
+
+                <TextView
+                    android:text="@string/image_colon"
+                    style="@style/message_detail_item_key"
+                    android:layout_gravity="top"
+                    />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/overlay_detail_image"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    app:shapeAppearanceOverlay="@style/message_detail_image"
+                    tools:src="@drawable/auth_root_img_1"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!--    Read By-->
+    <com.google.android.material.card.MaterialCardView
+        app:rippleColor="@android:color/transparent"
+        android:visibility="gone"
+        android:clickable="true"
+        android:id="@+id/read_by_parent"
+        android:layout_width="300dp"
+        android:layout_height="400dp"
+        android:background="@color/white"
+        android:layout_gravity="center"
+        app:cardCornerRadius="10dp"
+        >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/read_by"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                />
+
+            <View
+                android:layout_marginTop="20dp"
+                style="@style/horizontal_rule"
+                />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/read_by_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                />
+
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/no_views"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_height="0dp">
+
+                <ImageView
+                    android:layout_gravity="center"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:src="@drawable/eye"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    style="@style/message_detail_item_value"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/this_message_hasnt_been_viewed_yet"
+                    />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/viewed_by_count"
+                tools:text="@string/viewed_by_1_contact"
+                style="@style/message_detail_item_value"
+                android:layout_marginBottom="10dp"
+                android:layout_gravity="right"
+                android:layout_marginRight="10dp"
+                />
+        </LinearLayout>
+
+
+    </com.google.android.material.card.MaterialCardView>
+
+</FrameLayout>

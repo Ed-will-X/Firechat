@@ -2,6 +2,7 @@ package com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_p
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +12,12 @@ import androidx.lifecycle.*
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
+import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
+import com.varsel.firechat.common._utils.ImageUtils
 import com.varsel.firechat.databinding.FragmentGroupChatPageBinding
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Message.Message
@@ -23,16 +27,22 @@ import com.varsel.firechat.data.local.ReadReceipt.ReadReceipt
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
+import com.varsel.firechat.databinding.ActionSheetMessageOptionsBinding
+import com.varsel.firechat.domain.use_case._util.message.FormatStampMessageDetail_UseCase
 import com.varsel.firechat.domain.use_case._util.message.SortMessages_UseCase
-import com.varsel.firechat.domain.use_case.chat_image.DisplayGroupImage_UseCase
-import com.varsel.firechat.domain.use_case.chat_image.DisplayImageMessageGroup_UseCase
-import com.varsel.firechat.domain.use_case.chat_image.StoreChatImageUseCase
-import com.varsel.firechat.domain.use_case.chat_image.UploadChatImage_UseCase
+import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
+import com.varsel.firechat.domain.use_case._util.user.ExcludeCurrentUserIdFromList_UseCase
+import com.varsel.firechat.domain.use_case._util.user.ExcludeCurrentUserIdFromMap_UseCase
+import com.varsel.firechat.domain.use_case.chat_image.*
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.group_chat.InterpolateGroupParticipantsUseCase
 import com.varsel.firechat.domain.use_case.group_chat.SendGroupMessage_UseCase
 import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_UseCase
 import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
+import com.varsel.firechat.domain.use_case.message.DeleteMessageForAll_ChatRoom_UseCase
+import com.varsel.firechat.domain.use_case.message.DeleteMessageForAll_GroupRoom_UseCase
+import com.varsel.firechat.domain.use_case.message.DeleteMessage_Chat_UseCase
+import com.varsel.firechat.domain.use_case.message.DeleteMessage_Group_UseCase
 import com.varsel.firechat.domain.use_case.other_user.GetListOfUsers_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
@@ -41,6 +51,8 @@ import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
 import com.varsel.firechat.presentation.signedIn.adapters.FriendListAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.MessageListAdapter
+import com.varsel.firechat.presentation.signedIn.adapters.ReadByAdapter
+import com.varsel.firechat.presentation.signedIn.fragments.screens.chat_page.ChatPageFragmentDirections
 import com.varsel.firechat.presentation.signedIn.fragments.screens.chat_page.ChatPageViewModel
 import com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_detail.GroupChatDetailViewModel
 import com.varsel.firechat.presentation.viewModel.FriendListFragmentViewModel
@@ -105,10 +117,31 @@ class GroupChatPageFragment : Fragment() {
     @Inject
     lateinit var storeReceipt: StoreReceipt_UseCase
 
+    @Inject
+    lateinit var formatStampTime: FormatStampMessageDetail_UseCase
+
+    @Inject
+    lateinit var truncate: Truncate_UseCase
+
+    @Inject
+    lateinit var checkChatImageInDb: CheckChatImageInDb
+
+    @Inject
+    lateinit var excludeUserId: ExcludeCurrentUserIdFromList_UseCase
+
+    @Inject
+    lateinit var excludeUserIdFromMap: ExcludeCurrentUserIdFromMap_UseCase
+
+    @Inject
+    lateinit var deleteForAll: DeleteMessageForAll_GroupRoom_UseCase
+
+    @Inject
+    lateinit var deleteMessage: DeleteMessage_Group_UseCase
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        updateReadReceipt()
+//        updateReadReceipt()
     }
 
     override fun onCreateView(
@@ -167,6 +200,12 @@ class GroupChatPageFragment : Fragment() {
             openImagePicker(this)
         }
 
+        binding.darkOverlay.setOnClickListener {
+            binding.darkOverlay.visibility = View.GONE
+            binding.messageDetailParent.visibility = View.GONE
+            binding.readByParent.visibility = View.GONE
+        }
+
         binding.profileImage.setOnClickListener {
             if(viewModel.state.value?.selectedRoom != null) {
                 val selectedGroupImage = viewModel.state.value?.groupImage
@@ -178,6 +217,168 @@ class GroupChatPageFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun showMessageOptionsActionsheet(message: Message, user: User?) {
+        val dialog = BottomSheetDialog(requireContext())
+        val dialogBinding = ActionSheetMessageOptionsBinding.inflate(layoutInflater, binding.root, false)
+        dialog.setContentView(dialogBinding.root)
+
+        if(user != null) {
+            setDialogBindings(dialog, dialogBinding, message, user)
+        } else {
+            viewModel.getOtherUserSingle(message.sender).onEach {
+                when(it) {
+                    is Resource.Success -> {
+                        if(it.data != null) {
+                            setDialogBindings(dialog, dialogBinding, message, it.data)
+                        }
+                    }
+                }
+            }.launchIn(lifecycleScope)
+        }
+
+
+        dialogBinding.cancelBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun setupReadByAdapter(message: Message, userIDs: List<Pair<String, Long>>) {
+        binding.readByRecyclerView.visibility = View.GONE
+        binding.noViews.visibility = View.GONE
+
+        val viewedByCount = userIDs.count()
+        val adapter = ReadByAdapter(message, this, parent.signedinViewModel, parent) {
+            val action = ChatPageFragmentDirections.actionChatPageFragmentToOtherProfileFragment(it.userUID)
+            findNavController().navigate(action)
+        }
+        binding.readByRecyclerView.adapter = adapter
+
+        binding.viewedByCount.setText(if(viewedByCount == 1) parent.getString(R.string.viewed_by_1_contact) else parent.getString(R.string.viewed_by_int_contacts, viewedByCount))
+        binding.readByRecyclerView.visibility = if(viewedByCount > 0 && !message.deletedBySender) View.VISIBLE else View.GONE
+        binding.noViews.visibility = if(viewedByCount < 1 || message.deletedBySender) View.VISIBLE else View.GONE
+        binding.viewedByCount.visibility = if(viewedByCount > 0 && !message.deletedBySender) View.VISIBLE else View.GONE
+
+        adapter.items = userIDs
+    }
+
+    private fun setDialogBindings(dialog: BottomSheetDialog, dialogBinding: ActionSheetMessageOptionsBinding, message: Message, user: User) {
+        dialogBinding.name.setText(if(user.userUID == viewModel.getCurrentUserId()) parent.getString(R.string.you) else user.name)
+        dialogBinding.deleteForAllParent.visibility = if(user.userUID == viewModel.getCurrentUserId()) View.VISIBLE else View.GONE
+        dialogBinding.readByParent.visibility = if(message.sender == viewModel.getCurrentUserId()) View.VISIBLE else View.GONE
+        dialogBinding.deleteForAllParent.visibility = if(message.deletedBySender == true) View.GONE else View.VISIBLE
+        dialogBinding.replyParent.visibility = View.GONE
+        dialogBinding.forwardParent.visibility = View.GONE
+
+        dialogBinding.deleteParent.setOnClickListener {
+            deleteMessage(message, roomId).onEach {
+                when(it) {
+                    is Response.Success -> {
+                        Log.d("LLL", "Deleted")
+                    }
+                    is Response.Loading -> {
+                        Log.d("LLL", "Deleting")
+                    }
+                    is Response.Fail -> {
+                        Log.d("LLL", "Failed to delete")
+                    }
+                }
+            }.launchIn(lifecycleScope)
+            dialog.dismiss()
+        }
+
+        dialogBinding.detailsParent.setOnClickListener {
+            showMessageDetailOverlay(message, user)
+            dialog.dismiss()
+        }
+
+        dialogBinding.readByParent.setOnClickListener {
+            binding.readByParent.visibility = View.VISIBLE
+            binding.darkOverlay.visibility = View.VISIBLE
+
+            val filteredMap = excludeUserIdFromMap(message.readBy)
+            val filteredPair = filteredMap.map { Pair(it.key, it.value) }
+
+            setupReadByAdapter(message, filteredPair)
+
+            dialog.dismiss()
+        }
+
+        dialogBinding.deleteForAllParent.setOnClickListener {
+            deleteForAll(message, roomId).onEach {
+                when(it) {
+                    is Response.Success -> {
+                        Log.d("LLL", "Deleted")
+                    }
+                    is Response.Loading -> {
+                        Log.d("LLL", "Deleting")
+                    }
+                    is Response.Fail -> {
+                        Log.d("LLL", "Failed to delete")
+                    }
+                }
+            }.launchIn(lifecycleScope)
+
+            dialog.dismiss()
+        }
+    }
+
+
+    private fun showMessageDetailOverlay(message: Message, user: User) {
+        // Reset
+        binding.overlayDetailMessageParent.visibility = View.GONE
+        binding.overlayDetailMessageImageParent.visibility = View.GONE
+        binding.overlayDetailMessageTypeParent.visibility = View.GONE
+
+
+        binding.overlayDetailName.setText(if(user.userUID == viewModel.getCurrentUserId()) parent.getString(R.string.you) else user.name)
+        binding.overlayDetailTime.setText(formatStampTime(message.time))
+        binding.overlayDetailMessageId.setText(message.messageUID)
+
+        if(message.deletedBySender == false) {
+            binding.overlayDetailMessageType.setText(returnTextFromMessageType(message.type))
+            binding.overlayDetailMessageTypeParent.visibility = View.VISIBLE
+
+            if(message.type == MessageType.TEXT) {
+                binding.overlayDetailMessage.setText(truncate(message.message, 150))
+                binding.overlayDetailMessageParent.visibility = View.VISIBLE
+            } else if(message.type == MessageType.IMAGE) {
+                lifecycleScope.launch {
+                    binding.overlayDetailMessageImageParent.visibility = View.VISIBLE
+
+                    checkChatImageInDb(message.message).onEach {
+                        when(it) {
+                            is Resource.Success -> {
+                                if(it.data != null) {
+                                    val bitmap = ImageUtils.base64ToBitmap(it.data.image!!)
+                                    Glide.with(parent).load(bitmap).dontAnimate().into(binding.overlayDetailImage)
+                                }
+                            }
+                            is Resource.Loading -> {
+                                // TODO: Show loading spinner
+                            }
+                            is Resource.Error -> {
+                                // TODO: Show error image
+                            }
+                        }
+                    }.launchIn(lifecycleScope)
+                }
+            }
+        }
+
+        binding.darkOverlay.visibility = View.VISIBLE
+        binding.messageDetailParent.visibility = View.VISIBLE
+    }
+
+    private fun returnTextFromMessageType(messageType: Int): String {
+        return when(messageType) {
+            MessageType.TEXT -> "Text"
+            MessageType.IMAGE -> "Image"
+            else -> "Undefined"
+        }
     }
 
     private fun collectState(roomId: String) {
@@ -218,7 +419,7 @@ class GroupChatPageFragment : Fragment() {
             }, { profileImage, user ->
                 displayProfileImage(profileImage, user, parent)
             }, { message, user ->  
-                
+                showMessageOptionsActionsheet(message, user)
             })
 
         binding.messagesRecyclerView.adapter = messageAdapter
@@ -233,19 +434,19 @@ class GroupChatPageFragment : Fragment() {
                 lifecycleScope.launch {
                     storeImage_UseCase(image)
                     sendImgMessage(message) {
-                        updateReadReceipt()
+//                        updateReadReceipt()
                     }
                 }
             }
         }, {})
     }
 
-    private fun updateReadReceipt(){
-        val receipt = ReadReceipt("${roomId}:${viewModel.getCurrentUserId()}", System.currentTimeMillis())
-        lifecycleScope.launch {
-            storeReceipt(receipt)
-        }
-    }
+//    private fun updateReadReceipt(){
+//        val receipt = ReadReceipt("${roomId}:${viewModel.getCurrentUserId()}", System.currentTimeMillis())
+//        lifecycleScope.launch {
+//            storeReceipt(receipt)
+//        }
+//    }
 
     private fun observeGroupImage(profileImage: ProfileImage?){
         if(profileImage?.image != null){
@@ -295,7 +496,7 @@ class GroupChatPageFragment : Fragment() {
         sendMessageUseCase(roomId, binding.messageEditText).onEach {
             when(it) {
                 is Response.Success -> {
-                    updateReadReceipt()
+//                    updateReadReceipt()
                 }
                 is Response.Fail -> {
                     // TODO: Show failure infobar in failure check
@@ -363,7 +564,7 @@ class GroupChatPageFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
 
-        updateReadReceipt()
+//        updateReadReceipt()
 
         _binding = null
     }

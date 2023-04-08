@@ -11,11 +11,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.varsel.firechat.R
+import com.varsel.firechat.common.Resource
+import com.varsel.firechat.common.Response
+import com.varsel.firechat.common._utils.ImageUtils
 import com.varsel.firechat.databinding.FragmentChatPageBinding
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageType
-import com.varsel.firechat.data.local.ReadReceipt.ReadReceipt
 import com.varsel.firechat.domain.use_case.chat_image.DisplayChatImage_UseCase
 import com.varsel.firechat.domain.use_case.chat_image.UploadChatImage_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
@@ -23,12 +28,22 @@ import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_UseCase
 import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.common._utils.MessageUtils
+import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.databinding.ActionSheetMessageOptionsBinding
+import com.varsel.firechat.domain.use_case._util.message.FormatStampMessageDetail_UseCase
+import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
+import com.varsel.firechat.domain.use_case._util.user.ExcludeCurrentUserIdFromList_UseCase
+import com.varsel.firechat.domain.use_case._util.user.ExcludeCurrentUserIdFromMap_UseCase
+import com.varsel.firechat.domain.use_case.chat_image.CheckChatImageInDb
 import com.varsel.firechat.domain.use_case.chat_image.StoreChatImageUseCase
 import com.varsel.firechat.domain.use_case.chat_room.FindChatRoom_UseCase
+import com.varsel.firechat.domain.use_case.message.DeleteMessageForAll_ChatRoom_UseCase
+import com.varsel.firechat.domain.use_case.message.DeleteMessage_Chat_UseCase
 import com.varsel.firechat.domain.use_case.read_receipt_temp.StoreReceipt_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
 import com.varsel.firechat.presentation.signedIn.adapters.MessageListAdapter
+import com.varsel.firechat.presentation.signedIn.adapters.ReadByAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -77,10 +92,31 @@ class ChatPageFragment : Fragment() {
     @Inject
     lateinit var findChatRoom: FindChatRoom_UseCase
 
+    @Inject
+    lateinit var formatStampTime: FormatStampMessageDetail_UseCase
+
+    @Inject
+    lateinit var truncate: Truncate_UseCase
+
+    @Inject
+    lateinit var checkChatImageInDb: CheckChatImageInDb
+
+    @Inject
+    lateinit var excludeUserId: ExcludeCurrentUserIdFromList_UseCase
+
+    @Inject
+    lateinit var excludeUserIdFromMap: ExcludeCurrentUserIdFromMap_UseCase
+
+    @Inject
+    lateinit var deleteForAll: DeleteMessageForAll_ChatRoom_UseCase
+
+    @Inject
+    lateinit var deleteMessage: DeleteMessage_Chat_UseCase
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        updateReadReceipt()
+//        updateReadReceipt()
     }
 
     override fun onCreateView(
@@ -106,6 +142,12 @@ class ChatPageFragment : Fragment() {
         viewModel.actionBarVisibility.value = false
 
         firstMessageSent = false
+
+        binding.darkOverlay.setOnClickListener {
+            binding.darkOverlay.visibility = View.GONE
+            binding.messageDetailParent.visibility = View.GONE
+            binding.readByParent.visibility = View.GONE
+        }
 
         viewModel.actionBarVisibility.observe(viewLifecycleOwner, Observer {
             if(it){
@@ -144,7 +186,7 @@ class ChatPageFragment : Fragment() {
 
             if(binding.messageEditText.text.toString() != ""){
                 viewModel.handleSendMessage(message, existingChatRoomId, newChatRoom) {
-                    updateReadReceipt()
+//                    updateReadReceipt()
                 }
             }
 
@@ -199,7 +241,7 @@ class ChatPageFragment : Fragment() {
                 }, { profileImage, user ->
                     displayProfileImage(profileImage, user, parent)
                 }, { message, user ->
-
+                    showMessageOptionsActionsheet(message, user)
                 })
             binding.messagesRecyclerView.adapter = messagesListAdapter
 
@@ -215,26 +257,175 @@ class ChatPageFragment : Fragment() {
                 lifecycleScope.launch {
                     storeImage_UseCase(image)
                     viewModel.handleSendMessage(message, existingChatRoomId, newChatRoom) {
-                        updateReadReceipt()
+//                        updateReadReceipt()
                     }
                 }
             }
         },{})
     }
 
-    private fun updateReadReceipt(){
-        if(existingChatRoomId != null){
-            val receipt = ReadReceipt("${existingChatRoomId}:${viewModel.getCurrentUserId()}", System.currentTimeMillis())
-            lifecycleScope.launch {
-                storeReceipt(receipt)
-            }
+    private fun showMessageOptionsActionsheet(message: Message, user: User?) {
+        val dialog = BottomSheetDialog(requireContext())
+        val dialogBinding = ActionSheetMessageOptionsBinding.inflate(layoutInflater, binding.root, false)
+        dialog.setContentView(dialogBinding.root)
+
+        if(user != null) {
+            setDialogBindings(dialog, dialogBinding, message, user)
         } else {
-            if(firstMessageSent == true){
-                val receipt = ReadReceipt("${newChatRoomId}:${viewModel.getCurrentUserId()}", System.currentTimeMillis())
+            viewModel.getOtherUserSingle(message.sender).onEach {
+                when(it) {
+                    is Resource.Success -> {
+                        if(it.data != null) {
+                            setDialogBindings(dialog, dialogBinding, message, it.data)
+                        }
+                    }
+                }
+            }.launchIn(lifecycleScope)
+        }
+
+
+        dialogBinding.cancelBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun setupReadByAdapter(message: Message, userIDs: List<Pair<String, Long>>) {
+        binding.readByRecyclerView.visibility = View.GONE
+        binding.noViews.visibility = View.GONE
+
+        val viewedByCount = userIDs.count()
+        val adapter = ReadByAdapter(message, this, parent.signedinViewModel, parent) {
+            val action = ChatPageFragmentDirections.actionChatPageFragmentToOtherProfileFragment(it.userUID)
+            findNavController().navigate(action)
+        }
+        binding.readByRecyclerView.adapter = adapter
+
+        binding.viewedByCount.setText(if(viewedByCount == 1) parent.getString(R.string.viewed_by_1_contact) else parent.getString(R.string.viewed_by_int_contacts, viewedByCount))
+        binding.readByRecyclerView.visibility = if(viewedByCount > 0 && !message.deletedBySender) View.VISIBLE else View.GONE
+        binding.noViews.visibility = if(viewedByCount < 1 || message.deletedBySender) View.VISIBLE else View.GONE
+        binding.viewedByCount.visibility = if(viewedByCount > 0 && !message.deletedBySender) View.VISIBLE else View.GONE
+
+        adapter.items = userIDs
+    }
+
+    private fun setDialogBindings(dialog: BottomSheetDialog, dialogBinding: ActionSheetMessageOptionsBinding, message: Message, user: User) {
+        dialogBinding.name.setText(if(user.userUID == viewModel.getCurrentUserId()) parent.getString(R.string.you) else user.name)
+        dialogBinding.deleteForAllParent.visibility = if(user.userUID == viewModel.getCurrentUserId()) View.VISIBLE else View.GONE
+        dialogBinding.readByParent.visibility = if(message.sender == viewModel.getCurrentUserId()) View.VISIBLE else View.GONE
+        dialogBinding.deleteForAllParent.visibility = if(message.deletedBySender == true) View.GONE else View.VISIBLE
+        dialogBinding.replyParent.visibility = View.GONE
+        dialogBinding.forwardParent.visibility = View.GONE
+
+        dialogBinding.deleteParent.setOnClickListener {
+            if(existingChatRoomId != null) {
+                deleteMessage(message, existingChatRoomId!!).onEach {
+                    when(it) {
+                        is Response.Success -> {
+                            Log.d("LLL", "Deleted")
+                        }
+                        is Response.Loading -> {
+                            Log.d("LLL", "Deleting")
+                        }
+                        is Response.Fail -> {
+                            Log.d("LLL", "Failed to delete")
+                        }
+                    }
+                }.launchIn(lifecycleScope)
+            }
+            dialog.dismiss()
+        }
+
+        dialogBinding.detailsParent.setOnClickListener {
+            showMessageDetailOverlay(message, user)
+            dialog.dismiss()
+        }
+
+        dialogBinding.readByParent.setOnClickListener {
+            binding.readByParent.visibility = View.VISIBLE
+            binding.darkOverlay.visibility = View.VISIBLE
+
+            val filteredMap = excludeUserIdFromMap(message.readBy)
+            val filteredPair = filteredMap.map { Pair(it.key, it.value) }
+
+            setupReadByAdapter(message, filteredPair)
+
+            dialog.dismiss()
+        }
+
+        dialogBinding.deleteForAllParent.setOnClickListener {
+            if(existingChatRoomId != null) {
+                deleteForAll(message, existingChatRoomId!!).onEach {
+                    when(it) {
+                        is Response.Success -> {
+                            Log.d("LLL", "Deleted")
+                        }
+                        is Response.Loading -> {
+                            Log.d("LLL", "Deleting")
+                        }
+                        is Response.Fail -> {
+                            Log.d("LLL", "Failed to delete")
+                        }
+                    }
+                }.launchIn(lifecycleScope)
+            }
+            dialog.dismiss()
+        }
+    }
+
+
+    private fun showMessageDetailOverlay(message: Message, user: User) {
+        // Reset
+        binding.overlayDetailMessageParent.visibility = View.GONE
+        binding.overlayDetailMessageImageParent.visibility = View.GONE
+        binding.overlayDetailMessageTypeParent.visibility = View.GONE
+
+
+        binding.overlayDetailName.setText(if(user.userUID == viewModel.getCurrentUserId()) parent.getString(R.string.you) else user.name)
+        binding.overlayDetailTime.setText(formatStampTime(message.time))
+        binding.overlayDetailMessageId.setText(message.messageUID)
+
+        if(message.deletedBySender == false) {
+            binding.overlayDetailMessageType.setText(returnTextFromMessageType(message.type))
+            binding.overlayDetailMessageTypeParent.visibility = View.VISIBLE
+
+            if(message.type == MessageType.TEXT) {
+                binding.overlayDetailMessage.setText(truncate(message.message, 150))
+                binding.overlayDetailMessageParent.visibility = View.VISIBLE
+            } else if(message.type == MessageType.IMAGE) {
                 lifecycleScope.launch {
-                    storeReceipt(receipt)
+                    binding.overlayDetailMessageImageParent.visibility = View.VISIBLE
+
+                    checkChatImageInDb(message.message).onEach {
+                        when(it) {
+                            is Resource.Success -> {
+                                if(it.data != null) {
+                                    val bitmap = ImageUtils.base64ToBitmap(it.data.image!!)
+                                    Glide.with(parent).load(bitmap).dontAnimate().into(binding.overlayDetailImage)
+                                }
+                            }
+                            is Resource.Loading -> {
+                                // TODO: Show loading spinner
+                            }
+                            is Resource.Error -> {
+                                // TODO: Show error image
+                            }
+                        }
+                    }.launchIn(lifecycleScope)
                 }
             }
+        }
+
+        binding.darkOverlay.visibility = View.VISIBLE
+        binding.messageDetailParent.visibility = View.VISIBLE
+    }
+
+    private fun returnTextFromMessageType(messageType: Int): String {
+        return when(messageType) {
+            MessageType.TEXT -> "Text"
+            MessageType.IMAGE -> "Image"
+            else -> "Undefined"
         }
     }
 
@@ -306,7 +497,7 @@ class ChatPageFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
 
-        updateReadReceipt()
+//        updateReadReceipt()
 
         _binding = null
     }

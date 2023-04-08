@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="wrap_content"
+<LinearLayout
+    android:id="@+id/message_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -33,13 +35,13 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="17dp"
                 android:paddingVertical="10dp"
-                android:textSize="15dp"
+                android:textSize="15sp"
                 android:textColor="@color/white"
-                android:text="Hey nancy, can you make me admin? mmmmmmm"
+                tools:text="Hey nancy, can you make me admin? mmmmmmm"
                 />
         </LinearLayout>
 
-
+<!--    Image -->
         <FrameLayout
             android:id="@+id/image_view_parent"
             android:visibility="gone"
@@ -49,8 +51,8 @@
             android:layout_gravity="right"
             android:layout_marginLeft="60dp"
             android:layout_marginRight="10dp"
-            android:layout_width="250dp"
-            android:layout_height="150dp">
+            android:layout_width="@dimen/image_bubble_width"
+            android:layout_height="@dimen/image_bubble_height">
 
             <include
                 layout="@layout/load_button"
@@ -68,6 +70,7 @@
                 />
         </FrameLayout>
 
+<!--        Image view second-->
         <FrameLayout
             android:id="@+id/image_view_parent_second"
             android:visibility="gone"
@@ -77,8 +80,8 @@
             android:layout_marginRight="10dp"
             android:foreground="?selectableItemBackground"
             android:background="@drawable/bg_loading_shimmer_message_sent_second"
-            android:layout_width="250dp"
-            android:layout_height="150dp">
+            android:layout_width="@dimen/image_bubble_width"
+            android:layout_height="@dimen/image_bubble_height">
 
             <include
                 layout="@layout/load_button"
@@ -105,7 +108,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Delivered · 17m"
-            android:textSize="12dp"
+            android:textSize="12sp"
             android:textColor="?subtitle_text_color"
             />
     </LinearLayout>

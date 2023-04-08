@@ -44,4 +44,9 @@ interface MessageRepository {
     fun storeReceipt_chatRoom(message: Message, chatRoomId: String) : Flow<Response>
     fun storeReceipt_groupRoom(message: Message, groupRoomId: String) : Flow<Response>
 
+    fun deleteMessageForAll_chatRoom(message: Message, chatRoomId: String) : Flow<Response>
+    fun deleteMessageForAll_groupRoom(message: Message, groupRoomId: String) : Flow<Response>
+
+    fun deleteMessage_chatRoom(message: Message, chatRoomId: String) : Flow<Response>
+    fun deleteMessage_groupRoom(message: Message, groupRoomId: String) : Flow<Response>
 }

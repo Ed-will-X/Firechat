@@ -1467,6 +1467,100 @@ class Firebase(
             }
     }
 
+    fun deleteMessageForAll_ChatRoom(
+        message: Message,
+        chatRoomUID: String,
+        successCallback: () -> Unit,
+        failureCallback: () -> Unit
+    ){
+        if(mAuth.currentUser!!.uid != message.sender) {
+            failureCallback()
+            return
+        }
+        // push the message to the chatroom
+        mDbRef
+            .child("chatRooms")
+            .child(chatRoomUID)
+            .child("messages")
+            .child(message.messageUID)
+            .child("deletedBySender")
+            .setValue(true)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                    DebugUtils.log_firebase("delete message successful")
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun deleteMessageForAll_GroupRoom(
+        message: Message,
+        groupRoomId: String,
+        successCallback: () -> Unit,
+        failureCallback: () -> Unit
+    ){
+        if(mAuth.currentUser!!.uid != message.sender) {
+            failureCallback()
+            return
+        }
+        // push the message to the chatroom
+        mDbRef
+            .child("groupRooms")
+            .child(groupRoomId)
+            .child("messages")
+            .child(message.messageUID)
+            .child("deletedBySender")
+            .setValue(true)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                    DebugUtils.log_firebase("delete message successful")
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun deleteMessage_chatRoom(message: Message, chatRoomId: String, successCallback: () -> Unit, failureCallback: ()-> Unit) {
+        mDbRef
+            .child("chatRooms")
+            .child(chatRoomId)
+            .child("messages")
+            .child(message.messageUID)
+            .child("deletedBy")
+            .child(mAuth.currentUser!!.uid)
+            .setValue(System.currentTimeMillis())
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                    DebugUtils.log_firebase("delete message successful")
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
+    fun deleteMessage_groupRoom(message: Message, groupRoomId: String, successCallback: () -> Unit, failureCallback: ()-> Unit) {
+        mDbRef
+            .child("groupRooms")
+            .child(groupRoomId)
+            .child("messages")
+            .child(message.messageUID)
+            .child("deletedBy")
+            .child(mAuth.currentUser!!.uid)
+            .setValue(System.currentTimeMillis())
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    successCallback()
+                    DebugUtils.log_firebase("delete message successful")
+                } else {
+                    failureCallback()
+                }
+            }
+    }
+
     // TODO: Implement delete account
     fun deleteAccount(){
         // delete from auth db

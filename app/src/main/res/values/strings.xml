@@ -271,8 +271,34 @@
     <string name="invalid_phone_number_length">Invalid phone number length</string>
     <string name="edit_user_successful">Edit user successful</string>
 
+    <string name="cancel">Cancel</string>
+    <string name="read_by">Read By</string>
+    <string name="delete_message">Delete Message</string>
+    <string name="delete_for_all">Delete for all</string>
+    <string name="reply">Reply</string>
+    <string name="forward">Forward</string>
+    <string name="Favorite">Favorite</string>
+    <string name="details">Details</string>
+    <string name="viewed_by_int_contacts">Viewed by %d contacts</string>
+    <string name="viewed_by_1_contact">Viewed by 1 contact</string>
+    <string name="no_views">No views</string>
+    <string name="this_message_hasnt_been_viewed_yet">This message hasn\'t been viewed yet</string>
+
+    <string name="this_message_was_deleted_by_user">This message was deleted by user</string>
+    <string name="you_deleted_this_message">You deleted this message</string>
+
+
+
+
 
 
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="by_colon">By:</string>
+    <string name="time_sent_colon">Time Sent:</string>
+    <string name="message_type_colon">Message Type:</string>
+    <string name="message_colon">Message:</string>
+    <string name="image_colon">Image:</string>
+    <string name="message_id_colon">Message ID:</string>
+
 </resources>

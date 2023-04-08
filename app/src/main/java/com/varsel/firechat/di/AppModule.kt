@@ -792,5 +792,46 @@ object AppModule {
         return HasBeenRead_UseCase(getCurrentUserIdUseCase)
     }
 
+    @Provides
+    @Singleton
+    fun provideFormatStampDetail() : FormatStampMessageDetail_UseCase {
+        return FormatStampMessageDetail_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideExcludeCurrentUserId(getCurrentUserIdUseCase: GetCurrentUserIdUseCase) : ExcludeCurrentUserIdFromList_UseCase {
+        return ExcludeCurrentUserIdFromList_UseCase(getCurrentUserIdUseCase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideExcludeCurrentUserIdFromMap(getCurrentUserIdUseCase: GetCurrentUserIdUseCase) : ExcludeCurrentUserIdFromMap_UseCase {
+        return ExcludeCurrentUserIdFromMap_UseCase(getCurrentUserIdUseCase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteMessageForAllGroup(messageRepository: MessageRepository) : DeleteMessageForAll_GroupRoom_UseCase {
+        return DeleteMessageForAll_GroupRoom_UseCase(messageRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteMessageForAllChat(messageRepository: MessageRepository) : DeleteMessageForAll_ChatRoom_UseCase {
+        return DeleteMessageForAll_ChatRoom_UseCase(messageRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteMessage_Chat_UseCase(messageRepository: MessageRepository) : DeleteMessage_Chat_UseCase {
+        return DeleteMessage_Chat_UseCase(messageRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteMessage_Group_UseCase(messageRepository: MessageRepository) : DeleteMessage_Group_UseCase {
+        return DeleteMessage_Group_UseCase(messageRepository)
+    }
 
 }

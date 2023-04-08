@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_pressed="true">
+        <shape
+            android:shape="rectangle">
+
+            <solid android:color="?chat_sent_pressed"/>
+            <corners
+                android:topLeftRadius="@dimen/chat_bubble_corner"
+                android:bottomLeftRadius="@dimen/chat_bubble_corner"
+                />
+
+        </shape>
+    </item>
+</selector>
