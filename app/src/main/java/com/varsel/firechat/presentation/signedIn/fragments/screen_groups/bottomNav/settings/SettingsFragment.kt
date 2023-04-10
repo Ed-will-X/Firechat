@@ -151,8 +151,6 @@ class SettingsFragment : Fragment() {
                 parent.datastore
             )
 
-            Log.d("LLL", "$public_post_auto_download_limit")
-
             binding.autoDownloadImageMessage.isChecked = auto_download_image_message == true || auto_download_image_message == null
             binding.autoDownloadVideoMessage.isChecked = auto_download_video_message == true
             binding.autoDownloadGifMessage.isChecked = auto_download_gif_message == true || auto_download_gif_message == null

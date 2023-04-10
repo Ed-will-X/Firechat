@@ -17,4 +17,5 @@ interface OtherUserRepository {
     fun rejectFriendRequest(user: User) : Flow<Response>
     fun unfriendUser(user: User) : Flow<Response>
 
+    fun getOtherUserLastOnline(userId: String) : Flow<Resource<Long?>>
 }

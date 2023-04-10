@@ -42,7 +42,7 @@ class ChatPageViewModel @Inject constructor(
     val setProfilePicUseCase: SetProfilePicUseCase,
     val getChatRoomsRecurrentUseCase: GetChatRoomsRecurrentUseCase,
     val getOtherUserSingle: GetOtherUserSingle,
-    val getotheruserfromparticipantsUsecase: GetOtherUserFromParticipants_UseCase,
+    val getOtherUserFromParticipants: GetOtherUserFromParticipants_UseCase,
     val sendmessageUsecase: SendMessage_UseCase,
     val appendparticipantsUsecase: AppendParticipants_UseCase,
     val appendchatroomUsecase: AppendChatRoom_UseCase,

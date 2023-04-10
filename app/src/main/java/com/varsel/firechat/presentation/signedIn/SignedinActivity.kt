@@ -3,23 +3,18 @@ package com.varsel.firechat.presentation.signedIn
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
-import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.createDataStore
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
-import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -29,7 +24,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.varsel.firechat.R
 import com.varsel.firechat.databinding.ActivitySignedinBinding
-import com.varsel.firechat.data.local.Setting.Setting
 import com.varsel.firechat.data.local.Setting.SettingViewModel
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.use_case._util.InfobarColors
@@ -49,15 +43,12 @@ import com.varsel.firechat.domain.use_case._util.theme.SetThemeConfiguration_Use
 import com.varsel.firechat.domain.use_case._util.user.GetOtherUserId_UseCase
 import com.varsel.firechat.domain.use_case._util.user.SortByTimestamp_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
+import com.varsel.firechat.domain.use_case.last_online.UpdateLastOnline_UseCase
 import com.varsel.firechat.domain.use_case.settings.GetSetting_Boolean_UseCase
 import com.varsel.firechat.domain.use_case.settings.StoreSetting_boolean_UseCase
-import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.settings.SettingKeys_Boolean
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import java.util.*
@@ -74,6 +65,8 @@ class SignedinActivity : AppCompatActivity() {
     val settingViewModel: SettingViewModel by viewModels()
     lateinit var infobarController: InfobarControllerUseCase
     lateinit var datastore: DataStore<Preferences>
+
+    var timer: Timer? = null
 
     @Inject
     lateinit var sortByTimestamp: SortByTimestamp_UseCase
@@ -114,6 +107,9 @@ class SignedinActivity : AppCompatActivity() {
     @Inject
     lateinit var setThemeConfiguration: SetThemeConfiguration_UseCase
 
+    @Inject
+    lateinit var updateLastOnline: UpdateLastOnline_UseCase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -143,7 +139,6 @@ class SignedinActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.signed_in_nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
-        checkConnectivity()
 //        setOverlayClickListeners()
 
         binding.logoutTextBtn.setOnClickListener {
@@ -174,9 +169,34 @@ class SignedinActivity : AppCompatActivity() {
                 }
             }
         )
-
-
 //        profileImageViewModel.setClearBlacklistCountdown()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("LLL", "On Pause Ran")
+
+        if(timer != null) {
+            timer?.cancel()
+            timer = null
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("LLL", "On Resume Ran")
+
+        checkConnectivity({
+            if(timer == null) {
+                timer = updateLastOnline(this)
+            }
+        }, {
+            if(timer != null) {
+                timer?.cancel()
+                timer = null
+            }
+        })
+
     }
 
     private fun collectState() {
@@ -326,9 +346,10 @@ class SignedinActivity : AppCompatActivity() {
 
 
     var offlineInfobarTimer: Timer? = null
-    private fun checkConnectivity(){
+    private fun checkConnectivity(onlineCallback: ()-> Unit = {}, offlineCallback: ()-> Unit = {}){
         checkServerConnection().onEach {
             if(it){
+                onlineCallback()
                 infobarController.showBottomInfobar(this.getString(R.string.back_online), InfobarColors.ONLINE)
 
                 if(offlineInfobarTimer != null){
@@ -337,6 +358,8 @@ class SignedinActivity : AppCompatActivity() {
 
                 binding.networkErrorOverlay.visibility = View.GONE
             } else {
+                offlineCallback()
+
                 offlineInfobarTimer = fixedRateTimer("no_connection_timer", false, 0L, 5 * 1000 + 3000) {
                     infobarController.showBottomInfobar(this@SignedinActivity.getString(R.string.no_connection), InfobarColors.OFFLINE)
                 }

@@ -277,13 +277,13 @@ class GroupChatPageFragment : Fragment() {
             deleteMessage(message, roomId).onEach {
                 when(it) {
                     is Response.Success -> {
-                        Log.d("LLL", "Deleted")
+//                        Log.d("LLL", "Deleted")
                     }
                     is Response.Loading -> {
-                        Log.d("LLL", "Deleting")
+//                        Log.d("LLL", "Deleting")
                     }
                     is Response.Fail -> {
-                        Log.d("LLL", "Failed to delete")
+//                        Log.d("LLL", "Failed to delete")
                     }
                 }
             }.launchIn(lifecycleScope)
@@ -311,13 +311,13 @@ class GroupChatPageFragment : Fragment() {
             deleteForAll(message, roomId).onEach {
                 when(it) {
                     is Response.Success -> {
-                        Log.d("LLL", "Deleted")
+//                        Log.d("LLL", "Deleted")
                     }
                     is Response.Loading -> {
-                        Log.d("LLL", "Deleting")
+//                        Log.d("LLL", "Deleting")
                     }
                     is Response.Fail -> {
-                        Log.d("LLL", "Failed to delete")
+//                        Log.d("LLL", "Failed to delete")
                     }
                 }
             }.launchIn(lifecycleScope)

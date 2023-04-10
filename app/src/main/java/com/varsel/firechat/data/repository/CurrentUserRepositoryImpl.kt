@@ -191,4 +191,14 @@ class CurrentUserRepositoryImpl @Inject constructor(
         return isConnectedToFirebase
     }
 
+    override fun updateLastOnline(): Flow<Response> = callbackFlow {
+        firebase.updateLastOnline({
+            trySend(Response.Success())
+        }, {
+            trySend(Response.Fail())
+        })
+
+        awaitClose {  }
+    }
+
 }

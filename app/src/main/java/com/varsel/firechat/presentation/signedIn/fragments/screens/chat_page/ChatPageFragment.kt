@@ -16,6 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
+import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.common._utils.ImageUtils
 import com.varsel.firechat.databinding.FragmentChatPageBinding
 import com.varsel.firechat.data.local.Chat.ChatRoom
@@ -37,6 +38,7 @@ import com.varsel.firechat.domain.use_case._util.user.ExcludeCurrentUserIdFromMa
 import com.varsel.firechat.domain.use_case.chat_image.CheckChatImageInDb
 import com.varsel.firechat.domain.use_case.chat_image.StoreChatImageUseCase
 import com.varsel.firechat.domain.use_case.chat_room.FindChatRoom_UseCase
+import com.varsel.firechat.domain.use_case.last_online.CheckLastOnline_UseCase
 import com.varsel.firechat.domain.use_case.message.DeleteMessageForAll_ChatRoom_UseCase
 import com.varsel.firechat.domain.use_case.message.DeleteMessage_Chat_UseCase
 import com.varsel.firechat.domain.use_case.read_receipt_temp.StoreReceipt_UseCase
@@ -112,6 +114,9 @@ class ChatPageFragment : Fragment() {
 
     @Inject
     lateinit var deleteMessage: DeleteMessage_Chat_UseCase
+
+    @Inject
+    lateinit var checkLastOnline: CheckLastOnline_UseCase
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -203,6 +208,35 @@ class ChatPageFragment : Fragment() {
 
         return view
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        handleOnlineStatus()
+    }
+
+    private fun handleOnlineStatus(count: Int = 0) {
+        Log.d("LLL", "Handle online status ran")
+        if(count >= 10) {
+            return
+        }
+        lifecycleScope.launch {
+            if(viewModel.state.value?.selectedChatRoom?.participants != null) {
+                checkLastOnline(parent, this@ChatPageFragment, viewModel.getOtherUserFromParticipants(viewModel.state.value!!.selectedChatRoom!!.participants), binding.root) {
+                    binding.onlineStatus.setText(it)
+                }
+            } else {
+                delay(3 * 1000L)
+                handleOnlineStatus(count + 1)
+            }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+    }
+
+
 
     private fun collectState() {
         viewModel.state.observe(viewLifecycleOwner, Observer {
@@ -323,13 +357,13 @@ class ChatPageFragment : Fragment() {
                 deleteMessage(message, existingChatRoomId!!).onEach {
                     when(it) {
                         is Response.Success -> {
-                            Log.d("LLL", "Deleted")
+//                            Log.d("LLL", "Deleted")
                         }
                         is Response.Loading -> {
-                            Log.d("LLL", "Deleting")
+//                            Log.d("LLL", "Deleting")
                         }
                         is Response.Fail -> {
-                            Log.d("LLL", "Failed to delete")
+//                            Log.d("LLL", "Failed to delete")
                         }
                     }
                 }.launchIn(lifecycleScope)
@@ -359,13 +393,13 @@ class ChatPageFragment : Fragment() {
                 deleteForAll(message, existingChatRoomId!!).onEach {
                     when(it) {
                         is Response.Success -> {
-                            Log.d("LLL", "Deleted")
+//                            Log.d("LLL", "Deleted")
                         }
                         is Response.Loading -> {
-                            Log.d("LLL", "Deleting")
+//                            Log.d("LLL", "Deleting")
                         }
                         is Response.Fail -> {
-                            Log.d("LLL", "Failed to delete")
+//                            Log.d("LLL", "Failed to delete")
                         }
                     }
                 }.launchIn(lifecycleScope)
@@ -481,7 +515,7 @@ class ChatPageFragment : Fragment() {
     // This function listens for messages from the other end if the chat page is open without messages
     // only fires up when there is a change to the current user
     private fun listenForSimultaneousFirstInitialisation(chatRooms: List<ChatRoom>){
-        Log.d("LLL", "Listen for simultaneous init ran")
+//        Log.d("LLL", "Listen for simultaneous init ran")
         // check chatrooms which have both the current user
         val chatRoom = findChatRoom(userUID, chatRooms)
         if(chatRoom != null){

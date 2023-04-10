@@ -57,9 +57,9 @@
                         />
 
                     <TextView
-                        android:id="@+id/occupation_text"
+                        android:id="@+id/online_status"
                         android:textSize="11sp"
-                        android:text="@string/offline"
+                        tools:text="@string/offline"
                         android:textColor="@color/transparent_white"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

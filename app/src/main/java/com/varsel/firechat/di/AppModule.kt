@@ -35,6 +35,8 @@ import com.varsel.firechat.domain.use_case.chat_room.*
 import com.varsel.firechat.domain.use_case.current_user.*
 import com.varsel.firechat.domain.use_case.group_chat.*
 import com.varsel.firechat.domain.use_case.image.*
+import com.varsel.firechat.domain.use_case.last_online.CheckLastOnline_UseCase
+import com.varsel.firechat.domain.use_case.last_online.UpdateLastOnline_UseCase
 import com.varsel.firechat.domain.use_case.message.*
 import com.varsel.firechat.domain.use_case.other_user.*
 import com.varsel.firechat.domain.use_case.profile_image.*
@@ -834,4 +836,15 @@ object AppModule {
         return DeleteMessage_Group_UseCase(messageRepository)
     }
 
+    @Provides
+    @Singleton
+    fun provideUpdateLastOnline(currentUserRepository: CurrentUserRepository) : UpdateLastOnline_UseCase {
+        return UpdateLastOnline_UseCase(currentUserRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCheckLastOnline_UseCase(formatStamp: FormatStampMessageDetail_UseCase, otherUserRepository: OtherUserRepository) : CheckLastOnline_UseCase {
+        return CheckLastOnline_UseCase(formatStamp, otherUserRepository)
+    }
 }

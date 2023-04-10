@@ -11,7 +11,6 @@ import com.varsel.firechat.presentation.signedIn.SignedinActivity
 class SetChatImageUseCase {
     operator fun invoke(base64: String, image: ImageView, viewParent: FrameLayout, activity: SignedinActivity){
         if(base64.isNotEmpty()){
-            Log.d("LLL", "Set chat image ran")
             val bitmap = ImageUtils.base64ToBitmap(base64)
             Glide.with(activity).load(bitmap).dontAnimate().into(image)
             viewParent.visibility = View.VISIBLE

@@ -319,7 +319,6 @@ class MessageListAdapter(
         imageViewParent: FrameLayout,
         image_view_parent_to_hide: FrameLayout,
     ){
-        Log.d("LLL", "Handle download ran")
         var has_been_clicked = false
 
         imageViewParent.visibility = View.VISIBLE
@@ -330,7 +329,6 @@ class MessageListAdapter(
             this@MessageListAdapter.chatsViewModel.checkChatImageInDb(item.message).onEach {
                 when(it) {
                     is Resource.Success -> {
-                        Log.d("LLL", "db success")
                         // TODO: Refactor entire success, loading and error clauses into different functions
                         if(it.data?.image != null) {
                             // if: bind it directly (the same way it was before)
@@ -346,13 +344,10 @@ class MessageListAdapter(
                         }
                     }
                     is Resource.Loading -> {
-                        Log.d("LLL", "db loading")
                         // TODO: Show loading indicator
                     }
                     is Resource.Error -> {
-                        Log.d("LLL", "db error")
                         imageViewParent.setOnClickListener {
-                            Log.d("LLL", "Image download clicked")
                             if(!has_been_clicked){
                                 lifecycleOwner.lifecycleScope.launch {
                                     this@MessageListAdapter.chatsViewModel.getChatImageUseCase(item.message, chatRoomId).onEach {

@@ -984,7 +984,6 @@ class Firebase(
                 }
             }
         }
-        // TODO: Implement success and failure callbacks
     }
 
     fun editGroup(key: String, value: String, groupId: String, successCallback: () -> Unit, failureCallback: () -> Unit){
@@ -1559,6 +1558,54 @@ class Firebase(
                     failureCallback()
                 }
             }
+    }
+
+    fun updateLastOnline(successCallback: () -> Unit, failureCallback: () -> Unit) {
+        val databaseRef = mDbRef.child("Users").child(mAuth.currentUser?.uid.toString())
+
+        databaseRef
+            .child("lastOnline")
+            .setValue(System.currentTimeMillis()).addOnCompleteListener {
+            if(it.isSuccessful) {
+                successCallback()
+            } else {
+                failureCallback()
+            }
+        }
+    }
+
+    fun getOtherUserLastOnlineRecurrent (
+        userId: String,
+        successCallback: (stamp: Long?) -> Unit,
+        beforeCallback: () -> Unit = {},
+        afterCallback: () -> Unit = {}
+    ) : ValueEventListener {
+
+        val listener = users_ref
+            .child("Users")
+            .child(userId)
+            .child("lastOnline")
+            .addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                beforeCallback()
+
+                for (item in snapshot.children){
+                    val stamp = item.getValue(Long::class.java)
+                    Log.d("LLL", "Last Online fb success: ${stamp}")
+
+                    DebugUtils.log_firebase("fetch current user recurrent successful")
+
+                    successCallback(stamp)
+                }
+                afterCallback()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })
+
+        return listener
     }
 
     // TODO: Implement delete account

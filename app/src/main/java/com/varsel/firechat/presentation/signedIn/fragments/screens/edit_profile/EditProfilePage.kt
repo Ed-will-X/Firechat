@@ -94,7 +94,6 @@ class EditProfilePage : Fragment() {
         }
         collectLatestLifecycleFlow(viewModel.user) {
             if(it != null) {
-                Log.d("LLL", "Phone number: ${it.phone}")
                 setBindings(it)
 
                 binding.actionSheetClickable.setOnClickListener { it2 ->

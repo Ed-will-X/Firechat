@@ -46,7 +46,6 @@ class SendNotificationMessage_UseCase @Inject constructor(
                 )
 
             if(v.profile_image != null) {
-                Log.d("LLL", "Profile image not null")
                 notificationBuilder.setLargeIcon(ImageUtils.base64ToBitmap(v.profile_image!!))
             }
 

@@ -99,4 +99,16 @@ class OtherUserRepositoryImpl @Inject constructor(
         awaitClose {  }
     }
 
+    override fun getOtherUserLastOnline(userId: String): Flow<Resource<Long?>> = callbackFlow {
+        Log.d("LLL", "Last Online Ran in Repo")
+
+        firebase.getOtherUserLastOnlineRecurrent(userId, {
+            trySendBlocking(Resource.Success(it))
+        }, {}, {
+
+        })
+
+        awaitClose {  }
+    }
+
 }
