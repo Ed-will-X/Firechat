@@ -69,20 +69,12 @@
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:layout_width="@dimen/setting_head_icon_size"
-                            android:layout_height="@dimen/setting_head_icon_size"
                             android:src="@drawable/ic_outline_person"
-                            app:tint="?colorOnSecondary"
-                            />
+                            style="@style/setting_header_title_icon" />
 
                         <TextView
-                            android:layout_marginLeft="10dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="@dimen/setting_head_text_size"
                             android:text="@string/account"
-                            android:textStyle="bold"
-                            android:textColor="?colorOnSecondary"
+                            style="@style/setting_header_title_text"
                             />
                     </LinearLayout>
 
@@ -94,23 +86,11 @@
                 <!--        Edit Profile-->
                 <LinearLayout
                     android:id="@+id/edit_profile"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="15dp"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    style="@style/settings_page_navigable_parent">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/edit_profile"
-                        android:textStyle="bold"
-                        android:textColor="?subtitle_text_color"
-                        />
+                        style="@style/setting_page_item_text" />
 
                     <View
                         android:layout_width="0dp"
@@ -128,22 +108,11 @@
                 <!--        Change password-->
                 <LinearLayout
                     android:id="@+id/change_password"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="15dp"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    style="@style/settings_page_navigable_parent">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/change_password"
-                        android:textStyle="bold"
-                        android:textColor="?subtitle_text_color"
+                        style="@style/setting_page_item_text"
                         />
 
                     <View
@@ -162,22 +131,11 @@
                 <!--        Delete account-->
                 <LinearLayout
                     android:id="@+id/delete_account"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="15dp"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    style="@style/settings_page_navigable_parent">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/setting_delete_account"
-                        android:textStyle="bold"
-                        android:textColor="?subtitle_text_color"
+                        style="@style/setting_page_item_text"
                         />
 
                     <View
@@ -217,20 +175,13 @@
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:layout_width="@dimen/setting_head_icon_size"
-                            android:layout_height="@dimen/setting_head_icon_size"
+                            style="@style/setting_header_title_icon"
                             android:src="@drawable/ic_notifications_outline"
-                            app:tint="?colorOnSecondary"
                             />
 
                         <TextView
-                            android:layout_marginLeft="10dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="@dimen/setting_head_text_size"
                             android:text="@string/setting_notification"
-                            android:textStyle="bold"
-                            android:textColor="?colorOnSecondary"
+                            style="@style/setting_header_title_text"
                             />
                     </LinearLayout>
 
@@ -241,87 +192,87 @@
 
                 <!--        Show Chat Notifications-->
                 <Switch
-                    android:paddingVertical="15dp"
-                    android:gravity="center_vertical"
                     android:id="@+id/show_chat_notifications"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/show_chat_notifications"
-                    android:textStyle="bold"
-                    android:textColor="?subtitle_text_color"
-                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+                    tools:ignore="UseSwitchCompatOrMaterialXml"
+                    style="@style/setting_page_switch" />
 
                 <!--        Show group notifications-->
                 <Switch
-                    android:paddingVertical="15dp"
-                    android:gravity="center_vertical"
+                    style="@style/setting_page_switch"
                     android:id="@+id/show_group_notifications"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/show_group_notifications"
-                    android:textStyle="bold"
-                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <!--        Show friend request notifications-->
                 <Switch
-                    android:paddingVertical="15dp"
-                    android:gravity="center_vertical"
+                    style="@style/setting_page_switch"
                     android:id="@+id/show_friend_request_notifications"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/show_friend_request_notifications"
-                    android:textStyle="bold"
-                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
 
                 <!--        Show new friend notifications-->
                 <Switch
-                    android:paddingVertical="15dp"
-                    android:gravity="center_vertical"
+                    style="@style/setting_page_switch"
                     android:id="@+id/show_new_friend_notifications"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/show_new_friend_notifications"
-                    android:textStyle="bold"
-                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
 
                 <!--        Show group add notifications-->
                 <Switch
-                    android:paddingVertical="15dp"
-                    android:gravity="center_vertical"
+                    style="@style/setting_page_switch"
                     android:id="@+id/show_group_add_notifications"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/show_group_add_notifications"
-                    android:textStyle="bold"
-                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
             </LinearLayout>
+
+<!--            Privacy-->
+            <LinearLayout
+                android:layout_marginTop="@dimen/setting_head_margin_top"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!--                Header-->
+                <LinearLayout
+                    android:paddingHorizontal="15dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:gravity="center_vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            style="@style/setting_header_title_icon"
+                            android:src="@drawable/ic_lock_outlined"
+                            />
+
+                        <TextView
+                            android:text="@string/privacy"
+                            style="@style/setting_header_title_text"
+                            />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_marginTop="5dp"
+                        style="@style/horizontal_rule"/>
+                </LinearLayout>
+
+                <!--        Show Last Seen-->
+                <Switch
+                    android:id="@+id/show_last_seen"
+                    android:text="@string/show_last_seen"
+                    tools:ignore="UseSwitchCompatOrMaterialXml"
+                    style="@style/setting_page_switch"
+                    />
+            </LinearLayout>
+
 
             <!--    Storage and history-->
             <LinearLayout
@@ -341,20 +292,13 @@
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:layout_width="@dimen/setting_head_icon_size"
-                            android:layout_height="@dimen/setting_head_icon_size"
                             android:src="@drawable/ic_memory"
-                            app:tint="?colorOnSecondary"
+                            style="@style/setting_header_title_icon"
                             />
 
                         <TextView
-                            android:layout_marginLeft="10dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="@dimen/setting_head_text_size"
                             android:text="@string/storage_and_history"
-                            android:textStyle="bold"
-                            android:textColor="?colorOnSecondary"
+                            style="@style/setting_header_title_text"
                             />
                     </LinearLayout>
 
@@ -366,22 +310,11 @@
                 <!--        Clear app storage-->
                 <LinearLayout
                     android:id="@+id/clear_app_storage"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="15dp"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    style="@style/settings_page_navigable_parent">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/clear_app_storage"
-                        android:textStyle="bold"
-                        android:textColor="?subtitle_text_color"
+                        style="@style/setting_page_item_text"
                         />
 
                     <View
@@ -394,28 +327,18 @@
                         android:layout_width="@dimen/setting_item_icon_size"
                         android:layout_height="@dimen/setting_item_icon_size"
                         android:src="@drawable/ic_arrow_forward_ios"
-                        app:tint="@color/grey" />
+                        app:tint="@color/grey"
+                        />
                 </LinearLayout>
 
                 <!--        Clear cache-->
                 <LinearLayout
                     android:id="@+id/clear_cache"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="15dp"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    style="@style/settings_page_navigable_parent">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/clear_cache"
-                        android:textStyle="bold"
-                        android:textColor="?subtitle_text_color"
+                        style="@style/setting_page_item_text"
                         />
 
                     <View
@@ -428,28 +351,18 @@
                         android:layout_width="@dimen/setting_item_icon_size"
                         android:layout_height="@dimen/setting_item_icon_size"
                         android:src="@drawable/ic_arrow_forward_ios"
-                        app:tint="@color/grey" />
+                        app:tint="@color/grey"
+                        />
                 </LinearLayout>
 
                 <!--        Clear user search history-->
                 <LinearLayout
                     android:id="@+id/clear_user_search_history"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="15dp"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    style="@style/settings_page_navigable_parent">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/clear_user_search_history"
-                        android:textStyle="bold"
-                        android:textColor="?subtitle_text_color"
+                        style="@style/setting_page_item_text"
                         />
 
                     <View
@@ -489,20 +402,13 @@
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:layout_width="@dimen/setting_head_icon_size"
-                            android:layout_height="@dimen/setting_head_icon_size"
                             android:src="@drawable/ic_outline_palette"
-                            app:tint="?colorOnSecondary"
+                            style="@style/setting_header_title_icon"
                             />
 
                         <TextView
-                            android:layout_marginLeft="10dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="@dimen/setting_head_text_size"
                             android:text="@string/theme"
-                            android:textStyle="bold"
-                            android:textColor="?colorOnSecondary"
+                            style="@style/setting_header_title_text"
                             />
                     </LinearLayout>
 
@@ -513,34 +419,16 @@
 
                 <!--        Dark mode-->
                 <Switch
-                    android:paddingVertical="15dp"
-                    android:gravity="center_vertical"
+                    style="@style/setting_page_switch"
                     android:id="@+id/dark_mode"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/setting_dark_mode"
-                    android:textStyle="bold"
-                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <!--        Override system theme-->
                 <Switch
-                    android:paddingVertical="15dp"
-                    android:gravity="center_vertical"
+                    style="@style/setting_page_switch"
                     android:id="@+id/override_system_theme"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/override_system_theme"
-                    android:textStyle="bold"
-                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
             </LinearLayout>
 
@@ -564,20 +452,13 @@
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:layout_width="@dimen/setting_head_icon_size"
-                            android:layout_height="@dimen/setting_head_icon_size"
                             android:src="@drawable/ic_wifi"
-                            app:tint="?colorOnSecondary"
+                            style="@style/setting_header_title_icon"
                             />
 
                         <TextView
-                            android:layout_marginLeft="10dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="@dimen/setting_head_text_size"
                             android:text="@string/data_consumption"
-                            android:textStyle="bold"
-                            android:textColor="?colorOnSecondary"
+                            style="@style/setting_header_title_text"
                             />
                     </LinearLayout>
 
@@ -588,66 +469,30 @@
 
                 <!--    Auto download image messages-->
                 <Switch
-                    android:paddingVertical="15dp"
-                    android:gravity="center_vertical"
+                    style="@style/setting_page_switch"
                     android:id="@+id/auto_download_image_message"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/auto_download_image_message"
-                    android:textStyle="bold"
-                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <!--    Auto download video message-->
                 <Switch
-                    android:paddingVertical="15dp"
-                    android:gravity="center_vertical"
+                    style="@style/setting_page_switch"
                     android:id="@+id/auto_download_video_message"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/auto_download_video_message"
-                    android:textStyle="bold"
-                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <!--    Auto download GIF message-->
                 <Switch
-                    android:paddingVertical="15dp"
-                    android:gravity="center_vertical"
+                    style="@style/setting_page_switch"
                     android:id="@+id/auto_download_gif_message"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/auto_download_gif_message"
-                    android:textStyle="bold"
-                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <!--    Auto download audio message-->
                 <Switch
-                    android:paddingVertical="15dp"
-                    android:gravity="center_vertical"
+                    style="@style/setting_page_switch"
                     android:id="@+id/auto_download_audio_message"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/setting_item_text_size"
                     android:text="@string/auto_download_audio_message"
-                    android:textStyle="bold"
-                    android:textColor="?subtitle_text_color"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
                 <!--    Public Post Download Count-->
                 <LinearLayout
@@ -712,20 +557,13 @@
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:layout_width="@dimen/setting_head_icon_size"
-                            android:layout_height="@dimen/setting_head_icon_size"
                             android:src="@drawable/ic_feedback_outline"
-                            app:tint="?colorOnSecondary"
+                            style="@style/setting_header_title_icon"
                             />
 
                         <TextView
-                            android:layout_marginLeft="10dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="@dimen/setting_head_text_size"
                             android:text="@string/feedback"
-                            android:textStyle="bold"
-                            android:textColor="?colorOnSecondary"
+                            style="@style/setting_header_title_text"
                             />
                     </LinearLayout>
 
@@ -737,22 +575,11 @@
                 <!--        Report bug-->
                 <LinearLayout
                     android:id="@+id/report_bug"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="15dp"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    style="@style/settings_page_navigable_parent">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/report_bug"
-                        android:textStyle="bold"
-                        android:textColor="?subtitle_text_color"
+                        style="@style/setting_page_item_text"
                         />
 
                     <View
@@ -771,22 +598,11 @@
                 <!--        Send feedback -->
                 <LinearLayout
                     android:id="@+id/send_feedback"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="15dp"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    style="@style/settings_page_navigable_parent">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/send_feedback"
-                        android:textStyle="bold"
-                        android:textColor="?subtitle_text_color"
+                        style="@style/setting_page_item_text"
                         />
 
                     <View
@@ -824,20 +640,13 @@
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:layout_width="@dimen/setting_head_icon_size"
-                            android:layout_height="@dimen/setting_head_icon_size"
                             android:src="@drawable/ic_outline_add_circle"
-                            app:tint="?colorOnSecondary"
+                            style="@style/setting_header_title_icon"
                             />
 
                         <TextView
-                            android:layout_marginLeft="10dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="@dimen/setting_head_text_size"
                             android:text="@string/more"
-                            android:textStyle="bold"
-                            android:textColor="?colorOnSecondary"
+                            style="@style/setting_header_title_text"
                             />
                     </LinearLayout>
 
@@ -849,22 +658,11 @@
                 <!--        Language-->
                 <LinearLayout
                     android:id="@+id/language"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="15dp"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    style="@style/settings_page_navigable_parent">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/language"
-                        android:textStyle="bold"
-                        android:textColor="?subtitle_text_color"
+                        style="@style/setting_page_item_text"
                         />
 
                     <View
@@ -880,25 +678,14 @@
                         app:tint="@color/grey" />
                 </LinearLayout>
 
-                <!--        Send feedback -->
+                <!--        Revert settings -->
                 <LinearLayout
                     android:id="@+id/revert_settings"
-                    android:paddingHorizontal="@dimen/setting_item_padding_horizontal"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="15dp"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    style="@style/settings_page_navigable_parent">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/setting_item_text_size"
                         android:text="@string/revert_settings"
-                        android:textStyle="bold"
-                        android:textColor="?subtitle_text_color"
+                        style="@style/setting_page_item_text"
                         />
 
                     <View
@@ -919,6 +706,7 @@
 
         </LinearLayout>
     </ScrollView>
+
 <!--    Logout-->
     <com.google.android.material.card.MaterialCardView
         android:clickable="true"

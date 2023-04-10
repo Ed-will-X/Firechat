@@ -15,6 +15,8 @@ class SettingKeys_Boolean {
         const val AUTO_DOWNLOAD_VIDEO_MESSAGE = "AUTO_DOWNLOAD_VIDEO_MESSAGE"
         const val AUTO_DOWNLOAD_GIF_MESSAGE = "AUTO_DOWNLOAD_GIF_MESSAGE"
         const val AUTO_DOWNLOAD_AUDIO_MESSAGE = "AUTO_DOWNLOAD_AUDIO_MESSAGE"
+
+        const val SHOW_LAST_SEEN = "SHOW_LAST_SEEN"
     }
 }
 
@@ -27,5 +29,11 @@ class SettingKeys_Integer {
 class SettingKeys_String {
     companion object {
         const val PUBLIC_POST_AUTO_DOWNLOAD_LIMIT = "PUBLIC_POST_AUTO_DOWNLOAD_LIMIT"
+    }
+}
+
+class SettingProps_Long {
+    companion object {
+        const val LAST_SEEN_LAST_ENABLED = "LAST_SEEN_LAST_ENABLED"
     }
 }

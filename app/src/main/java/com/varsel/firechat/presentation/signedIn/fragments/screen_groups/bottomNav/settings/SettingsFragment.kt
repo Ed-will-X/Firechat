@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.varsel.firechat.R
+import com.varsel.firechat.common.Constants
 import com.varsel.firechat.data.local.Setting.Setting
 import com.varsel.firechat.databinding.FragmentSettingsBinding
 import com.varsel.firechat.domain.use_case._util.status_bar.ChangeStatusBarColor_UseCase
@@ -64,6 +65,12 @@ class SettingsFragment : Fragment() {
     lateinit var getInteger: GetSetting_Integer_UseCase
 
     @Inject
+    lateinit var storeLong: StoreSetting_Long_UseCase
+
+    @Inject
+    lateinit var getLong: GetSetting_Long_UseCase
+
+    @Inject
     lateinit var storeString: StoreSetting_string_UseCase
 
     @Inject
@@ -94,6 +101,9 @@ class SettingsFragment : Fragment() {
         setThemeSettingsListeners()
         getDataConsumptionSettings()
         setDataConsumptionSettingListeners()
+
+        getPrivacySettings()
+        setPrivacySettings()
 
         binding.logout.setOnClickListener {
             showLogoutConfirmationDialog()
@@ -137,6 +147,41 @@ class SettingsFragment : Fragment() {
             }
             binding.darkMode.isChecked = darkTheme == true
             binding.overrideSystemTheme.isChecked = override_theme == true
+        }
+    }
+
+    private fun getPrivacySettings() {
+        lifecycleScope.launch {
+            val show_last_seen = getBoolean(SettingKeys_Boolean.SHOW_LAST_SEEN, parent.datastore)
+
+            binding.showLastSeen.isChecked = show_last_seen == true || show_last_seen == null
+            setDisabledSwitch()
+
+        }
+    }
+
+    private fun setPrivacySettings() {
+        binding.showLastSeen.setOnCheckedChangeListener { buttonView, isChecked ->
+            lifecycleScope.launch {
+                // TODO: If unchecked, check if last updated is less than 24h before enabling
+                if(!isChecked) {
+                    setDisabledSwitch()
+                } else {
+                    storeLong(SettingProps_Long.LAST_SEEN_LAST_ENABLED, System.currentTimeMillis(), parent.datastore)
+                }
+                storeBoolean(SettingKeys_Boolean.SHOW_LAST_SEEN, isChecked, parent.datastore)
+            }
+        }
+    }
+
+    private fun setDisabledSwitch() {
+        lifecycleScope.launch {
+            val lastSeenStamp = getLong(SettingProps_Long.LAST_SEEN_LAST_ENABLED, parent.datastore)
+            if (lastSeenStamp != null && lastSeenStamp - System.currentTimeMillis() < Constants.LAST_SEEN_REFRESH) {
+                binding.showLastSeen.isEnabled = false
+            } else if (lastSeenStamp == null) {
+                binding.showLastSeen.isEnabled = true
+            }
         }
     }
 

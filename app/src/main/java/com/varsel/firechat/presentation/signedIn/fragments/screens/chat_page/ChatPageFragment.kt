@@ -42,10 +42,12 @@ import com.varsel.firechat.domain.use_case.last_online.CheckLastOnline_UseCase
 import com.varsel.firechat.domain.use_case.message.DeleteMessageForAll_ChatRoom_UseCase
 import com.varsel.firechat.domain.use_case.message.DeleteMessage_Chat_UseCase
 import com.varsel.firechat.domain.use_case.read_receipt_temp.StoreReceipt_UseCase
+import com.varsel.firechat.domain.use_case.settings.GetSetting_Boolean_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.ChatPageType
 import com.varsel.firechat.presentation.signedIn.adapters.MessageListAdapter
 import com.varsel.firechat.presentation.signedIn.adapters.ReadByAdapter
+import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.settings.SettingKeys_Boolean
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -117,6 +119,9 @@ class ChatPageFragment : Fragment() {
 
     @Inject
     lateinit var checkLastOnline: CheckLastOnline_UseCase
+
+    @Inject
+    lateinit var getBoolean: GetSetting_Boolean_UseCase
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -212,7 +217,23 @@ class ChatPageFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        handleOnlineStatus()
+        lifecycleScope.launch {
+            val show_last_seen = getBoolean(SettingKeys_Boolean.SHOW_LAST_SEEN, parent.datastore)
+
+            if(show_last_seen == true || show_last_seen == null) {
+                binding.nameTextLarge.visibility = View.GONE
+                binding.nameWithOnline.visibility = View.VISIBLE
+
+                handleOnlineStatus()
+            } else {
+                // TODO: Make name text bigger
+                binding.nameTextLarge.visibility = View.VISIBLE
+                binding.nameWithOnline.visibility = View.GONE
+
+            }
+        }
+
+
     }
 
     private fun handleOnlineStatus(count: Int = 0) {
@@ -251,6 +272,7 @@ class ChatPageFragment : Fragment() {
 
         viewModel.user.observe(viewLifecycleOwner, Observer {
             binding.nameText.text = it?.name
+            binding.nameTextLarge.text = it?.name
         })
 
         viewModel.state.observe(viewLifecycleOwner, Observer {

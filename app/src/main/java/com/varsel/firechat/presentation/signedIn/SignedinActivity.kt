@@ -46,9 +46,11 @@ import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUse
 import com.varsel.firechat.domain.use_case.last_online.UpdateLastOnline_UseCase
 import com.varsel.firechat.domain.use_case.settings.GetSetting_Boolean_UseCase
 import com.varsel.firechat.domain.use_case.settings.StoreSetting_boolean_UseCase
+import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.settings.SettingKeys_Boolean
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import java.util.*
@@ -185,17 +187,22 @@ class SignedinActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Log.d("LLL", "On Resume Ran")
+        lifecycleScope.launch {
+            val show_last_seen = getBoolean(SettingKeys_Boolean.SHOW_LAST_SEEN, datastore)
 
-        checkConnectivity({
-            if(timer == null) {
-                timer = updateLastOnline(this)
+            if(show_last_seen == true || show_last_seen == null) {
+                checkConnectivity({
+                    if(timer == null) {
+                        timer = updateLastOnline(this@SignedinActivity)
+                    }
+                }, {
+                    if(timer != null) {
+                        timer?.cancel()
+                        timer = null
+                    }
+                })
             }
-        }, {
-            if(timer != null) {
-                timer?.cancel()
-                timer = null
-            }
-        })
+        }
 
     }
 

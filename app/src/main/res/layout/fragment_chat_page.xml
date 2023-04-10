@@ -48,27 +48,44 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="1"/>
+
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:id="@+id/name_with_online"
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/name_text"
+                            android:textSize="16sp"
+                            android:textColor="@color/white"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="Elsa Addams"
+                            />
+
+                        <TextView
+                            android:id="@+id/online_status"
+                            android:textSize="11sp"
+                            tools:text="@string/offline"
+                            android:textColor="@color/transparent_white"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+                    </LinearLayout>
+
                     <TextView
-                        android:id="@+id/name_text"
-                        android:textSize="16sp"
+                        android:id="@+id/name_text_large"
+                        android:textSize="17.5sp"
                         android:textColor="@color/white"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        />
-
-                    <TextView
-                        android:id="@+id/online_status"
-                        android:textSize="11sp"
-                        tools:text="@string/offline"
-                        android:textColor="@color/transparent_white"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        tools:text="Elsa Addams"
                         />
                     <View
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="1"/>
-                    />
                 </LinearLayout>
 
                 <ImageView

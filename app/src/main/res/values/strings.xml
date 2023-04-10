@@ -22,7 +22,7 @@
     <string name="setting_profile_lock">Profile Lock</string>
     <string name="setting_chat_customise">Edit User</string>
     <string name="setting_notification">Notifications</string>
-    <string name="setting_privacy">Privacy</string>
+    <string name="privacy">Privacy</string>
     <string name="setting_logout">Logout</string>
     <string name="setting_delete_account">Delete Account</string>
     <string name="logout_dialog_title">Logout?</string>
@@ -256,6 +256,7 @@
 
 
     <string name="show_chat_notifications">Show chat notifications</string>
+    <string name="show_last_seen">Show last seen</string>
     <string name="show_group_notifications">Show group notifications</string>
     <string name="override_system_theme">Override system theme</string>
     <string name="show_friend_request_notifications">Show friend request notifications</string>

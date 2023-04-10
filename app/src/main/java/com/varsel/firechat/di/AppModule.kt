@@ -847,4 +847,16 @@ object AppModule {
     fun provideCheckLastOnline_UseCase(formatStamp: FormatStampMessageDetail_UseCase, otherUserRepository: OtherUserRepository) : CheckLastOnline_UseCase {
         return CheckLastOnline_UseCase(formatStamp, otherUserRepository)
     }
+
+    @Provides
+    @Singleton
+    fun provideStoreSetting_Long_UseCase() : StoreSetting_Long_UseCase {
+        return StoreSetting_Long_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetSetting_Long_UseCase() : GetSetting_Long_UseCase {
+        return GetSetting_Long_UseCase()
+    }
 }
