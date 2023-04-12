@@ -57,6 +57,7 @@
 
         <com.google.android.material.tabs.TabLayout
             style="@style/tab"
+            app:tabGravity="fill"
             android:id="@+id/chats_tab_layout"
             android:layout_width="match_parent"/>
 

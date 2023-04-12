@@ -112,7 +112,6 @@ class MessageListAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item: Message = getItem(position)
 
-
         if(holder.javaClass == SentViewHolder::class.java){
             // Sent Holder
             val viewHolder = holder as SentViewHolder
@@ -146,7 +145,12 @@ class MessageListAdapter(
 
             try {
                 val prev: Message? = getItem(position - 1)
-                if(prev?.sender.equals(item.sender) && this.chatsViewModel.calculateTimestampDifferenceLess(item.time!!, prev?.time!!)){
+                if(prev?.sender.equals(item.sender) && this.chatsViewModel.calculateTimestampDifferenceLess(item.time!!, prev?.time!!) && prev.deletedBy.keys.contains(chatsViewModel.getCurrentUserId()) == true) {
+                    viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat) }
+                    if(item.type == MessageType.IMAGE){
+                        handleDownloadOnClick(item, viewHolder.sentImage, holder.imageViewParent, holder.imageViewParentSecond)
+                    }
+                } else if(prev?.sender.equals(item.sender) && this.chatsViewModel.calculateTimestampDifferenceLess(item.time!!, prev?.time!!)){
                     viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_current_user_chat_second) }
                     if(item.type == MessageType.IMAGE){
                         handleDownloadOnClick(item, viewHolder.sentImageSecond, holder.imageViewParentSecond, holder.imageViewParent)
@@ -166,7 +170,10 @@ class MessageListAdapter(
 
             try {
                 val next: Message? = getItem(position + 1)
-                if(next?.sender == item.sender && this.chatsViewModel.calculateTimestampDifferenceLess(next?.time!!, item.time!!)){
+                if(next?.deletedBy?.keys?.contains(chatsViewModel.getCurrentUserId()) == true){
+                    viewHolder.timestamp.visibility = View.VISIBLE
+                    viewHolder.timestamp.text = this.chatsViewModel.formatStampMessage(item.time.toString())
+                } else if(next?.sender == item.sender && this.chatsViewModel.calculateTimestampDifferenceLess(next.time, item.time!!)){
                     viewHolder.timestamp.visibility = View.GONE
                 } else {
                     viewHolder.timestamp.visibility = View.VISIBLE
@@ -223,7 +230,7 @@ class MessageListAdapter(
 
             try {
                 val next: Message? = getItem(position + 1)
-                if(next?.sender.equals(item.sender)){
+                if(next?.sender.equals(item.sender) && next?.deletedBy?.keys?.contains(chatsViewModel.getCurrentUserId()) == false){
                     viewHolder.textParent.background = fragment.activity?.let { ContextCompat.getDrawable(it, R.drawable.bg_other_user_chat) }
                     viewHolder.timestamp.visibility = View.GONE
                     if(item.type == MessageType.IMAGE){
@@ -252,52 +259,17 @@ class MessageListAdapter(
 
             try {
                 val prev: Message? = getItem(position - 1)
-                if(prev?.sender.equals(item.sender)){
-                    viewHolder.profilePicContainer.visibility = View.GONE
-                    viewHolder.emptyPadding.visibility = View.VISIBLE
+                if(prev?.sender.equals(item.sender) && prev?.deletedBy?.keys?.contains(chatsViewModel.getCurrentUserId()) == true) {
+                    setOtherProfileImageChat(item, holder)
+                } else if(prev?.sender.equals(item.sender)){
+                    holder.profilePicContainer.visibility = View.GONE
+                    holder.emptyPadding.visibility = View.VISIBLE
                 } else {
-                    this.chatsViewModel.firebase.getFirebaseInstance().getUserSingle(item.sender, { user ->
-                        lifecycleOwner.lifecycleScope.launch {
-                            // Get Other user profile image
-                            this@MessageListAdapter.chatsViewModel.getOtherUserProfileImageUseCase(user).onEach {
-                                if(it?.image != null) {
-                                    this@MessageListAdapter.chatsViewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
-                                    holder.profileImage.setOnClickListener { _ ->
-                                        profileImgClickListener(it, user)
-                                    }
-                                } else {
-                                    holder.imageViewParent.visibility = View.GONE
-                                }
-                            }.launchIn(this)
-                        }
-                    })
-                    viewHolder.profilePicContainer.visibility = View.VISIBLE
-                    viewHolder.emptyPadding.visibility = View.GONE
+                    setOtherProfileImageChat(item, holder)
                 }
             } catch (e: Exception) {
-                this.chatsViewModel.firebase.getFirebaseInstance().getUserSingle(item.sender, { user ->
-                    lifecycleOwner.lifecycleScope.launch {
-                        // Long click listener
-//                        holder.textParent.setOnLongClickListener {
-//                            handleLongClick_Received(item, user)
-//                            true
-//                        }
-
-                        // Get other user profile image
-                        this@MessageListAdapter.chatsViewModel.getOtherUserProfileImageUseCase(user).onEach {
-                            if(it?.image != null) {
-                                this@MessageListAdapter.chatsViewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
-                                holder.profileImage.setOnClickListener { _ ->
-                                    profileImgClickListener(it, user)
-                                }
-                            } else {
-                                holder.imageViewParent.visibility = View.GONE
-                            }
-                        }.launchIn(this)
-                    }
-                })
-                viewHolder.profilePicContainer.visibility = View.VISIBLE
-                viewHolder.emptyPadding.visibility = View.GONE
+                // Applies where the message is the first and has no previous one
+                setOtherProfileImageChat(item, holder)
             }
         }
     }
@@ -311,6 +283,26 @@ class MessageListAdapter(
         } else {
             return MessageStatus.RECEIVED
         }
+    }
+
+    private fun setOtherProfileImageChat(item: Message, holder: ReceivedViewHolder) {
+        this.chatsViewModel.firebase.getFirebaseInstance().getUserSingle(item.sender, { user ->
+            lifecycleOwner.lifecycleScope.launch {
+                // Get Other user profile image
+                this@MessageListAdapter.chatsViewModel.getOtherUserProfileImageUseCase(user).onEach {
+                    if(it?.image != null) {
+                        this@MessageListAdapter.chatsViewModel.setProfilePicUseCase(it.image!!, holder.profileImage, holder.profileImageParent, activity)
+                        holder.profileImage.setOnClickListener { _ ->
+                            profileImgClickListener(it, user)
+                        }
+                    } else {
+                        holder.imageViewParent.visibility = View.GONE
+                    }
+                }.launchIn(this)
+            }
+        })
+        holder.profilePicContainer.visibility = View.VISIBLE
+        holder.emptyPadding.visibility = View.GONE
     }
 
     private fun handleDownloadOnClick(

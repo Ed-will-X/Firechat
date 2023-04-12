@@ -49,412 +49,417 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
-        android:orientation="vertical"
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <com.google.android.material.card.MaterialCardView
-            android:background="?user_card_background_profile_fragment"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="2dp"
-            android:layout_marginTop="70dp"
-            android:layout_marginHorizontal="30dp"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:paddingTop="20dp"
-                android:orientation="vertical"
+            android:layout_height="match_parent">
+            <com.google.android.material.card.MaterialCardView
+                android:background="?user_card_background_profile_fragment"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="2dp"
+                android:layout_marginTop="70dp"
+                android:layout_marginHorizontal="30dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <LinearLayout
-                    android:paddingHorizontal="20dp"
-                    android:layout_width="wrap_content"
+                    android:paddingTop="20dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                    <FrameLayout
-                        android:id="@+id/profile_image_silhouette"
-                        android:background="@drawable/bg_profile_background"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp">
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_baseline_person_24"
-                            android:layout_height="20dp"/>
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:visibility="gone"
-                            android:id="@+id/profile_image_parent"
-                            app:cardCornerRadius="360dp"
-                            app:cardElevation="0dp"
-                            android:elevation="0dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                    <LinearLayout
+                        android:paddingHorizontal="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <FrameLayout
+                            android:id="@+id/profile_image_silhouette"
+                            android:background="@drawable/bg_profile_background"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp">
 
                             <ImageView
-                                android:id="@+id/profile_image"
+                                android:layout_width="20dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_baseline_person_24"
+                                android:layout_height="20dp"/>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:visibility="gone"
+                                android:id="@+id/profile_image_parent"
+                                app:cardCornerRadius="360dp"
+                                app:cardElevation="0dp"
+                                android:elevation="0dp"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:scaleType="centerCrop"
+                                android:layout_height="match_parent">
+
+                                <ImageView
+                                    android:id="@+id/profile_image"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"
+                                    />
+
+                            </com.google.android.material.card.MaterialCardView>
+
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:id="@+id/user_props"
+                            android:layout_marginLeft="10dp"
+                            android:orientation="vertical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="?colorOnSecondary"
+                                android:textStyle="bold"
+                                android:text=""
                                 />
-
-                        </com.google.android.material.card.MaterialCardView>
-
-                    </FrameLayout>
-
-                    <LinearLayout
-                        android:id="@+id/user_props"
-                        android:layout_marginLeft="10dp"
-                        android:orientation="vertical"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
+                            <TextView
+                                android:id="@+id/occupation"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:textColor="@color/grey"
+                                />
+                        </LinearLayout>
                         <TextView
-                            android:id="@+id/name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            android:id="@+id/name_without_occupation"
+                            android:layout_marginLeft="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text=""
                             android:textColor="?colorOnSecondary"
-                            android:textStyle="bold"
-                            android:text=""
-                            />
-                        <TextView
-                            android:id="@+id/occupation"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:textColor="@color/grey"
+                            android:textSize="22sp"
                             />
                     </LinearLayout>
-                    <TextView
-                        android:visibility="gone"
-                        android:id="@+id/name_without_occupation"
-                        android:layout_marginLeft="10dp"
+                    <View
+                        android:layout_marginTop="10dp"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text=""
-                        android:textColor="?colorOnSecondary"
-                        android:textSize="22sp"
+                        android:layout_height="0.3dp"
+                        android:background="?horizontal_rule_color"
                         />
-                </LinearLayout>
-                <View
-                    android:layout_marginTop="10dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="0.3dp"
-                    android:background="?horizontal_rule_color"
-                    />
-                <TextView
-                    android:id="@+id/about_text_body"
-                    android:textColor="?colorOnSecondary"
-                    android:layout_marginTop="10dp"
-                    android:paddingHorizontal="20dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/no_about"
-                    />
-                <LinearLayout
-                    android:paddingVertical="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="?user_card_background_profile_fragment_bottom"
-                    android:gravity="center_horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:layout_gravity="center_horizontal"
-                            android:id="@+id/post_count"
-                            android:textSize="20dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="?colorOnSecondary"
-                            android:text="@string/zero"
-                            />
-                        <TextView
-                            android:layout_gravity="center_horizontal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/public_posts"
-                            android:textColor="@color/grey"
-                            android:textSize="12sp"
-                            />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_marginLeft="70dp"
-                        android:orientation="vertical"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:id="@+id/friend_count"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="?colorOnSecondary"
-                            android:textSize="20dp"
-                            android:text="@string/zero"
-                            android:layout_gravity="center_horizontal"
-                            />
-                        <TextView
-                            android:layout_gravity="center_horizontal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/friends"
-                            android:textColor="@color/grey"
-                            android:textSize="12sp"
-                            />
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            app:cardBackgroundColor="?user_card_background_profile_fragment_bottom"
-            android:clickable="true"
-            android:id="@+id/friend_requests_clickable"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="1dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginHorizontal="30dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <LinearLayout
-                android:paddingHorizontal="20dp"
-                android:paddingVertical="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/friend_requests"
-                    android:textSize="17sp"
-                    android:textColor="?colorOnSecondary"
-                    />
-
-                <TextView
-                    android:id="@+id/friend_requests_count"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/grey"
-                    android:text="@string/zero_in_brackets"
-                    />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_arrow_foreward"
-                    />
-
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            app:cardBackgroundColor="?user_card_background_profile_fragment_bottom"
-            android:clickable="true"
-            android:id="@+id/edit_profile"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="1dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginHorizontal="30dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <LinearLayout
-                android:paddingHorizontal="20dp"
-                android:paddingVertical="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/edit_profile"
-                    android:textSize="17sp"
-                    android:textColor="?colorOnSecondary"
-                    />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_arrow_foreward"
-                    />
-
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            app:cardBackgroundColor="?user_card_background_profile_fragment_bottom"
-            android:clickable="true"
-            android:id="@+id/friends_clickable"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="1dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginHorizontal="30dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <LinearLayout
-                android:paddingHorizontal="20dp"
-                android:paddingVertical="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/friends"
-                    android:textSize="17sp"
-                    android:textColor="?colorOnSecondary"
-                    />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_arrow_foreward"
-                    />
-
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            app:cardBackgroundColor="?user_card_background_profile_fragment_bottom"
-            app:cardCornerRadius="10dp"
-            android:elevation="1dp"
-            android:id="@+id/public_posts_clickable"
-            android:clickable="true"
-            android:layout_marginHorizontal="30dp"
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:paddingTop="10dp"
-                android:paddingHorizontal="20dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
                     <TextView
-                        android:textSize="17sp"
+                        android:id="@+id/about_text_body"
+                        android:textColor="?colorOnSecondary"
+                        android:layout_marginTop="10dp"
+                        android:paddingHorizontal="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/public_posts"
+                        android:text="@string/no_about"
+                        />
+                    <LinearLayout
+                        android:paddingVertical="10dp"
+                        android:layout_marginTop="10dp"
+                        android:background="?user_card_background_profile_fragment_bottom"
+                        android:gravity="center_horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:layout_gravity="center_horizontal"
+                                android:id="@+id/post_count"
+                                android:textSize="20dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="?colorOnSecondary"
+                                android:text="@string/zero"
+                                />
+                            <TextView
+                                android:layout_gravity="center_horizontal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/public_posts"
+                                android:textColor="@color/grey"
+                                android:textSize="12sp"
+                                />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_marginLeft="70dp"
+                            android:orientation="vertical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:id="@+id/friend_count"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="?colorOnSecondary"
+                                android:textSize="20dp"
+                                android:text="@string/zero"
+                                android:layout_gravity="center_horizontal"
+                                />
+                            <TextView
+                                android:layout_gravity="center_horizontal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/friends"
+                                android:textColor="@color/grey"
+                                android:textSize="12sp"
+                                />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                app:cardBackgroundColor="?user_card_background_profile_fragment_bottom"
+                android:clickable="true"
+                android:id="@+id/friend_requests_clickable"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="1dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginHorizontal="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/friend_requests"
+                        android:textSize="17sp"
+                        android:textColor="?colorOnSecondary"
+                        />
+
+                    <TextView
+                        android:id="@+id/friend_requests_count"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/grey"
+                        android:text="@string/zero_in_brackets"
+                        />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_foreward"
+                        />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                app:cardBackgroundColor="?user_card_background_profile_fragment_bottom"
+                android:clickable="true"
+                android:id="@+id/edit_profile"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="1dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginHorizontal="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/edit_profile"
+                        android:textSize="17sp"
                         android:textColor="?colorOnSecondary"
                         />
 
                     <View
                         android:layout_width="0dp"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_height="0dp"/>
+                        />
 
-                    <TextView
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/see_all"
-                        android:textColor="?ios_text_button_color"
+                        android:src="@drawable/ic_arrow_foreward"
                         />
-                </LinearLayout>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:visibility="gone"
-                    android:id="@+id/public_post_recycler_view"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                    app:spanCount="2"
-                    />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                app:cardBackgroundColor="?user_card_background_profile_fragment_bottom"
+                android:clickable="true"
+                android:id="@+id/friends_clickable"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="1dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginHorizontal="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/friends"
+                        android:textSize="17sp"
+                        android:textColor="?colorOnSecondary"
+                        />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_foreward"
+                        />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                app:cardBackgroundColor="?user_card_background_profile_fragment_bottom"
+                app:cardCornerRadius="10dp"
+                android:elevation="1dp"
+                android:id="@+id/public_posts_clickable"
+                android:clickable="true"
+                android:layout_marginHorizontal="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <LinearLayout
-                    android:id="@+id/posts_shimmer"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp">
-                    <include
-                        layout="@layout/shimmer_public_posts"
-                        />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:visibility="gone"
-                    android:layout_marginTop="20dp"
-                    android:id="@+id/no_public_posts"
+                    android:paddingTop="10dp"
+                    android:paddingHorizontal="20dp"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+
                     <LinearLayout
-                        android:orientation="vertical"
+                        android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
-                        <ImageView
-                            android:layout_gravity="center_horizontal"
-                            android:src="@drawable/picture"
-                            android:layout_width="150dp"
-                            android:layout_height="150dp"
-                            android:layout_marginHorizontal="130dp"
+
+                        <TextView
+                            android:textSize="17sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/public_posts"
+                            android:textColor="?colorOnSecondary"
                             />
 
-                        <LinearLayout
-                            android:id="@+id/create_public_post_clickable"
-                            android:layout_marginHorizontal="100dp"
-                            android:layout_gravity="bottom|center"
-                            android:layout_marginBottom="70dp"
-                            android:orientation="vertical"
-                            android:layout_width="200dp"
-                            android:layout_height="100dp">
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="0dp"/>
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/no_public_post"
-                                android:textSize="@dimen/no_chat_header"
-                                android:textStyle="bold"
-                                android:textColor="?colorOnSecondary"
-                                android:layout_gravity="center"
-                                />
-
-                            <TextView
-                                android:layout_marginTop="10dp"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/no_public_post_body"
-                                android:textSize="@dimen/no_chat_body"
-                                android:textColor="@color/grey"
-                                />
-                        </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/see_all"
+                            android:textColor="?ios_text_button_color"
+                            />
                     </LinearLayout>
 
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:visibility="gone"
+                        android:id="@+id/public_post_recycler_view"
+                        android:layout_marginTop="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        app:spanCount="2"
+                        />
+
+                    <LinearLayout
+                        android:id="@+id/posts_shimmer"
+                        android:layout_marginTop="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp">
+                        <include
+                            layout="@layout/shimmer_public_posts"
+                            />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:layout_marginTop="20dp"
+                        android:id="@+id/no_public_posts"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:layout_gravity="center_horizontal"
+                                android:src="@drawable/picture"
+                                android:layout_width="150dp"
+                                android:layout_height="150dp"
+                                android:layout_marginHorizontal="130dp"
+                                />
+
+                            <LinearLayout
+                                android:id="@+id/create_public_post_clickable"
+                                android:layout_marginHorizontal="100dp"
+                                android:layout_gravity="bottom|center"
+                                android:layout_marginBottom="70dp"
+                                android:orientation="vertical"
+                                android:layout_width="200dp"
+                                android:layout_height="100dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/no_public_post"
+                                    android:textSize="@dimen/no_chat_header"
+                                    android:textStyle="bold"
+                                    android:textColor="?colorOnSecondary"
+                                    android:layout_gravity="center"
+                                    />
+
+                                <TextView
+                                    android:layout_marginTop="10dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/no_public_post_body"
+                                    android:textSize="@dimen/no_chat_body"
+                                    android:textColor="@color/grey"
+                                    />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
 
-
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
-
+    </ScrollView>
 </FrameLayout>

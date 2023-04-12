@@ -7,8 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -24,9 +22,8 @@ import com.varsel.firechat.databinding.FragmentProfileBinding
 import com.varsel.firechat.data.local.PublicPost.PublicPost
 import com.varsel.firechat.data.local.PublicPost.PublicPostType
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.domain.use_case._util.InfobarColors
 import com.varsel.firechat.domain.use_case.image.EncodeUri_UseCase
-import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_UseCase
+import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_image_UseCase
 import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.domain.use_case.public_post.DisplayPublicPostImage_UseCase
@@ -78,7 +75,7 @@ class ProfileFragment: Fragment() {
     lateinit var openImagePicker: OpenImagePicker_UseCase
 
     @Inject
-    lateinit var handleOnActivityResult: HandleOnActivityResult_UseCase
+    lateinit var handleOnActivityResult: HandleOnActivityResult_image_UseCase
 
     @Inject
     lateinit var encodeUri: EncodeUri_UseCase

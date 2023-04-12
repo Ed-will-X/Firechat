@@ -1,14 +1,13 @@
 package com.varsel.firechat.domain.use_case.image
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import javax.inject.Inject
 
 val REQUEST_TAKE_PHOTO = 0
-class HandleOnActivityResult_UseCase @Inject constructor(
+class HandleOnActivityResult_image_UseCase @Inject constructor(
     val encodeImage: EncodeImage_UseCase
 ) {
     operator fun invoke(requestCode: Int, resultCode: Int, data: Intent?, albumCallback: (uri: Uri)-> Unit, cameraCallback: (imageEncoded: String?)-> Unit){

@@ -14,12 +14,6 @@ class Image {
 
     var image: String? = null
 
-//    constructor(imageId: String, ownerId: String, image: String){
-//        this.imageId = imageId
-//        this.ownerId = ownerId
-//        this.image = image
-//    }
-
     // Used when adding to the realtime database
     constructor(imageId: String, ownerId: String){
         this.imageId = imageId

@@ -2,7 +2,6 @@ package com.varsel.firechat.presentation.signedIn.fragments.screens.group_chat_p
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -23,7 +22,6 @@ import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageStatus
 import com.varsel.firechat.data.local.Message.MessageType
-import com.varsel.firechat.data.local.ReadReceipt.ReadReceipt
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
@@ -37,11 +35,9 @@ import com.varsel.firechat.domain.use_case.chat_image.*
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.group_chat.InterpolateGroupParticipantsUseCase
 import com.varsel.firechat.domain.use_case.group_chat.SendGroupMessage_UseCase
-import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_UseCase
+import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_image_UseCase
 import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
-import com.varsel.firechat.domain.use_case.message.DeleteMessageForAll_ChatRoom_UseCase
 import com.varsel.firechat.domain.use_case.message.DeleteMessageForAll_GroupRoom_UseCase
-import com.varsel.firechat.domain.use_case.message.DeleteMessage_Chat_UseCase
 import com.varsel.firechat.domain.use_case.message.DeleteMessage_Group_UseCase
 import com.varsel.firechat.domain.use_case.other_user.GetListOfUsers_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
@@ -94,7 +90,7 @@ class GroupChatPageFragment : Fragment() {
     lateinit var openImagePicker: OpenImagePicker_UseCase
 
     @Inject
-    lateinit var handleOnActivityResult: HandleOnActivityResult_UseCase
+    lateinit var handleOnActivityResult: HandleOnActivityResult_image_UseCase
 
     @Inject
     lateinit var uploadChatImage: UploadChatImage_UseCase

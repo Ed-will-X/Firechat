@@ -22,25 +22,22 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import com.varsel.firechat.databinding.ActionSheetParticipantActionsBinding
 import com.varsel.firechat.databinding.ActionSheetProfileImageBinding
 import com.varsel.firechat.databinding.FragmentGroupChatDetailBinding
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
-import com.varsel.firechat.domain.use_case._util.InfobarColors
 import com.varsel.firechat.domain.use_case._util.animation.Direction
 import com.varsel.firechat.domain.use_case._util.animation.Rotate90UseCase
 import com.varsel.firechat.domain.use_case.camera.OpenCamera_UseCase
 import com.varsel.firechat.domain.use_case.chat_image.DisplayGroupImage_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.image.EncodeUri_UseCase
-import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_UseCase
+import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_image_UseCase
 import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
-import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.domain.use_case._util.user.SortUsersByNameInGroup_UseCase
 import com.varsel.firechat.domain.use_case.chat_room.DoesChatRoomExist_UseCase
@@ -51,7 +48,6 @@ import com.varsel.firechat.presentation.signedIn.adapters.ParticipantsListAdapte
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
@@ -81,7 +77,7 @@ class GroupChatDetailFragment : Fragment() {
     lateinit var openImagePicker: OpenImagePicker_UseCase
 
     @Inject
-    lateinit var handleOnActivityResult: HandleOnActivityResult_UseCase
+    lateinit var handleOnActivityResult: HandleOnActivityResult_image_UseCase
 
     @Inject
     lateinit var encodeUri: EncodeUri_UseCase

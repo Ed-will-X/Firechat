@@ -22,7 +22,7 @@ import com.varsel.firechat.domain.use_case.camera.OpenCamera_UseCase
 import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
 import com.varsel.firechat.domain.use_case.current_user.EditUserFields
 import com.varsel.firechat.domain.use_case.image.EncodeUri_UseCase
-import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_UseCase
+import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_image_UseCase
 import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -56,7 +56,7 @@ class EditProfilePage : Fragment() {
     lateinit var openImagePicker: OpenImagePicker_UseCase
 
     @Inject
-    lateinit var handleOnActivityResult: HandleOnActivityResult_UseCase
+    lateinit var handleOnActivityResult: HandleOnActivityResult_image_UseCase
 
     @Inject
     lateinit var encodeUri: EncodeUri_UseCase

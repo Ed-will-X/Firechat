@@ -33,6 +33,8 @@ import com.varsel.firechat.domain.use_case.chat_image.*
 import com.varsel.firechat.domain.use_case.chat_image.UploadChatImage_UseCase
 import com.varsel.firechat.domain.use_case.chat_room.*
 import com.varsel.firechat.domain.use_case.current_user.*
+import com.varsel.firechat.domain.use_case.document.HandleOnActivityResult_Doument_UseCase
+import com.varsel.firechat.domain.use_case.document.OpenDocumentPicker_UseCase
 import com.varsel.firechat.domain.use_case.group_chat.*
 import com.varsel.firechat.domain.use_case.image.*
 import com.varsel.firechat.domain.use_case.last_online.CheckLastOnline_UseCase
@@ -462,8 +464,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideHandleOnActivityResult(encodeimageUsecase: EncodeImage_UseCase): HandleOnActivityResult_UseCase {
-        return HandleOnActivityResult_UseCase(encodeimageUsecase)
+    fun provideHandleOnActivityResult(encodeimageUsecase: EncodeImage_UseCase): HandleOnActivityResult_image_UseCase {
+        return HandleOnActivityResult_image_UseCase(encodeimageUsecase)
     }
 
     @Provides
@@ -859,4 +861,20 @@ object AppModule {
     fun provideGetSetting_Long_UseCase() : GetSetting_Long_UseCase {
         return GetSetting_Long_UseCase()
     }
+
+    @Provides
+    @Singleton
+    fun provideOpenDocumentPicker_UseCase() : OpenDocumentPicker_UseCase {
+        return OpenDocumentPicker_UseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideHandleOnActivityResult_Doument_UseCase() : HandleOnActivityResult_Doument_UseCase {
+        return HandleOnActivityResult_Doument_UseCase()
+    }
+
+
+
+
 }

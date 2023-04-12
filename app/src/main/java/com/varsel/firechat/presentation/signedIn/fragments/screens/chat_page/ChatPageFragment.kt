@@ -16,31 +16,32 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
 import com.varsel.firechat.common.Resource
 import com.varsel.firechat.common.Response
-import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.observeOnce
 import com.varsel.firechat.common._utils.ImageUtils
-import com.varsel.firechat.databinding.FragmentChatPageBinding
+import com.varsel.firechat.common._utils.MessageUtils
 import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.Message.MessageType
-import com.varsel.firechat.domain.use_case.chat_image.DisplayChatImage_UseCase
-import com.varsel.firechat.domain.use_case.chat_image.UploadChatImage_UseCase
-import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
-import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_UseCase
-import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
-import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
-import com.varsel.firechat.common._utils.MessageUtils
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.databinding.ActionSheetMessageOptionsBinding
+import com.varsel.firechat.databinding.FragmentChatPageBinding
 import com.varsel.firechat.domain.use_case._util.message.FormatStampMessageDetail_UseCase
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
 import com.varsel.firechat.domain.use_case._util.user.ExcludeCurrentUserIdFromList_UseCase
 import com.varsel.firechat.domain.use_case._util.user.ExcludeCurrentUserIdFromMap_UseCase
 import com.varsel.firechat.domain.use_case.chat_image.CheckChatImageInDb
+import com.varsel.firechat.domain.use_case.chat_image.DisplayChatImage_UseCase
 import com.varsel.firechat.domain.use_case.chat_image.StoreChatImageUseCase
+import com.varsel.firechat.domain.use_case.chat_image.UploadChatImage_UseCase
 import com.varsel.firechat.domain.use_case.chat_room.FindChatRoom_UseCase
+import com.varsel.firechat.domain.use_case.current_user.CheckServerConnectionUseCase
+import com.varsel.firechat.domain.use_case.document.HandleOnActivityResult_Doument_UseCase
+import com.varsel.firechat.domain.use_case.document.OpenDocumentPicker_UseCase
+import com.varsel.firechat.domain.use_case.image.HandleOnActivityResult_image_UseCase
+import com.varsel.firechat.domain.use_case.image.OpenImagePicker_UseCase
 import com.varsel.firechat.domain.use_case.last_online.CheckLastOnline_UseCase
 import com.varsel.firechat.domain.use_case.message.DeleteMessageForAll_ChatRoom_UseCase
 import com.varsel.firechat.domain.use_case.message.DeleteMessage_Chat_UseCase
+import com.varsel.firechat.domain.use_case.profile_image.DisplayProfileImage
 import com.varsel.firechat.domain.use_case.read_receipt_temp.StoreReceipt_UseCase
 import com.varsel.firechat.domain.use_case.settings.GetSetting_Boolean_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
@@ -82,7 +83,7 @@ class ChatPageFragment : Fragment() {
     lateinit var openImagePicker: OpenImagePicker_UseCase
 
     @Inject
-    lateinit var handleOnActivityResult: HandleOnActivityResult_UseCase
+    lateinit var handleOnActivityResult: HandleOnActivityResult_image_UseCase
 
     @Inject
     lateinit var uploadChatImage: UploadChatImage_UseCase
@@ -122,6 +123,12 @@ class ChatPageFragment : Fragment() {
 
     @Inject
     lateinit var getBoolean: GetSetting_Boolean_UseCase
+
+    @Inject
+    lateinit var openDocumentPicker: OpenDocumentPicker_UseCase
+
+    @Inject
+    lateinit var handleOnActivityResult_document: HandleOnActivityResult_Doument_UseCase
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -209,6 +216,10 @@ class ChatPageFragment : Fragment() {
 
         binding.gallery.setOnClickListener {
             openImagePicker(this)
+        }
+
+        binding.file.setOnClickListener {
+            openDocumentPicker(this)
         }
 
         return view
@@ -318,6 +329,22 @@ class ChatPageFragment : Fragment() {
                 }
             }
         },{})
+
+        handleOnActivityResult_document(requestCode, resultCode, data) {
+            var extension = ""
+
+            val fileName = it?.lastPathSegment
+
+            if (fileName != null) {
+                val dotIndex = fileName.lastIndexOf(".")
+
+                if (dotIndex > 0 && dotIndex < fileName.length - 1) {
+                    extension = fileName.substring(dotIndex + 1)
+                }
+            }
+
+            Log.d("LLL", "${fileName}")
+        }
     }
 
     private fun showMessageOptionsActionsheet(message: Message, user: User?) {

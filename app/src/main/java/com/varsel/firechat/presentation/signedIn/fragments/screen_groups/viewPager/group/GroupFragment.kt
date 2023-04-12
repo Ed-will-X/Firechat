@@ -1,26 +1,27 @@
 package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.viewPager.group
 
+import android.content.res.Configuration
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.varsel.firechat.R
-import com.varsel.firechat.databinding.FragmentGroupBinding
+import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
 import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.data.local.User.User
+import com.varsel.firechat.databinding.FragmentGroupBinding
+import com.varsel.firechat.domain.use_case._util.message.SortChats_UseCase
 import com.varsel.firechat.domain.use_case.chat_image.DisplayGroupImage_UseCase
 import com.varsel.firechat.presentation.signedIn.SignedinActivity
 import com.varsel.firechat.presentation.signedIn.adapters.GroupChatsListAdapter
 import com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottomNav.chats_tab_page.ChatsFragmentDirections
-import com.varsel.firechat.common._utils.ExtensionFunctions.Companion.collectLatestLifecycleFlow
-import com.varsel.firechat.domain.use_case._util.message.SortChats_UseCase
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -43,8 +44,8 @@ class GroupFragment : Fragment() {
     ): View? {
         _binding = FragmentGroupBinding.inflate(layoutInflater, container, false)
         val view = binding.root
-
         parent = activity as SignedinActivity
+
         viewModel = ViewModelProvider(this).get(GroupViewModel::class.java)
         collectState()
 
@@ -58,8 +59,19 @@ class GroupFragment : Fragment() {
         })
 
         binding.groupChatsRecyclerView.adapter = adapter
+        adjustOrientation()
 
         return view
+    }
+
+    private fun adjustOrientation() {
+        val orientation = parent.resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // code for portrait mode
+        } else {
+            // code for landscape mode
+            Log.d("LLL", "Landscape")
+        }
     }
 
     private fun collectState() {
