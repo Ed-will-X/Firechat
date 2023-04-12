@@ -177,7 +177,13 @@ class SettingsFragment : Fragment() {
     private fun setDisabledSwitch() {
         lifecycleScope.launch {
             val lastSeenStamp = getLong(SettingProps_Long.LAST_SEEN_LAST_ENABLED, parent.datastore)
-            if (lastSeenStamp != null && lastSeenStamp - System.currentTimeMillis() < Constants.LAST_SEEN_REFRESH) {
+            if (lastSeenStamp != null) {
+                Log.d("LLL", "Last seen stamp: ${lastSeenStamp}")
+                Log.d("LLL", "Current Time: ${System.currentTimeMillis()}")
+                Log.d("LLL", "Time Diff: ${System.currentTimeMillis() - lastSeenStamp}")
+            }
+
+            if (lastSeenStamp != null && System.currentTimeMillis() - lastSeenStamp < Constants.A_DAY_IN_MILLISECONDS) {
                 binding.showLastSeen.isEnabled = false
             } else if (lastSeenStamp == null) {
                 binding.showLastSeen.isEnabled = true
@@ -200,7 +206,7 @@ class SettingsFragment : Fragment() {
             binding.autoDownloadVideoMessage.isChecked = auto_download_video_message == true
             binding.autoDownloadGifMessage.isChecked = auto_download_gif_message == true || auto_download_gif_message == null
             binding.autoDownloadAudioMessage.isChecked = auto_download_audio_message == true
-            binding.publicPostDownloadCount.setText(public_post_auto_download_limit.toString())
+            binding.publicPostDownloadCount.setText(if(public_post_auto_download_limit != -1) public_post_auto_download_limit.toString() else "4")
         }
     }
 

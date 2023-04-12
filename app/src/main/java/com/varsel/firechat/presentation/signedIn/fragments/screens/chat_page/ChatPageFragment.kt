@@ -25,6 +25,7 @@ import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.databinding.ActionSheetMessageOptionsBinding
 import com.varsel.firechat.databinding.FragmentChatPageBinding
 import com.varsel.firechat.domain.use_case._util.message.FormatStampMessageDetail_UseCase
+import com.varsel.firechat.domain.use_case._util.message.GetDateFromTimestamp_UseCase
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
 import com.varsel.firechat.domain.use_case._util.user.ExcludeCurrentUserIdFromList_UseCase
 import com.varsel.firechat.domain.use_case._util.user.ExcludeCurrentUserIdFromMap_UseCase
@@ -129,6 +130,10 @@ class ChatPageFragment : Fragment() {
 
     @Inject
     lateinit var handleOnActivityResult_document: HandleOnActivityResult_Doument_UseCase
+
+    @Inject
+    lateinit var getDateFromTimestamp: GetDateFromTimestamp_UseCase
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -457,16 +462,15 @@ class ChatPageFragment : Fragment() {
         }
     }
 
-
     private fun showMessageDetailOverlay(message: Message, user: User) {
         // Reset
         binding.overlayDetailMessageParent.visibility = View.GONE
         binding.overlayDetailMessageImageParent.visibility = View.GONE
         binding.overlayDetailMessageTypeParent.visibility = View.GONE
 
-
         binding.overlayDetailName.setText(if(user.userUID == viewModel.getCurrentUserId()) parent.getString(R.string.you) else user.name)
         binding.overlayDetailTime.setText(formatStampTime(message.time))
+        binding.overlayDateMessage.setText(getDateFromTimestamp(message.time))
         binding.overlayDetailMessageId.setText(message.messageUID)
 
         if(message.deletedBySender == false) {

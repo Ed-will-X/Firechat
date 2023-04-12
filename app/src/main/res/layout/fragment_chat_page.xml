@@ -462,6 +462,25 @@
             </LinearLayout>
 
             <LinearLayout
+                style="@style/message_detail_item_parent"
+                android:id="@+id/overlay_date_message_parent"
+                >
+
+                <TextView
+                    android:text="@string/date_colon"
+                    style="@style/message_detail_item_key"
+                    android:layout_gravity="top"
+                    />
+
+                <TextView
+                    android:id="@+id/overlay_date_message"
+                    tools:text="Lorem ipsum dolor sit amet consectetur adipisicing elit elit elit..."
+                    style="@style/message_detail_item_value"
+                    />
+            </LinearLayout>
+
+
+            <LinearLayout
                 android:id="@+id/overlay_detail_message_type_parent"
                 style="@style/message_detail_item_parent"
                 >
@@ -513,6 +532,7 @@
                     style="@style/message_detail_item_value"
                     />
             </LinearLayout>
+
 
             <LinearLayout
                 style="@style/message_detail_item_parent"

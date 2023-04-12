@@ -13,6 +13,6 @@ class GetSetting_Integer_UseCase @Inject constructor(
         val datastoreKey = preferencesKey<Int>(key)
         val preferences = datastore.data.first()
 
-        return preferences[datastoreKey]
+        return preferences[datastoreKey] ?: -1
     }
 }

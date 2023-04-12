@@ -874,7 +874,9 @@ object AppModule {
         return HandleOnActivityResult_Doument_UseCase()
     }
 
-
-
-
+    @Provides
+    @Singleton
+    fun provideFormatDateFromTimestamp_UseCase() : GetDateFromTimestamp_UseCase {
+        return GetDateFromTimestamp_UseCase()
+    }
 }

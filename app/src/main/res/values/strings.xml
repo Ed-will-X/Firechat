@@ -299,6 +299,7 @@
     <string name="time_sent_colon">Time Sent:</string>
     <string name="message_type_colon">Message Type:</string>
     <string name="message_colon">Message:</string>
+    <string name="date_colon">Date:</string>
     <string name="image_colon">Image:</string>
     <string name="message_id_colon">Message ID:</string>
 

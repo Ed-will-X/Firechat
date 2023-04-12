@@ -27,6 +27,7 @@ import com.varsel.firechat.data.local.Chat.GroupRoom
 import com.varsel.firechat.data.local.ProfileImage.ProfileImage
 import com.varsel.firechat.databinding.ActionSheetMessageOptionsBinding
 import com.varsel.firechat.domain.use_case._util.message.FormatStampMessageDetail_UseCase
+import com.varsel.firechat.domain.use_case._util.message.GetDateFromTimestamp_UseCase
 import com.varsel.firechat.domain.use_case._util.message.SortMessages_UseCase
 import com.varsel.firechat.domain.use_case._util.string.Truncate_UseCase
 import com.varsel.firechat.domain.use_case._util.user.ExcludeCurrentUserIdFromList_UseCase
@@ -133,6 +134,9 @@ class GroupChatPageFragment : Fragment() {
 
     @Inject
     lateinit var deleteMessage: DeleteMessage_Group_UseCase
+
+    @Inject
+    lateinit var getDateFromTimestamp: GetDateFromTimestamp_UseCase
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -333,6 +337,8 @@ class GroupChatPageFragment : Fragment() {
         binding.overlayDetailName.setText(if(user.userUID == viewModel.getCurrentUserId()) parent.getString(R.string.you) else user.name)
         binding.overlayDetailTime.setText(formatStampTime(message.time))
         binding.overlayDetailMessageId.setText(message.messageUID)
+        binding.overlayDateMessage.setText(getDateFromTimestamp(message.time))
+
 
         if(message.deletedBySender == false) {
             binding.overlayDetailMessageType.setText(returnTextFromMessageType(message.type))

@@ -11,10 +11,7 @@ import com.varsel.firechat.data.local.Chat.ChatRoom
 import com.varsel.firechat.data.local.Message.Message
 import com.varsel.firechat.data.local.User.User
 import com.varsel.firechat.domain.repository.FirebaseRepository
-import com.varsel.firechat.domain.use_case._util.message.CalculateTimestampDifferenceLess_UseCase
-import com.varsel.firechat.domain.use_case._util.message.FormatStampMessage_UseCase
-import com.varsel.firechat.domain.use_case._util.message.FormatSystemMessage_UseCase
-import com.varsel.firechat.domain.use_case._util.message.GetLastMessage_UseCase
+import com.varsel.firechat.domain.use_case._util.message.*
 import com.varsel.firechat.domain.use_case.chat_room.AppendChatRoom_UseCase
 import com.varsel.firechat.domain.use_case.chat_room.AppendParticipants_UseCase
 import com.varsel.firechat.domain.use_case.chat_room.SendMessage_UseCase
@@ -30,7 +27,6 @@ import com.varsel.firechat.domain.use_case.profile_image.GetOtherUserProfileImag
 import com.varsel.firechat.domain.use_case.profile_image.SetProfilePicUseCase
 import com.varsel.firechat.domain.use_case.read_receipt.StoreChatReceipt_UseCase
 import com.varsel.firechat.domain.use_case.read_receipt.StoreGroupReceipt_UseCase
-import com.varsel.firechat.domain.use_case.read_receipt_temp.StoreReceipt_UseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -57,7 +53,7 @@ class ChatPageViewModel @Inject constructor(
     val formatSystemMessage: FormatSystemMessage_UseCase,
     val firebase: FirebaseRepository,
     val storeReceipt: StoreChatReceipt_UseCase,
-    val storeGroupReceipt: StoreGroupReceipt_UseCase
+    val storeGroupReceipt: StoreGroupReceipt_UseCase,
 ): ViewModel() {
     val actionBarVisibility = MutableLiveData<Boolean>(false)
 
