@@ -279,4 +279,12 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">?subtitle_text_color</item>
     </style>
+
+    <style name="auth_root_edit_text">
+        <item name="android:background">@drawable/edit_text_shape</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:textColorHint">?attr/dialog_input_text_color</item>
+    </style>
 </resources>

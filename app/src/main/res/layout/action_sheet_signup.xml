@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/dialog_shape"
     android:orientation="vertical">
 
     <View
@@ -20,45 +22,36 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
+            android:textColor="?colorOnSecondary"
             android:text="@string/auth_root_signup_text_large" />
 
         <EditText
             android:inputType="textCapWords"
             android:maxLength="20"
             android:id="@+id/name_edit_text"
-            android:background="@drawable/edit_text_shape"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:hint="@string/placeholder_fullname" />
+            android:hint="@string/placeholder_fullname"
+            style="@style/auth_root_edit_text"
+            />
 
         <EditText
             android:id="@+id/email_edit_text"
-            android:background="@drawable/edit_text_shape"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:inputType="textEmailAddress"
+            style="@style/auth_root_edit_text"
             android:hint="@string/placeholder_email" />
 
         <EditText
             android:maxLength="20"
             android:id="@+id/password_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/edit_text_shape"
-            android:layout_marginBottom="10dp"
+            style="@style/auth_root_edit_text"
             android:inputType="textPassword"
             android:hint="@string/placeholder_password" />
 
         <EditText
             android:maxLength="20"
             android:id="@+id/confirm_password_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/edit_text_shape"
-            android:layout_marginBottom="10dp"
             android:inputType="textPassword"
+            style="@style/auth_root_edit_text"
             android:hint="@string/placeholder_confirm_password" />
 
         <Button
@@ -67,6 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
+            android:textColor="@color/white"
             android:text="@string/auth_root_signup_btn_actionsheet" />
 
         <com.google.android.material.checkbox.MaterialCheckBox
@@ -76,6 +70,7 @@
             android:layout_height="wrap_content"
             android:text="@string/auth_root_signup_terms"
             android:textSize="13sp"
+            android:textColor="?colorOnSecondary"
             android:layout_marginBottom="10dp"
             />
     </LinearLayout>

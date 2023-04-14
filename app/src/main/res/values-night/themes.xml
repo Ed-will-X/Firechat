@@ -1,6 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.Firechat" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <!--    TODO: Remove when about to implement dark theme-->
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+
+
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/light_blue</item>
         <item name="colorPrimaryVariant">@color/light_blue_variant</item>
@@ -23,7 +28,7 @@
         <item name="background_chats_fragment">@color/darker_grey</item>
 
         <!-- Horizontal rule color-->
-        <item name="horizontal_rule_color">@color/transparent_grey</item>
+        <item name="horizontal_rule_color">@color/transparent_grey_2</item>
 
         <!-- Shimmer color-->
         <item name="shimmer_color_main">@color/matte_black</item>
@@ -44,5 +49,18 @@
 
 
         <item name="ios_text_button_color">@color/blue</item>
+
+        <item name="group_card">@color/matte_black</item>
+        <item name="background_group_fragment">@color/matte_black</item>
+
+        <item name="friend_page_sub_header">@color/matte_black</item>
+        <item name="friend_page_background">@color/dark_matte_black</item>
+
+        <item name="dialog_background">@color/matte_black</item>
+        <item name="dialog_edit_text">@color/lighter_matte_black</item>
+        <item name="dialog_handlebar">@color/lighter_matte_black</item>
+        <item name="dialog_input_text_color">@color/light_grey_2</item>
+        <item name="sort_popover">@color/matte_black</item>
+
     </style>
 </resources>

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/dialog_shape"
     android:orientation="vertical">
 
     <View
@@ -19,30 +20,26 @@
             style="@style/auth_root_signin_large_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="?colorOnSecondary"
             android:layout_marginBottom="15dp"
             android:text="@string/auth_root_signin_text_large" />
 
         <EditText
             android:id="@+id/email_edit_text"
-            android:background="@drawable/edit_text_shape"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
+            style="@style/auth_root_edit_text"
             android:inputType="textEmailAddress"
             android:hint="@string/placeholder_email" />
 
         <EditText
+            style="@style/auth_root_edit_text"
             android:maxLength="20"
             android:id="@+id/password_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/edit_text_shape"
-            android:layout_marginBottom="5dp"
             android:inputType="textPassword"
             android:hint="@string/placeholder_password" />
 
         <Button
             android:id="@+id/sign_in_btn_actionsheet"
+            android:textColor="@drawable/button_selector"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"

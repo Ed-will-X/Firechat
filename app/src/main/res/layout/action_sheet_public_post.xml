@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    android:background="@drawable/dialog_shape"
     android:minHeight="500dp"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -22,7 +23,7 @@
             android:layout_height="wrap_content"
             android:text="@string/all_posts"
             android:textStyle="bold"
-            android:textColor="@color/black"
+            android:textColor="?colorOnSecondary"
             android:textSize="17sp"
             />
 
@@ -101,7 +102,7 @@
                     android:text="@string/no_public_post"
                     android:textSize="@dimen/no_chat_header"
                     android:textStyle="bold"
-                    android:textColor="@color/black"
+                    android:textColor="?colorOnSecondary"
                     android:layout_gravity="center"
                     />
 

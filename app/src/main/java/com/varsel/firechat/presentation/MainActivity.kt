@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -41,7 +42,11 @@ class MainActivity : AppCompatActivity() {
 
         datastore = createDataStore(getString(R.string.settings).toLowerCase())
 
-        setThemeConfiguration(datastore, lifecycleScope)
+        // TODO Enable Later
+//        setThemeConfiguration(datastore, lifecycleScope)
+
+        // TODO: Remove
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         hideStatusBar()
 

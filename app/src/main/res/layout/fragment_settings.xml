@@ -422,6 +422,7 @@
                     style="@style/setting_page_switch"
                     android:id="@+id/dark_mode"
                     android:text="@string/setting_dark_mode"
+                    android:enabled="false"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <!--        Override system theme-->
@@ -429,6 +430,7 @@
                     style="@style/setting_page_switch"
                     android:id="@+id/override_system_theme"
                     android:text="@string/override_system_theme"
+                    android:enabled="false"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
             </LinearLayout>
 

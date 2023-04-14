@@ -8,6 +8,9 @@
 
     <attr name="shimmer_color_main" format="reference" />
     <attr name="shimmer_end_color" format="reference" />
+    <attr name="friend_page_sub_header" format="reference" />
+    <attr name="friend_page_background" format="reference" />
+
 
     <attr name="background_chats_fragment" format="reference" />
 
@@ -26,6 +29,20 @@
 
     <attr name="chat_sent_pressed" format="reference" />
     <attr name="chat_received_pressed" format="reference" />
+
+    <attr name="group_card" format="reference" />
+
+    <attr name="background_group_fragment" format="reference" />
+
+    <attr name="dialog_background" format="reference" />
+    <attr name="dialog_edit_text" format="reference" />
+    <attr name="dialog_handlebar" format="reference" />
+    <attr name="dialog_input_text_color" format="reference" />
+    <attr name="sort_popover" format="reference" />
+
+
+
+
 
 
 </resources>

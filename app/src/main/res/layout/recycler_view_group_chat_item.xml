@@ -7,6 +7,7 @@
     app:cardElevation="1dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardBackgroundColor="?user_card_background_profile_fragment_bottom"
     android:layout_width="match_parent"
     android:layout_height="170dp">
 

@@ -124,7 +124,7 @@
                             android:id="@+id/user_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/black"
+                            android:textColor="?colorOnSecondary"
                             android:textSize="18sp"
                             tools:text="Ligma Balls"
                             />
@@ -159,7 +159,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/user_details"
-                        android:textColor="@color/black"
+                        android:textColor="?colorOnSecondary"
                         android:textSize="15sp"
                         android:layout_marginLeft="20dp"
                         android:layout_gravity="center_vertical"
@@ -234,8 +234,8 @@
                         android:id="@+id/detail_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Name Here"
-                        android:textColor="@color/black"
+                        tools:text="Name Here"
+                        android:textColor="?colorOnSecondary"
                         android:layout_marginLeft="7dp"
                         />
                 </LinearLayout>
@@ -284,9 +284,9 @@
                         android:id="@+id/detail_email"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="email here"
-                        android:textColor="@color/black"
+                        tools:text="email here"
                         android:layout_marginLeft="7dp"
+                        android:textColor="?colorOnSecondary"
                         />
                 </LinearLayout>
 
@@ -334,8 +334,8 @@
                         android:id="@+id/detail_phone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="phone here"
-                        android:textColor="@color/black"
+                        tools:text="phone here"
+                        android:textColor="?colorOnSecondary"
                         android:layout_marginLeft="7dp"
                         />
                 </LinearLayout>
@@ -384,9 +384,9 @@
                         android:id="@+id/detail_occupation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="occupation here"
-                        android:textColor="@color/black"
+                        tools:text="occupation here"
                         android:layout_marginLeft="7dp"
+                        android:textColor="?colorOnSecondary"
                         />
                 </LinearLayout>
 
@@ -434,9 +434,9 @@
                         android:id="@+id/detail_location"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="location here"
-                        android:textColor="@color/black"
+                        tools:text="location here"
                         android:layout_marginLeft="7dp"
+                        android:textColor="?colorOnSecondary"
                         />
                 </LinearLayout>
 
@@ -485,9 +485,9 @@
                         android:id="@+id/detail_gender"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="gender here"
-                        android:textColor="@color/black"
+                        tools:text="gender here"
                         android:layout_marginLeft="7dp"
+                        android:textColor="?colorOnSecondary"
                         />
                 </LinearLayout>
 
@@ -513,7 +513,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/media_files"
-                    android:textColor="@color/black"
+                    android:textColor="?colorOnSecondary"
                     android:textSize="15sp"
                     />
 
@@ -550,8 +550,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/friends"
-                    android:textColor="@color/black"
                     android:textSize="15sp"
+                    android:textColor="?colorOnSecondary"
                     />
 
                 <TextView
