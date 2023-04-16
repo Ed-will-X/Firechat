@@ -86,6 +86,8 @@
     <string name="no_group_body">You\'re not in any groups yet. You can create one and add your friends.</string>
     <string name="no_friends">No Friends</string>
     <string name="no_friends_body">You don\'t have any friends yet. You can add some.</string>
+    <string name="no_friend_requests">No Friend Requests</string>
+    <string name="no_friend_requests_body">You don\'t have any friend requests yet. When you get some requests, they will show up here.</string>
     <string name="no_friends_to_search">No Friends to Search</string>
     <string name="no_friends_to_search_body">You don\'t have any friends yet to search.</string>
     <string name="create_new">Create New</string>

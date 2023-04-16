@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.varsel.firechat.R
@@ -316,6 +317,10 @@ class ChatPageFragment : Fragment() {
                     showMessageOptionsActionsheet(message, user)
                 })
             binding.messagesRecyclerView.adapter = messagesListAdapter
+            val layoutManager = LinearLayoutManager(requireContext())
+            layoutManager.stackFromEnd = true
+            binding.messagesRecyclerView.layoutManager = layoutManager
+
 
             collectState()
         }

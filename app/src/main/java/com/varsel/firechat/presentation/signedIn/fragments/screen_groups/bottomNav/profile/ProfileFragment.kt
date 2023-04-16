@@ -3,9 +3,11 @@ package com.varsel.firechat.presentation.signedIn.fragments.screen_groups.bottom
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -154,8 +156,13 @@ class ProfileFragment: Fragment() {
         collectLatestLifecycleFlow(viewModel.currentUser) {
             if(it != null) {
                 setUser(it)
+
+                Log.d("LLL", "Previous Friend request count: $prevRequestCount")
+                Log.d("LLL", "Current Friend request count: ${it.friendRequests.keys.size}")
+
                 if(prevRequestCount != it.friendRequests.count()) {
                     prevRequestCount = it.friendRequests.count()
+
                     viewModel.getFriendRequests(it.friendRequests)
                 }
             }
@@ -328,6 +335,7 @@ class ProfileFragment: Fragment() {
         dialog.setContentView(R.layout.action_sheet_friend_requests)
 
         val recyclerView = dialog.findViewById<RecyclerView>(R.id.friend_requests_recycler_view)
+        val noFriends = dialog.findViewById<LinearLayout>(R.id.no_friend_requests_dialog)
 
         friendRequestsAdapter = FriendRequestsAdapter(parent, this, viewModel, { id, user, base64 ->
             dialog.dismiss()
@@ -350,7 +358,14 @@ class ProfileFragment: Fragment() {
         recyclerView?.adapter = friendRequestsAdapter
 
         collectLatestLifecycleFlow(viewModel.friendRequests) {
-            setFriendRequests(it)
+            if(it.isNotEmpty()) {
+                setFriendRequests(it)
+                noFriends?.visibility = View.GONE
+                recyclerView?.visibility = View.VISIBLE
+            } else {
+                noFriends?.visibility = View.VISIBLE
+                recyclerView?.visibility = View.GONE
+            }
         }
 
         val friendRequestSwipeGesture = object : FriendRequestSwipeGesture(parent){

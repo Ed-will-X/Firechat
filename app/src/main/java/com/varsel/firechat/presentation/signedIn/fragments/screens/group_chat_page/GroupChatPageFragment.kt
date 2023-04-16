@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.*
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -425,6 +426,9 @@ class GroupChatPageFragment : Fragment() {
             })
 
         binding.messagesRecyclerView.adapter = messageAdapter
+        val layoutManager = LinearLayoutManager(requireContext())
+        layoutManager.stackFromEnd = true
+        binding.messagesRecyclerView.layoutManager = layoutManager
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

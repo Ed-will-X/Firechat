@@ -111,8 +111,12 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun getFriendRequests(requests: HashMap<String, Long>) {
-        getfriendrequestsUsecase(requests) {
-            _friendRequests.value = it
+        if(requests.isNotEmpty()) {
+            getfriendrequestsUsecase(requests) {
+                _friendRequests.value = it
+            }
+        } else {
+            _friendRequests.value = listOf()
         }
     }
 }
