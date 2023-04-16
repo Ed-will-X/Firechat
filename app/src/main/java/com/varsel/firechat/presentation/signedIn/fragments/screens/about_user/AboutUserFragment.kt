@@ -47,8 +47,17 @@ class AboutUserFragment : Fragment() {
         }
 
         setBindings()
+        toggleDetailsVisibility()
 
         return view
+    }
+
+    private fun toggleDetailsVisibility() {
+        if(viewModel.userDetailsVisible.value == true){
+            viewModel.setVisible(binding)
+        } else {
+            viewModel.setInvisible(binding)
+        }
     }
 
     private fun collectState() {

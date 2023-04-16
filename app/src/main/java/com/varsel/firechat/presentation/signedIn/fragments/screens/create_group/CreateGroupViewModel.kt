@@ -1,5 +1,6 @@
 package com.varsel.firechat.presentation.signedIn.fragments.screens.create_group
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -41,9 +42,20 @@ class CreateGroupViewModel @Inject constructor(
     private val _friends = MutableStateFlow(listOf<User>())
     val friends = _friends
 
+    private val _selected = MutableLiveData(arrayListOf<String>())
+    val selected: LiveData<ArrayList<String>> = _selected
+
     init {
         getUser()
         fetchFriends()
+    }
+
+    fun select(uid: String){
+        selected.value?.add(uid)
+    }
+
+    fun unselect(uid: String){
+        selected.value?.remove(uid)
     }
 
     private fun getUser(){

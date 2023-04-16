@@ -27,7 +27,7 @@ class CreateGroupAdapter(
     val imageClickListener: (profileImage: ProfileImage, user: User) -> Unit
 ): RecyclerView.Adapter<CreateGroupAdapter.CreateGroupViewHolder>() {
     var friends: MutableList<User?> = arrayListOf()
-    var selected: ArrayList<String?> = arrayListOf()
+//    var selected: ArrayList<String?> = arrayListOf()
 
     class CreateGroupViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val parent = itemView.findViewById<LinearLayout>(R.id.parent_clickable)
@@ -74,9 +74,9 @@ class CreateGroupAdapter(
 
             holder.checkbox.setOnClickListener {
                 if(holder.checkbox.isChecked){
-                    select(item.userUID)
+                    viewModel.select(item.userUID)
                 } else {
-                    unselect(item.userUID)
+                    viewModel.unselect(item.userUID)
                 }
                 checkChanged()
 
@@ -85,20 +85,15 @@ class CreateGroupAdapter(
     }
 
     private fun isSelected(userId: String): Boolean{
-        for (i in selected){
+        if(viewModel.selected.value == null) {
+            return false
+        }
+        for (i in viewModel.selected.value!!){
             if (i == userId){
                 return true
             }
         }
         return false
-    }
-
-    private fun select(uid: String){
-        selected.add(uid)
-    }
-
-    private fun unselect(uid: String){
-        selected.remove(uid)
     }
 
     override fun getItemCount(): Int {

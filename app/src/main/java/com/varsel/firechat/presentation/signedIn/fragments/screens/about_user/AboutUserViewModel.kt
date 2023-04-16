@@ -28,7 +28,7 @@ class AboutUserViewModel @Inject constructor(
     val getOtherUserSingle: GetOtherUserSingle,
     val getOtherUserProfileImageUseCase: GetOtherUserProfileImageUseCase
 ): ViewModel() {
-    private var userDetailsVisible = MutableLiveData<Boolean>(false)
+    var userDetailsVisible = MutableLiveData<Boolean>(false)
 
     private val _state = MutableStateFlow(AboutUserState())
     val state: StateFlow<AboutUserState> = _state
@@ -70,11 +70,19 @@ class AboutUserViewModel @Inject constructor(
 
     private fun toggleUserDetailsVisibility(binding: FragmentAboutUserBinding){
         if(userDetailsVisible.value == true){
-            binding.userDetailsHideable.visibility = View.VISIBLE
-            rotate90UseCase(binding.userDetailsIconAnimatable, Direction.Forward())
+            setVisible(binding)
         } else {
-            binding.userDetailsHideable.visibility = View.GONE
-            rotate90UseCase(binding.userDetailsIconAnimatable, Direction.Reverse())
+            setInvisible(binding)
         }
+    }
+
+    fun setVisible(binding: FragmentAboutUserBinding) {
+        binding.userDetailsHideable.visibility = View.VISIBLE
+        rotate90UseCase(binding.userDetailsIconAnimatable, Direction.Forward())
+    }
+
+    fun setInvisible(binding: FragmentAboutUserBinding) {
+        binding.userDetailsHideable.visibility = View.GONE
+        rotate90UseCase(binding.userDetailsIconAnimatable, Direction.Reverse())
     }
 }

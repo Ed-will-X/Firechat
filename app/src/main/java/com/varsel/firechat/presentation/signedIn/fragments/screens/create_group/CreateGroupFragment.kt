@@ -126,7 +126,7 @@ class CreateGroupFragment : Fragment() {
     private fun observeInternetStatus(){
         checkServerConnection().onEach {
             if(it){
-                if(adapter.selected.count() > 0){
+                if(viewModel.selected.value?.count()!! > 0){
                     binding.createGroupBtn.isEnabled = true
                 } else {
                     binding.createGroupBtn.isEnabled = false
@@ -139,7 +139,7 @@ class CreateGroupFragment : Fragment() {
 
     private fun toggleBtnEnable(){
         if(viewModel.checkServerConnectionUseCase().value == true){
-            if(adapter.selected.count() > 0){
+            if(viewModel.selected.value!!.count() > 0){
                 binding.createGroupBtn.isEnabled = true
                 binding.doneClickable.visibility = View.VISIBLE
             } else {
@@ -197,7 +197,7 @@ class CreateGroupFragment : Fragment() {
     }
 
     private fun addParticipants(): HashMap<String, String>{
-        val participants = adapter.selected.associateWith { it } as HashMap<String, String>
+        val participants = viewModel.selected.value!!.associateWith { it } as HashMap<String, String>
 
         val currentUser: String = viewModel.getCurrentUserId()
         participants.put(currentUser, currentUser)

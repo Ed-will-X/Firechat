@@ -208,7 +208,7 @@ class FriendListFragment : Fragment() {
     private fun setupSortDialogOverlay(friends: List<User>){
         viewModel.setBinding(binding)
 
-        viewModel.changeSortMethod(SortTypes.ASCENDING)
+        viewModel.changeSortMethod(viewModel.sortMethod.value!!)
 
         setSortDialogClickListeners()
         binding.sortClickable.setOnClickListener {
