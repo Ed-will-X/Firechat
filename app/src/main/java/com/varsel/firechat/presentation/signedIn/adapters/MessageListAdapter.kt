@@ -116,31 +116,39 @@ class MessageListAdapter(
             // Sent Holder
             val viewHolder = holder as SentViewHolder
 
-            if(item.deletedBy.keys.contains(chatsViewModel.getCurrentUserId())) {
-                holder.messageParent.visibility = View.GONE
-                holder.messageParent.removeAllViews()
-            }
+
 
             storeReceipt(item)
 
-            if(item.type == MessageType.TEXT){
-                // TODO: Implement delete functionality
-                if(item.deletedBySender == false) {
+
+
+            // TODO: Implement delete functionality
+            if(item.deletedBySender == false) {
+                Log.d("BALLS", "Deleted by sender is false: ${item.message}")
+//                    unsetDeletedText(viewHolder.text, R.color.white)
+
+                if(item.type == MessageType.TEXT){
                     viewHolder.text.text = item.message
                     viewHolder.imageViewParent.visibility = View.GONE
                     viewHolder.imageViewParentSecond.visibility = View.GONE
                     viewHolder.textParent.visibility = View.VISIBLE
-                } else {
-                    setDeletedText(viewHolder.text, R.string.you_deleted_this_message, R.color.transparent_grey)
-                }
 
-                // Long click listener
-                holder.textParent.setOnLongClickListener {
-                    handleLongClick_Received(item, null)
-                    true
+                } else if(item.type == MessageType.IMAGE){
+                    viewHolder.textParent.visibility = View.GONE
+
+                    viewHolder.imageViewParent.visibility = View.VISIBLE
+                    viewHolder.imageViewParentSecond.visibility = View.VISIBLE
                 }
-            } else if(item.type == MessageType.IMAGE){
-                viewHolder.textParent.visibility = View.GONE
+            } else {
+                Log.d("BALLS", "Deleted by sender is true: ${item.message}")
+
+                setDeletedText(viewHolder.text, R.string.you_deleted_this_message, R.color.transparent_grey)
+            }
+
+            // Long click listener
+            holder.textParent.setOnLongClickListener {
+                handleLongClick_Received(item, null)
+                true
             }
 
             try {
@@ -168,6 +176,7 @@ class MessageListAdapter(
                 }
             }
 
+
             try {
                 val next: Message? = getItem(position + 1)
                 if(next?.deletedBy?.keys?.contains(chatsViewModel.getCurrentUserId()) == true){
@@ -182,6 +191,14 @@ class MessageListAdapter(
             } catch(e: Exception) {
                 viewHolder.timestamp.visibility = View.VISIBLE
                 viewHolder.timestamp.text = this.chatsViewModel.formatStampMessage(item.time.toString())
+            }
+
+            ///////////// Handles Deleted by current
+            if(item.deletedBy.keys.contains(chatsViewModel.getCurrentUserId())) {
+                holder.messageParent.visibility = View.GONE
+//                holder.messageParent.removeAllViews()
+            } else {
+                holder.messageParent.visibility = View.VISIBLE
             }
 
         } else if(holder.javaClass == SystemViewHolder::class.java){
@@ -202,7 +219,9 @@ class MessageListAdapter(
 
             if(item.deletedBy.keys.contains(chatsViewModel.getCurrentUserId())) {
                 holder.messageParent.visibility = View.GONE
-                holder.messageParent.removeAllViews()
+//                holder.messageParent.removeAllViews()
+            } else {
+                holder.messageParent.visibility = View.VISIBLE
             }
 
             storeReceipt(item)
@@ -217,8 +236,6 @@ class MessageListAdapter(
                 } else {
                     setDeletedText(viewHolder.text, R.string.this_message_was_deleted_by_user, R.color.transparent_grey)
                 }
-
-
                 // Long click listener
                 holder.textParent.setOnLongClickListener {
                     handleLongClick_Received(item, null)
@@ -226,6 +243,8 @@ class MessageListAdapter(
                 }
             } else if(item.type == MessageType.IMAGE){
                 viewHolder.textParent.visibility = View.GONE
+                viewHolder.imageViewParent.visibility = View.VISIBLE
+                viewHolder.imageViewParentSecond.visibility = View.VISIBLE
             }
 
             try {
@@ -454,6 +473,16 @@ class MessageListAdapter(
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, activity.resources.getDimension(R.dimen.deleted_text_size))
 
         textView.setText((activity.getString(stringResource)))
+    }
+
+    private fun unsetDeletedText(
+        textView: TextView,
+        colorResource: Int = R.color.white
+    ) {
+        textView.setTypeface(null, Typeface.NORMAL)
+        textView.setTextColor(colorResource)
+
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, activity.resources.getDimension(R.dimen.deleted_text_size))
     }
 }
 

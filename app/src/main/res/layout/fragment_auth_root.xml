@@ -8,9 +8,10 @@
     >
 
     <ImageView
+        android:id="@+id/background_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/a_s_s_d_f_r_v"
+        tools:src="@drawable/a_s_s_d_f_r_v"
         android:scaleType="centerCrop"
         />
 

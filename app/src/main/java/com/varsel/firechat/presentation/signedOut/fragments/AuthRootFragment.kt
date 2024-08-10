@@ -10,7 +10,10 @@ import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.varsel.firechat.R
 import com.varsel.firechat.common.Response
 import com.varsel.firechat.databinding.ActionSheetSigninBinding
 import com.varsel.firechat.databinding.ActionSheetSignupBinding
@@ -69,6 +72,11 @@ class AuthRootFragment : Fragment() {
         val view = binding.root
 
         parent  = activity as SignedoutActivity
+
+        Glide.with(requireContext())
+            .load(R.drawable.a_s_s_d_f_r_v)
+            .apply(RequestOptions().override(720, 720))
+            .into(binding.backgroundImage)
 
         binding.signIn.setOnClickListener {
             showSigninDialog { dialogBinding ->

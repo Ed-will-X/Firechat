@@ -72,6 +72,7 @@ class GroupChatPageFragment : Fragment() {
     private val chatPageViewModel: ChatPageViewModel by activityViewModels()
     private lateinit var viewModel: GroupChatPageViewModel
     private lateinit var friendsViewModel: FriendListFragmentViewModel
+    private lateinit var messagesLayoutManager: LinearLayoutManager
 
     @Inject
     lateinit var displayProfileImage: DisplayProfileImage
@@ -426,9 +427,9 @@ class GroupChatPageFragment : Fragment() {
             })
 
         binding.messagesRecyclerView.adapter = messageAdapter
-        val layoutManager = LinearLayoutManager(requireContext())
-        layoutManager.stackFromEnd = true
-        binding.messagesRecyclerView.layoutManager = layoutManager
+        messagesLayoutManager = LinearLayoutManager(requireContext())
+        messagesLayoutManager.stackFromEnd = true
+        binding.messagesRecyclerView.layoutManager = messagesLayoutManager
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -482,6 +483,8 @@ class GroupChatPageFragment : Fragment() {
 
             val sorted = sortMessages(groupRoom)
             binding.groupNameText.text = groupRoom.groupName
+
+            messagesLayoutManager.removeAllViews()
 
             messageAdapter.submitList(sorted)
             messageAdapter.notifyDataSetChanged()

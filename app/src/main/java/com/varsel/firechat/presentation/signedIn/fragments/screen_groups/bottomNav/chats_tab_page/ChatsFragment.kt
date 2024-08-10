@@ -68,7 +68,8 @@ class ChatsFragment : Fragment() {
         binding.addNewChat.setOnClickListener {
             mock_notifications.add(NotificationItem("Elsa Addams", "Heyyyy sweetie ❤️", chatsViewModel.state.value?.currentUserImage, "28394", MessageType.Text, "14h"))
 
-            sendNotification_message(mock_notifications, parent)
+            // TODO: Uncomment this to use mock notifications
+//            sendNotification_message(mock_notifications, parent)
             view.findNavController().navigate(R.id.action_chatsFragment_to_addFriends)
         }
 

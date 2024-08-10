@@ -22,7 +22,8 @@ class SendNotificationMessage_UseCase @Inject constructor(
         val intent = Intent(activity, SignedinActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        val pendingIntent = PendingIntent.getActivity(activity, 0, intent, 0)
+        val pendingIntent = PendingIntent.getActivity(activity, 0, intent,
+            PendingIntent.FLAG_IMMUTABLE)
         val notificationManager = NotificationManagerCompat.from(activity)
 
 
